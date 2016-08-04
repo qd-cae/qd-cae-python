@@ -48,19 +48,20 @@ srcs_dyna = ["src/qd/cae/dyna/python_api/wrapper.cpp",
 
 # FEMZIP usage? Libraries present?
 if useFemzip:
-   srcs_dyna.append("src/qd/cae/dyna/dyna/FemzipBuffer.cpp")
-   if (platform.system() == "Windows") and os.path.isdir('libs/Windows_VS2010_MT/x64'):
-		lib_dirs_dyna = ['libs/Windows_VS2010_MT/x64']
-		libs_dyna = ['femunziplib_standard_dyna','ipp_zlib','ippcoremt',
+    if (platform.system() == "Windows") and os.path.isdir('libs/Windows_VS2010_MT/x64'):
+        srcs_dyna.append("src/qd/cae/dyna/dyna/FemzipBuffer.cpp")
+        lib_dirs_dyna = ['libs/Windows_VS2010_MT/x64']
+        libs_dyna = ['femunziplib_standard_dyna','ipp_zlib','ippcoremt',
             'ippdcmt','ippsmt','ifwin','ifconsol','ippvmmt','libmmt',
             'libirc','svml_dispmt','msvcrt']
-		compiler_args_dyna.append("/DCD_USE_FEMZIP")
-   elif (platform.system() == "Linux") and os.path.isdir('libs/Linux/64Bit'):
-      lib_dirs_dyna = ['libs/Linux/64Bit']
-      libs_dyna = ['femunzip_dyna_standard','ipp_z','ippcore',
+        compiler_args_dyna.append("/DCD_USE_FEMZIP")
+    elif (platform.system() == "Linux") and os.path.isdir('libs/Linux/64Bit'):
+        srcs_dyna.append("src/qd/cae/dyna/dyna/FemzipBuffer.cpp")
+        lib_dirs_dyna = ['libs/Linux/64Bit']
+        libs_dyna = ['femunzip_dyna_standard','ipp_z','ippcore',
             'ippdc','ipps','ifcore_pic','ifcoremt','imf',
             'ipgo','irc','svml','ippcore_l','stdc++','dl']
-      compiler_args_dyna.append("-DCD_USE_FEMZIP")
+        compiler_args_dyna.append("-DCD_USE_FEMZIP")
 # CFLAGS linux
 if (platform == "linux") or (platform == "linux2") or use_mingw:
 	compiler_args_dyna.append("-std=c++11")
