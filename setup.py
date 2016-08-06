@@ -25,14 +25,15 @@ for ii in range(len(sys.argv)):
 		use_mingw=True
 	if (sys.argv[ii] == "--compiler=mingw32"):
 		use_mingw=True
-      
-# (1) Native Code Stuff  
+
+# (1) Native Code Stuff
 # (1.1) DYNA toolbox
 compiler_args_dyna = []
 include_dirs_dyna = []
 lib_dirs_dyna = []
 libs_dyna = []
 srcs_dyna = ["src/qd/cae/dyna/python_api/wrapper.cpp",
+    "src/qd/cae/dyna/db/FEMFile.cpp",
     "src/qd/cae/dyna/db/DB_Elements.cpp",
     "src/qd/cae/dyna/db/DB_Nodes.cpp",
     "src/qd/cae/dyna/db/DB_Parts.cpp",
@@ -64,7 +65,7 @@ if useFemzip:
         compiler_args_dyna.append("-DCD_USE_FEMZIP")
 # CFLAGS linux
 if (platform == "linux") or (platform == "linux2") or use_mingw:
-	compiler_args_dyna.append("-std=c++11")
+	#compiler_args_dyna.append("-std=c++11")
 	compiler_args_dyna.append("-O3")
 	if not use_mingw:
 		compiler_args_dyna.append("-fPIC")
@@ -105,4 +106,3 @@ setup(name = 'qd',
                      'Topic :: CAE',
                      'Topic :: FEM',
                      'Programming Language :: Python :: 2.7'],)
-      
