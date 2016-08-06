@@ -7,8 +7,6 @@
  */
 DB_Parts::DB_Parts(){
 
-  //this->parts = map<int,Part*>();
-
 }
 
 
@@ -41,14 +39,14 @@ Part* DB_Parts::add_part(int partIndex, int partID){
  * Get the parts in the db in a vector.
  */
 vector<Part*> DB_Parts::get_parts(){
-	
+
 	vector<Part*> ret(this->parts.size());
 	for (map<int,Part*>::iterator it=this->parts.begin(); it!=this->parts.end(); ++it) {
 		ret.push_back(it->second);
       cout << it->second << endl; // DEBUG
 	}
 	return ret;
-	
+
 }
 
 
@@ -76,14 +74,12 @@ Part* DB_Parts::get_part_byID(int partID){
 Part* DB_Parts::get_part_byIndex(int partIndex){
 
   map<int,Part*>::iterator it = this->partsByIndex.find(partIndex);
-  
+
   // Part existing
   if(it != this->partsByIndex.end()){
     return it->second;
   }
 
-  cout << "DB_Parts::get_part_byIndex 2" << endl;
-  
   // Part not found
   return NULL;
 
@@ -121,12 +117,12 @@ unsigned int DB_Parts::size(){
  * Print the parts in the db.
  */
 void DB_Parts::print_parts(){
-  
+
   for (map<int,Part*>::iterator it=this->parts.begin(); it!=this->parts.end(); ++it) {
-	cout << "partID:" << it->second->get_partID() 
-	     << " name:" << it->second->get_name() 
+	cout << "partID:" << it->second->get_partID()
+	     << " name:" << it->second->get_name()
 		 << " nElems:" << it->second->get_elements().size()
 		 << endl;
   }
-  
+
 }

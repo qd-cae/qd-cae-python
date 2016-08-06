@@ -3,6 +3,7 @@
 #include <string.h>
 #include <iostream>
 #include <bitset>
+#include <fstream>
 #include "../utility/FileUtility.h"
 #include "D3plotBuffer.h"
 

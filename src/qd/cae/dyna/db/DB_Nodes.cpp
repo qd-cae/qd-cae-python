@@ -9,11 +9,11 @@
 /*
  * Constructor.
  */
-DB_Nodes::DB_Nodes(D3plot* d3plot){
+DB_Nodes::DB_Nodes(FEMFile* _femfile){
 
   this->nodesByIndex = map<int,Node*>();
   this->nodesByID = map<int,Node*>();
-  this->d3plot = d3plot;
+  this->femfile = _femfile;
 
 }
 
@@ -97,8 +97,8 @@ void DB_Nodes::set_db_elements(DB_Elements* _db_elements){
 /*
  * Get the owning d3plot of the db.
  */
-D3plot* DB_Nodes::get_d3plot(){
-   return this->d3plot;
+FEMFile* DB_Nodes::get_femfile(){
+   return this->femfile;
 }
 
 /*

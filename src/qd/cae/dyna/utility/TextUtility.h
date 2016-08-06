@@ -1,6 +1,6 @@
 
-#ifndef TEXTUTILITY
-#define TEXTUTILITY
+#ifndef TEXTUTILITY_H
+#define TEXTUTILITY_H
 
 #include <vector>
 #include <string>
@@ -21,10 +21,10 @@ std::string to_string(T value)
  * Text utility class
  */
 class TextUtility {
-   
+
    public:
    static std::vector<unsigned int> extract_integers(std::string text);
-   
+
 };
 
 

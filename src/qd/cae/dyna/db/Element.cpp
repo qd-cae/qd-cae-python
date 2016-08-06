@@ -24,11 +24,11 @@ Element::Element(int _elementID, ElementType _elementType, set<Node*> _nodes,DB_
   this->db_elements = _db_elements;
   this->elementID = _elementID;
   this->elemType = _elementType;
-  
+
   for(set<Node*>::iterator it=_nodes.begin(); it != _nodes.end(); ++it){
     this->nodes.insert(((Node*) *it)->get_nodeID());
   }
-  
+
   this->check();
   /*
   for (auto _node : _nodes)
@@ -91,9 +91,9 @@ set<Node*> Element::get_nodes(){
     } else{
       throw("Node with index:"+to_string(*it)+" in Element:"+to_string(this->elementID)+" was not found in DB.");
     }
-        
+
   }
-  
+
   return node_set;
 }
 
@@ -107,7 +107,7 @@ void Element::add_plastic_strain(float _platic_strain){
   if(_platic_strain < 0)
     throw("Element:"+to_string(this->elementID)+" tries to add a negative plastic strain:"+to_string(_platic_strain));
   */
-    
+
   this->plastic_strain.push_back(_platic_strain);
 }
 
@@ -151,7 +151,7 @@ void Element::add_stress(vector<float> _stress){
  * Append history vars to the time seris.
  */
 void Element::add_history_vars(vector<float> vars,size_t iTimestep){
-   
+
    if(iTimestep < this->history_vars.size()){
       for(size_t ii=0; ii<vars.size(); ++ii){
          this->history_vars[iTimestep].push_back(vars[ii]);
@@ -159,7 +159,7 @@ void Element::add_history_vars(vector<float> vars,size_t iTimestep){
    } else {
       this->history_vars.push_back(vars);
    }
-   
+
 }
 
 
@@ -189,72 +189,76 @@ vector<float> Element::get_energy(){
  * the average of all nodes.
  */
 vector<float> Element::get_coords(int iTimestep){
-  
-  if(this->nodes.size() < 1)
-    throw("Element with id "+to_string(this->elementID)+" has no nodes and thus no coords.");
-  
-  if((iTimestep != 0) & (!this->db_elements->get_d3plot()->displacement_is_read()) ){
-    throw(string("Displacements were not read yet. Please use read_states=\"disp\"."));
-  }
-  
-  if( iTimestep < 0 )
-    iTimestep = this->db_elements->get_d3plot()->get_timesteps().size() + iTimestep; // Python array style
-  
-  if( (iTimestep < 0) )
-    throw(string("Specified timestep exceeds real time step size."));
-  
-  DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
-  
-  Node* current_node = NULL;
-  vector<float> coords_elem(3);
-  vector<float> coords_node;
-  vector< vector<float> > disp_node; 
-  
-  for(set<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
-	
-   current_node = db_nodes->get_nodeByID(*it);
-   coords_node = current_node->get_coords();
-	
-   coords_elem[0] += coords_node[0];
-   coords_elem[1] += coords_node[1];
-   coords_elem[2] += coords_node[2];
-    
-   // Coords at different timestep
-   if(iTimestep != 0){
-      
-      disp_node = current_node->get_disp();
-      
-      // Check correctness
-      if( iTimestep >= disp_node.size() )
-        throw(string("Specified timestep exceeds real time step size."));
-      
-      coords_elem[0] += disp_node[iTimestep][0];
-      coords_elem[1] += disp_node[iTimestep][1];
-      coords_elem[2] += disp_node[iTimestep][2];
+
+   if(this->nodes.size() < 1)
+      throw(string("Element with id ")+to_string(this->elementID)+string(" has no nodes and thus no coords."));
+
+   if(this->db_elements->get_femfile()->is_d3plot()){
+      if( (iTimestep != 0) & (!this->db_elements->get_femfile()->get_d3plot()->displacement_is_read()) )
+         throw(string("Displacements were not read yet. Please use read_states=\"disp\"."));
+   } else if(this->db_elements->get_femfile()->is_keyFile()) {
+      if( iTimestep != 0 )
+         throw(string("Since a KeyFile has no states, you can not use the iTimeStep argument in element.get_coords."));
+   } else {
+      throw(string("FEMFile is neither a d3plot, nor a keyfile in element.get_coords"));
    }
-    
+
+   if( iTimestep < 0 )
+      iTimestep = this->db_elements->get_femfile()->get_d3plot()->get_timesteps().size() + iTimestep; // Python array style
+
+   if( (iTimestep < 0) )
+      throw(string("Specified timestep exceeds real time step size."));
+
+   DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
+
+   Node* current_node = NULL;
+   vector<float> coords_elem(3);
+   vector<float> coords_node;
+   vector< vector<float> > disp_node;
+
+   for(set<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
+
+      current_node = db_nodes->get_nodeByID(*it);
+      coords_node = current_node->get_coords();
+
+      coords_elem[0] += coords_node[0];
+      coords_elem[1] += coords_node[1];
+      coords_elem[2] += coords_node[2];
+
+      // Coords at different timestep
+      if(iTimestep != 0){
+
+         disp_node = current_node->get_disp();
+
+         // Check correctness
+         if( iTimestep >= disp_node.size() )
+            throw(string("Specified timestep exceeds real time step size."));
+
+         coords_elem[0] += disp_node[iTimestep][0];
+         coords_elem[1] += disp_node[iTimestep][1];
+         coords_elem[2] += disp_node[iTimestep][2];
+      }
   }
-  
+
   coords_elem[0] /= (float) this->nodes.size();
   coords_elem[1] /= (float) this->nodes.size();
   coords_elem[2] /= (float) this->nodes.size();
-  
+
   return coords_elem;
-	
-} 
+}
 
 /*
- * Get an estimate for the average element length. This takes the 
+ * Get an estimate for the average element length. This takes the
  * maximum distance (diagonal) from the first node and multiplies
  * it with a volume factor (beam=1,shell=sqrt(2),solid=sqrt(3))
  */
 float Element::get_estimated_element_size(){
-   
+
    if(this->nodes.size() < 1)
       throw("Element with id "+to_string(this->elementID)+" has no nodes and thus no size.");
-   
+
    DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
-   
+
    float maxdist = -1.;
    vector<float> ncoords;
    vector<float> basis_coords;
@@ -265,13 +269,13 @@ float Element::get_estimated_element_size(){
          ncoords[0] *= ncoords[0];
          ncoords[1] *= ncoords[1];
          ncoords[2] *= ncoords[2];
-         
+
          maxdist = max(maxdist,ncoords[0]+ncoords[1]+ncoords[2]);
       } else {
          basis_coords=ncoords;
       }
    }
-   
+
    if(this->elemType == SHELL){
       if(this->nodes.size() == 3){
          return sqrt(maxdist); // tria
@@ -300,7 +304,7 @@ float Element::get_estimated_element_size(){
       return sqrt(maxdist); // beam
    }
 
-   
+
 }
 
 /*
@@ -336,7 +340,7 @@ vector< vector<float> > Element::get_history_vars(){
 
 /*
  * Check of the element type is correct regarding the node size.
- */ 
+ */
 void Element::check(){
 
    if(this->elemType == SHELL){
@@ -344,7 +348,7 @@ void Element::check(){
          throw("A shell element must have 3 or 4 nodes. You have "+to_string(this->nodes.size()));
       return;
    }
-   
+
    if(this->elemType == SOLID){
       if( (this->nodes.size() < 4) | (this->nodes.size() > 8) | (this->nodes.size() == 7))
          throw("A solid element must have 4,5,6 or 8 nodes. You have "+to_string(this->nodes.size()));
@@ -354,5 +358,5 @@ void Element::check(){
       if(this->nodes.size() != 2)
          throw("A beam element must have exactly 2 nodes. You have "+to_string(this->nodes.size()));
    }
-   
+
 }

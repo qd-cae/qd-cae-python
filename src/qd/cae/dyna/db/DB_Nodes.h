@@ -4,28 +4,29 @@
 
 // forward declarations
 class Node;
-class D3plot;
+class FEMFile;
 class DB_Elements;
 
 // includes
 #include <map>
 #include <vector>
 
+// namespaces
 using namespace std;
 
 class DB_Nodes {
 
-  private:
-  D3plot* d3plot;
+private:
+  FEMFile* femfile;
   map<int,Node*> nodesByIndex; // starts at 1
   map<int,Node*> nodesByID;
   DB_Elements* db_elements;
 
-  public:
-  DB_Nodes(D3plot* d3plot);
+public:
+  DB_Nodes(FEMFile* _femfile);
   ~DB_Nodes();
   unsigned int size();
-  D3plot* get_d3plot();
+  FEMFile* get_femfile();
   DB_Elements* get_db_elements();
   void set_db_elements(DB_Elements*);
   Node* add_node(int,vector<float>);

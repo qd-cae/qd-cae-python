@@ -3,6 +3,7 @@
 #define D3PLOT
 
 // forward declarations
+class KeyFile;
 class DB_Nodes;
 class DB_Parts;
 class DB_Elements;
@@ -13,16 +14,14 @@ class DB_Elements;
 #include <time.h>
 #include <vector>
 #include <algorithm> // trim
-
+#include "../db/FEMFile.hpp"
 #include "AbstractBuffer.h"
 
 using namespace std;
 
-class D3plot {
+class D3plot : public FEMFile {
 
-  private:
-
-  string filename;
+private:
   string dyna_title;
   string dyna_datetime; // BUGGY
 
@@ -109,19 +108,16 @@ class D3plot {
   vector<unsigned int> history_is_read;
   vector<unsigned int> history_shell_is_read;
   vector<unsigned int> history_solid_is_read;
-  
+
   vector<unsigned int> history_var_read;
   vector<unsigned int> history_shell_read;
   vector<unsigned int> history_solid_read;
-  
+
   vector<unsigned int> history_var_mode;
   vector<unsigned int> history_shell_mode;
   vector<unsigned int> history_solid_mode;
 
   AbstractBuffer* buffer;
-  DB_Nodes* db_nodes;
-  DB_Parts* db_parts;
-  DB_Elements* db_elements;
 
   // Functions
   void init_vars();
@@ -147,13 +143,13 @@ class D3plot {
   public:
   D3plot (string filepath,bool _use_femzip,vector<string> _variables);
   ~D3plot();
-  string get_filepath();
   void read_states(vector<string> _variables);
   vector<float> get_timesteps();
-  DB_Nodes* get_db_nodes();
-  DB_Parts* get_db_parts();
-  DB_Elements* get_db_elements();
   bool displacement_is_read();
+  bool is_d3plot(){return true;};
+  bool is_keyFile(){return false;};
+  D3plot* get_d3plot(){return this;};
+  KeyFile* get_keyFile(){throw(string("You can not get a keyfile handle from a d3plot ... for now."));};
 
 };
 

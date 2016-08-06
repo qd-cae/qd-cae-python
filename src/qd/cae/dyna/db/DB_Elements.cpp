@@ -8,17 +8,18 @@
 #include "Element.h"
 #include "Node.h"
 #include "Part.h"
-#include "../dyna/d3plot.h"
+#include "FEMFile.hpp"
 #include "../utility/TextUtility.h"
 
-/*
- * Constructor.
+/** Constructor
+ *
+ * @param FEMFile* _femfile : parent file
  */
-DB_Elements::DB_Elements(D3plot* _d3plot, DB_Nodes* _db_nodes, DB_Parts* _db_parts){
+DB_Elements::DB_Elements(FEMFile* _femfile){
 
-  this->d3plot = _d3plot;
-  this->db_nodes = _db_nodes;
-  this->db_parts = _db_parts;
+  this->femfile = _femfile;
+  this->db_nodes = _femfile->get_db_nodes();
+  this->db_parts = _femfile->get_db_parts();
 
 }
 
@@ -114,8 +115,12 @@ Element* DB_Elements::add_element(ElementType _eType, int _elementID, vector<int
 }
 
 
-/*
- * Get the element by it's id and it's type.
+/** Get the element by it's internal id and it's type.
+ *
+ * @param int _elementType : see description
+ * @param int _elementID : id of the element (like in the solver)
+ * @return Element* _element
+ *
  * Type may be: Element.ElementType
  * NONE = 0 -> error
  * BEAM = 1
@@ -148,8 +153,12 @@ Element* DB_Elements::get_elementByID(int _elementType,int _elementID){
 
 }
 
-/*
- * Get the element by it's internal index and it's type.
+/** Get the element by it's internal index and it's type.
+ *
+ * @param int _elementType : see description
+ * @param int _elementIndex : index of the element (not id!)
+ * @return Element* _element
+ *
  * Type may be: Element.ElementType
  * NONE = 0 -> error
  * BEAM = 1
@@ -182,24 +191,24 @@ Element* DB_Elements::get_elementByIndex(int _elementType,int _elementIndex){
 
 }
 
-/*
- * Get the d3plot
- */
-D3plot* DB_Elements::get_d3plot(){
-   return this->d3plot;
-}
- 
 
-/*
- * Get the node-db.
+/** Get the DynaInputFile pointer
+ * @return DnyaInputFile* keyfile
+ */
+FEMFile* DB_Elements::get_femfile(){
+   return this->femfile;
+}
+
+/** Get the node-db.
+ * @return DB_Nodes* db_nodes
  */
 DB_Nodes* DB_Elements::get_db_nodes(){
   return this->db_nodes;
 }
 
 
-/*
- * Get the number of  in the db.
+/** Get the number of  in the db.
+ * @return unsigned int nElements : returns the total number of elements in the db
  */
 unsigned int DB_Elements::size(){
   return elements4.size()+elements2.size()+elements8.size();

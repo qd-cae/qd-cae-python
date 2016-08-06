@@ -4,6 +4,7 @@
 #include "Element.h"
 #include "DB_Nodes.h"
 #include "DB_Elements.h"
+#include "FEMFile.hpp"
 #include "../dyna/d3plot.h"
 #include "../utility/TextUtility.h"
 
@@ -109,36 +110,52 @@ set<Element*> Node::get_elements(){
  * of length 3.
  */
 vector<float> Node::get_coords(int iTimestep){
-  
-  if((iTimestep != 0) & (!this->db_nodes->get_d3plot()->displacement_is_read()) ){
-    throw(string("Displacements were not read yet. Please use read_states=\"disp\"."));
-  }
 
-  if( iTimestep < 0 )
-    iTimestep = this->db_nodes->get_d3plot()->get_timesteps().size() + iTimestep; // Python array style
-  
-  if( (iTimestep < 0) )
-    throw(string("Specified timestep exceeds real time step size."));
-  
-  if(iTimestep == 0){
-     
-     return this->coords;
-  
-  } else {
-     
-     vector<float> ret;
-     ret = this->coords;
-     
-     if( iTimestep >= this->disp.size() )
-        throw(string("Specified timestep exceeds real time step size."));
-     
-     ret[0] += this->disp[iTimestep][0];
-     ret[1] += this->disp[iTimestep][1];
-     ret[2] += this->disp[iTimestep][2];
-     
-     return ret;
-  }
-  
+   // D3plot with iTimestep != 0
+   if(this->db_nodes->get_femfile()->is_d3plot()){
+      D3plot* d3plot = this->db_nodes->get_femfile()->get_d3plot();
+
+      // Displacements iTimestep != 0
+      if( iTimestep != 0 ){
+         if(d3plot->displacement_is_read()){
+
+            if( iTimestep < 0 )
+               iTimestep = d3plot->get_timesteps().size() + iTimestep; // Python array style
+
+            if( (iTimestep < 0) )
+               throw(string("Specified timestep exceeds real time step size."));
+
+            vector<float> ret;
+            ret = this->coords;
+
+            if( iTimestep >= this->disp.size() )
+               throw(string("Specified timestep exceeds real time step size."));
+
+            ret[0] += this->disp[iTimestep][0];
+            ret[1] += this->disp[iTimestep][1];
+            ret[2] += this->disp[iTimestep][2];
+
+            return ret;
+
+         } else {
+            throw(string("Displacements were not read yet. Please use read_states=\"disp\"."));
+         }
+
+   }
+
+   // KeyFile with iTimestep != 0
+   } else if(this->db_nodes->get_femfile()->is_keyFile()){
+      if(iTimestep != 0)
+         throw(string("Since a KeyFile has no states, you can not use the iTimeStep argument in node.get_coords."));
+
+   // Unknown Filetype
+   } else {
+     throw(string("FEMFile is neither a d3plot, nor a keyfile in node.get_coords"));
+   }
+
+   // iTimestep == 0
+   return this->coords;
+
 }
 
 

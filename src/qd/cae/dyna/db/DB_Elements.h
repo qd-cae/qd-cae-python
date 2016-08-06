@@ -6,7 +6,7 @@
 //class Element;
 class DB_Nodes;
 class DB_Parts;
-class D3plot;
+class FEMFile;
 
 // includes
 #include <vector>
@@ -17,8 +17,8 @@ using namespace std;
 
 class DB_Elements {
 
-  private:
-  D3plot* d3plot;
+private:
+  FEMFile* femfile;
   DB_Nodes* db_nodes;
   DB_Parts* db_parts;
   map<int,Element*> elements2;
@@ -28,10 +28,10 @@ class DB_Elements {
   map<int,Element*> elements4ByIndex;
   map<int,Element*> elements8ByIndex;
 
-  public:
-  DB_Elements(D3plot*, DB_Nodes*,DB_Parts*);
+public:
+  DB_Elements(FEMFile* _femfile);
   ~DB_Elements();
-  D3plot* get_d3plot();
+  FEMFile* get_femfile();
   DB_Nodes* get_db_nodes();
   Element* add_element(ElementType,int,vector<int>);
 

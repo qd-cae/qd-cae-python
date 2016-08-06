@@ -19,7 +19,7 @@ enum ElementType {NONE,BEAM,SHELL,SOLID};
 class Element {
 
   /* PRIVATE */
-  private:
+private:
 
   int elementID;
   set<int> nodes;
@@ -32,7 +32,7 @@ class Element {
   DB_Elements* db_elements;
 
   /* PUBLIC */
-  public:
+public:
   Element(int,ElementType,set<Node*>,DB_Elements* db_elements);
   ~Element();
   bool operator<(const Element &other) const;

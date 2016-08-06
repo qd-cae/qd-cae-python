@@ -12,11 +12,11 @@ using namespace std;
 
 class DB_Parts {
 
-  private:
+private:
   map<int,Part*> parts;
   map<int,Part*> partsByIndex;
 
-  public:
+public:
   DB_Parts();
   ~DB_Parts();
 

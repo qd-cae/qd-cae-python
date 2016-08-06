@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string>
 #include <algorithm>
+#include <fstream>
 #ifdef _WIN32
 	#include <windows.h>
 	#include <tchar.h>
@@ -11,6 +12,42 @@
 #else
 	#include "glob.h"
 #endif
+
+
+/** Read the lines of a text file into a vector
+ * @param string filepath : path of the text file
+ *
+ * throws an expection in case of an IO-Error.
+ */
+vector<string> FileUtility::read_textFile(string filepath){
+
+   // vars
+   string linebuffer;
+   vector<string> filebuffer;
+
+   // open stream
+   ifstream filestream(filepath.c_str());
+   if (! filestream.is_open())
+      throw(string("Error while opening file ")+filepath);
+
+   // read data
+   while(getline(filestream, linebuffer)) {
+      filebuffer.push_back(linebuffer);
+   }
+
+   // Check for Error
+   if (filestream.bad()){
+      filestream.close();
+      throw(string("Error during reading file ")+filepath);
+   }
+
+   // Close file
+   filestream.close();
+
+   // return
+   return filebuffer;
+
+}
 
 
 #ifdef _WIN32
