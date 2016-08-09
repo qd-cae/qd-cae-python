@@ -1,6 +1,6 @@
 
-#ifndef DB_NODES
-#define DB_NODES
+#ifndef DB_NODES_HPP
+#define DB_NODES_HPP
 
 // forward declarations
 class Node;

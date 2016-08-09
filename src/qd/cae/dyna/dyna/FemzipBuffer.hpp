@@ -1,6 +1,6 @@
 
-#ifndef FEMZIPBUFFER
-#define FEMZIPBUFFER
+#ifndef FEMZIPBUFFER_HPP
+#define FEMZIPBUFFER_HPP
 
 #include <string>
 #include "AbstractBuffer.hpp"

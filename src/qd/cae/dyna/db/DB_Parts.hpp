@@ -1,6 +1,6 @@
 
-#ifndef DB_PARTS
-#define DB_PARTS
+#ifndef DB_PARTS_HPP
+#define DB_PARTS_HPP
 
 #include <string>
 #include <vector>

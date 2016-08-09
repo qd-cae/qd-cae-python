@@ -1,6 +1,6 @@
 
-#ifndef D3PLOTBUFFER
-#define D3PLOTBUFFER
+#ifndef D3PLOTBUFFER_HPP
+#define D3PLOTBUFFER_HPP
 
 #include <string>
 #include "AbstractBuffer.hpp"

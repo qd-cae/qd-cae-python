@@ -1,6 +1,6 @@
 
-#ifndef TEXTUTILITY_H
-#define TEXTUTILITY_H
+#ifndef TEXTUTILITY_HPP
+#define TEXTUTILITY_HPP
 
 #include <vector>
 #include <string>

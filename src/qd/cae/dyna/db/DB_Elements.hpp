@@ -1,6 +1,6 @@
 
-#ifndef DB_ELEMENTS
-#define DB_ELEMENTS
+#ifndef DB_ELEMENTS_HPP
+#define DB_ELEMENTS_HPP
 
 // forward declarations
 //class Element;

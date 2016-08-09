@@ -1,6 +1,6 @@
 
-#ifndef D3PLOT
-#define D3PLOT
+#ifndef D3PLOT_HPP
+#define D3PLOT_HPP
 
 // forward declarations
 class KeyFile;

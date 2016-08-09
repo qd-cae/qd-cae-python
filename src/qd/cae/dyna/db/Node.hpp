@@ -1,6 +1,6 @@
 
-#ifndef NODE
-#define NODE
+#ifndef NODE_HPP
+#define NODE_HPP
 
 // forward declarations
 class Element;

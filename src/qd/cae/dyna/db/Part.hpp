@@ -1,6 +1,6 @@
 
-#ifndef PART
-#define PART
+#ifndef PART_HPP
+#define PART_HPP
 
 // forward declaration
 class Node;
