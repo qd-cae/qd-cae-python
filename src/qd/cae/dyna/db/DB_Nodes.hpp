@@ -29,9 +29,9 @@ public:
   FEMFile* get_femfile();
   DB_Elements* get_db_elements();
   void set_db_elements(DB_Elements*);
-  Node* add_node(int,vector<float>);
-  Node* get_nodeByID(int);
-  Node* get_nodeByIndex(int);
+  Node* add_node(int _id,vector<float> _coords);
+  Node* get_nodeByID(int _id);
+  Node* get_nodeByIndex(int _index);
 
 };
 

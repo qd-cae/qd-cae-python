@@ -1,10 +1,9 @@
 
 #include <string>
-#include "DB_Elements.h"
-#include "DB_Nodes.h"
-#include "../dyna/d3plot.h"
-#include "Node.h"
-#include "../utility/TextUtility.h"
+#include "DB_Elements.hpp"
+#include "DB_Nodes.hpp"
+#include "Node.hpp"
+#include "../utility/TextUtility.hpp"
 
 /*
  * Constructor.

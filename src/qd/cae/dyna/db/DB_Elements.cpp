@@ -2,14 +2,14 @@
 #include <string>
 #include <set>
 
-#include "DB_Elements.h"
-#include "DB_Nodes.h"
-#include "DB_Parts.h"
-#include "Element.h"
-#include "Node.h"
-#include "Part.h"
+#include "DB_Elements.hpp"
+#include "DB_Nodes.hpp"
+#include "DB_Parts.hpp"
+#include "Element.hpp"
+#include "Node.hpp"
+#include "Part.hpp"
 #include "FEMFile.hpp"
-#include "../utility/TextUtility.h"
+#include "../utility/TextUtility.hpp"
 
 /** Constructor
  *

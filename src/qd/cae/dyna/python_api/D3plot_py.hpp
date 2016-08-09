@@ -2,10 +2,14 @@
 #ifndef D3PLOT_PY
 #define D3PLOT_PY
 
-#include <Python.h>
-#include "../dyna/d3plot.h"
+// forward declarations
+class D3plot;
 
-using namespace std;
+// includes
+#include <Python.h>
+
+// namespaces
+//using namespace std;
 
 extern "C" {
 
@@ -52,7 +56,7 @@ extern "C" {
   /* CD_D3plot FUNCTION get_partByID */
   static PyObject *
   CD_D3plot_get_partByID(CD_D3plot* self, PyObject* args);
-  
+
   /* CD_D3plot FUNCTION get_parts */
   static PyObject *
   CD_D3plot_get_parts(CD_D3plot* self, PyObject* args);

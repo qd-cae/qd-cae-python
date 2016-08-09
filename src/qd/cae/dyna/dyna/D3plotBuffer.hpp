@@ -3,7 +3,7 @@
 #define D3PLOTBUFFER
 
 #include <string>
-#include "AbstractBuffer.h"
+#include "AbstractBuffer.hpp"
 
 using namespace std;
 

@@ -1,12 +1,12 @@
 
 #include <string>
-#include "Node.h"
-#include "Element.h"
-#include "DB_Nodes.h"
-#include "DB_Elements.h"
+#include "Node.hpp"
+#include "Element.hpp"
+#include "DB_Nodes.hpp"
+#include "DB_Elements.hpp"
 #include "FEMFile.hpp"
-#include "../dyna/d3plot.h"
-#include "../utility/TextUtility.h"
+#include "../dyna/D3plot.hpp"
+#include "../utility/TextUtility.hpp"
 
 /*
  * Constructor.

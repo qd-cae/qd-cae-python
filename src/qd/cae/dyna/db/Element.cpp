@@ -3,13 +3,13 @@
 #include <algorithm> // std::max
 #include <cmath>        // std::abs
 #include <string>
-#include "../dyna/d3plot.h"
-#include "Element.h"
-#include "Node.h"
-#include "DB_Nodes.h"
-#include "DB_Elements.h"
-#include "../utility/TextUtility.h"
-#include "../utility/MathUtility.h"
+#include "../dyna/D3plot.hpp"
+#include "Element.hpp"
+#include "Node.hpp"
+#include "DB_Nodes.hpp"
+#include "DB_Elements.hpp"
+#include "../utility/TextUtility.hpp"
+#include "../utility/MathUtility.hpp"
 
 /*
  * Constructor.

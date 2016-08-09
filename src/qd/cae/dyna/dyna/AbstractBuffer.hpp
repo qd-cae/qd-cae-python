@@ -1,6 +1,6 @@
 
-#ifndef ABSTRACTBYTEBUFFER
-#define ABSTRACTBYTEBUFFER
+#ifndef ABSTRACTBUFFER_HPP
+#define ABSTRACTBUFFER_HPP
 
 #include <string.h>
 
@@ -24,7 +24,7 @@ class AbstractBuffer{
   virtual bool has_nextState()=0;
   virtual void rewind_nextState()=0;
   virtual void end_nextState()=0;
-  // Close 
+  // Close
   virtual void finish_reading()=0;
 
   // Vars

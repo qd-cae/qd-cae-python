@@ -1,22 +1,23 @@
 
 #include <Python.h>
-#include "D3plot_py.h"
-#include "Node_py.h"
-#include "Element_py.h"
-#include "Part_py.h"
+#include "D3plot_py.hpp"
+#include "Node_py.hpp"
+#include "Element_py.hpp"
+#include "Part_py.hpp"
 #include <limits>
 #include <string.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
 #include <set>
-#include "../utility/TextUtility.h"
-#include "../dyna/d3plot.h"
-#include "../db/DB_Elements.h"
-#include "../db/DB_Nodes.h"
-#include "../db/DB_Parts.h"
-#include "../db/Node.h"
-#include "../db/Element.h"
+#include "../utility/TextUtility.hpp"
+#include "../dyna/D3plot.hpp"
+#include "../db/DB_Elements.hpp"
+#include "../db/DB_Nodes.hpp"
+#include "../db/DB_Parts.hpp"
+#include "../db/Node.hpp"
+#include "../db/Part.hpp"
+#include "../db/Element.hpp"
 
 using namespace std;
 
@@ -63,7 +64,7 @@ extern "C" {
       delete self->d3plot;
       self->d3plot = NULL;
     }
-	
+
 	#ifdef CD_DEBUG
 	cout << "D3plot destructor" << endl;
 	#endif
@@ -105,34 +106,34 @@ extern "C" {
 
     vector<string> variables;
     if(PyString_Check(read_states_py)){
-    
+
       char* variable_c = PyString_AsString(read_states_py);
       string variable = string(variable_c);
-      
+
       variables.push_back(variable);
-      
+
     } else if(PyList_Check(read_states_py)){
-      
+
       for(unsigned int ii=0; ii<PySequence_Size(read_states_py); ii++){
 
           PyObject* item = PyList_GET_ITEM(read_states_py, ii);
-          
+
           // Check
           if(!PyString_Check(item)){
             string message = "Item in list is not of type string.";
             PyErr_SetString(PyExc_SyntaxError,message.c_str() );
             return -1;
-          } 
-          
+          }
+
           // here we go
           variables.push_back(PyString_AsString(item));
-          
+
       }
-      
+
     } else {
       // nothing
     }
-    
+
     // Check if filepath parsing worked
     if(filepath_c){
 
@@ -208,15 +209,15 @@ extern "C" {
     PyObject* argument;
     if (!PyArg_ParseTuple(args, "O", &argument))
       return NULL;
-      
+
     if(PyString_Check(argument)){
-      
+
       char* variable_c = PyString_AsString(argument);
       string variable = string(variable_c);
-      
+
       vector<string> variables;
       variables.push_back(variable);
-      
+
       try{
         self->d3plot->read_states(variables);
       } catch (const char* e){
@@ -228,26 +229,26 @@ extern "C" {
       }
 
       return Py_None;
-      
+
     } else if(PyList_Check(argument)){
-      
+
         vector<string> variables;
         for(unsigned int ii=0; ii<PySequence_Size(argument); ii++){
 
           PyObject* item = PyList_GET_ITEM(argument, ii);
-          
+
           // Check
           if(!PyString_Check(item)){
             string message = "Item in list is not of type string.";
             PyErr_SetString(PyExc_SyntaxError,message.c_str() );
             return NULL;
-          } 
-          
+          }
+
           // here we go
           variables.push_back(PyString_AsString(item));
-          
+
         }
-        
+
         try{
           self->d3plot->read_states(variables);
         } catch (const char* e){
@@ -257,14 +258,14 @@ extern "C" {
           PyErr_SetString(PyExc_RuntimeError, e.c_str());
           return NULL;
         }
-        
+
         return Py_None;
-          
+
     }
 
     PyErr_SetString(PyExc_SyntaxError, "Error, argument is neither int nor list of int.");
     return NULL;
-    
+
   }
 
   /* CD_D3plot FUNCTION get_nodeByID */
@@ -463,35 +464,35 @@ extern "C" {
   /* CD_D3plot FUNCTION get_parts */
   static PyObject *
   CD_D3plot_get_parts(CD_D3plot* self, PyObject* args){
-  
+
     if (self->d3plot == NULL) {
       PyErr_SetString(PyExc_AttributeError, "Developer Error d3plot pointer NULL.");
       return NULL;
     }
-    
+
     // Create list
     PyObject* part_list = PyList_New(self->d3plot->get_db_parts()->size());
-    
+
     // fill list
     Part* _part=NULL;
     int check=0;
     for(unsigned int ii=0; ii < self->d3plot->get_db_parts()->size(); ++ii){
-      
+
       _part = self->d3plot->get_db_parts()->get_part_byIndex(ii+1); // index start at 1
-      
+
       PyObject *argList2 = Py_BuildValue("Oi",self ,_part->get_partID());
       PyObject* ret = PyObject_CallObject((PyObject *) &CD_Part_Type, argList2);
       Py_DECREF(argList2);
-      
+
       if(ret == NULL){
         Py_DECREF(part_list);
         PyErr_SetString(PyExc_RuntimeError, "Developer Error during part construction.");
         return NULL;
       }
-      
+
       check += PyList_SetItem(part_list, ii, ret);
     }
-    
+
     if(check != 0){
       Py_DECREF(part_list);
       PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of part list.");
@@ -501,7 +502,7 @@ extern "C" {
     return part_list;
 
   }
-  
+
 
   /*******************************************************/
   /*                                                     */
@@ -602,10 +603,10 @@ extern "C" {
       PyErr_SetString(PyExc_AttributeError,"Pointer to node is NULL.");
       return NULL;
     }
-    
+
     int iTimestep = 0;
     static char *kwlist[] = {"iTimestep",NULL}; // TODO Deprecated!
-    
+
     if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &iTimestep)){
         return NULL;
     }
@@ -632,7 +633,7 @@ extern "C" {
       PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of coords list.");
       return NULL;
     }
-    
+
     return coords_list;
 
   }
@@ -779,7 +780,7 @@ extern "C" {
     int check=0;
     PyObject* element_list = PyList_New(elements.size());
     unsigned int ii=0;
-    
+
     for(set<Element*>::iterator it=elements.begin(); it != elements.end(); ++it){
 //    for(auto element : elements){ // -std=c++11 rulez
       Element* element = *it;
@@ -1101,15 +1102,15 @@ extern "C" {
   /* CD_Element FUNCTION get_coords */
   static PyObject *
   CD_Element_get_coords(CD_Element* self, PyObject *args, PyObject *kwds){
-  
+
 	 if(self->element == NULL){
       PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
       return NULL;
     }
-    
+
     int iTimestep = 0;
     static char *kwlist[] = {"iTimestep",NULL}; // TODO Deprecated!
-    
+
     if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &iTimestep)){
         return NULL;
     }
@@ -1127,7 +1128,7 @@ extern "C" {
       PyErr_SetString(PyExc_RuntimeError, e.c_str());
       return NULL;
     }
-    
+
     int check = 0;
     PyObject* coords_list = PyList_New(coords.size());
     for(unsigned int ii=0; ii<coords.size(); ii++){
@@ -1141,20 +1142,20 @@ extern "C" {
     }
 
     return coords_list;
-  
+
   }
-  
+
   /* CD_Element FUNCTION get_history */
   static PyObject *
   CD_Element_get_history(CD_Element* self){
-     
+
     if(self->element == NULL){
       PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
       return NULL;
     }
-    
+
     vector< vector<float> > history_vars = self->element->get_history_vars();
-    
+
     int check0 = 0;
     int check1 = 0;
     PyObject* history_vars_list0 = PyList_New(history_vars.size());
@@ -1175,32 +1176,32 @@ extern "C" {
     }
 
     return history_vars_list0;
-     
+
   }
-  
+
   /* CD_Element FUNCTION get_estimated_size */
   static PyObject *
   CD_Element_get_estimated_size(CD_Element* self){
-  
+
     if(self->element == NULL){
       PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
       return NULL;
     }
-        
+
     return Py_BuildValue("f",self->element->get_estimated_element_size());
-  
+
   }
-   
+
 
   /* CD_Element FUNCTION get_type */
   static PyObject *
   CD_Element_get_type(CD_Element* self){
-  
+
     if(self->element == NULL){
       PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
       return NULL;
     }
-        
+
     ElementType type = self->element->get_elementType();
     if(type == SHELL){
       return Py_BuildValue("s","shell");
@@ -1212,10 +1213,10 @@ extern "C" {
       PyErr_SetString(PyExc_AttributeError,"Unknown element type detected.");
       return NULL;
     }
-  
+
   }
-  
-  
+
+
   /*******************************************************/
   /*                                                     */
   /*                     Q D _ P A R T                   */
@@ -1254,7 +1255,7 @@ extern "C" {
     int partID;
     static char *kwlist[] = {"d3plot","partID", NULL}; // TODO Deprecated!
 
-    
+
     if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi", kwlist, &d3plot_obj_py, &partID)){
         return -1;
     }
@@ -1321,9 +1322,9 @@ extern "C" {
       PyErr_SetString(PyExc_AttributeError,"Pointer to part is NULL.");
       return NULL;
     }
-    
+
     set<Node*> nodes = self->part->get_nodes();
-    
+
     int check=0;
     PyObject* node_list = PyList_New(nodes.size());
 
@@ -1332,7 +1333,7 @@ extern "C" {
     Node* node = NULL;
     for(set<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
       node = *it;
-    
+
       PyObject *argList2 = Py_BuildValue("Oi",self->d3plot_py ,node->get_nodeID());
       PyObject* ret = PyObject_CallObject((PyObject *) &CD_Node_Type, argList2);
       Py_DECREF(argList2);
@@ -1418,13 +1419,13 @@ extern "C" {
   {
 	return Py_None;
   }
-  
+
   /* MODULE codie function table */
   static PyMethodDef CodieMethods[] = {
     {"test_codie",  test_codie, METH_VARARGS,"Execute a shell command."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
   };
-  
+
   /* MODULE codie */
   /* PYTHON 3 STUFF ?!?!?
   static PyModuleDef codie_module = {
@@ -1436,7 +1437,7 @@ extern "C" {
     //NULL, NULL, NULL, NULL, NULL
   };
   */
-  
+
   /* MODULE INIT codie */
   /* PY3
   PyMODINIT_FUNC

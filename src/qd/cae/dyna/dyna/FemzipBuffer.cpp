@@ -4,8 +4,8 @@ extern "C"
 #include "femzip.h"
 #include <stdio.h>
 }
-#include "FemzipBuffer.h"
-#include "../utility/FileUtility.h"
+#include "FemzipBuffer.hpp"
+#include "../utility/FileUtility.hpp"
 #include <iostream>
 #include <bitset>
 #include <sstream>
@@ -21,7 +21,7 @@ FemzipBuffer::FemzipBuffer(string _filepath){
     throw("File \"" + this->filepath + "\" does not exist or is locked.");
   }
   this->init_vars();
-  
+
   // version check
   float unzipversion = 0.;
 	float fileunzipversion = 0.;
@@ -58,7 +58,7 @@ FemzipBuffer::~FemzipBuffer(){
  * Initialize the variables for the class.
  */
 void FemzipBuffer::init_vars(){
-   
+
   this->wordSize = 4; // byte
   this->current_buffer = NULL;
 
@@ -79,7 +79,7 @@ void FemzipBuffer::init_vars(){
   this->size_times = 0;
   // config
   this->adjust = 5;
-   
+
 }
 
 /*
@@ -198,7 +198,7 @@ void FemzipBuffer::read_nextState(){
     delete[] this->current_buffer;
     this->current_buffer = NULL;
   }
-  
+
   #ifdef CD_DEBUG
   cout << "Loading state: " << this->iTimeStep << "/" << this->nTimeStep << endl;
   #endif
@@ -258,7 +258,7 @@ void FemzipBuffer::end_nextState(){
     delete[] this->current_buffer;
     this->current_buffer = NULL;
   }
-  
+
   close_read(&this->ier);
   this->check_ier("Femzip Error during closing of file.");
 
@@ -266,12 +266,12 @@ void FemzipBuffer::end_nextState(){
 
 /*
  * Close the file.
- */ 
+ */
 void FemzipBuffer::finish_reading(){
 
    close_read(&this->ier);
    this->check_ier("Femzip Error during closing of file.");
- 
+
 }
 
 /*

@@ -2,10 +2,11 @@
 #ifndef PART_PY
 #define PART_PY
 
-#include <Python.h>
-#include "../db/Part.h"
+// forward declarations
+class Part;
 
-using namespace std;
+// includes
+#include <Python.h>
 
 extern "C" {
 

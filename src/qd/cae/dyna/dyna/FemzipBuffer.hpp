@@ -3,7 +3,7 @@
 #define FEMZIPBUFFER
 
 #include <string>
-#include "AbstractBuffer.h"
+#include "AbstractBuffer.hpp"
 
 using namespace std;
 
@@ -13,7 +13,7 @@ class FemzipBuffer : public AbstractBuffer {
   private:
   string filepath;
   int wordSize; // byte
-  
+
   char* current_buffer;
 
   // general

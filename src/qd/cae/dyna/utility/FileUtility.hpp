@@ -1,6 +1,6 @@
 
-#ifndef FILEUTILITY
-#define FILEUTILITY
+#ifndef FILEUTILITY_HPP
+#define FILEUTILITY_HPP
 
 #include <string>
 #include <vector>

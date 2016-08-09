@@ -7,6 +7,7 @@ class KeyFile;
 class DB_Nodes;
 class DB_Parts;
 class DB_Elements;
+class AbstractBuffer;
 
 #include <iostream>
 #include <stdlib.h>
@@ -15,7 +16,6 @@ class DB_Elements;
 #include <vector>
 #include <algorithm> // trim
 #include "../db/FEMFile.hpp"
-#include "AbstractBuffer.h"
 
 using namespace std;
 

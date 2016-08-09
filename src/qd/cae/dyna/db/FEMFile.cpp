@@ -1,8 +1,8 @@
 
 #include "FEMFile.hpp"
-#include "../db/DB_Nodes.h"
-#include "../db/DB_Parts.h"
-#include "../db/DB_Elements.h"
+#include "../db/DB_Nodes.hpp"
+#include "../db/DB_Parts.hpp"
+#include "../db/DB_Elements.hpp"
 
 /** Constructor for a new FEMFile
  */

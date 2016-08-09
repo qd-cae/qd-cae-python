@@ -4,8 +4,8 @@
 #include <iostream>
 #include <bitset>
 #include <fstream>
-#include "../utility/FileUtility.h"
-#include "D3plotBuffer.h"
+#include "../utility/FileUtility.hpp"
+#include "D3plotBuffer.hpp"
 
 /*
  * Constructor

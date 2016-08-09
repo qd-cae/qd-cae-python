@@ -1,6 +1,6 @@
 
-#include "DB_Parts.h"
-#include "Part.h"
+#include "DB_Parts.hpp"
+#include "Part.hpp"
 
 /**
  * Constructor

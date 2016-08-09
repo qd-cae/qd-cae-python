@@ -1,19 +1,18 @@
 
 #include <string>
-#include "d3plot.h"
-#include "D3plotBuffer.h"
-#include "../db/Node.h"
-#include "../db/Part.h"
-#include "../db/Element.h"
-#include "../db/DB_Nodes.h"
-#include "../db/DB_Parts.h"
-#include "../db/DB_Elements.h"
-#include "../utility/TextUtility.h"
-#include "../utility/IOUtility.h"
-#include "../utility/FileUtility.h"
+#include "D3plot.hpp"
+#include "D3plotBuffer.hpp"
+#include "../db/Node.hpp"
+#include "../db/Part.hpp"
+#include "../db/Element.hpp"
+#include "../db/DB_Nodes.hpp"
+#include "../db/DB_Parts.hpp"
+#include "../db/DB_Elements.hpp"
+#include "../utility/TextUtility.hpp"
+#include "../utility/FileUtility.hpp"
 
 #ifdef CD_USE_FEMZIP
-#include "FemzipBuffer.h"
+#include "FemzipBuffer.hpp"
 #endif
 
 

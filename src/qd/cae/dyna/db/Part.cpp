@@ -1,7 +1,7 @@
 
-#include "Part.h"
-#include "Node.h"
-#include "Element.h"
+#include "Part.hpp"
+#include "Node.hpp"
+#include "Element.hpp"
 
 
 /**
@@ -26,17 +26,17 @@ Part::~Part(){
  * Assign a part name.
  */
 void Part::set_name(string _name){
-  
+
   string::const_iterator it = _name.begin();
   while (it != _name.end() && isspace(*it))
     it++;
-	
+
   string::const_reverse_iterator rit = _name.rbegin();
   while (rit.base() != it && isspace(*rit))
     rit++;
 
   string name(it, rit.base());
-	
+
   this->partName = name;
 }
 
@@ -72,7 +72,7 @@ set<Node*> Part::get_nodes(){
 
   set<Node*> nodes;
   set<Node*> elem_nodes;
-  
+
   for(set<Element*>::iterator it=this->elements.begin(); it != this->elements.end(); ++it){
     elem_nodes = ((Element*) *it)->get_nodes();
     for(set<Node*>::iterator it2=elem_nodes.begin(); it2 != elem_nodes.end(); ++it2){
