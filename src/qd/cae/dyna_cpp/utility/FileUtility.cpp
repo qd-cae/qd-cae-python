@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <fstream>
+#include <boost/algorithm/string/trim.hpp>
 #ifdef _WIN32
 	#include <windows.h>
 	#include <tchar.h>
@@ -32,6 +33,7 @@ vector<string> FileUtility::read_textFile(string filepath){
 
    // read data
    while(getline(filestream, linebuffer)) {
+      boost::trim(linebuffer);
       filebuffer.push_back(linebuffer);
    }
 

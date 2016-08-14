@@ -199,7 +199,7 @@ void FemzipBuffer::read_nextState(){
     this->current_buffer = NULL;
   }
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Loading state: " << this->iTimeStep << "/" << this->nTimeStep << endl;
   #endif
 

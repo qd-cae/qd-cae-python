@@ -11,58 +11,58 @@ extern "C" {
   class Element;
   class D3plot;
 
-  /* CD_Node OBJECT */
+  /* QD_Node OBJECT */
   typedef struct {
       PyObject_HEAD //;
       /* Type-specific fields go here. */
       Node* node;
-      CD_D3plot* d3plot_py;
-  } CD_Node;
+      QD_D3plot* d3plot_py;
+  } QD_Node;
 
   static void
-  CD_Node_dealloc(CD_Node* self);
+  QD_Node_dealloc(QD_Node* self);
 
   static int
-  CD_Node_init(CD_Node *self, PyObject *args, PyObject *kwds);
+  QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds);
 
   static PyObject *
-  CD_Node_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
+  QD_Node_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 
   static PyObject *
-  CD_Node_get_NodeID(CD_Node* self);
+  QD_Node_get_NodeID(QD_Node* self);
 
   static PyObject *
-  CD_Node_get_coords(CD_Node* self, PyObject *args, PyObject *kwds);
+  QD_Node_get_coords(QD_Node* self, PyObject *args, PyObject *kwds);
 
   static PyObject *
-  CD_Node_get_disp(CD_Node* self);
+  QD_Node_get_disp(QD_Node* self);
 
   static PyObject *
-  CD_Node_get_vel(CD_Node* self);
+  QD_Node_get_vel(QD_Node* self);
 
   static PyObject *
-  CD_Node_get_accel(CD_Node* self);
+  QD_Node_get_accel(QD_Node* self);
 
   static PyObject *
-  CD_Node_get_elements(CD_Node* self);
+  QD_Node_get_elements(QD_Node* self);
 
-  static PyMethodDef CD_Node_methods[] = {
-    {"get_id", (PyCFunction) CD_Node_get_NodeID, METH_NOARGS, "Get the node id."},
-    {"get_coords", (PyCFunction) CD_Node_get_coords, METH_VARARGS, "Get the node coordinates."},
-    {"get_disp", (PyCFunction) CD_Node_get_disp, METH_NOARGS, "Get the node displacement over time."},
-    {"get_vel", (PyCFunction) CD_Node_get_vel, METH_NOARGS, "Get the node velocity over time."},
-    {"get_accel", (PyCFunction) CD_Node_get_accel, METH_NOARGS, "Get the node acceleration over time."},
-    {"get_elements", (PyCFunction) CD_Node_get_elements, METH_NOARGS, "Get the elements to which the node belongs."},
+  static PyMethodDef QD_Node_methods[] = {
+    {"get_id", (PyCFunction) QD_Node_get_NodeID, METH_NOARGS, "Get the node id."},
+    {"get_coords", (PyCFunction) QD_Node_get_coords, METH_VARARGS, "Get the node coordinates."},
+    {"get_disp", (PyCFunction) QD_Node_get_disp, METH_NOARGS, "Get the node displacement over time."},
+    {"get_vel", (PyCFunction) QD_Node_get_vel, METH_NOARGS, "Get the node velocity over time."},
+    {"get_accel", (PyCFunction) QD_Node_get_accel, METH_NOARGS, "Get the node acceleration over time."},
+    {"get_elements", (PyCFunction) QD_Node_get_elements, METH_NOARGS, "Get the elements to which the node belongs."},
     {NULL}  /* Sentinel */
   };
 
-  /* CD_Node_Type TYPE */
-  static PyTypeObject CD_Node_Type = {
+  /* QD_Node_Type TYPE */
+  static PyTypeObject QD_Node_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "Node",             /* tp_name */
-    sizeof(CD_Node),           /* tp_basicsize */
+    sizeof(QD_Node),           /* tp_basicsize */
     0,                         /* tp_itemsize */
-    (destructor) CD_Node_dealloc, /* tp_dealloc */
+    (destructor) QD_Node_dealloc, /* tp_dealloc */
     0,                         /* tp_print */
     0,                         /* tp_getattr */
     0,                         /* tp_setattr */
@@ -86,7 +86,7 @@ extern "C" {
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
-    CD_Node_methods,           /* tp_methods */
+    QD_Node_methods,           /* tp_methods */
     0,                         /* tp_members */
     0,                         /* tp_getset */
     0,                         /* tp_base */
@@ -94,9 +94,9 @@ extern "C" {
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
-    (initproc) CD_Node_init,   /* tp_init */
+    (initproc) QD_Node_init,   /* tp_init */
     0,                         /* tp_alloc */
-    CD_Node_new,             /* tp_new */
+    QD_Node_new,             /* tp_new */
   };
 
 

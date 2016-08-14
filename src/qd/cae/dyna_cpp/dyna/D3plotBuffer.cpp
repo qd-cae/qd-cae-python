@@ -123,7 +123,7 @@ void D3plotBuffer::read_nextState(){
   }
 
   if(iStateFile < d3plots.size()){
-    #ifdef CD_DEBUG
+    #ifdef QD_DEBUG
     cout << "Loading state-file:" << d3plots[iStateFile] << endl;
     #endif
     this->get_bufferFromFile(d3plots[iStateFile]);

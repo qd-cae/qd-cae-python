@@ -11,15 +11,17 @@
 #include "../utility/TextUtility.hpp"
 #include "../utility/FileUtility.hpp"
 
-#ifdef CD_USE_FEMZIP
+#ifdef QD_USE_FEMZIP
 #include "FemzipBuffer.hpp"
 #endif
 
 
-/*
- * Constructor for a D3plot.
+/** Constructor for a D3plot.
+ * @param string filepath : path to the d3plot file
+ * @param vector<string> state_variables : which state variables to read
+ * @param bool use_femzip : set to true if your d3plot was femzipped
  */
-D3plot::D3plot (string _filename,bool _useFemzip,vector<string> _state_variables)
+D3plot::D3plot (string _filename,vector<string> _state_variables,bool _useFemzip)
 : FEMFile(_filename) {
 
    // standard vars
@@ -30,11 +32,11 @@ D3plot::D3plot (string _filename,bool _useFemzip,vector<string> _state_variables
   this->useFemzip = _useFemzip;
 
   // Create Buffer
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Reading d3plot ... " << endl;
   #endif
 
-  #ifdef CD_USE_FEMZIP
+  #ifdef QD_USE_FEMZIP
   if(this->useFemzip){
     this->buffer = new FemzipBuffer(this->get_filepath());
   } else {
@@ -54,23 +56,15 @@ D3plot::D3plot (string _filename,bool _useFemzip,vector<string> _state_variables
   this->read_geometry();
 
   // States
-  /*
-   * This routine must run through, even though no variables might be read.
-   * This is due to the fact, that femzip must read the states before
-   * closing the file. It is not possible to leave this out.
-   */
+  //
+  // This routine must run through, even though no variables might be read.
+  // This is due to the fact, that femzip must read the states before
+  // closing the file. It is not possible to leave this out.
+  //
   this->read_states(_state_variables);
 
-  // Release Buffer
-  /*
-  I wouldn't do this, since we might need to read other state variables.
-  if (this->buffer != NULL) {
-    delete this->buffer;
-    this->buffer = NULL;
-  }
-  */
-
 }
+
 
 /*
  * Destructor
@@ -84,6 +78,7 @@ D3plot::~D3plot(){
   }
 
 }
+
 
 /*
  * Initialize the object vars.
@@ -180,7 +175,7 @@ void D3plot::init_vars(){
  */
 void D3plot::read_header(){
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "> HEADER " << endl;
   #endif
 
@@ -309,7 +304,7 @@ void D3plot::read_header(){
       }
   }
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Title:  " << this->dyna_title << endl;
   cout << "nNodes : " << this->dyna_numnp << endl;
   cout << "nElem2 : " << this->dyna_nel2 << endl;
@@ -378,7 +373,7 @@ void D3plot::read_header(){
  */
 void D3plot::read_geometry(){
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "> GEOMETRY" << endl;
   #endif
 
@@ -427,7 +422,7 @@ void D3plot::read_geometry(){
   /* ====== D A T A B A S E S ====== */
 
   // Node-DB
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Adding nodes ... ";
   #endif
   if(buffer_numbering[0].size() != buffer_nodes.size())
@@ -436,24 +431,24 @@ void D3plot::read_geometry(){
 
     this->get_db_nodes()->add_node(buffer_numbering[0][ii],buffer_nodes[ii]);
   }
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << this->get_db_nodes->size() << " done." << endl;
   #endif
 
   // Beams
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Adding beams ... ";
   #endif
   for(unsigned int ii=0; ii < buffer_elems2.size() ;ii++){
     this->get_db_elements()->add_element(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
 
   }
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << this->get_db_elements()->size() << " done." << endl;
   #endif
 
   // Shells
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Adding shells ... ";
   #endif
   for(unsigned int ii=0; ii < buffer_elems4.size() ;ii++){
@@ -461,12 +456,12 @@ void D3plot::read_geometry(){
     this->get_db_elements()->add_element(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
 
   }
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << this->get_db_elements()->size() << " done." << endl;
   #endif
 
   // Solids
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Adding solids ... ";
   #endif
   for(unsigned int ii=0; ii < buffer_elems8.size() ;ii++){
@@ -474,7 +469,7 @@ void D3plot::read_geometry(){
     this->get_db_elements()->add_element(SOLID,buffer_numbering[1][ii],buffer_elems8[ii]);
 
   }
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << get_db_elements()->size() << " done." << endl;
   #endif
 
@@ -487,7 +482,7 @@ void D3plot::read_geometry(){
  */
 vector<vector<float>> D3plot::read_geometry_nodes(){
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Reading nodes ... ";
   #endif
 
@@ -508,7 +503,7 @@ vector<vector<float>> D3plot::read_geometry_nodes(){
   // Update word position
   wordPosition += wordsToRead;
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "done." << endl;
   #endif
 
@@ -526,7 +521,7 @@ vector<vector<int>> D3plot::read_geometry_elem8(){
   // Check
   if(dyna_nel8 == 0) return vector<vector<int>>();
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Reading elems8 ... ";
   #endif
 
@@ -558,7 +553,7 @@ vector<vector<int>> D3plot::read_geometry_elem8(){
   wordPosition += wordsToRead;
   if(own_nel10) wordPosition += 2*dyna_nel8;
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "done." << endl;
   #endif
 
@@ -576,7 +571,7 @@ vector<vector<int>> D3plot::read_geometry_elem4(){
   // Check
   if(dyna_nel4 == 0) return vector<vector<int>>();
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Reading elems4 ... ";
   #endif
 
@@ -606,7 +601,7 @@ vector<vector<int>> D3plot::read_geometry_elem4(){
   // Update word position
   wordPosition += wordsToRead;
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "done." << endl;
   #endif
 
@@ -623,7 +618,7 @@ vector<vector<int>> D3plot::read_geometry_elem2(){
   // Check
   if(dyna_nel2 == 0) return vector<vector<int>>();
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Reading elems2 ... ";
   #endif
 
@@ -658,7 +653,7 @@ vector<vector<int>> D3plot::read_geometry_elem2(){
   // Update word position
   wordPosition += wordsToRead;
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "done." << endl;
   #endif
 
@@ -693,7 +688,7 @@ vector<vector<int>> D3plot::read_geometry_numbering(){
 
   if(dyna_narbs == 0) return vector<vector<int>>();
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Reading numbering ... ";
   #endif
 
@@ -816,7 +811,7 @@ vector<vector<int>> D3plot::read_geometry_numbering(){
   // 20 node solids: 12 node conn
   if((dyna_extra > 0) & (dyna_nel20 > 0))
     wordPosition += 13*dyna_nel20;
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "done." << endl;
   #endif
 
@@ -829,7 +824,7 @@ vector<vector<int>> D3plot::read_geometry_numbering(){
  */
 void D3plot::read_geometry_parts(){
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "Reading parts ... " ;
   #endif
 
@@ -851,7 +846,7 @@ void D3plot::read_geometry_parts(){
 
   }
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << this->get_db_parts()->size() << " done." << endl;
   #endif
 
@@ -878,7 +873,7 @@ bool D3plot::isFileEnding(int iWord){
  */
 void D3plot::read_states_init(){
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "> STATES INIT" << endl;
   #endif
 
@@ -943,7 +938,7 @@ void D3plot::read_states_init(){
 
 
   this->buffer->end_nextState();
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "nTimeSteps: " << this->timesteps.size() << endl;
   #endif
 }
@@ -978,7 +973,7 @@ void D3plot::read_states_parse(vector<string> _variables){
       this->disp_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->disp_is_read){
-        #ifdef CD_DEBUG
+        #ifdef QD_DEBUG
         cout << "disp already loaded." << endl;
         #endif
         this->disp_read = 0;
@@ -990,7 +985,7 @@ void D3plot::read_states_parse(vector<string> _variables){
       this->vel_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->vel_is_read){
-        #ifdef CD_DEBUG
+        #ifdef QD_DEBUG
         cout << "vel already loaded." << endl;
         #endif
         this->vel_read = 0;
@@ -1002,7 +997,7 @@ void D3plot::read_states_parse(vector<string> _variables){
       this->acc_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->acc_is_read){
-        #ifdef CD_DEBUG
+        #ifdef QD_DEBUG
         cout << "accel already loaded." << endl;
         #endif
         this->acc_read = 0;
@@ -1014,7 +1009,7 @@ void D3plot::read_states_parse(vector<string> _variables){
       this->stress_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->stress_is_read){
-        #ifdef CD_DEBUG
+        #ifdef QD_DEBUG
         cout << "stress already loaded." << endl;
         #endif
         this->stress_read = 0;
@@ -1027,7 +1022,7 @@ void D3plot::read_states_parse(vector<string> _variables){
       this->plastic_strain_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->plastic_strain_is_read){
-        #ifdef CD_DEBUG
+        #ifdef QD_DEBUG
         cout << "plastic strain already loaded." << endl;
         #endif
         this->plastic_strain_read = 0;
@@ -1039,7 +1034,7 @@ void D3plot::read_states_parse(vector<string> _variables){
       this->strain_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->strain_is_read){
-        #ifdef CD_DEBUG
+        #ifdef QD_DEBUG
         cout << "strain already loaded." << endl;
         #endif
         this->strain_read = 0;
@@ -1051,7 +1046,7 @@ void D3plot::read_states_parse(vector<string> _variables){
       this->energy_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->energy_is_read){
-        #ifdef CD_DEBUG
+        #ifdef QD_DEBUG
         cout << "energy already loaded." << endl;
         #endif
         this->energy_read = 0;
@@ -1072,7 +1067,7 @@ void D3plot::read_states_parse(vector<string> _variables){
          for(size_t jj=0; jj<this->history_shell_is_read.size(); ++jj){
             vector<unsigned int>::iterator kk = find(hist_vars.begin(), hist_vars.end(), this->history_shell_is_read[jj]);
             if ( kk != hist_vars.end() ){
-               #ifdef CD_DEBUG
+               #ifdef QD_DEBUG
                cout << "history variable " << *kk << " already loaded for shells." << endl;
                #endif
                hist_vars.erase(kk);
@@ -1112,7 +1107,7 @@ void D3plot::read_states_parse(vector<string> _variables){
          for(size_t jj=0; jj<this->history_solid_is_read.size(); ++jj){
             vector<unsigned int>::iterator kk = find(hist_vars.begin(), hist_vars.end(), this->history_solid_is_read[jj]);
             if ( kk != hist_vars.end() ){
-               #ifdef CD_DEBUG
+               #ifdef QD_DEBUG
                cout << "history variable " << *kk << " already loaded for solids." << endl;
                #endif
                hist_vars.erase(kk);
@@ -1188,7 +1183,7 @@ unsigned int D3plot::read_states_parse_readMode(string _variable){
  */
 void D3plot::read_states(vector<string> _variables){
 
-  #ifdef CD_DEBUG
+  #ifdef QD_DEBUG
   cout << "> STATES" << endl;
   for(unsigned int ii=0; ii<_variables.size(); ++ii)
     cout << "variable: " << _variables[ii] << endl;
@@ -1277,7 +1272,7 @@ void D3plot::read_states(vector<string> _variables){
       if(timesteps_read){
         float state_time = buffer->read_float(wordPosition);
         this->timesteps.push_back(state_time);
-        #ifdef CD_DEBUG
+        #ifdef QD_DEBUG
         printf("State %u: %.4f\n",iState,state_time);
         //cout << "State " << iState << ": " << state_time << endl;
         #endif

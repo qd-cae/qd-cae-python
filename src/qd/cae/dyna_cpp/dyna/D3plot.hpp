@@ -17,7 +17,7 @@ class AbstractBuffer;
 #include <algorithm> // trim
 #include "../db/FEMFile.hpp"
 
-using namespace std;
+using namespace std; 
 
 class D3plot : public FEMFile {
 
@@ -141,7 +141,7 @@ private:
 
   // === P U B L I C === //
   public:
-  D3plot (string filepath,bool _use_femzip,vector<string> _variables);
+  D3plot(string filepath, vector<string> _variables = vector<string>(),bool _use_femzip = false);
   ~D3plot();
   void read_states(vector<string> _variables);
   vector<float> get_timesteps();
