@@ -1,5 +1,6 @@
 
 #include <Python.h>
+//#include "FEMFile_py.cpp"
 #include "D3plot_py.hpp"
 #include "Node_py.hpp"
 #include "Element_py.hpp"
@@ -12,8 +13,8 @@
 #include <vector>
 #include <set>
 #include "../utility/TextUtility.hpp"
-#include "../dyna/D3plot.hpp"
 #include "../dyna/KeyFile.hpp"
+#include "../dyna/D3plot.hpp"
 #include "../db/DB_Elements.hpp"
 #include "../db/DB_Nodes.hpp"
 #include "../db/DB_Parts.hpp"
@@ -53,6 +54,7 @@ extern "C" {
   //
   // This is a little weird, since they are just copied in here,
   // but who cares as long as it works fine.
+  #include "FEMFile_py.cpp"
   #include "KeyFile_py.cpp"
   #include "D3plot_py.cpp"
   #include "Node_py.cpp"

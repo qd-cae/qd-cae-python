@@ -7,6 +7,7 @@ class D3plot;
 
 // includes
 #include <Python.h>
+#include "FEMFile_py.hpp"
 
 // namespaces
 //using namespace std;
