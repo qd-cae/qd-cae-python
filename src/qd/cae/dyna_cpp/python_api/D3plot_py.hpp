@@ -16,7 +16,8 @@ extern "C" {
 
   /* QD_D3plot OBJECT */
   typedef struct {
-      PyObject_HEAD //;
+      //PyObject_HEAD //;
+      QD_FEMFile femfile;
       /* Type-specific fields go here. */
       D3plot* d3plot;
   } QD_D3plot;
@@ -96,9 +97,8 @@ extern "C" {
     0,                         /* tp_getattro */
     0,                         /* tp_setattro */
     0,                         /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT |
-        Py_TPFLAGS_BASETYPE,   /* tp_flags */
-    "D3plot",               /* tp_doc */
+    Py_TPFLAGS_DEFAULT,        /* tp_flags */
+    "D3plot",                  /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
     0,                         /* tp_richcompare */
@@ -108,7 +108,7 @@ extern "C" {
     QD_D3plot_methods,         /* tp_methods */
     0,                         /* tp_members */
     0,                         /* tp_getset */
-    0,                         /* tp_base */
+    &QD_FEMFile_Type,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */

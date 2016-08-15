@@ -4,9 +4,9 @@
 static void
 QD_FEMFile_dealloc(QD_FEMFile* self)
 {
-   if(self->femfile != NULL){
-      delete self->femfile;
-      self->femfile = NULL;
+   if(self->femfile_ptr != NULL){
+      delete self->femfile_ptr;
+      self->femfile_ptr = NULL;
    }
 }
 
@@ -20,7 +20,7 @@ QD_FEMFile_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
   // Init vars if any ...
   if (self != NULL){
-    self->femfile = NULL;
+    self->femfile_ptr = NULL;
   }
 
   return (PyObject*) self;
@@ -33,4 +33,10 @@ QD_FEMFile_init(QD_FEMFile *self, PyObject *args, PyObject *kwds)
 {
 
   return 0;
+}
+
+
+static PyObject *
+QD_FEMFile_test(PyTypeObject *type, PyObject *args, PyObject *kwds){
+   return Py_None;
 }

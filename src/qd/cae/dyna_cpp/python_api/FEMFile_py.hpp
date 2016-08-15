@@ -14,7 +14,7 @@ extern "C" {
   typedef struct {
       PyObject_HEAD //;
       /* Type-specific fields go here. */
-      FEMFile* femfile;
+      FEMFile* femfile_ptr;
   } QD_FEMFile;
 
   static void
@@ -26,8 +26,12 @@ extern "C" {
   static PyObject *
   QD_FEMFile_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 
+  static PyObject *
+  QD_FEMFile_test(PyTypeObject *type, PyObject *args, PyObject *kwds);
 
   static PyMethodDef QD_FEMFile_methods[] = {
+   //{"test", (PyCFunction) QD_FEMFile_test, METH_NOARGS, "Test."},
+   
    {NULL}  /* Sentinel */
   };
 

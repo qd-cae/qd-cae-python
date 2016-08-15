@@ -26,6 +26,7 @@ QD_D3plot_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
   // Init vars if any ...
   if (self != NULL){
     self->d3plot = NULL;
+    self->femfile.femfile_ptr = NULL;
   }
 
   return (PyObject*) self;
@@ -83,6 +84,7 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
 
     try{
       self->d3plot = new D3plot(string(filepath_c), variables, (bool) useFemzip);
+      self->femfile.femfile_ptr = self->d3plot;
     } catch (const char* e){
       PyErr_SetString(PyExc_RuntimeError, e);
       return -1;
