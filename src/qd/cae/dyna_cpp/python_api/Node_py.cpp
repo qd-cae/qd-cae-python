@@ -4,7 +4,7 @@ static void
 QD_Node_dealloc(QD_Node* self)
 {
 
-  Py_DECREF(self->d3plot_py);
+  Py_DECREF(self->femFile_py);
 
 }
 
@@ -33,30 +33,30 @@ static int
 QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
 {
 
-  PyObject* d3plot_obj_py;
-  QD_D3plot* d3plot_py;
+  PyObject* femFile_obj_py;
+  QD_FEMFile* femFile_py;
   int nodeID;
-  static char *kwlist[] = {"d3plot","nodeID", NULL}; // TODO Deprecated!
+  static char *kwlist[] = {"femfile","nodeID", NULL}; // TODO Deprecated!
 
-  if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi", kwlist, &d3plot_obj_py, &nodeID)){
+  if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi", kwlist, &femFile_obj_py, &nodeID)){
       return -1;
   }
 
-  if (! PyObject_TypeCheck(d3plot_obj_py, &QD_D3plot_Type)) {
-    PyErr_SetString(PyExc_SyntaxError, "arg #1 not a d3plot in node constructor");
+  if (! PyObject_TypeCheck(femFile_obj_py, &QD_FEMFile_Type)) {
+    PyErr_SetString(PyExc_SyntaxError, "arg #1 not a D3plot or KeyFile in node constructor");
     return -1;
   }
 
-  d3plot_py = (QD_D3plot*) d3plot_obj_py;
+  femFile_py = (QD_FEMFile*) femFile_obj_py;
 
-  if(d3plot_py->d3plot == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to d3plot-object is NULL.");
+  if(femFile_py->instance == NULL){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ File-Object is NULL.");
     return -1;
   }
 
-  self->d3plot_py = d3plot_py;
-  Py_INCREF(self->d3plot_py);
-  self->node = d3plot_py->d3plot->get_db_nodes()->get_nodeByID(nodeID);
+  self->femFile_py = femFile_py;
+  Py_INCREF(self->femFile_py);
+  self->node = femFile_py->instance->get_db_nodes()->get_nodeByID(nodeID);
 
   if(self->node == NULL){
     string message("Could not find any node with ID "+to_string(nodeID)+".");
@@ -285,7 +285,7 @@ QD_Node_get_elements(QD_Node* self){
       return NULL;
     }
 
-    PyObject *argList2 = Py_BuildValue("OOi",self->d3plot_py, elementType_py, element->get_elementID());
+    PyObject *argList2 = Py_BuildValue("OOi",self->femFile_py, elementType_py, element->get_elementID());
     PyObject* ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
     Py_DECREF(argList2);
    Py_DECREF(elementType_py);

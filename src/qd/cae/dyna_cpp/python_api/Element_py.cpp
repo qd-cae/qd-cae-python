@@ -5,7 +5,7 @@ static void
 QD_Element_dealloc(QD_Element* self)
 {
 
-  Py_DECREF(self->d3plot_py);
+  Py_DECREF(self->femFile_py);
 
 }
 
@@ -33,17 +33,17 @@ static int
 QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
 {
 
-  PyObject* d3plot_obj_py;
+  PyObject* femfile_obj_py;
   char* elementType_c;
   int elementID;
-  static char *kwlist[] = {"d3plot","elementType","elementID", NULL}; // TODO Deprecated!
+  static char *kwlist[] = {"femfile","elementType","elementID", NULL}; // TODO Deprecated!
 
-  if (! PyArg_ParseTupleAndKeywords(args, kwds, "Osi", kwlist, &d3plot_obj_py, &elementType_c, &elementID)){
+  if (! PyArg_ParseTupleAndKeywords(args, kwds, "Osi", kwlist, &femfile_obj_py, &elementType_c, &elementID)){
      return -1;
   }
 
-  if (! PyObject_TypeCheck(d3plot_obj_py, &QD_D3plot_Type)) {
-    PyErr_SetString(PyExc_TypeError, "arg #1 not a d3plot in element constructor");
+  if (! PyObject_TypeCheck(femfile_obj_py, &QD_FEMFile_Type)) {
+    PyErr_SetString(PyExc_TypeError, "arg #1 not a D3plot or KeyFile in element constructor");
     return -1;
   }
 
@@ -60,16 +60,16 @@ QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
     return -1;
   }
 
-  QD_D3plot* d3plot_py = (QD_D3plot*) d3plot_obj_py;
+  QD_FEMFile* femFile_py = (QD_FEMFile*) femfile_obj_py;
 
-  if(d3plot_py->d3plot == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to d3plot-object is NULL.");
+  if(femFile_py->instance == NULL){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ File-Object is NULL.");
     return -1;
   }
 
-  self->d3plot_py = d3plot_py;
-  Py_INCREF(self->d3plot_py);
-  self->element = d3plot_py->d3plot->get_db_elements()->get_elementByID(elementType,elementID);
+  self->femFile_py = femFile_py;
+  Py_INCREF(self->femFile_py);
+  self->element = femFile_py->instance->get_db_elements()->get_elementByID(elementType,elementID);
 
   if(self->element == NULL){
     PyErr_SetString(PyExc_RuntimeError,string("Could not find any element with ID: "+to_string(elementID)+".").c_str());
@@ -256,7 +256,7 @@ QD_Element_get_nodes(QD_Element* self){
   for(set<Node*>::iterator it=nodes.begin(); it != nodes.end(); ++it){
     node = *it;
 
-    PyObject *argList2 = Py_BuildValue("Oi",self->d3plot_py ,node->get_nodeID());
+    PyObject *argList2 = Py_BuildValue("Oi",self->femFile_py ,node->get_nodeID());
     PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
     Py_DECREF(argList2);
 

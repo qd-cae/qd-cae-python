@@ -15,7 +15,7 @@ extern "C" {
       PyObject_HEAD //;
       /* Type-specific fields go here. */
       Part* part;
-      QD_D3plot* d3plot_py;
+      QD_FEMFile* femFile_py;
   } QD_Part;
 
 

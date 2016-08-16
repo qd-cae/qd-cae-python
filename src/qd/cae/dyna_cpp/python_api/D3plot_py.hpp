@@ -14,7 +14,7 @@ class D3plot;
 
 extern "C" {
 
-  /* QD_D3plot OBJECT */
+  /* OBJECT */
   typedef struct {
       //PyObject_HEAD //;
       QD_FEMFile femfile;
@@ -23,60 +23,41 @@ extern "C" {
   } QD_D3plot;
 
 
-  /* QD_D3plot DEALLOC */
+  /* DEALLOC */
   static void
   QD_D3plot_dealloc(QD_D3plot* self);
 
-  /* QD_D3plot NEW */
+  /* NEW */
   static PyObject *
   QD_D3plot_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 
-  /* QD_D3plot INIT */
+  /* INIT */
   static int
   QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds);
 
-  /* QD_D3plot FUNCTION get_timesteps */
+  /* FUNCTION get_timesteps */
   static PyObject *
   QD_D3plot_get_timesteps(QD_D3plot* self);
 
-  /* QD_D3plot FUNCTION get_filepath */
-  static PyObject *
-  QD_D3plot_get_filepath(QD_D3plot* self);
-
-  /* QD_D3plot FUNCTION read_states */
+  /* FUNCTION read_states */
   static PyObject *
   QD_D3plot_read_states(QD_D3plot* self, PyObject* args);
 
-  /* QD_D3plot FUNCTION get_nodeByID */
-  static PyObject *
-  QD_D3plot_get_nodeByID(QD_D3plot* self, PyObject* args);
 
-  /* QD_D3plot FUNCTION get_elementByID */
-  static PyObject *
-  QD_D3plot_get_elementByID(QD_D3plot* self, PyObject* args);
-
-  /* QD_D3plot FUNCTION get_partByID */
-  static PyObject *
-  QD_D3plot_get_partByID(QD_D3plot* self, PyObject* args);
-
-  /* QD_D3plot FUNCTION get_parts */
-  static PyObject *
-  QD_D3plot_get_parts(QD_D3plot* self, PyObject* args);
-
-  /* QD_D3plot METHOD TABLE */
+  /* METHOD TABLE */
   static PyMethodDef QD_D3plot_methods[] = {
     {"get_timesteps", (PyCFunction) QD_D3plot_get_timesteps, METH_NOARGS, "Get the timesteps in the d3plot."},
-    {"get_filepath", (PyCFunction) QD_D3plot_get_filepath, METH_NOARGS, "Get the filepath of the d3plot."},
+//    {"get_filepath", (PyCFunction) QD_D3plot_get_filepath, METH_NOARGS, "Get the filepath of the d3plot."},
     {"read_states", (PyCFunction) QD_D3plot_read_states, METH_VARARGS, "Read a state variable."},
-    {"get_nodeByID", (PyCFunction) QD_D3plot_get_nodeByID, METH_VARARGS, "Get a node from it's id."},
-    {"get_elementByID", (PyCFunction) QD_D3plot_get_elementByID, METH_VARARGS, "Get an element from it's id."},
-    {"get_partByID", (PyCFunction) QD_D3plot_get_partByID, METH_VARARGS, "Get a part from it's id."},
-    {"get_parts", (PyCFunction) QD_D3plot_get_parts, METH_NOARGS, "Get all the parts in a list."},
+//    {"get_nodeByID", (PyCFunction) QD_D3plot_get_nodeByID, METH_VARARGS, "Get a node from it's id."},
+//    {"get_elementByID", (PyCFunction) QD_D3plot_get_elementByID, METH_VARARGS, "Get an element from it's id."},
+//    {"get_partByID", (PyCFunction) QD_D3plot_get_partByID, METH_VARARGS, "Get a part from it's id."},
+//    {"get_parts", (PyCFunction) QD_D3plot_get_parts, METH_NOARGS, "Get all the parts in a list."},
 	{NULL}  /* Sentinel */
   };
 
 
-  /* QD_D3plot TYPE ... whatever */
+  /* TYPE ... whatever */
   static PyTypeObject QD_D3plot_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "D3plot",               /* tp_name */

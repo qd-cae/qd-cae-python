@@ -12,7 +12,7 @@ useFemzip = True
 # =============================== #
 
 # Version
-_version = "0.1.0"
+_version = "0.1.1"
 
 # py -> pyc
 compileall.compile_dir('src/')
@@ -74,11 +74,11 @@ if (platform == "linux") or (platform == "linux2") or use_mingw:
 	if not use_mingw:
 		compiler_args_dyna.append("-fPIC")
 	if debugging_mode:
-		compiler_args_dyna.append("-DCD_DEBUG")
+		compiler_args_dyna.append("-DQD_DEBUG")
 # CFLAGS Windows
 else:
 	if debugging_mode:
-		compiler_args_dyna.append("/DCD_DEBUG")
+		compiler_args_dyna.append("/DQD_DEBUG")
 dyna_extension = Extension("dyna_post", srcs_dyna, extra_compile_args = compiler_args_dyna,
 									  library_dirs=lib_dirs_dyna,
 									  libraries=libs_dyna,

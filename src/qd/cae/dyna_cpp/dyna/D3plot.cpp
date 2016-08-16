@@ -432,7 +432,7 @@ void D3plot::read_geometry(){
     this->get_db_nodes()->add_node(buffer_numbering[0][ii],buffer_nodes[ii]);
   }
   #ifdef QD_DEBUG
-  cout << this->get_db_nodes->size() << " done." << endl;
+  cout << this->get_db_nodes()->size() << " done." << endl;
   #endif
 
   // Beams

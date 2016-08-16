@@ -17,7 +17,7 @@ class AbstractBuffer;
 #include <algorithm> // trim
 #include "../db/FEMFile.hpp"
 
-using namespace std; 
+using namespace std;
 
 class D3plot : public FEMFile {
 
