@@ -14,17 +14,18 @@ lacking behind here in contrary to modern informatics.
 
 We want to tackle this issue with this free library, in order to give engineering
 a boost. Use it, build more awesome applications with it, share your projects
-too and if possible cotribute.
+too and if possible contribute.
 
 # Sub-Modules
 
 Current Module List:
+
 1. qd.cae.dyna
-..- Read D3plot (DONE)
-..- Read Input Files (IN PPROGRESS)
-..- Read Binouts (TODO)
+  - Read D3plot (DONE)
+  - Read Input Files (IN PPROGRESS)
+  - Read Binouts (TODO)
 2. qd.numerics
-..- certain numerical functions missing in numpy or scipy
+  - certain numerical functions missing in numpy or scipy
 
 For more details, look into the helper files.
 
