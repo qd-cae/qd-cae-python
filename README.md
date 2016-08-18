@@ -31,9 +31,12 @@ For more details, look into the helper files.
 
 # Installation
 
-If possible, use the precompiled python-wheels in the dist folder. The wheel
-always is compiled with FEMZIP support too. Compilation of the library yourself
-just needs Boost, just do whatever the setup script tells you.
+If possible, use the pre-compiled python-wheels in the dist folder and install with pip.
+The wheel is always compiled with FEMZIP support. For compiling the code yourself,
+the library needs Boost.
+
+In case one wants to use it for another C++ application, the source code may
+also be compiled without the python2 wrapper.
 
 The library is written almost entirely in C++, thus compilation is required if
 triggering the setup script. There are two dependencies, from which one is
