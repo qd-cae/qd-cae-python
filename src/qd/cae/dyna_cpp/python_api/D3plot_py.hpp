@@ -16,9 +16,8 @@ extern "C" {
 
   /* OBJECT */
   typedef struct {
-      //PyObject_HEAD //;
-      QD_FEMFile femfile;
-      /* Type-specific fields go here. */
+      QD_FEMFile femfile; // Base
+      // Type-specific fields go here.
       D3plot* d3plot;
   } QD_D3plot;
 
@@ -89,7 +88,7 @@ extern "C" {
     QD_D3plot_methods,         /* tp_methods */
     0,                         /* tp_members */
     0,                         /* tp_getset */
-    &QD_FEMFile_Type,                         /* tp_base */
+    &QD_FEMFile_Type,          /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */

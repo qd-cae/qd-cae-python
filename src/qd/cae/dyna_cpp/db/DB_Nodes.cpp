@@ -38,15 +38,15 @@ DB_Nodes::~DB_Nodes(){
 Node* DB_Nodes::add_node(int _nodeID, vector<float> coords){
 
   if(coords.size() != 3){
-    throw("The node coordinate vector must have length 3.");
+    throw(string("The node coordinate vector must have length 3."));
   }
   if(_nodeID < 0){
-    throw("Node-ID may not be negative!");
+    throw(string("Node-ID may not be negative!"));
   }
 
   // Check if node already is in map
   if(nodesByID.count(_nodeID) != 0)
-    throw("Trying to insert a node with same id twice:"+to_string(_nodeID));
+    throw(string("Trying to insert a node with same id twice:")+to_string(_nodeID));
 
   // Create and add new node
   Node* node = new Node(_nodeID,coords,this);
@@ -89,7 +89,7 @@ Node* DB_Nodes::get_nodeByIndex(int nodeIndex){
  */
 void DB_Nodes::set_db_elements(DB_Elements* _db_elements){
   if(_db_elements == NULL)
-    throw("Setting db_elements=NULL in db_nodes is forbidden.");
+    throw(string("Setting db_elements=NULL in db_nodes is forbidden."));
   this->db_elements = _db_elements;
 }
 
@@ -113,6 +113,6 @@ DB_Elements* DB_Nodes::get_db_elements(){
  */
 unsigned int DB_Nodes::size(){
   if(nodesByIndex.size() != nodesByID.size())
-    throw("Node database encountered error: nodesByIndex.size() != nodesByID.size()");
+    throw(string("Node database encountered error: nodesByIndex.size() != nodesByID.size()"));
   return nodesByIndex.size();
 }

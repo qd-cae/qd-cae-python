@@ -8,6 +8,7 @@ QD_KeyFile_dealloc(QD_KeyFile* self)
   if(self->keyFile != NULL){
     delete self->keyFile;
     self->keyFile = NULL;
+    self->femfile.instance = NULL; // = self->keyFile
   }
 
  #ifdef QD_DEBUG
@@ -27,6 +28,7 @@ QD_KeyFile_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
   // Init vars if any ...
   if (self != NULL){
     self->keyFile = NULL;
+    self->femfile.instance = NULL;
   }
 
   return (PyObject*) self;
@@ -51,6 +53,7 @@ QD_KeyFile_init(QD_KeyFile *self, PyObject *args, PyObject *kwds)
       } else {
          self->keyFile = new KeyFile();
       }
+      self->femfile.instance = self->keyFile;
    } catch (string e){
       PyErr_SetString(PyExc_RuntimeError, e.c_str());
       return -1;

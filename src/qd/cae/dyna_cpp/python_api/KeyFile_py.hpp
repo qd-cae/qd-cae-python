@@ -11,7 +11,7 @@ class KeyFile;
 
 /* QD_KeyFile OBJECT */
 typedef struct {
-    PyObject_HEAD //;
+    QD_FEMFile femfile; // Base
     /* Type-specific fields go here. */
     KeyFile* keyFile;
 } QD_KeyFile;
@@ -51,8 +51,7 @@ static PyTypeObject QD_KeyFile_Type = {
   0,                         /* tp_getattro */
   0,                         /* tp_setattro */
   0,                         /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT |
-      Py_TPFLAGS_BASETYPE,   /* tp_flags */
+  Py_TPFLAGS_DEFAULT,        /* tp_flags */
   "KeyFile",                 /* tp_doc */
   0,                         /* tp_traverse */
   0,                         /* tp_clear */
@@ -60,10 +59,10 @@ static PyTypeObject QD_KeyFile_Type = {
   0,                         /* tp_weaklistoffset */
   0,                         /* tp_iter */
   0,                         /* tp_iternext */
-  QD_KeyFile_methods,           /* tp_methods */
+  QD_KeyFile_methods,        /* tp_methods */
   0,                         /* tp_members */
   0,                         /* tp_getset */
-  0,                         /* tp_base */
+  &QD_FEMFile_Type,          /* tp_base */
   0,                         /* tp_dict */
   0,                         /* tp_descr_get */
   0,                         /* tp_descr_set */

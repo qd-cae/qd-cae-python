@@ -33,11 +33,13 @@ public:
   ~DB_Elements();
   FEMFile* get_femfile();
   DB_Nodes* get_db_nodes();
-  Element* add_element(ElementType,int,vector<int>);
+  Element* add_element_byIndex(ElementType _eType,int _id,vector<int> _elem_data);
+  //Element* add_element_byID(ElementType _eType,int _id, int _partid, vector<int> _node_ids)
+  Element* add_element_byKeyFile(ElementType _eType,int _id, int _partid, vector<int> _node_ids);
 
-  unsigned int size();
-  Element* get_elementByID(int,int);
-  Element* get_elementByIndex(int,int);
+  size_t size(); 
+  Element* get_elementByID(int _eType, int _id);
+  Element* get_elementByIndex(int _eType, int _index);
 
 };
 

@@ -20,13 +20,14 @@ public:
   DB_Parts();
   ~DB_Parts();
 
-  unsigned int size();
+  size_t size();
   void print_parts();
-  vector<Part*> get_parts();
+  vector<Part*>& get_parts();
   Part* get_part_byName(string);
-  Part* get_part_byID(int);
-  Part* get_part_byIndex(int);
-  Part* add_part(int,int);
+  Part* get_part_byID(int _id);
+  Part* get_part_byIndex(int _index);
+  Part* add_part(int _partIndex, int _partID);
+  Part* add_part(int _partID);
 
 };
 

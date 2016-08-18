@@ -26,10 +26,22 @@ DB_Parts::~DB_Parts(){
 /**
  * Create a part with it's index and id.
  */
-Part* DB_Parts::add_part(int partIndex, int partID){
+Part* DB_Parts::add_part(int _partIndex, int _partID){
 
-  Part* part = new Part(partID,"");
-  this->parts.insert(pair<int,Part*>(partID,part));
+  Part* part = new Part(_partID,"");
+  this->parts.insert(pair<int,Part*>(_partID,part));
+  this->partsByIndex.insert(pair<int,Part*>(_partIndex,part));
+  return part;
+
+}
+
+/** Create a part with it's id. The index is just size + 1.
+ */
+Part* DB_Parts::add_part(int _partID){
+
+  Part* part = new Part(_partID,"");
+  int partIndex = this->parts.size()+1;
+  this->parts.insert(pair<int,Part*>(_partID,part));
   this->partsByIndex.insert(pair<int,Part*>(partIndex,part));
   return part;
 
@@ -38,7 +50,7 @@ Part* DB_Parts::add_part(int partIndex, int partID){
 /**
  * Get the parts in the db in a vector.
  */
-vector<Part*> DB_Parts::get_parts(){
+vector<Part*>& DB_Parts::get_parts(){
 
 	vector<Part*> ret(this->parts.size());
 	for (map<int,Part*>::iterator it=this->parts.begin(); it!=this->parts.end(); ++it) {
@@ -62,7 +74,7 @@ Part* DB_Parts::get_part_byID(int partID){
     return it->second;
   }
 
-  // Part creation
+  // :(
   return NULL;
 
 }
@@ -106,7 +118,7 @@ Part* DB_Parts::get_part_byName(string _name){
 /**
  * Get the number of parts in the database.
  */
-unsigned int DB_Parts::size(){
+size_t DB_Parts::size(){
   if(parts.size() != partsByIndex.size())
     throw("Part Maps: Id-Map and Index-Map have unequal sizes.");
   return parts.size();

@@ -440,7 +440,7 @@ void D3plot::read_geometry(){
   cout << "Adding beams ... ";
   #endif
   for(unsigned int ii=0; ii < buffer_elems2.size() ;ii++){
-    this->get_db_elements()->add_element(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
+    this->get_db_elements()->add_element_byIndex(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
 
   }
   #ifdef QD_DEBUG
@@ -453,7 +453,7 @@ void D3plot::read_geometry(){
   #endif
   for(unsigned int ii=0; ii < buffer_elems4.size() ;ii++){
 
-    this->get_db_elements()->add_element(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
+    this->get_db_elements()->add_element_byIndex(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
 
   }
   #ifdef QD_DEBUG
@@ -466,7 +466,7 @@ void D3plot::read_geometry(){
   #endif
   for(unsigned int ii=0; ii < buffer_elems8.size() ;ii++){
 
-    this->get_db_elements()->add_element(SOLID,buffer_numbering[1][ii],buffer_elems8[ii]);
+    this->get_db_elements()->add_element_byIndex(SOLID,buffer_numbering[1][ii],buffer_elems8[ii]);
 
   }
   #ifdef QD_DEBUG
