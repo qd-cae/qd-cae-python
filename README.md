@@ -20,7 +20,7 @@ too and if possible contribute.
 
 Current Module List:
 
-1. qd.cae.dyna
+1. [qd.cae.dyna](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md)
   - Read D3plot (DONE)
   - Read Input Files (IN PPROGRESS)
   - Read Binouts (TODO)
