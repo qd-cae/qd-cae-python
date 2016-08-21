@@ -13,7 +13,7 @@ The core-code is written entirely in C++ with a python wrapper. Even though the 
 Classes:
 - [D3plot](#d3plot)
 - [KeyFile](#keyfile)
-- [FEMFile (D3plot & KeyFile)](#femfile-(d3plot,keyfile))
+- [FEMFile (D3plot & KeyFile)](#femfile(d3plot,keyfile))
 - [Node](#node)
 - [Element](#element)
 - [Part](#part)
@@ -105,7 +105,7 @@ Features:
 - Parts
 
 -----------------------------
-# FEMFile (D3plot,KeyFile)
+# FEMFile (D3plot, KeyFile)
 
 **femfile.get_filepath()**
 
@@ -278,7 +278,7 @@ Get all elements, which belong to the part.
 
 ## Wrong Filetype
 
-*d3plot = D3plot(filepath,use_femzip=False,read_states=None) RuntimeError: Wrong filetype 1041203856 != 1 in header of d3plot*
+*RuntimeError: Wrong filetype [NUMBER] != 1 in header of d3plot*
 
 The file might be written in double precision (1), or the files endian is different to the machines endian (2). In case (1) you can simply tell LS-Dyna to output the file in single-precision, despite calculating in double precision. No one usually cares about those digits anyways for numeric reasons. 3 ways to make dyna output in 32bit format:
 
