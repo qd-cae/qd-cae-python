@@ -129,7 +129,7 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
   // Find part
   Part* part = this->db_parts->get_part_byID(_partid);
   if(part == NULL){
-     part = this->db_parts->add_part(_partid);
+     part = this->db_parts->add_part_byID(_partid);
   }
 
   // Find nodes

@@ -37,7 +37,7 @@ Part* DB_Parts::add_part(int _partIndex, int _partID){
 
 /** Create a part with it's id. The index is just size + 1.
  */
-Part* DB_Parts::add_part(int _partID){
+Part* DB_Parts::add_part_byID(int _partID){
 
   Part* part = new Part(_partID,"");
   int partIndex = this->parts.size()+1;

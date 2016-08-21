@@ -35,14 +35,14 @@ If possible, use the pre-compiled python-wheels in the dist folder and install w
 The wheel is always compiled with FEMZIP support. For compiling the code yourself,
 the library needs Boost.
 
-In case one wants to use it for another C++ application, the source code may
-also be compiled without the python2 wrapper.
-
 The library is written almost entirely in C++, thus compilation is required if
 triggering the setup script. There are two dependencies, from which one is
 optional. BOOST and FEMZIP. If one wants to compile with FEMZIP, the link libraries
 need to be downloaded from the official website. Also we use some boost headers,
 so boost is not optional. It is not uploaded here, due to it's large size.
+
+In case one wants to use it for another C++ application, the source code may
+also be compiled without the python2 wrapper.
 
 # License
 

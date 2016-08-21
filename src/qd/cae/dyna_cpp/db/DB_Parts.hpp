@@ -27,7 +27,7 @@ public:
   Part* get_part_byID(int _id);
   Part* get_part_byIndex(int _index);
   Part* add_part(int _partIndex, int _partID);
-  Part* add_part(int _partID);
+  Part* add_part_byID(int _partID);
 
 };
 

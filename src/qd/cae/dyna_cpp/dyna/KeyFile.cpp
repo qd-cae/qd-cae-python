@@ -10,6 +10,7 @@
 #include "../db/DB_Elements.hpp"
 #include "../db/DB_Parts.hpp"
 #include "../db/Element.hpp"
+#include "../db/Part.hpp"
 #include "KeyFile.hpp"
 
 using namespace boost::algorithm;
@@ -51,21 +52,27 @@ void KeyFile::read_mesh(string _filepath){
    #endif
 
    // Get databases
+   DB_Parts* db_parts = this->get_db_parts();
    DB_Nodes* db_nodes = this->get_db_nodes();
    DB_Elements* db_elements = this->get_db_elements();
 
    // Time to do the thing
    bool nodesection = false;
    bool elemsection = false;
-   bool elemthicksection = false;
+   //bool elemthicksection = false;
    bool partsection = false;
-   bool propsection = false;
-   bool propsection_title = false;
+   //bool propsection = false;
+   //bool propsection_title = false;
 
    string line;
    vector<float> coords(3);
    vector<int> elemNodes_shell(4);
-   int id, partID;
+   int id;
+   int partID;
+   string title;
+   size_t iCardLine = 0;
+
+
    #ifdef QD_DEBUG
    cout << "Parsing Text File ... " << endl;
    #endif
@@ -150,6 +157,56 @@ void KeyFile::read_mesh(string _filepath){
          cout << "*ELEMENT_SHELL finished in line: " << iLine << endl;
          #endif
       }
+
+
+
+      /* PART */
+      if(trim_copy(line).substr(0,5) == "*PART"){
+
+         partsection = true;
+         #ifdef QD_DEBUG
+         cout << "Starting *PART in line: " << iLine << endl;
+         #endif
+         iCardLine = 0;
+
+      } else if(partsection & (line.find('$') == string::npos)
+                            & (line.find('*') == string::npos) ){
+
+         if( iCardLine == 0 ){
+            title = trim_copy(line);
+         } else if( iCardLine == 1 ) {
+
+            try {
+
+               id = boost::lexical_cast<int>(trim_copy(line.substr(0,10)));
+               Part* part = db_parts->get_part_byID(id);
+               if(part == NULL){
+                  part = db_parts->add_part_byID(id);
+               }
+               part->set_name(title);
+
+            } catch (const std::exception& ex){
+               cerr << "Error reading part in line " << iLine << ":" << ex.what() << endl;
+               return;
+            } catch (const string& ex) {
+               cerr << "Error reading part in line " << iLine << ":" << ex << endl;
+               return;
+            } catch (...) {
+               cerr << "Error reading part in line " << iLine << ": Unknown error." << endl;
+            }
+
+         }
+
+         iCardLine += 1;
+
+      } else if( partsection &  ((line.find('*') != string::npos) | line.empty()) ){
+         partsection = false;
+         #ifdef QD_DEBUG
+         cout << "*PART finished in line: " << iLine << endl;
+         #endif
+      }
+
+
 
    } // for lines
    #ifdef QD_DEBUG
