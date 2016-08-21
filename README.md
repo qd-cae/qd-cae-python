@@ -1,6 +1,6 @@
 
 
-# QD-Python
+# QD-Engineering 4 Python
 
 This python2 library is an open source software package with utility functions regarding
 engineering, especially Simulation and Computer Aided Engineering (CAE).
@@ -47,6 +47,7 @@ also be compiled without the python2 wrapper.
 # License
 
 See the LICENSE file.
+For further licensing requests or questions contact us.
 
 # Authors
 
