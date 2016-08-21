@@ -13,7 +13,7 @@ The core-code is written entirely in C++ with a python wrapper. Even though the 
 Classes:
 - [D3plot](#d3plot)
 - [KeyFile](#keyfile)
-- [FEMFile (D3plot & KeyFile)](#femfile(d3plot,keyfile))
+- [FEMFile (D3plot & KeyFile)](#femfile-(d3plot,-keyfile))
 - [Node](#node)
 - [Element](#element)
 - [Part](#part)
@@ -106,6 +106,8 @@ Features:
 
 -----------------------------
 # FEMFile (D3plot, KeyFile)
+
+This is the super class for KeyFiles and D3plot. It contains all of the functions to access the nodes, parts, ...
 
 **femfile.get_filepath()**
 
