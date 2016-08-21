@@ -10,7 +10,7 @@ persons who contribute. Visit our website at http://www.qd-eng.de/
 CAE suffers greatly from expensive tools with bad or moderate scripting access.
 Also many algorithms developed in research never get published due to licensing
 or being very specific regarding a certain software environment. Engineering is
-lacking behind here in contrary to modern informatics.
+lacking behind here, contrary to modern informatics.
 
 We want to tackle this issue with this free library, in order to give engineering
 a boost. Use it, build more awesome applications with it, share your projects

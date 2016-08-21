@@ -8,21 +8,47 @@ The core-code is written entirely in C++ with a python wrapper. Even though the 
 -----------
 # Overview:
 
+[Example](#example)
+
 Classes:
-- [D3plot](## D3plot)
-- [KeyFile](## KeyFile)
-- [FEMFile (D3plot & KeyFile)](## FEMFile (D3plot & KeyFile))
-- [Node](## Node)
-- [Element](## Element)
-- [Part](## Part)
+- [D3plot](#d3plot)
+- [KeyFile](#keyfile)
+- [FEMFile (D3plot & KeyFile)](#femfile-(d3plot,keyfile))
+- [Node](#node)
+- [Element](#element)
+- [Part](#part)
 
 Functions:
-None
+(None)
 
+[FAQ](#faq)
 
 
 ---------
-## D3plot
+# Example
+
+```python
+from codie import D3plot
+
+d3plot = D3plot("filepath/to/d3plot",read_states="disp")
+timesteps = d3plot.get_timesteps()
+d3plot.read_states(["plastic_strain max","history 2 shell max"])
+
+node = d3plot.get_nodeByID(7)
+node_displacement = node.get_disp()
+
+element = d3plot.get_elementByID("shell",11)
+elem_plastic_strain = element.get_plastic_strain()
+for node in element.get_nodes():
+  print("Node:"+str(node.get_id()))
+
+part = d3plot.get_partByID(13)
+part_elems = part.get_elements()
+
+```
+
+---------
+# D3plot
 
 This class can read binary result files and give access to it. It has the following limits:
 
@@ -65,7 +91,7 @@ In order to read the plastic-strain considering only the maximum over all integr
 
 
 ----------
-## KeyFIle
+# KeyFile
 
 **KeyFile(filepath)**
 
@@ -79,7 +105,7 @@ Features:
 - Parts
 
 -----------------------------
-## FEMFile (D3plot & KeyFile)
+# FEMFile (D3plot,KeyFile)
 
 **femfile.get_filepath()**
 
@@ -112,7 +138,7 @@ Get a part instance by it's id.
 Get all the parts in the femfile.
 
 -------
-## Node
+# Node
 
 The **Node** class handles all node related data. In case that the **Node** is owned by a D3plot, time series data may be requested too, must be loaded first.
 
@@ -153,7 +179,7 @@ Get the time series of the acceleration vector.
 Get all element instances, which reference this node.
 
 ---------
-##Element
+# Element
 
 The **Element** function works the same as the node function. In case it is owned by a D3plot, it may contain time series data, if loaded.
 
@@ -217,7 +243,7 @@ Calculates an average element edge size for the element. The size is not highly 
 Get the type of the element.
 
 -------
-## Part
+# Part
 
 The **Part** class has the following functions:
 
@@ -245,3 +271,22 @@ Get all nodes, which belong to the part. A node may belong to more than one part
 *return: (list) elements of the part*
 
 Get all elements, which belong to the part.
+
+
+-----
+# FAQ
+
+## Wrong Filetype
+
+*d3plot = D3plot(filepath,use_femzip=False,read_states=None) RuntimeError: Wrong filetype 1041203856 != 1 in header of d3plot*
+
+The file might be written in double precision (1), or the files endian is different to the machines endian (2). In case (1) you can simply tell LS-Dyna to output the file in single-precision, despite calculating in double precision. No one usually cares about those digits anyways for numeric reasons. 3 ways to make dyna output in 32bit format:
+
+- Inputfile: *DATABASE_FORMAT, IBINARY=1
+- Environment-Variable: export LSTC_BINARY=32ieee
+- Command-line: e. g. ls971 i=input 32ieee=yes
+
+
+## nsrh != nsort + numnp
+
+Your file might be compressed with FEMZIP. Use the flag: use_fezmip=True in the constructor of the D3plot.
