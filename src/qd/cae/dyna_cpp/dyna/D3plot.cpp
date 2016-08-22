@@ -185,7 +185,7 @@ void D3plot::read_header(){
     own_external_numbers_I8 = true;
   }
   if(filetype != 1){
-    throw("Wrong filetype "+to_string(this->buffer->read_int(11))+" != 1 in header of d3plot");
+    throw("Wrong filetype "+to_string(this->buffer->read_int(11))+" != 1 in header of d3plot. Your file might be in Double Precision or the endian of the file is not the endian of the machine.");
   }
 
   this->dyna_title = this->buffer->read_str(0,10);
@@ -696,7 +696,7 @@ vector<vector<int>> D3plot::read_geometry_numbering(){
   int nsort = buffer->read_int(wordPosition);
   // pointer to elem8 numbering
   int nsrh = buffer->read_int(wordPosition+1);
-  if(nsrh != dyna_numnp+abs(nsort)) throw("nsrh != nsort + numnp is inconsistent in dyna file.");
+  if(nsrh != dyna_numnp+abs(nsort)) throw("nsrh != nsort + numnp is inconsistent in dyna file. Your file might be using FEMZIP.");
   // pointer to elem2 numbering
   int nsrb = buffer->read_int(wordPosition+2);
   if(nsrb != nsrh+dyna_nel8) throw("nsrb != nsrh + nel8 is inconsistent in dyna file.");
