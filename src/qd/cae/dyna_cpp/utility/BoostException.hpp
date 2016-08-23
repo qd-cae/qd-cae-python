@@ -4,14 +4,14 @@
 
 namespace boost {
 
-//#ifdef BOOST_NO_EXCEPTIONS
+#ifdef BOOST_NO_EXCEPTIONS
 
 template<class E> inline void throw_exception(E const & e)
 {
     throw e;
 }
 
-//#endif // BOOST_NO_EXCEPTIONS
+#endif // BOOST_NO_EXCEPTIONS
 
 } // boost
 

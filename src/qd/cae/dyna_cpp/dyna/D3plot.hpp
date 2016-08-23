@@ -123,11 +123,11 @@ private:
   void init_vars();
   void read_header();
   void read_geometry();
-  vector<vector<float>> read_geometry_nodes();
-  vector<vector<int>>   read_geometry_elem8();
-  vector<vector<int>>   read_geometry_elem4();
-  vector<vector<int>>   read_geometry_elem2();
-  vector<vector<int>>   read_geometry_numbering();
+  vector< vector<float> > read_geometry_nodes();
+  vector< vector<int> >   read_geometry_elem8();
+  vector< vector<int> >   read_geometry_elem4();
+  vector< vector<int> >   read_geometry_elem2();
+  vector< vector<int> >   read_geometry_numbering();
   void                  read_geometry_parts();
   void read_states_init();
   void read_states_parse(vector<string>);

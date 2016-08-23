@@ -19,9 +19,9 @@ class Node {
   int nodeID;
   set<Element*> elements;
   vector<float> coords;
-  vector<vector<float>> disp;
-  vector<vector<float>> vel;
-  vector<vector<float>> accel;
+  vector< vector<float> > disp;
+  vector< vector<float> > vel;
+  vector< vector<float> > accel;
   DB_Nodes* db_nodes;
 
   public:

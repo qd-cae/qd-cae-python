@@ -480,14 +480,14 @@ void D3plot::read_geometry(){
  * Read the nodes in the geometry section.
  *
  */
-vector<vector<float>> D3plot::read_geometry_nodes(){
+vector< vector<float> > D3plot::read_geometry_nodes(){
 
   #ifdef QD_DEBUG
   cout << "Reading nodes ... ";
   #endif
 
   wordsToRead = dyna_numnp*dyna_ndim;
-  vector<vector<float>> buffer_nodes(dyna_numnp);
+  vector< vector<float> > buffer_nodes(dyna_numnp);
 
   int jj = 0;
   for (int ii=wordPosition;ii<wordPosition+wordsToRead;ii+=3){
@@ -516,10 +516,10 @@ vector<vector<float>> D3plot::read_geometry_nodes(){
  * Read the 8 noded elements in the geometry section.
  *
  */
-vector<vector<int>> D3plot::read_geometry_elem8(){
+vector< vector<int> > D3plot::read_geometry_elem8(){
 
   // Check
-  if(dyna_nel8 == 0) return vector<vector<int>>();
+  if(dyna_nel8 == 0) return vector< vector<int> >();
 
   #ifdef QD_DEBUG
   cout << "Reading elems8 ... ";
@@ -529,7 +529,7 @@ vector<vector<int>> D3plot::read_geometry_elem8(){
   const int nVarsElem8 = 9;
 
   // allocate
-  vector<vector<int>> buffer_elems8(dyna_nel8);
+  vector< vector<int> > buffer_elems8(dyna_nel8);
 
   wordsToRead = nVarsElem8*dyna_nel8;
   int iElement = 0;
@@ -566,10 +566,10 @@ vector<vector<int>> D3plot::read_geometry_elem8(){
  * Read the 4 noded elements in the geometry section.
  *
  */
-vector<vector<int>> D3plot::read_geometry_elem4(){
+vector< vector<int> > D3plot::read_geometry_elem4(){
 
   // Check
-  if(dyna_nel4 == 0) return vector<vector<int>>();
+  if(dyna_nel4 == 0) return vector< vector<int> >();
 
   #ifdef QD_DEBUG
   cout << "Reading elems4 ... ";
@@ -578,7 +578,7 @@ vector<vector<int>> D3plot::read_geometry_elem4(){
   const int nVarsElem4 = 5;
 
   // allocate
-  vector<vector<int>> buffer_elems4(dyna_nel4);
+  vector< vector<int> > buffer_elems4(dyna_nel4);
 
   wordsToRead = nVarsElem4*dyna_nel4;
   int iElement = 0;
@@ -613,10 +613,10 @@ vector<vector<int>> D3plot::read_geometry_elem4(){
  * Read the 2 noded elements in the geometry section.
  *
  */
-vector<vector<int>> D3plot::read_geometry_elem2(){
+vector< vector<int> > D3plot::read_geometry_elem2(){
 
   // Check
-  if(dyna_nel2 == 0) return vector<vector<int>>();
+  if(dyna_nel2 == 0) return vector< vector<int> >();
 
   #ifdef QD_DEBUG
   cout << "Reading elems2 ... ";
@@ -625,7 +625,7 @@ vector<vector<int>> D3plot::read_geometry_elem2(){
   const int nVarsElem2 = 6;
 
   // allocate
-  vector<vector<int>> buffer_elems2(dyna_nel2);
+  vector< vector<int> > buffer_elems2(dyna_nel2);
 
   wordsToRead = nVarsElem2*dyna_nel2;
   int iElement = 0;
@@ -670,7 +670,7 @@ vector<vector<int>> D3plot::read_geometry_elem2(){
  *           shells = 3
  *           (tshells= 4 - not implemented)
  */
-vector<vector<int>> D3plot::read_geometry_numbering(){
+vector< vector<int> > D3plot::read_geometry_numbering(){
 
   // TODO
   // NARBS check wrong?!?!?!
@@ -686,7 +686,7 @@ vector<vector<int>> D3plot::read_geometry_numbering(){
   }
   */
 
-  if(dyna_narbs == 0) return vector<vector<int>>();
+  if(dyna_narbs == 0) return vector< vector<int> >();
 
   #ifdef QD_DEBUG
   cout << "Reading numbering ... ";
@@ -714,7 +714,7 @@ vector<vector<int>> D3plot::read_geometry_numbering(){
   /* === ID - ORDER === */
   // nodes,solids,beams,shells,tshells
 
-  vector<vector<int>> idvector(4);
+  vector< vector<int> > idvector(4);
 
   // Node IDs
   if (nsort < 0) {
