@@ -7,7 +7,7 @@ import compileall
 from setuptools import find_packages,setup,Extension
 
 # ======= S E T T I N G S ======= #
-debugging_mode = True
+debugging_mode = False
 useFemzip = True
 # =============================== #
 

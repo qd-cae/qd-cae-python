@@ -32,8 +32,7 @@ T string_to_type(std::string const & str){
    return value;
 }
 
-/*
- * Text utility class
+/** Text utility class
  */
 class TextUtility {
 
@@ -43,6 +42,20 @@ class TextUtility {
    static std::string &rtrim(std::string &s);
    static std::string &trim(std::string &s);
 };
+
+
+/** Preprocess a string for dyna.
+ * @param string s : string to preprocess
+ * @return string& s : string with removed comments
+ */
+inline std::string preprocess_string_dyna(std::string _text){
+
+   size_t pos = _text.find('$');
+   if(pos != std::string::npos)
+      return _text.substr(0,pos);
+   return _text;
+
+}
 
 
 #endif

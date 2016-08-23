@@ -125,11 +125,11 @@ vector<float> Node::get_coords(int iTimestep){
             if( (iTimestep < 0) )
                throw(string("Specified timestep exceeds real time step size."));
 
-            vector<float> ret;
-            ret = this->coords;
-
             if( iTimestep >= this->disp.size() )
                throw(string("Specified timestep exceeds real time step size."));
+
+            vector<float> ret;
+            ret = this->coords; // copies
 
             ret[0] += this->disp[iTimestep][0];
             ret[1] += this->disp[iTimestep][1];
