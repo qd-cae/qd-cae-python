@@ -12,7 +12,7 @@ useFemzip = True
 # =============================== #
 
 # Version
-_version = "0.1.1"
+_version = "0.1.2"
 
 # py -> pyc
 compileall.compile_dir('src/')
