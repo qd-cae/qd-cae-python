@@ -19,13 +19,21 @@ D3plotBuffer::D3plotBuffer(string _d3plot_path, int _wordSize){
 
   // Check File
   if(!FileUtility::check_ExistanceAndAccess(_d3plot_path)){
-    throw("File \"" + _d3plot_path + "\" does not exist or is locked.");
+    throw(string("File \"" + _d3plot_path + "\" does not exist or is locked."));
   }
 
-  this->d3plots = FileUtility::globVector(_d3plot_path+"*");
+  this->d3plots = FileUtility::findDynaResultFiles(_d3plot_path);
+  #ifdef QD_DEBUG
+  cout << "Found result files:" << endl;
+  for(size_t ii=0; ii<this->d3plots.size(); ++ii){
+     cout << this->d3plots[ii] << endl;
+  }
+  cout << "End of file list." << endl;
+  #endif
+  //this->d3plots = FileUtility::globVector(_d3plot_path+"*");
 
-  if(d3plots.size() < 1)
-    throw("No D3plot result file could be found with the given path:"+_d3plot_path);
+  if(this->d3plots.size() < 1)
+    throw(string("No D3plot result file could be found with the given path:"+_d3plot_path));
 
   this->wordSize = _wordSize;
 }
@@ -131,7 +139,7 @@ void D3plotBuffer::read_nextState(){
     return;
   }
 
-  throw("There are no more state-files to be read.");
+  throw(string("There are no more state-files to be read."));
 }
 
 

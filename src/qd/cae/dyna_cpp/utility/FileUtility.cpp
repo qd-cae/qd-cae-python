@@ -74,7 +74,7 @@ vector<string> FileUtility::globVector(string pattern){
 
 	// get file directory
   string directory = "";
-	size_t pos = pattern.find_last_of("/\\");
+  size_t pos = pattern.find_last_of("/\\");
   if (pos != string::npos)
 	  directory = pattern.substr(0,pos) + "/";
 
@@ -85,6 +85,7 @@ vector<string> FileUtility::globVector(string pattern){
 	do
 	{
 		string fname(FindFileData.cFileName);
+
 		files.push_back(directory+fname);
 
 	} while(FindNextFile(hFind, &FindFileData) != 0);
@@ -94,6 +95,43 @@ vector<string> FileUtility::globVector(string pattern){
 	sort(files.begin(), files.end());
 
 	return files;
+
+}
+
+/** Find dyna result files from the given base filename.
+ * @param string _base_filepath
+ */
+vector<string> FileUtility::findDynaResultFiles(string _base_filepath){
+
+   // get file directory
+  string directory = "";
+  size_t pos = _base_filepath.find_last_of("/\\");
+  if (pos != string::npos)
+	  directory = _base_filepath.substr(0,pos) + "/";
+
+	// get files
+   vector<string> files;
+   string win32_pattern = string(_base_filepath+"*");
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hFind = FindFirstFileEx(win32_pattern.c_str(),
+                                  FindExInfoStandard,
+                                  &FindFileData,
+                                  FindExSearchNameMatch,
+                                  NULL,
+                                  FIND_FIRST_EX_CASE_SENSITIVE); // Searches are case-sensitive.
+   do
+	{
+		string fname(FindFileData.cFileName);
+      if(fname.substr(0,_base_filepath.size()) == _base_filepath) // case sensitivity check
+         files.push_back(directory+fname);
+
+	} while(FindNextFile(hFind, &FindFileData) != 0);
+	FindClose(hFind);
+
+	// Sort files
+	sort(files.begin(), files.end());
+
+   return files;
 
 }
 
@@ -118,6 +156,24 @@ vector<string> FileUtility::globVector(string pattern){
   sort(files.begin(), files.end());
 
   return files;
+}
+
+
+vector<string> FileUtility::findDynaResultFiles(string _base_filepath){
+
+   string pattern = string(_base_filepath+"*")
+   glob_t glob_result;
+   glob(pattern.c_str(),GLOB_TILDE,NULL,&glob_result);
+   vector<string> files;
+   for(unsigned int i=0;i<glob_result.gl_pathc;++i){
+      if(string(glob_result.gl_pathv[i]).substr(0,_base_filepath.size()) == _base_filepath )
+         files.push_back(string(glob_result.gl_pathv[i]));
+   }
+   globfree(&glob_result);
+
+   sort(files.begin(), files.end());
+
+   return files;
 }
 
 #endif
