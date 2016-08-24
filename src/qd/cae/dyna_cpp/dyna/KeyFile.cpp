@@ -61,6 +61,7 @@ void KeyFile::read_mesh(string _filepath){
    bool nodesection = false;
    bool elemsection = false;
    bool elemsection_solid = false;
+   bool elemsection_beam = false;
    //bool elemthicksection = false;
    bool partsection = false;
    //bool propsection = false;
@@ -68,6 +69,7 @@ void KeyFile::read_mesh(string _filepath){
 
    string line;
    vector<float> coords(3);
+   vector<int> elemNodes_beam(2);
    vector<int> elemNodes_shell(4);
    vector<int> elemNodes_solid(8);
    int id;
@@ -207,6 +209,49 @@ void KeyFile::read_mesh(string _filepath){
          #endif
       }
 
+
+      // BEAMS
+      if(trim_copy(line).substr(0,string("*ELEMENT_BEAM").size()) == "*ELEMENT_BEAM"){
+         elemsection_beam = true;
+         iCardLine = 0;
+         #ifdef QD_DEBUG
+         cout << "Starting *ELEMENT_BEAM in line: " << (iLine+1) << endl;
+         #endif
+      } else if(elemsection_beam & (line.find('*') == string::npos) & (!line.empty()) ){
+
+         try {
+
+            if(iCardLine == 0){
+
+               id = boost::lexical_cast<int>(trim_copy(line.substr(0,8)));
+               partID = boost::lexical_cast<int>(trim_copy(line.substr(8,8)));
+               elemNodes_beam[0] = boost::lexical_cast<int>(trim_copy(line.substr(16,8)));
+               elemNodes_beam[1] = boost::lexical_cast<int>(trim_copy(line.substr(24,8)));
+               db_elements->add_element_byKeyFile(BEAM, id, partID, elemNodes_beam);
+               ++iCardLine;
+
+            } else if(iCardLine == 1){
+               iCardLine = 0;
+            }
+
+         } catch (const std::exception& ex){
+            cerr << "Error reading element in line " << (iLine+1) << ":" << ex.what() << endl;
+            elemsection_beam = false;
+         } catch (const string& ex) {
+            cerr << "Error reading element in line " << (iLine+1) << ":" << ex << endl;
+            elemsection_beam = false;
+         } catch (...) {
+            cerr << "Error reading element in line " << (iLine+1) << ": Unknown error." << endl;
+            elemsection_beam = false;
+         }
+
+
+      } else if( elemsection_beam &  ((line.find('*') != string::npos) | line.empty()) ){
+         elemsection_beam = false;
+         #ifdef QD_DEBUG
+         cout << "*ELEMENT_BEAM finished in line: " << (iLine+1) << endl;
+         #endif
+      }
 
 
       /* PART */
