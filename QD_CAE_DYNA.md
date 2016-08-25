@@ -28,7 +28,7 @@ Functions:
 # Example
 
 ```python
-from codie import D3plot
+from qd.cae.dyna import D3plot
 
 d3plot = D3plot("filepath/to/d3plot",read_states="disp")
 timesteps = d3plot.get_timesteps()
