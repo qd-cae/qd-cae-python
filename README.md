@@ -1,6 +1,6 @@
 
 
-# QD-Engineering 4 Python
+# qd - a CAE Python Library
 
 This python2 library is an open source software package with utility functions regarding
 engineering, especially Simulation and Computer Aided Engineering (CAE).
