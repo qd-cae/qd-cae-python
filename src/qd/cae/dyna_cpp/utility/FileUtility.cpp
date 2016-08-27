@@ -1,10 +1,12 @@
 
 #include "FileUtility.hpp"
+#include "TextUtility.hpp"
 #include <iostream>
 #include <stdlib.h>
 #include <string>
 #include <algorithm>
 #include <fstream>
+#include <boost/algorithm/string/trim.hpp>
 #ifdef _WIN32
 	#include <windows.h>
 	#include <tchar.h>
@@ -48,6 +50,78 @@ vector<string> FileUtility::read_textFile(string filepath){
    return filebuffer;
 
 }
+
+/** Read a KeyFile's lines into a buffer. Includes will be catched
+ * @param string filepath : path of the text file
+ *
+ * throws an expection in case of an IO-Error.
+ */
+vector<string> FileUtility::read_keyFile(string filepath){
+
+   // vars
+   string linebuffer;
+   vector<string> filebuffer;
+
+   // open stream
+   ifstream filestream(filepath.c_str());
+   if (! filestream.is_open())
+      throw(string("Error while opening file "+filepath));
+
+   // read data
+   string edited_line;
+   bool include_detected = false;
+   bool load_include = false ;
+   string include_filepath;
+   while(getline(filestream, linebuffer)) {
+
+      edited_line = boost::algorithm::trim_copy(preprocess_string_dyna(edited_line));
+
+      // check for include statement
+      if(edited_line.substr(0,8) == "*INCLUDE"){
+         include_detected = true;
+         continue;
+      }
+
+      // parse filepath
+      if(include_detected){
+         include_filepath = edited_line;
+         load_include = true;
+         include_detected = false;
+         #ifdef QD_DEBUG
+         cout << "Loading include file:" << include_filepath << endl;
+         #endif
+         continue;
+      }
+
+      // load include
+      if(load_include & !include_filepath.empty() ){
+         vector<string> include_lines = FileUtility::read_keyFile(include_filepath);
+         filebuffer.insert(filebuffer.end(),include_lines.begin(),include_lines.end());
+         load_include = false;
+         #ifdef QD_DEBUG
+         cout << "Include loaded." << endl;
+         #endif
+         continue;
+      }
+
+      // If nothing special happened, just save the line.
+      filebuffer.push_back(linebuffer);
+   }
+
+   // Check for Error
+   if (filestream.bad()){
+      filestream.close();
+      throw(string("Error during reading file ")+filepath);
+   }
+
+   // Close file
+   filestream.close();
+
+   // return
+   return filebuffer;
+
+}
+
 
 
 #ifdef _WIN32

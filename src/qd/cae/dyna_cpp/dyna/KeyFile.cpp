@@ -16,6 +16,19 @@
 
 using namespace boost::algorithm;
 
+// Enumeration
+namespace Keyword{
+   enum Keyword {NONE,
+                 NODE,
+                 ELEMENT_BEAM,
+                 ELEMENT_SHELL,
+                 ELEMENT_SOLID,
+                 PART,
+                 INCLUDE};
+}
+
+
+
 /**
  * Constructor for a LS-Dyna input file.
  */
@@ -43,9 +56,22 @@ KeyFile::KeyFile(string _filepath)
  */
 void KeyFile::read_mesh(string _filepath){
 
+   #ifdef QD_DEBUG
+   cout << " === Parsing File: " << _filepath << endl;
+   #endif
+
+   // File directory for Includes
+   string directory = "";
+   size_t pos = _filepath.find_last_of("/\\");
+   if (pos != string::npos)
+	   directory = _filepath.substr(0,pos) + "/";
+   #ifdef QD_DEBUG
+   cout << "Basic directory for *INCLUDE: " << directory << endl;
+   #endif
+
    // Read the lines
    #ifdef QD_DEBUG
-   cout << "Reading teyt file into buffer ... " << flush;
+   cout << "Filling IO-Buffer ... " << flush;
    #endif
    vector<string> lines = FileUtility::read_textFile(_filepath);
    #ifdef QD_DEBUG
@@ -58,16 +84,9 @@ void KeyFile::read_mesh(string _filepath){
    DB_Elements* db_elements = this->get_db_elements();
 
    // Time to do the thing
-   bool nodesection = false;
-   bool elemsection = false;
-   bool elemsection_solid = false;
-   bool elemsection_beam = false;
-   //bool elemthicksection = false;
-   bool partsection = false;
-   //bool propsection = false;
-   //bool propsection_title = false;
-
+   Keyword::Keyword keyword = Keyword::NONE;
    string line;
+   string line_trimmed;
    vector<float> coords(3);
    vector<int> elemNodes_beam(2);
    vector<int> elemNodes_shell(4);
@@ -76,30 +95,42 @@ void KeyFile::read_mesh(string _filepath){
    int partID;
    string title;
    size_t iCardLine = 0;
+   bool line_has_keyword = false;
 
-
-   #ifdef QD_DEBUG
-   cout << "Parsing Text File ... " << endl;
-   #endif
    for(vector<string>::size_type iLine = 0; iLine != lines.size(); iLine++) {
 
       // Remove comments, etc
       line = preprocess_string_dyna(lines[iLine]);
+      line_trimmed = trim_copy(line);
+      line_has_keyword = (line_trimmed.find('*') != string::npos);
 
       // Skip empty lines
-      if( trim_copy(line).empty() )
-         line = string("");
+      if( line_trimmed.empty() )
+         continue;
 
-      // TODO Line preprocessing
-      // Remove comment stuff behind "$"
+      /* INCLUDE */
+      if(line_trimmed == "*INCLUDE"){
+         keyword = Keyword::INCLUDE;
+         #ifdef QD_DEBUG
+         cout << "*INCLUDE in line: " << (iLine+1) << endl;
+         #endif
+      } else if ( keyword == Keyword::INCLUDE ){
+         this->read_mesh(directory+line_trimmed); // basic directory is this file's
+         keyword = Keyword::NONE;
+      }
+
 
       /* NODES */
-      if(trim_copy(line) == "*NODE"){
-         nodesection = true;
+      if(line_trimmed == "*NODE"){
+
+         keyword = Keyword::NODE;
          #ifdef QD_DEBUG
          cout << "Starting *NODE in line: " << (iLine+1) << endl;
          #endif
-      } else if(nodesection & (line.find('*') == string::npos) & (!line.empty()) ){
+
+      } else if( (keyword==Keyword::NODE)
+               & !line_has_keyword
+               & (!line_trimmed.empty()) ){
 
          try {
             coords[0] = boost::lexical_cast<float>(trim_copy(line.substr(8,16)));
@@ -108,16 +139,18 @@ void KeyFile::read_mesh(string _filepath){
             db_nodes->add_node(boost::lexical_cast<int>(trim_copy(line.substr(0,8))),coords);
          } catch (const std::exception& ex){
             cerr << "Error reading node in line " << (iLine+1) << ":" << ex.what() << endl;
-            nodesection = false;
+            keyword = Keyword::NODE;
          } catch (const string& ex) {
             cerr << "Error reading node in line " << (iLine+1) << ":" << ex << endl;
-            nodesection = false;
+            keyword = Keyword::NODE;
          } catch (...) {
             cerr << "Error reading node in line " << (iLine+1) << ": Unknown error." << endl;
-            nodesection = false;
+            keyword = Keyword::NODE;
          }
-      } else if( nodesection & ((line.find('*') != string::npos) | line.empty()) ){
-         nodesection = false;
+      } else if( (keyword==Keyword::NODE)
+               & (line_has_keyword | line.empty()) ){
+
+         keyword = Keyword::NONE;
          #ifdef QD_DEBUG
          cout << "*NODE finished in line: " << (iLine+1) << endl;
          #endif
@@ -125,12 +158,14 @@ void KeyFile::read_mesh(string _filepath){
 
 
       /* ELEMENTS */
-      if(trim_copy(line) == "*ELEMENT_SHELL"){
-         elemsection = true;
+      if(line_trimmed == "*ELEMENT_SHELL"){
+         keyword = Keyword::ELEMENT_SHELL;
          #ifdef QD_DEBUG
          cout << "Starting *ELEMENT_SHELL in line: " << (iLine+1) << endl;
          #endif
-      } else if(elemsection & (line.find('*') == string::npos) & (!line.empty()) ){
+      } else if( (keyword == Keyword::ELEMENT_SHELL )
+               & !line_has_keyword
+               & (!line.empty()) ){
 
          try {
             id = boost::lexical_cast<int>(trim_copy(line.substr(0,8)));
@@ -142,16 +177,18 @@ void KeyFile::read_mesh(string _filepath){
             db_elements->add_element_byKeyFile(SHELL, id, partID, elemNodes_shell);
          } catch (const std::exception& ex){
             cerr << "Error reading element in line " << (iLine+1) << ":" << ex.what() << endl;
-            elemsection = false;
+            keyword = Keyword::NONE;
          } catch (const string& ex) {
             cerr << "Error reading element in line " << (iLine+1) << ":" << ex << endl;
-            elemsection = false;
+            keyword = Keyword::NONE;
          } catch (...) {
             cerr << "Error reading element in line " << (iLine+1) << ": Unknown error." << endl;
-            elemsection = false;
+            keyword = Keyword::NONE;
          }
-      } else if( elemsection &  ((line.find('*') != string::npos) | line.empty()) ){
-         elemsection = false;
+      } else if( (keyword == Keyword::ELEMENT_SHELL)
+              &  (line_has_keyword | line.empty()) ){
+
+         keyword = Keyword::NONE;
          #ifdef QD_DEBUG
          cout << "*ELEMENT_SHELL finished in line: " << (iLine+1) << endl;
          #endif
@@ -159,13 +196,15 @@ void KeyFile::read_mesh(string _filepath){
 
 
       /* ELEMENTS */
-      if(trim_copy(line) == "*ELEMENT_SOLID"){
-         elemsection_solid = true;
+      if(line_trimmed == "*ELEMENT_SOLID"){
+         keyword = Keyword::ELEMENT_SOLID;
          iCardLine = 0;
          #ifdef QD_DEBUG
          cout << "Starting *ELEMENT_SOLID in line: " << (iLine+1) << endl;
          #endif
-      } else if(elemsection_solid & (line.find('*') == string::npos) & (!line.empty()) ){
+      } else if( (keyword == Keyword::ELEMENT_SOLID)
+               & !line_has_keyword
+               & !line.empty() ){
 
          try {
 
@@ -192,18 +231,19 @@ void KeyFile::read_mesh(string _filepath){
 
          } catch (const std::exception& ex){
             cerr << "Error reading element in line " << (iLine+1) << ":" << ex.what() << endl;
-            elemsection_solid = false;
+            keyword = Keyword::NONE;
          } catch (const string& ex) {
             cerr << "Error reading element in line " << (iLine+1) << ":" << ex << endl;
-            elemsection_solid = false;
+            keyword = Keyword::NONE;
          } catch (...) {
             cerr << "Error reading element in line " << (iLine+1) << ": Unknown error." << endl;
-            elemsection_solid = false;
+            keyword = Keyword::NONE;
          }
 
 
-      } else if( elemsection_solid &  ((line.find('*') != string::npos) | line.empty()) ){
-         elemsection_solid = false;
+      } else if( (keyword == Keyword::ELEMENT_SOLID)
+              &  (line_has_keyword | line.empty()) ){
+         keyword = Keyword::NONE;
          #ifdef QD_DEBUG
          cout << "*ELEMENT_SOLID finished in line: " << (iLine+1) << endl;
          #endif
@@ -211,13 +251,15 @@ void KeyFile::read_mesh(string _filepath){
 
 
       // BEAMS
-      if(trim_copy(line).substr(0,string("*ELEMENT_BEAM").size()) == "*ELEMENT_BEAM"){
-         elemsection_beam = true;
+      if(line_trimmed.substr(0,string("*ELEMENT_BEAM").size()) == "*ELEMENT_BEAM"){
+         keyword = Keyword::ELEMENT_BEAM;
          iCardLine = 0;
          #ifdef QD_DEBUG
          cout << "Starting *ELEMENT_BEAM in line: " << (iLine+1) << endl;
          #endif
-      } else if(elemsection_beam & (line.find('*') == string::npos) & (!line.empty()) ){
+      } else if( (keyword == Keyword::ELEMENT_BEAM)
+               & !line_has_keyword
+               & (!line.empty()) ){
 
          try {
 
@@ -236,18 +278,19 @@ void KeyFile::read_mesh(string _filepath){
 
          } catch (const std::exception& ex){
             cerr << "Error reading element in line " << (iLine+1) << ":" << ex.what() << endl;
-            elemsection_beam = false;
+            keyword = Keyword::ELEMENT_BEAM;
          } catch (const string& ex) {
             cerr << "Error reading element in line " << (iLine+1) << ":" << ex << endl;
-            elemsection_beam = false;
+            keyword = Keyword::ELEMENT_BEAM;
          } catch (...) {
             cerr << "Error reading element in line " << (iLine+1) << ": Unknown error." << endl;
-            elemsection_beam = false;
+            keyword = Keyword::ELEMENT_BEAM;
          }
 
 
-      } else if( elemsection_beam &  ((line.find('*') != string::npos) | line.empty()) ){
-         elemsection_beam = false;
+      } else if( (keyword == Keyword::ELEMENT_BEAM)
+              &  (line_has_keyword | line.empty()) ){
+         keyword = Keyword::ELEMENT_BEAM;
          #ifdef QD_DEBUG
          cout << "*ELEMENT_BEAM finished in line: " << (iLine+1) << endl;
          #endif
@@ -255,18 +298,20 @@ void KeyFile::read_mesh(string _filepath){
 
 
       /* PART */
-      if(trim_copy(line).substr(0,5) == "*PART"){
+      if(line_trimmed.substr(0,5) == "*PART"){
 
-         partsection = true;
+         keyword = Keyword::PART;
          #ifdef QD_DEBUG
          cout << "Starting *PART in line: " << (iLine+1) << endl;
          #endif
          iCardLine = 0;
 
-      } else if(partsection & (line.find('*') == string::npos) & (!line.empty()) ){
+      } else if( (keyword == Keyword::PART)
+               & !line_has_keyword
+               & (!line.empty()) ){
 
          if( iCardLine == 0 ){
-            title = trim_copy(line);
+            title = line_trimmed;
             ++iCardLine;
          } else if( iCardLine == 1 ) {
 
@@ -282,18 +327,21 @@ void KeyFile::read_mesh(string _filepath){
 
             } catch (const std::exception& ex){
                cerr << "Error reading part in line " << (iLine+1) << ":" << ex.what() << endl;
-               partsection = false;
+               keyword = Keyword::NONE;
             } catch (const string& ex) {
                cerr << "Error reading part in line " << (iLine+1) << ":" << ex << endl;
-               partsection = false;
+               keyword = Keyword::NONE;
             } catch (...) {
                cerr << "Error reading part in line " << (iLine+1) << ": Unknown error." << endl;
-               partsection = false;
+               keyword = Keyword::NONE;
             }
+
          }
 
-      } else if( partsection &  ((line.find('*') != string::npos) | (iCardLine > 1)) ){
-         partsection = false;
+      } else if( (keyword == Keyword::PART)
+               & ( line_has_keyword | (iCardLine > 1)) ){
+
+         keyword = Keyword::NONE;
          #ifdef QD_DEBUG
          cout << "*PART finished in line: " << (iLine+1) << endl;
          #endif
