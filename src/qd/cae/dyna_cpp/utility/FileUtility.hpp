@@ -15,8 +15,8 @@ public:
   static bool check_ExistanceAndAccess(string);
   static vector<string> globVector(string);
   static vector<string> read_textFile(string _filepath);
-  static vector<string> read_keyFile(string _filepath);
   static vector<string> findDynaResultFiles(string _base_file);
+  
 
 };
 

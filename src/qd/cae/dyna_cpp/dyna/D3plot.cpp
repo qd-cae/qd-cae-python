@@ -1055,7 +1055,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     } else if(_variables[ii].find("history") != string::npos){
 
       // retrieve history var indexes
-      vector<unsigned int> hist_vars = TextUtility::extract_integers(_variables[ii]);
+      vector<unsigned int> hist_vars = extract_integers<unsigned int>(_variables[ii]);
       if(hist_vars.size() < 1)
          throw("No history variable index specified. Please input at least one number seperated by spaces.");
       unsigned int var_mode = read_states_parse_readMode(_variables[ii]);
