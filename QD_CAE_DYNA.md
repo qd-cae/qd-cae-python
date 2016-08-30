@@ -13,7 +13,7 @@ The core-code is written entirely in C++ with a python wrapper. Even though the 
 Classes:
 - [D3plot](#d3plot)
 - [KeyFile](#keyfile)
-- [FEMFile (D3plot & KeyFile)](#femfile-(d3plot,-keyfile))
+- [FEMFile (D3plot & KeyFile)](#femfile-d3plot-keyfile)
 - [Node](#node)
 - [Element](#element)
 - [Part](#part)
@@ -52,9 +52,9 @@ part_elems = part.get_elements()
 
 This class can read binary result files and give access to it. It has the following limits:
 
-- Single Precision only (in case you use Double Precision, output in Single Precision)
+- Single Precision only (in case you calculate in Double Precision, output in Single Precision)
 - no SPH or fluid dynamics planned!
-- no thick shells
+- no thick shells (maybe if requested)
 
 **D3plot(filepath,use_femzip=False,read_states=None)**
 

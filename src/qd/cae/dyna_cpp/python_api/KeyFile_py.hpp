@@ -33,7 +33,7 @@ static PyMethodDef QD_KeyFile_methods[] = {
 /* QD_KeyFile_Type TYPE */
 static PyTypeObject QD_KeyFile_Type = {
   PyVarObject_HEAD_INIT(NULL, 0)
-  "KeyFile",             /* tp_name */
+  "QD_KeyFile",             /* tp_name */
   sizeof(QD_KeyFile),           /* tp_basicsize */
   0,                         /* tp_itemsize */
   (destructor) QD_KeyFile_dealloc, /* tp_dealloc */
@@ -52,7 +52,7 @@ static PyTypeObject QD_KeyFile_Type = {
   0,                         /* tp_setattro */
   0,                         /* tp_as_buffer */
   Py_TPFLAGS_DEFAULT,        /* tp_flags */
-  "KeyFile",                 /* tp_doc */
+  "QD_KeyFile",                 /* tp_doc */
   0,                         /* tp_traverse */
   0,                         /* tp_clear */
   0,                         /* tp_richcompare */

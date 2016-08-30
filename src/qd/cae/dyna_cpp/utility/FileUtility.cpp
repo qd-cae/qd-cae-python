@@ -108,9 +108,13 @@ vector<string> FileUtility::findDynaResultFiles(string _base_filepath){
 
    // get file directory
   string directory = "";
+  string base_filename = _base_filepath;
   size_t pos = _base_filepath.find_last_of("/\\");
-  if (pos != string::npos)
-	  directory = _base_filepath.substr(0,pos) + "/";
+  if (pos != string::npos){
+     base_filename = _base_filepath.substr(pos+1,string::npos);
+     directory = _base_filepath.substr(0,pos) + "/";
+  }
+
 
 	// get files
    vector<string> files;
@@ -125,8 +129,8 @@ vector<string> FileUtility::findDynaResultFiles(string _base_filepath){
    do
 	{
 		string fname(FindFileData.cFileName);
-      if( (fname.substr(0,_base_filepath.size()) == _base_filepath) // case sensitivity check
-        & string_has_only_numbers(fname,_base_filepath.size()) ) // number ending only
+      if( (fname.substr(0,base_filename.size()) == base_filename) // case sensitivity check
+        & string_has_only_numbers(fname,base_filename.size()) ) // number ending only
          files.push_back(directory+fname);
 
 	} while(FindNextFile(hFind, &FindFileData) != 0);

@@ -59,7 +59,7 @@ extern "C" {
   /* TYPE ... whatever */
   static PyTypeObject QD_D3plot_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "D3plot",               /* tp_name */
+    "QD_D3plot",               /* tp_name */
     sizeof(QD_D3plot),         /* tp_basicsize */
     0,                         /* tp_itemsize */
     (destructor)QD_D3plot_dealloc, /* tp_dealloc */
@@ -77,8 +77,9 @@ extern "C" {
     0,                         /* tp_getattro */
     0,                         /* tp_setattro */
     0,                         /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT,        /* tp_flags */
-    "D3plot",                  /* tp_doc */
+    Py_TPFLAGS_DEFAULT |
+    Py_TPFLAGS_BASETYPE,        /* tp_flags */
+    "QD_D3plot",                  /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
     0,                         /* tp_richcompare */

@@ -75,7 +75,7 @@ extern "C" {
   /* QD_Element_Type TYPE */
   static PyTypeObject QD_Element_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "Element",             /* tp_name */
+    "QD_Element",             /* tp_name */
     sizeof(QD_Element),           /* tp_basicsize */
     0,                         /* tp_itemsize */
     (destructor) QD_Element_dealloc, /* tp_dealloc */
@@ -95,7 +95,7 @@ extern "C" {
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT |
         Py_TPFLAGS_BASETYPE,   /* tp_flags */
-    "Element",                 /* tp_doc */
+    "QD_Element",                 /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
     0,                         /* tp_richcompare */

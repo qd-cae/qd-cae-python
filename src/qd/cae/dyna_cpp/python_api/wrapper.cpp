@@ -97,8 +97,7 @@ extern "C" {
   PyInit_codie(void)
   */
   void
-  //initcodie(void)
-  initdyna_post(void)
+  initdyna_cpp(void)
   {
     PyObject* m;
 
@@ -125,7 +124,7 @@ extern "C" {
 
     // Init Module
     // Python 2.7
-    m = Py_InitModule3("dyna_post", QDMethods,
+    m = Py_InitModule3("dyna_cpp", QDMethods,
                        "qd cae routines for LS-DYNA.");
     // PY3 m = PyModule_Create(&codie_module);
     /*
@@ -137,19 +136,19 @@ extern "C" {
       return;
 
     Py_INCREF(&QD_D3plot_Type);
-    PyModule_AddObject(m, "D3plot", (PyObject *)&QD_D3plot_Type);
+    PyModule_AddObject(m, "QD_D3plot", (PyObject *)&QD_D3plot_Type);
 
     Py_INCREF(&QD_KeyFile_Type);
-    PyModule_AddObject(m, "KeyFile", (PyObject *)&QD_KeyFile_Type);
+    PyModule_AddObject(m, "QD_KeyFile", (PyObject *)&QD_KeyFile_Type);
 
     Py_INCREF(&QD_Node_Type);
-    PyModule_AddObject(m, "Node", (PyObject *)&QD_Node_Type);
+    PyModule_AddObject(m, "QD_Node", (PyObject *)&QD_Node_Type);
 
     Py_INCREF(&QD_Element_Type);
-    PyModule_AddObject(m, "Element", (PyObject *)&QD_Element_Type);
+    PyModule_AddObject(m, "QD_Element", (PyObject *)&QD_Element_Type);
 
     Py_INCREF(&QD_Element_Type);
-    PyModule_AddObject(m, "Part", (PyObject *)&QD_Part_Type);
+    PyModule_AddObject(m, "QD_Part", (PyObject *)&QD_Part_Type);
 
     // PY3 return m;
   }

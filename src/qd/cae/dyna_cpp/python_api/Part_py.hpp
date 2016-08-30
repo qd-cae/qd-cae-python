@@ -60,7 +60,7 @@ extern "C" {
   /* QD_Part TYPE ... whatever */
   static PyTypeObject QD_Part_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "Part",                 /* tp_name */
+    "QD_Part",                 /* tp_name */
     sizeof(QD_Part),           /* tp_basicsize */
     0,                         /* tp_itemsize */
     (destructor)QD_Part_dealloc, /* tp_dealloc */
@@ -80,7 +80,7 @@ extern "C" {
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT |
         Py_TPFLAGS_BASETYPE,   /* tp_flags */
-    "Part",                    /* tp_doc */
+    "QD_Part",                    /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
     0,                         /* tp_richcompare */

@@ -59,7 +59,7 @@ extern "C" {
   /* TYPE */
   static PyTypeObject QD_FEMFile_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "FEMFile",             /* tp_name */
+    "QD_FEMFile",             /* tp_name */
     sizeof(QD_FEMFile),           /* tp_basicsize */
     0,                         /* tp_itemsize */
     (destructor) QD_FEMFile_dealloc, /* tp_dealloc */
@@ -79,7 +79,7 @@ extern "C" {
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT |
         Py_TPFLAGS_BASETYPE,   /* tp_flags */
-    "FEMFile",                 /* tp_doc */
+    "QD_FEMFile",                 /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
     0,                         /* tp_richcompare */

@@ -1,9 +1,11 @@
 
 
+qd.cae.dyna:
+- Let python classes inherit wrapper classes for additional python routines
+
 qd.cae.dyna.KeyFile:
  - Add Keyword memory dict
- - write statement
+ - write mesh routine
 
 qd.cae.dyna.D3plot:
-- Search files must end with numbers only
 - Debug Class
