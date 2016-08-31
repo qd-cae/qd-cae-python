@@ -13,7 +13,7 @@ template<class E> inline void throw_exception(E const & e)
 }
 
 // LINUX
-#elif
+#else
 
 #ifdef BOOST_NO_EXCEPTIONS
 template<class E> inline void throw_exception(E const & e)
@@ -22,8 +22,8 @@ template<class E> inline void throw_exception(E const & e)
 }
 #endif
 
-#endif
+#endif // _WIN32
 
 } // boost
 
-#endif // BOOSTEXCEPTION_HPP
+#endif // ifndef BOOSTEXCEPTION_HPP

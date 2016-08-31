@@ -106,7 +106,7 @@ vector<string> FileUtility::globVector(string pattern){
  */
 vector<string> FileUtility::findDynaResultFiles(string _base_filepath){
 
-   // get file directory
+  // get file directory
   string directory = "";
   string base_filename = _base_filepath;
   size_t pos = _base_filepath.find_last_of("/\\");
@@ -169,7 +169,7 @@ vector<string> FileUtility::globVector(string pattern){
 
 vector<string> FileUtility::findDynaResultFiles(string _base_filepath){
 
-   string pattern = string(_base_filepath+"*")
+   string pattern = string(_base_filepath+"*");
    glob_t glob_result;
    glob(pattern.c_str(),GLOB_TILDE,NULL,&glob_result);
    vector<string> files;
