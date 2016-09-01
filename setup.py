@@ -9,6 +9,8 @@ from setuptools import find_packages,setup,Extension
 # ======= S E T T I N G S ======= #
 debugging_mode = False
 useFemzip = True
+boost_path = "libs/boost_1_61_0"
+femzip_path = "libs/femzip"
 # =============================== #
 
 # Version
@@ -28,11 +30,11 @@ for ii in range(len(sys.argv)):
 
 # (1) Native Code Stuff
 # (1.1) DYNA-POST toolbox
-if not os.path.isdir("libs/boost_1_61_0"):
-    raise Exception("You are missing the library: libs/boost_1_61_0.")
+if not os.path.isdir(boost_path):
+    raise Exception("Invalid boost library path: %s." % boost_path)
     #b2 --toolset=msvc-10.0 --build-type=complete architecture=x86 address-model=64 stage
 compiler_args_dyna = []
-include_dirs_dyna = ["libs/boost_1_61_0"]
+include_dirs_dyna = [boost_path]
 lib_dirs_dyna = [] # ["libs/boost_1_61_0/lib64-msvc-9.0"]
 libs_dyna  = [] # ["boost_python"]
 srcs_dyna = ["src/qd/cae/dyna_cpp/python_api/wrapper.cpp",
@@ -52,24 +54,27 @@ srcs_dyna = ["src/qd/cae/dyna_cpp/python_api/wrapper.cpp",
 # FEMZIP usage? Libraries present?
 # You need to download the femzip libraries yourself from SIDACT GmbH
 # If you have questions, write a mail.
-if useFemzip:
-    if (platform.system() == "Windows") and os.path.isdir('libs/Windows_VS2010_MT/x64'):
+if useFemzip and os.path.isdir(femzip_path):
+    if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path,"Windows_VS2010_MT","x64")):
         srcs_dyna.append("src/qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
-        lib_dirs_dyna.append('libs/Windows_VS2010_MT/x64')
+        lib_dirs_dyna.append(os.path.join(femzip_path,"Windows_VS2010_MT","x64"))
         libs_dyna = ['femunziplib_standard_dyna','ipp_zlib','ippcoremt',
             'ippdcmt','ippsmt','ifwin','ifconsol','ippvmmt','libmmt',
             'libirc','svml_dispmt','msvcrt']
         compiler_args_dyna.append("/DQD_USE_FEMZIP")
-    elif (platform.system() == "Linux") and os.path.isdir('libs/Linux/64Bit'):
+    elif (platform.system() == "Linux") and os.path.isdir(os.path.join(femzip_path,"Linux","64Bit")):
         srcs_dyna.append("src/qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
-        lib_dirs_dyna.append('libs/Linux/64Bit')
+        lib_dirs_dyna.append(os.path.join(femzip_path,"Linux","64Bit"))
         libs_dyna = ['femunzip_dyna_standard','ipp_z','ippcore',
             'ippdc','ipps','ifcore_pic','ifcoremt','imf',
             'ipgo','irc','svml','ippcore_l','stdc++','dl']
         compiler_args_dyna.append("-DQD_USE_FEMZIP")
+else:
+	print("FEMZIP library %s not found. Compiling without femzip support." % femzip_path)
+
 # CFLAGS linux
 if (platform == "linux") or (platform == "linux2") or use_mingw:
-	#compiler_args_dyna.append("-std=c++11")
+	#compiler_args_dyna.append("-std=c++11") # I really wish so ...
 	compiler_args_dyna.append("-O3")
 	if not use_mingw:
 		compiler_args_dyna.append("-fPIC")
@@ -77,6 +82,7 @@ if (platform == "linux") or (platform == "linux2") or use_mingw:
 		compiler_args_dyna.append("-DQD_DEBUG")
 # CFLAGS Windows
 else:
+	compiler_args_dyna.append("/EHa")
 	if debugging_mode:
 		compiler_args_dyna.append("/DQD_DEBUG")
 dyna_extension = Extension("dyna", srcs_dyna, extra_compile_args = compiler_args_dyna,

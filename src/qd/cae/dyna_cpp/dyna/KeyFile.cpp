@@ -100,13 +100,15 @@ void KeyFile::read_mesh(string _filepath){
    for(vector<string>::size_type iLine = 0; iLine != lines.size(); iLine++) {
 
       // Remove comments, etc
-      line = preprocess_string_dyna(lines[iLine]);
-      line_trimmed = trim_copy(line);
-      line_has_keyword = (line_trimmed.find('*') != string::npos);
+      //line = preprocess_string_dyna(lines[iLine]);
+      line = lines[iLine];
 
       // Skip empty lines
-      if( line_trimmed.empty() )
+      if( line[0] == '$' )
          continue;
+
+      line_trimmed = trim_copy(line);
+      line_has_keyword = (line_trimmed.find('*') != string::npos);
 
       /* INCLUDE */
       if(line_trimmed == "*INCLUDE"){

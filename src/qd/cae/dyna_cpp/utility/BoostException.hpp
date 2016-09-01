@@ -7,10 +7,12 @@ namespace boost {
 // WINDOWS
 #ifdef _WIN32
 
+#ifdef BOOST_NO_EXCEPTIONS
 template<class E> inline void throw_exception(E const & e)
 {
     throw e;
 }
+#endif
 
 // LINUX
 #elif
