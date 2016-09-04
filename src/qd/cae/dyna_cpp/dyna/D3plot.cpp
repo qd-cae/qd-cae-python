@@ -426,9 +426,8 @@ void D3plot::read_geometry(){
   cout << "Adding nodes ... ";
   #endif
   if(buffer_numbering[0].size() != buffer_nodes.size())
-    throw("Buffer node-numbering and buffer-nodes have different sizes.");
+    throw(string("Buffer node-numbering and buffer-nodes have different sizes."));
   for(unsigned int ii=0; ii < buffer_nodes.size() ;ii++){
-
     this->get_db_nodes()->add_node(buffer_numbering[0][ii],buffer_nodes[ii]);
   }
   #ifdef QD_DEBUG
@@ -439,9 +438,8 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding beams ... ";
   #endif
-  for(unsigned int ii=0; ii < buffer_elems2.size() ;ii++){
-    this->get_db_elements()->add_element_byIndex(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
-
+  for(size_t ii=0; ii < buffer_elems2.size() ;++ii){
+    this->get_db_elements()->add_element_byD3plot(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
   }
   #ifdef QD_DEBUG
   cout << this->get_db_elements()->size() << " done." << endl;
@@ -451,10 +449,8 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding shells ... ";
   #endif
-  for(unsigned int ii=0; ii < buffer_elems4.size() ;ii++){
-
-    this->get_db_elements()->add_element_byIndex(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
-
+  for(size_t ii=0; ii < buffer_elems4.size() ;++ii){
+    this->get_db_elements()->add_element_byD3plot(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
   }
   #ifdef QD_DEBUG
   cout << this->get_db_elements()->size() << " done." << endl;
@@ -464,10 +460,8 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding solids ... ";
   #endif
-  for(unsigned int ii=0; ii < buffer_elems8.size() ;ii++){
-
-    this->get_db_elements()->add_element_byIndex(SOLID,buffer_numbering[1][ii],buffer_elems8[ii]);
-
+  for(size_t ii=0; ii < buffer_elems8.size() ;++ii){
+    this->get_db_elements()->add_element_byD3plot(SOLID,buffer_numbering[1][ii],buffer_elems8[ii]);
   }
   #ifdef QD_DEBUG
   cout << get_db_elements()->size() << " done." << endl;
@@ -1359,7 +1353,7 @@ void D3plot::read_states_displacement(){
 
   int start = wordPosition + dyna_nglbv + 1;
   wordsToRead = dyna_numnp*dyna_ndim;
-  int iNode = 1;
+  int iNode = 0;
 
   for(int ii = start;ii < start+wordsToRead; ii+=dyna_ndim){
 
@@ -1388,7 +1382,7 @@ void D3plot::read_states_velocity(){
 
   int start = 1 + dyna_nglbv + (dyna_iu) * dyna_numnp * dyna_ndim + this->femzip_state_offset;
   wordsToRead = dyna_numnp*dyna_ndim;
-  int iNode = 1;
+  int iNode = 0;
 
   for(int ii = start;ii < start+wordsToRead; ii+=dyna_ndim){
 
@@ -1417,7 +1411,7 @@ void D3plot::read_states_acceleration(){
 
   int start = 1 + dyna_nglbv + (dyna_iu+dyna_iv) * dyna_numnp * dyna_ndim + this->femzip_state_offset;
   wordsToRead = dyna_numnp*dyna_ndim;
-  int iNode = 1;
+  int iNode = 0;
 
   for(int ii = start;ii < start+wordsToRead; ii+=dyna_ndim){
 
@@ -1452,7 +1446,7 @@ void D3plot::read_states_elem8(unsigned int iState){
   int start = 1 + dyna_nglbv + (dyna_iu+dyna_iv+dyna_ia) * dyna_numnp * dyna_ndim + this->femzip_state_offset;
   wordsToRead = dyna_nv3d * dyna_nel8;
 
-  int iElement = 1;
+  int iElement = 0;
   int delta = 7+dyna_neiph;
   for(int ii = start;ii < start+wordsToRead; ii+=delta){
 
@@ -1535,7 +1529,7 @@ void D3plot::read_states_elem4(unsigned int iState){
 
   wordsToRead = dyna_nv2d*dyna_nel4;
 
-  int iElement = 1;
+  int iElement = 0;
   for(int ii = start;ii < start+wordsToRead; ii+=dyna_nv2d){
 
     // preallocate layer vars
@@ -1751,7 +1745,7 @@ void D3plot::read_states_elem4(unsigned int iState){
       }
     }
 
-    iElement++;
+    ++iElement;
   }
 
 }

@@ -18,14 +18,14 @@ class DB_Nodes {
 
 private:
   FEMFile* femfile;
-  map<int,Node*> nodesByIndex; // starts at 1
+  vector<int> indexes2ids;
   map<int,Node*> nodesByID;
   DB_Elements* db_elements;
 
 public:
   DB_Nodes(FEMFile* _femfile);
   ~DB_Nodes();
-  unsigned int size();
+  size_t size();
   FEMFile* get_femfile();
   DB_Elements* get_db_elements();
   void set_db_elements(DB_Elements*);

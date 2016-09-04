@@ -45,13 +45,17 @@ DB_Elements::~DB_Elements(){
 
 }
 
-/*
- * Add an element to the db by it's ID
- * and it's nodeIndexes. Throws an exception
- * if one nodeIndex is invalid or if the elementID
- * is already existing.
+/** Add an element coming from a D3plot file
+ *
+ * @param ElementType _eType : type of the element to add, enum in Element.hpp
+ * @param int _elementID : id of the element to add
+ * @param vector<int> _elementData : element data from d3plot, node ids and part id
+ * @return Element* element : pointer to created instance
+ *
+ * Add an element to the db by it's ID  and it's nodeIndexes. Throws an exception
+ * if one nodeIndex is invalid or if the elementID is already existing.
  */
-Element* DB_Elements::add_element_byIndex(ElementType _eType, int _elementID, vector<int> _elementData){
+Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, vector<int> _elementData){
 
   if(_elementID < 0){
     throw(string("Element-ID may not be negative!"));
@@ -66,7 +70,7 @@ Element* DB_Elements::add_element_byIndex(ElementType _eType, int _elementID, ve
   // Find nodes
   set<Node*> nodes;
   for(size_t iNode = 0; iNode < _elementData.size()-1; iNode++){ // last is mat
-    Node* _node = this->db_nodes->get_nodeByIndex(_elementData[iNode]);
+    Node* _node = this->db_nodes->get_nodeByIndex(_elementData[iNode]-1); // dyna starts at index 1, this program at 0 of course
     if(_node == NULL)
       throw(string("A node with index:")+to_string(_elementData[iNode])+string(" does not exist and can not be added to an element."));
     nodes.insert(_node);
@@ -81,8 +85,10 @@ Element* DB_Elements::add_element_byIndex(ElementType _eType, int _elementID, ve
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
+
     this->elements2.insert(pair<int,Element*>(_elementID,element));
-    this->elements2ByIndex.insert(pair<int,Element*>(this->elements2ByIndex.size()+1,element));
+    //this->elements2ByIndex.insert(pair<int,Element*>(this->elements2ByIndex.size()+1,element));
+    this->index2id_elements2.push_back(_elementID);
 
   } else if(_eType == SHELL){
     map<int,Element*>::iterator it = this->elements4.find(_elementID);
@@ -90,8 +96,10 @@ Element* DB_Elements::add_element_byIndex(ElementType _eType, int _elementID, ve
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
+
     this->elements4.insert(pair<int,Element*>(_elementID,element));
-    this->elements4ByIndex.insert(pair<int,Element*>(this->elements4ByIndex.size()+1,element));
+    //this->elements4ByIndex.insert(pair<int,Element*>(this->elements4ByIndex.size()+1,element));
+    this->index2id_elements4.push_back(_elementID);
 
   } else if(_eType == SOLID){
     map<int,Element*>::iterator it = this->elements8.find(_elementID);
@@ -99,13 +107,14 @@ Element* DB_Elements::add_element_byIndex(ElementType _eType, int _elementID, ve
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
+
     this->elements8.insert(pair<int,Element*>(_elementID,element));
-    this->elements8ByIndex.insert(pair<int,Element*>(this->elements8ByIndex.size()+1,element));
+    //this->elements8ByIndex.insert(pair<int,Element*>(this->elements8ByIndex.size()+1,element));
+    this->index2id_elements8.push_back(_elementID);
 
   }
 
   // Register Elements
-  //for(auto node : nodes) {
   for(set<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
     ((Node*) *it)->add_element(element);
   }
@@ -114,11 +123,17 @@ Element* DB_Elements::add_element_byIndex(ElementType _eType, int _elementID, ve
   return element;
 }
 
-
-/** Add an element to the database coming from a KeyFile.
- * Add an element to the db by it's ID
- * and it's nodeIndexes. Since a KeyFile may have some weird order, missing
- * parts and nodes are created.
+/** Add an element coming from a KeyFile/Dyna Input File
+ *
+ * @param ElementType _eType : type of the element to add, enum in Element.hpp
+ * @param int _elementID : id of the element to add
+ * @param int part_id : id of the part, the element belongs to
+ * @param vector<int> _node_ids : node ids of the used nodes
+ * @return Element* element : pointer to created instance
+ *
+ * Add an element to the db by it's ID  and it's nodeIDs. Throws an exception
+ * if one nodeID is invalid or if the elementID is already existing. Since a
+ * KeyFile may have some weird order, missing parts and nodes are created.
  */
 Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, int _partid, vector<int> _node_ids)
 {
@@ -150,8 +165,10 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
+
     this->elements2.insert(pair<int,Element*>(_elementID,element));
-    this->elements2ByIndex.insert(pair<int,Element*>(this->elements2ByIndex.size()+1,element));
+    //this->elements2ByIndex.insert(pair<int,Element*>(this->elements2ByIndex.size()+1,element));
+    this->index2id_elements2.push_back(_elementID);
 
   } else if(_eType == SHELL){
     map<int,Element*>::iterator it = this->elements4.find(_elementID);
@@ -159,8 +176,10 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
+
     this->elements4.insert(pair<int,Element*>(_elementID,element));
-    this->elements4ByIndex.insert(pair<int,Element*>(this->elements4ByIndex.size()+1,element));
+    //this->elements4ByIndex.insert(pair<int,Element*>(this->elements4ByIndex.size()+1,element));
+    this->index2id_elements4.push_back(_elementID);
 
   } else if(_eType == SOLID){
     map<int,Element*>::iterator it = this->elements8.find(_elementID);
@@ -168,8 +187,10 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
+
     this->elements8.insert(pair<int,Element*>(_elementID,element));
-    this->elements8ByIndex.insert(pair<int,Element*>(this->elements8ByIndex.size()+1,element));
+    //this->elements8ByIndex.insert(pair<int,Element*>(this->elements8ByIndex.size()+1,element));
+    this->index2id_elements8.push_back(_elementID);
 
   }
 
@@ -196,7 +217,7 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
  * SHELL = 2
  * SOLID = 3
  */
-Element* DB_Elements::get_elementByID(int _elementType,int _elementID){
+Element* DB_Elements::get_elementByID(ElementType _elementType,int _elementID){
 
   if(_elementType == BEAM){
     map<int,Element*>::iterator it = this->elements2.find(_elementID);
@@ -234,8 +255,9 @@ Element* DB_Elements::get_elementByID(int _elementType,int _elementID){
  * SHELL = 2
  * SOLID = 3
  */
-Element* DB_Elements::get_elementByIndex(int _elementType,int _elementIndex){
+Element* DB_Elements::get_elementByIndex(ElementType _elementType,int _elementIndex){
 
+/*
   if(_elementType == BEAM){
     map<int,Element*>::iterator it = this->elements2ByIndex.find(_elementIndex);
     if(it == elements2ByIndex.end())
@@ -255,6 +277,27 @@ Element* DB_Elements::get_elementByIndex(int _elementType,int _elementIndex){
     return it->second;
 
   }
+*/
+
+   if(_elementType == BEAM){
+     map<int,Element*>::iterator it = this->elements2.find(index2id_elements2[_elementIndex]);
+     if(it == elements2.end())
+       return NULL;
+     return it->second;
+
+   } else if(_elementType == SHELL){
+     map<int,Element*>::iterator it = this->elements4.find(index2id_elements4[_elementIndex]);
+     if(it == elements4.end())
+       return NULL;
+     return it->second;
+
+   } else if(_elementType == SOLID){
+     map<int,Element*>::iterator it = this->elements8.find(index2id_elements8[_elementIndex]);
+     if(it == elements8.end())
+       return NULL;
+     return it->second;
+
+   }
 
   throw("Can not get element with elementType:"+to_string(_elementIndex));
 

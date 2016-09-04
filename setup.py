@@ -15,7 +15,7 @@ femzip_path = "libs/femzip"
 # =============================== #
 
 # Version
-_version = "0.1.3"
+_version = "0.1.4"
 
 # py -> pyc
 compileall.compile_dir('src/')

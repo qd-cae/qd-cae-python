@@ -47,7 +47,7 @@ QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
     return -1;
   }
 
-  int elementType;
+  ElementType elementType;
   string elementType_s(elementType_c);
   if( elementType_s.find("beam") !=  string::npos){
     elementType = BEAM;
