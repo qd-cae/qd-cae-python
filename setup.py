@@ -4,6 +4,7 @@ import os
 import sys
 import platform
 import compileall
+import numpy as np
 from setuptools import find_packages,setup,Extension
 
 # ======= S E T T I N G S ======= #
@@ -34,7 +35,7 @@ if not os.path.isdir(boost_path):
     raise Exception("Invalid boost library path: %s." % boost_path)
     #b2 --toolset=msvc-10.0 --build-type=complete architecture=x86 address-model=64 stage
 compiler_args_dyna = []
-include_dirs_dyna = [boost_path]
+include_dirs_dyna = [boost_path,np.get_include()]
 lib_dirs_dyna = [] # ["libs/boost_1_61_0/lib64-msvc-9.0"]
 libs_dyna  = [] # ["boost_python"]
 srcs_dyna = ["src/qd/cae/dyna_cpp/python_api/wrapper.cpp",
@@ -48,6 +49,7 @@ srcs_dyna = ["src/qd/cae/dyna_cpp/python_api/wrapper.cpp",
     "src/qd/cae/dyna_cpp/dyna/D3plotBuffer.cpp",
     "src/qd/cae/dyna_cpp/dyna/D3plot.cpp",
     "src/qd/cae/dyna_cpp/dyna/KeyFile.cpp",
+    "src/qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
     "src/qd/cae/dyna_cpp/utility/FileUtility.cpp",
     "src/qd/cae/dyna_cpp/utility/TextUtility.cpp",
     "src/qd/cae/dyna_cpp/utility/MathUtility.cpp"]

@@ -22,7 +22,6 @@ QD_Node_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->node = NULL;
   }
 
-
   return (PyObject*) self;
 
 }
@@ -99,30 +98,12 @@ QD_Node_get_coords(QD_Node* self, PyObject *args, PyObject *kwds){
       return NULL;
   }
 
-  vector<float> coords;
   try{
-    coords = self->node->get_coords(iTimestep);
-  } catch (const char* e){
-    PyErr_SetString(PyExc_RuntimeError, e);
-    return NULL;
+    return (PyObject*) vector_to_nparray(self->node->get_coords(iTimestep)); // numpy ... yay
   } catch (string e){
     PyErr_SetString(PyExc_RuntimeError, e.c_str());
     return NULL;
   }
-
-  int check = 0;
-  PyObject* coords_list = PyList_New(coords.size());
-  for(unsigned int ii=0; ii<coords.size(); ii++){
-    check += PyList_SetItem(coords_list, ii,Py_BuildValue("f",coords[ii]));
-  }
-
-  if(check != 0){
-    Py_DECREF(coords_list);
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of coords list.");
-    return NULL;
-  }
-
-  return coords_list;
 
 }
 
@@ -135,36 +116,8 @@ QD_Node_get_disp(QD_Node* self){
     return NULL;
   }
 
-  vector< vector<float> > disp = self->node->get_disp();
-
-  int check0 = 0;
-  int check1 = 0;
-  PyObject* disp_time_list = PyList_New(disp.size());
-
-  for(unsigned int ii=0; ii<disp.size(); ii++){
-
-    PyObject* disp_list = PyList_New(disp[ii].size());
-
-    for(unsigned int jj=0; jj<disp[ii].size(); jj++){
-      check1 += PyList_SetItem(disp_list, jj,Py_BuildValue("f",disp[ii][jj]));
-    }
-
-    check0 += PyList_SetItem(disp_time_list, ii, disp_list);
-  }
-
-  if( (check0 != 0) | (check1 != 0) ){
-    /*
-    for (int ii = 0; ii < PyList_Size(disp_time_list); ii++){
-      PyObject* disp_list = PyList_GetItem(disp_time_list, ii);
-      Py_DECREF(disp_list);
-    }
-    */
-    Py_DECREF(disp_time_list); // TODO: What about the lists in the list?
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of coords list.");
-    return NULL;
-  }
-
-  return disp_time_list;
+  // return numpy array
+  return (PyObject*) vector_to_nparray(self->node->get_disp()); // numpy ... yay
 
 }
 
@@ -178,36 +131,7 @@ QD_Node_get_vel(QD_Node* self){
     return NULL;
   }
 
-  vector< vector<float> > vel = self->node->get_vel();
-
-  int check0 = 0;
-  int check1 = 0;
-  PyObject* vel_time_list = PyList_New(vel.size());
-
-  for(unsigned int ii=0; ii<vel.size(); ii++){
-
-    PyObject* vel_list = PyList_New(vel[ii].size());
-
-    for(unsigned int jj=0; jj<vel[ii].size(); jj++){
-      check1 += PyList_SetItem(vel_list, jj,Py_BuildValue("f",vel[ii][jj]));
-    }
-
-    check0 += PyList_SetItem(vel_time_list, ii, vel_list);
-  }
-
-  if( (check0 != 0) | (check1 != 0) ){
-    /*
-    for (int ii = 0; ii < PyList_Size(disp_time_list); ii++){
-      PyObject* disp_list = PyList_GetItem(disp_time_list, ii);
-      Py_DECREF(disp_list);
-    }
-    */
-    Py_DECREF(vel_time_list); // TODO: What about the lists in the list?
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of velocity list.");
-    return NULL;
-  }
-
-  return vel_time_list;
+  (PyObject*) vector_to_nparray(self->node->get_vel());
 
 }
 
@@ -221,36 +145,7 @@ QD_Node_get_accel(QD_Node* self){
     return NULL;
   }
 
-  vector< vector<float> > accel = self->node->get_accel();
-
-  int check0 = 0;
-  int check1 = 0;
-  PyObject* accel_time_list = PyList_New(accel.size());
-
-  for(unsigned int ii=0; ii<accel.size(); ii++){
-
-    PyObject* accel_list = PyList_New(accel[ii].size());
-
-    for(unsigned int jj=0; jj<accel[ii].size(); jj++){
-      check1 += PyList_SetItem(accel_list, jj,Py_BuildValue("f",accel[ii][jj]));
-    }
-
-    check0 += PyList_SetItem(accel_time_list, ii, accel_list);
-  }
-
-  if( (check0 != 0) | (check1 != 0) ){
-    /*
-    for (int ii = 0; ii < PyList_Size(disp_time_list); ii++){
-      PyObject* disp_list = PyList_GetItem(disp_time_list, ii);
-      Py_DECREF(disp_list);
-    }
-    */
-    Py_DECREF(accel_time_list); // TODO: What about the lists in the list?
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of velocity list.");
-    return NULL;
-  }
-
-  return accel_time_list;
+  (PyObject*) vector_to_nparray(self->node->get_accel());
 
 }
 

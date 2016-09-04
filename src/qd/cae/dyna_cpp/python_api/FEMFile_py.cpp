@@ -97,14 +97,15 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
          int nodeID;
          try {
            nodeID = convert_obj_to_int(item);
-         } catch(int e) {
+         } catch(string& e) {
+           PyErr_SetString(PyExc_AttributeError,e.c_str());
            Py_DECREF(node_list);
            return NULL;
          }
 
          if(nodeID < 0){
            Py_DECREF(node_list);
-           PyErr_SetString(PyExc_SyntaxError, "Error, nodeID may not be negative.");
+           PyErr_SetString(PyExc_AttributeError, "Error, nodeID may not be negative.");
            return NULL;
          }
 
@@ -158,7 +159,8 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
        int elementID;
        try {
          elementID = convert_obj_to_int(argument);
-       } catch(int e) {
+       } catch(string& e) {
+         PyErr_SetString(PyExc_AttributeError,e.c_str());
          return NULL;
        }
 
@@ -185,7 +187,8 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
          int elementID;
          try {
            elementID = convert_obj_to_int(item);
-         } catch(int e) {
+         } catch(string& e) {
+           PyErr_SetString(PyExc_AttributeError,e.c_str());
            Py_DECREF(elem_list);
            return NULL;
          }

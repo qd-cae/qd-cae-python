@@ -104,21 +104,7 @@ QD_Element_get_plastic_strain(QD_Element* self){
     return NULL;
   }
 
-  vector<float> plastic_strain = self->element->get_plastic_strain();
-
-  int check = 0;
-  PyObject* plastic_strain_list = PyList_New(plastic_strain.size());
-  for(unsigned int ii=0; ii<plastic_strain.size(); ii++){
-    check += PyList_SetItem(plastic_strain_list, ii,Py_BuildValue("f",plastic_strain[ii]));
-  }
-
-  if(check != 0){
-    Py_DECREF(plastic_strain_list);
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of plastic-strain list.");
-    return NULL;
-  }
-
-  return plastic_strain_list;
+  return (PyObject*) vector_to_nparray(self->element->get_plastic_strain());
 
 }
 
@@ -132,21 +118,7 @@ QD_Element_get_energy(QD_Element* self){
     return NULL;
   }
 
-  vector<float> energy = self->element->get_energy();
-
-  int check = 0;
-  PyObject* energy_list = PyList_New(energy.size());
-  for(unsigned int ii=0; ii<energy.size(); ii++){
-    check += PyList_SetItem(energy_list, ii,Py_BuildValue("f",energy[ii]));
-  }
-
-  if(check != 0){
-    Py_DECREF(energy_list);
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of energy list.");
-    return NULL;
-  }
-
-  return energy_list;
+  return (PyObject*) vector_to_nparray(self->element->get_energy());
 
 }
 
@@ -160,36 +132,7 @@ QD_Element_get_strain(QD_Element* self){
     return NULL;
   }
 
-  vector< vector<float> > strain = self->element->get_strain();
-
-  int check0 = 0;
-  int check1 = 0;
-  PyObject* strain_time_list = PyList_New(strain.size());
-
-  for(unsigned int ii=0; ii<strain.size(); ii++){
-
-    PyObject* strain_list = PyList_New(strain[ii].size());
-
-    for(unsigned int jj=0; jj<strain[ii].size(); jj++){
-     check1 += PyList_SetItem(strain_list, jj, Py_BuildValue("f",strain[ii][jj]));
-    }
-
-    check0 += PyList_SetItem(strain_time_list, ii, strain_list);
-  }
-
-  if( (check0 != 0) | (check1 != 0) ){
-    /*
-    for (int ii = 0; ii < PyList_Size(disp_time_list); ii++){
-     PyObject* disp_list = PyList_GetItem(disp_time_list, ii);
-     Py_DECREF(disp_list);
-    }
-    */
-    Py_DECREF(strain_time_list); // TODO: What about the lists in the list?
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of strain list.");
-    return NULL;
-  }
-
-  return strain_time_list;
+  return (PyObject*) vector_to_nparray(self->element->get_strain());
 
 }
 
@@ -203,36 +146,7 @@ QD_Element_get_stress(QD_Element* self){
     return NULL;
   }
 
-  vector< vector<float> > stress = self->element->get_stress();
-
-  int check0 = 0;
-  int check1 = 0;
-  PyObject* stress_time_list = PyList_New(stress.size());
-
-  for(unsigned int ii=0; ii<stress.size(); ii++){
-
-    PyObject* stress_list = PyList_New(stress[ii].size());
-
-    for(unsigned int jj=0; jj<stress[ii].size(); jj++){
-     check1 += PyList_SetItem(stress_list, jj, Py_BuildValue("f",stress[ii][jj]));
-    }
-
-    check0 += PyList_SetItem(stress_time_list, ii, stress_list);
-  }
-
-  if( (check0 != 0) | (check1 != 0) ){
-    /*
-    for (int ii = 0; ii < PyList_Size(disp_time_list); ii++){
-     PyObject* disp_list = PyList_GetItem(disp_time_list, ii);
-     Py_DECREF(disp_list);
-    }
-    */
-    Py_DECREF(stress_time_list); // TODO: What about the lists in the list?
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of strain list.");
-    return NULL;
-  }
-
-  return stress_time_list;
+  return (PyObject*) vector_to_nparray(self->element->get_stress());
 
 }
 
@@ -294,30 +208,12 @@ QD_Element_get_coords(QD_Element* self, PyObject *args, PyObject *kwds){
   if (!PyArg_ParseTuple(args, "|i", &iTimestep))
     return NULL;*/
 
-  vector<float> coords;
   try{
-    coords = self->element->get_coords(iTimestep);
-  } catch (const char* e){
-    PyErr_SetString(PyExc_RuntimeError, e);
-    return NULL;
+    return (PyObject*) vector_to_nparray(self->element->get_coords(iTimestep));
   } catch (string e){
     PyErr_SetString(PyExc_RuntimeError, e.c_str());
     return NULL;
   }
-
-  int check = 0;
-  PyObject* coords_list = PyList_New(coords.size());
-  for(unsigned int ii=0; ii<coords.size(); ii++){
-    check += PyList_SetItem(coords_list, ii,Py_BuildValue("f",coords[ii]));
-  }
-
-  if(check != 0){
-    Py_DECREF(coords_list);
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of coords list.");
-    return NULL;
-  }
-
-  return coords_list;
 
 }
 
@@ -330,28 +226,7 @@ QD_Element_get_history(QD_Element* self){
     return NULL;
   }
 
-  vector< vector<float> > history_vars = self->element->get_history_vars();
-
-  int check0 = 0;
-  int check1 = 0;
-  PyObject* history_vars_list0 = PyList_New(history_vars.size());
-  for(unsigned int ii=0; ii<history_vars.size(); ii++){
-
-    PyObject* history_vars_list1 = PyList_New(history_vars[ii].size());
-
-    for(unsigned int jj=0; jj<history_vars[ii].size(); jj++){
-     check1 += PyList_SetItem(history_vars_list1, jj, Py_BuildValue("f",history_vars[ii][jj]));
-    }
-    check0 += PyList_SetItem(history_vars_list0, ii, history_vars_list1);
-  }
-
-  if( (check0 != 0) | (check1 != 0) ){
-    Py_DECREF(history_vars_list0); // TODO: What about the lists in the list?
-    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of strain list.");
-    return NULL;
-  }
-
-  return history_vars_list0;
+  return (PyObject*) vector_to_nparray(self->element->get_history_vars());
 
 }
 
