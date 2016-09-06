@@ -75,7 +75,7 @@ else:
 	print("FEMZIP library %s not found. Compiling without femzip support." % femzip_path)
 
 # CFLAGS linux
-if (platform == "linux") or (platform == "linux2") or use_mingw:
+if (platform.system().lower() == "linux") or (platform.system().lower() == "linux2") or use_mingw:
 	#compiler_args_dyna.append("-std=c++11") # I really wish so ...
 	compiler_args_dyna.append("-O3")
 	if not use_mingw:
