@@ -130,7 +130,7 @@ vector<string> FileUtility::findDynaResultFiles(string _base_filepath){
 	{
 		string fname(FindFileData.cFileName);
       if( (fname.substr(0,base_filename.size()) == base_filename) // case sensitivity check
-        & string_has_only_numbers(fname,base_filename.size()) ) // number ending only
+        && string_has_only_numbers(fname,base_filename.size()) ) // number ending only
          files.push_back(directory+fname);
 
 	} while(FindNextFile(hFind, &FindFileData) != 0);
@@ -176,7 +176,7 @@ vector<string> FileUtility::findDynaResultFiles(string _base_filepath){
    for(unsigned int i=0;i<glob_result.gl_pathc;++i){
       string fname(glob_result.gl_pathv[i]);
       if( (fname.substr(0,_base_filepath.size()) == _base_filepath)
-        & string_has_only_numbers(fname,_base_filepath.size()) )
+        && string_has_only_numbers(fname,_base_filepath.size()) )
          files.push_back(fname);
    }
    globfree(&glob_result);

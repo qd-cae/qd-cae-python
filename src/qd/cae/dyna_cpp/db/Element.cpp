@@ -194,7 +194,7 @@ vector<float> Element::get_coords(int iTimestep){
       throw(string("Element with id ")+to_string(this->elementID)+string(" has no nodes and thus no coords."));
 
    if(this->db_elements->get_femfile()->is_d3plot()){
-      if( (iTimestep != 0) & (!this->db_elements->get_femfile()->get_d3plot()->displacement_is_read()) )
+      if( (iTimestep != 0) && (!this->db_elements->get_femfile()->get_d3plot()->displacement_is_read()) )
          throw(string("Displacements were not read yet. Please use read_states=\"disp\"."));
    } else if(this->db_elements->get_femfile()->is_keyFile()) {
       if( iTimestep != 0 )

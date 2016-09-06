@@ -131,8 +131,8 @@ void KeyFile::read_mesh(string _filepath){
          #endif
 
       } else if( (keyword==Keyword::NODE)
-               & !line_has_keyword
-               & (!line_trimmed.empty()) ){
+               && !line_has_keyword
+               && (!line_trimmed.empty()) ){
 
          try {
             coords[0] = boost::lexical_cast<float>(trim_copy(line.substr(8,16)));
@@ -150,7 +150,7 @@ void KeyFile::read_mesh(string _filepath){
             keyword = Keyword::NODE;
          }
       } else if( (keyword==Keyword::NODE)
-               & (line_has_keyword | line.empty()) ){
+               && (line_has_keyword | line.empty()) ){
 
          keyword = Keyword::NONE;
          #ifdef QD_DEBUG
@@ -166,8 +166,8 @@ void KeyFile::read_mesh(string _filepath){
          cout << "Starting *ELEMENT_SHELL in line: " << (iLine+1) << endl;
          #endif
       } else if( (keyword == Keyword::ELEMENT_SHELL )
-               & !line_has_keyword
-               & (!line.empty()) ){
+               && !line_has_keyword
+               && (!line.empty()) ){
 
          try {
             id = boost::lexical_cast<int>(trim_copy(line.substr(0,8)));
@@ -188,7 +188,7 @@ void KeyFile::read_mesh(string _filepath){
             keyword = Keyword::NONE;
          }
       } else if( (keyword == Keyword::ELEMENT_SHELL)
-              &  (line_has_keyword | line.empty()) ){
+              &&  (line_has_keyword | line.empty()) ){
 
          keyword = Keyword::NONE;
          #ifdef QD_DEBUG
@@ -205,8 +205,8 @@ void KeyFile::read_mesh(string _filepath){
          cout << "Starting *ELEMENT_SOLID in line: " << (iLine+1) << endl;
          #endif
       } else if( (keyword == Keyword::ELEMENT_SOLID)
-               & !line_has_keyword
-               & !line.empty() ){
+               && !line_has_keyword
+               && !line.empty() ){
 
          try {
 
@@ -244,7 +244,7 @@ void KeyFile::read_mesh(string _filepath){
 
 
       } else if( (keyword == Keyword::ELEMENT_SOLID)
-              &  (line_has_keyword | line.empty()) ){
+              &&  (line_has_keyword | line.empty()) ){
          keyword = Keyword::NONE;
          #ifdef QD_DEBUG
          cout << "*ELEMENT_SOLID finished in line: " << (iLine+1) << endl;
@@ -260,8 +260,8 @@ void KeyFile::read_mesh(string _filepath){
          cout << "Starting *ELEMENT_BEAM in line: " << (iLine+1) << endl;
          #endif
       } else if( (keyword == Keyword::ELEMENT_BEAM)
-               & !line_has_keyword
-               & (!line.empty()) ){
+               && !line_has_keyword
+               && (!line.empty()) ){
 
          try {
 
@@ -291,7 +291,7 @@ void KeyFile::read_mesh(string _filepath){
 
 
       } else if( (keyword == Keyword::ELEMENT_BEAM)
-              &  (line_has_keyword | line.empty()) ){
+              &&  (line_has_keyword | line.empty()) ){
          keyword = Keyword::ELEMENT_BEAM;
          #ifdef QD_DEBUG
          cout << "*ELEMENT_BEAM finished in line: " << (iLine+1) << endl;
@@ -309,8 +309,8 @@ void KeyFile::read_mesh(string _filepath){
          iCardLine = 0;
 
       } else if( (keyword == Keyword::PART)
-               & !line_has_keyword
-               & (!line.empty()) ){
+               && !line_has_keyword
+               && (!line.empty()) ){
 
          if( iCardLine == 0 ){
             title = line_trimmed;
@@ -341,7 +341,7 @@ void KeyFile::read_mesh(string _filepath){
          }
 
       } else if( (keyword == Keyword::PART)
-               & ( line_has_keyword | (iCardLine > 1)) ){
+               && ( line_has_keyword | (iCardLine > 1)) ){
 
          keyword = Keyword::NONE;
          #ifdef QD_DEBUG
