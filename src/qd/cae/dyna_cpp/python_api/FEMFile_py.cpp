@@ -75,12 +75,21 @@ QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
       return NULL;
   }
 
-  // get argument
-  char* element_type_cstr = "";
-  if (!PyArg_ParseTuple(args, "|s", &element_type_cstr))
-  return NULL;
+  // Parse args
+  PyObject* arg = Py_None;
+  string element_type = "";
+  if (!PyArg_ParseTuple(args, "|O", &arg))
+    return NULL;
 
-  string element_type = element_type_cstr;
+  if(arg == Py_None){
+     //Nothing
+  } else if( PyString_Check(arg) ){
+     element_type = PyString_AsString(arg);
+  } else {
+     PyErr_SetString(PyExc_AttributeError,"Argument is not a string.");
+     return NULL;
+  }
+
   if( !element_type.empty() ){
      if( element_type == "shell" ){
        return Py_BuildValue("i",self->instance->get_db_elements()->size(SHELL));
@@ -95,6 +104,141 @@ QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
   }
 
   return Py_BuildValue("i",self->instance->get_db_elements()->size());
+
+}
+
+
+/* QD_Part FUNCTION get_nodes */
+static PyObject*
+QD_FEMFile_get_nodes(QD_FEMFile *self){
+
+  if(self->instance == NULL){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ object is NULL.");
+    return NULL;
+  }
+
+  DB_Nodes* db_nodes = self->instance->get_db_nodes();
+
+  int check=0;
+  PyObject* node_list = PyList_New(db_nodes->size());
+
+  size_t ii=0;
+  Node* node = NULL;
+  for(size_t iNode=0; iNode < db_nodes->size(); ++iNode){
+
+    PyObject *argList2 = Py_BuildValue("Oi",self, db_nodes->get_nodeByIndex(iNode)->get_nodeID());
+    PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
+    Py_DECREF(argList2);
+
+    check += PyList_SetItem(node_list, ii, ret);
+
+    ii++;
+  }
+
+  if(check != 0){
+    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of node instance list.");
+    Py_DECREF(node_list);
+    return NULL;
+  }
+
+  return node_list;
+}
+
+
+/* FUNCTION get_elements */
+static PyObject*
+QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
+
+  if(self->instance == NULL){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ object is NULL.");
+    return NULL;
+  }
+
+  // Parse args
+  PyObject* arg = Py_None;
+  string element_type = "";
+  if (!PyArg_ParseTuple(args, "|O", &arg))
+    return NULL;
+
+  if(arg == Py_None){
+     //Nothing
+  } else if( PyString_Check(arg) ){
+     element_type = PyString_AsString(arg);
+  } else {
+     PyErr_SetString(PyExc_AttributeError,"Argument is not a string.");
+     return NULL;
+  }
+
+
+  ElementType eType = NONE;
+  if(element_type == "beam"){
+     eType = BEAM;
+  } else if (element_type == "shell"){
+     eType = SHELL;
+  } else if (element_type == "solid"){
+     eType = SOLID;
+  } else if ( element_type.empty() ) {
+     eType = NONE;
+  } else {
+     PyErr_SetString(PyExc_AttributeError,"Unknown element type. Use beam, shell or solid.");
+     return NULL;
+  }
+
+  DB_Elements* db_elements = self->instance->get_db_elements();
+
+  // Do the thing
+  // Add all types if NONE
+  int check=0;
+  PyObject* element_list = PyList_New(db_elements->size(eType)); // allocate
+  PyObject* ret;
+  PyObject *argList2;
+
+  if( (eType == BEAM) || (eType == NONE) ){
+
+     PyObject* elementType_py = Py_BuildValue("s","beam");
+     for(size_t iElement=0; iElement<db_elements->size(BEAM); ++iElement){
+        argList2 = Py_BuildValue("OOi",self, elementType_py, db_elements->get_elementByIndex(BEAM,iElement)->get_elementID());
+        ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
+        check += PyList_SetItem(element_list, iElement, ret);
+        Py_DECREF(argList2);
+     }
+     Py_DECREF(elementType_py);
+
+  }
+
+  if( (eType == SHELL) || (eType == NONE) ){
+
+     PyObject* elementType_py = Py_BuildValue("s","shell");
+     for(size_t iElement=0; iElement<db_elements->size(SHELL); ++iElement){
+        argList2 = Py_BuildValue("OOi",self, elementType_py, db_elements->get_elementByIndex(SHELL,iElement)->get_elementID());
+        ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
+        check += PyList_SetItem(element_list, iElement, ret);
+        Py_DECREF(argList2);
+     }
+     Py_DECREF(elementType_py);
+
+  }
+
+  if( (eType == SOLID) || (eType == NONE) ){
+
+     PyObject* elementType_py = Py_BuildValue("s","solid");
+     for(size_t iElement=0; iElement<db_elements->size(SOLID); ++iElement){
+        argList2 = Py_BuildValue("OOi",self, elementType_py, db_elements->get_elementByIndex(SOLID,iElement)->get_elementID());
+        ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
+        check += PyList_SetItem(element_list, iElement, ret);
+        Py_DECREF(argList2);
+     }
+     Py_DECREF(elementType_py);
+
+  }
+
+  if(check != 0){
+    PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of element instance list.");
+    Py_DECREF(element_list);
+    return NULL;
+  }
+
+  return element_list;
 
 }
 

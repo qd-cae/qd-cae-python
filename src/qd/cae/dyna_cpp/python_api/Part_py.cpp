@@ -105,7 +105,7 @@ QD_Part_get_nodes(QD_Part *self){
   int check=0;
   PyObject* node_list = PyList_New(nodes.size());
 
-  unsigned int ii=0;
+  size_t ii=0;
 //   for(auto node : nodes){ // -std=c++11 rulez
   Node* node = NULL;
   for(set<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
@@ -146,18 +146,18 @@ QD_Part_get_elements(QD_Part *self){
   int check=0;
   PyObject* element_list = PyList_New(elements.size());
 
-  unsigned int ii=0;
+  size_t ii=0;
 //   for(auto element : elements){ // -std=c++11 rulez
   Element* element = NULL;
   for(set<Element*>::iterator it=elements.begin(); it != elements.end(); it++){
     element = *it;
 
     PyObject* elementType_py;
-    if(element->get_elementType() == 1){
+    if(element->get_elementType() == BEAM){
       elementType_py = Py_BuildValue("s","beam");
-    } else if(element->get_elementType() == 2) {
+   } else if(element->get_elementType() == SHELL) {
       elementType_py = Py_BuildValue("s","shell");
-    } else if(element->get_elementType() == 3) {
+   } else if(element->get_elementType() == SOLID) {
       elementType_py = Py_BuildValue("s","solid");
     } else {
       PyErr_SetString(PyExc_SyntaxError, "Developer Error, unknown element-type.");

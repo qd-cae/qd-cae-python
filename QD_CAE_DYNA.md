@@ -121,11 +121,17 @@ Get the path of the file.
 
 Get the number of nodes in the FEMFile.
 
-**femfile.get_nNodes(element_type="")**
+**femfile.get_nElements(element_type=None)**
 
-*return: (int) nNodes*
+*return: (int) nElements*
 
 Get the number of elements in the FEMFile. The Element Type argument is optional and may be used to get the number of beams, shells or solids. In case it is empty, the total size will be returned.
+
+**femfile.get_nodes()**
+
+*return: list of nodes*
+
+Get all the node objects in the femfile. Beware, asking for all node ojects may consume a large amount of memory.
 
 **femfile.get_nodeByID(arg)**
 
@@ -133,23 +139,29 @@ Get the number of elements in the FEMFile. The Element Type argument is optional
 
 The a node or a list of nodes, depending on the argument. One can either use just a node id (thus an integer) or a list of ids (thus a list of int). In the second case the function returns a list of nodes.
 
+**femfile.get_elements(element_type=None)**
+
+*return: list of elements*
+
+Get all the element objects in the femfile. Beware, asking for all element ojects may consume a large amount of memory. The optional element_type flag may target either beams, shells or solids.
+
 **femfile.get_elementByID(element_Type,arg)**
 
 *return: element or list of elements*
 
 This function takes two arguments. The first one is the element type. It may be a string "beam", "shell" or "solid". This is necessary due to the reason that ls-dyna is the sole solver which can use the same id for two different element types. The second argument may be either an id or a list of ids.
 
-**femfile.get_partByID(id)**
-
-*return: part*
-
-Get a part instance by it's id.
-
 **femfile.get_parts()**
 
 *return: list of parts*
 
 Get all the parts in the femfile.
+
+**femfile.get_partByID(id)**
+
+*return: part*
+
+Get a part instance by it's id.
 
 -------
 # Node

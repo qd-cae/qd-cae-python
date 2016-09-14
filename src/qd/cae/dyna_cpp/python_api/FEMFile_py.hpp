@@ -50,9 +50,17 @@ extern "C" {
   static PyObject *
   QD_FEMFile_get_nNodes(QD_FEMFile* self);
 
+  /* FUNCTON get_nodes */
+  static PyObject *
+  QD_FEMFile_get_nodes(QD_FEMFile* self);
+
   /* FUNCTON get_nElements */
   static PyObject *
   QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args);
+
+  /* FUNCTON get_nElements */
+  static PyObject *
+  QD_FEMFile_get_elements(QD_FEMFile* self, PyObject* args);
 
   /* FUNCTION get_filepath */
   static PyObject *
@@ -65,6 +73,8 @@ extern "C" {
    {"get_elementByID", (PyCFunction) QD_FEMFile_get_elementByID, METH_VARARGS, "Get an element from it's id."},
    {"get_partByID", (PyCFunction) QD_FEMFile_get_partByID, METH_VARARGS, "Get a part from it's id."},
    {"get_parts", (PyCFunction) QD_FEMFile_get_parts, METH_NOARGS, "Get all the parts in a list."},
+   {"get_nodes", (PyCFunction) QD_FEMFile_get_nodes, METH_NOARGS, "Get all the nodes of the femfile in a list."},
+   {"get_elements", (PyCFunction) QD_FEMFile_get_elements, METH_VARARGS, "Get all the elements of the femfile in a list."},
    {"get_mesh", (PyCFunction) QD_FEMFile_get_mesh, METH_VARARGS, "Get the mesh of the model."},
    {"get_nNodes", (PyCFunction) QD_FEMFile_get_nNodes, METH_NOARGS, "Get the number of nodes of the Mesh."},
    {"get_nElements", (PyCFunction) QD_FEMFile_get_nElements, METH_VARARGS, "Get the number of elements."},

@@ -11,11 +11,11 @@ from setuptools import find_packages,setup,Extension
 debugging_mode = False
 useFemzip = True
 boost_path = "libs/boost_1_61_0"
-femzip_path = "libs/femzip"
+femzip_path = "libs/femzip" # optional
 # =============================== #
 
 # Version
-_version = "0.1.4"
+_version = "0.1.5"
 
 # py -> pyc
 compileall.compile_dir('src/')
