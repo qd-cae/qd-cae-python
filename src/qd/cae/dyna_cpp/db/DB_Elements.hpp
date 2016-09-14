@@ -38,7 +38,7 @@ public:
   //Element* add_element_byID(ElementType _eType,int _id, int _partid, vector<int> _node_ids)
   Element* add_element_byKeyFile(ElementType _eType,int _id, int _partid, vector<int> _node_ids);
 
-  size_t size();
+  size_t size(ElementType _type = NONE);
   Element* get_elementByID(ElementType _eType, int _id);
   Element* get_elementByIndex(ElementType _eType, int _index);
 

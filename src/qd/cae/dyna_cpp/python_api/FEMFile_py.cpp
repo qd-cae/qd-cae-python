@@ -52,6 +52,53 @@ QD_FEMFile_get_filepath(QD_FEMFile* self){
 }
 
 
+/*  FUNCTION get_nNodes */
+static PyObject *
+QD_FEMFile_get_nNodes(QD_FEMFile* self){
+
+  if (self->instance == NULL) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
+      return NULL;
+  }
+
+  return Py_BuildValue("i",self->instance->get_db_nodes()->size());
+
+}
+
+
+/*  FUNCTION get_nElements */
+static PyObject *
+QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
+
+  if (self->instance == NULL) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
+      return NULL;
+  }
+
+  // get argument
+  char* element_type_cstr = "";
+  if (!PyArg_ParseTuple(args, "|s", &element_type_cstr))
+  return NULL;
+
+  string element_type = element_type_cstr;
+  if( !element_type.empty() ){
+     if( element_type == "shell" ){
+       return Py_BuildValue("i",self->instance->get_db_elements()->size(SHELL));
+     } else if ( element_type == "solid" ){
+       return Py_BuildValue("i",self->instance->get_db_elements()->size(SOLID));
+     } else if ( element_type == "beam" ){
+       return Py_BuildValue("i",self->instance->get_db_elements()->size(BEAM));
+     } else {
+       PyErr_SetString(PyExc_SyntaxError, "Unknown element type, please try beam, shell or solid.");
+       return NULL;
+     }
+  }
+
+  return Py_BuildValue("i",self->instance->get_db_elements()->size());
+
+}
+
+
 /* FUNCTION get_nodeByID */
 static PyObject *
 QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
@@ -246,6 +293,85 @@ QD_FEMFile_get_partByID(QD_FEMFile* self, PyObject* args){
    Py_DECREF(argList2);
 
    return ret;
+
+}
+
+
+/* FUNCTION get_mesh */
+static PyObject *
+QD_FEMFile_get_mesh(QD_FEMFile* self, PyObject* args){
+
+   if (self->instance == NULL) {
+     PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
+     return NULL;
+   }
+
+
+   int iTimestep = 0;
+   if (!PyArg_ParseTuple(args, "|i", &iTimestep))
+     return NULL;
+
+   // Databases
+   DB_Nodes* db_nodes = self->instance->get_db_nodes();
+   DB_Elements* db_elements = self->instance->get_db_elements();
+
+   // Return values
+   PyObject* nodes_array = Py_None;
+   PyObject* elements_array = Py_None;
+
+   // Extract nodes
+   size_t nNodes = db_nodes->size();
+   map<int,int> node_ids2index;
+   if(nNodes != 0){
+
+      Node* current_node = NULL;
+      vector< vector<float> > node_coords(nNodes);
+      for(size_t iNode=0; iNode < nNodes; ++iNode){
+         current_node = db_nodes->get_nodeByIndex(iNode);
+         node_coords[iNode] = current_node->get_coords(iTimestep);
+         node_ids2index.insert(pair<int,int>(current_node->get_nodeID(),iNode));
+      }
+
+      nodes_array = (PyObject*) vector_to_nparray(node_coords);
+   }
+
+   // Extract elements
+   size_t nElements = db_elements->size();
+   if (nElements != 0){
+
+      size_t nElements2 = db_elements->size(BEAM);
+      size_t nElements4 = db_elements->size(SHELL);
+      size_t nElements8 = db_elements->size(SOLID);
+
+      size_t iNode = 0;
+      set<int>::iterator it;
+      set<int> node_ids;
+      vector<int> node_indexes;
+      vector< vector<int> > element4_trias;
+
+      for(size_t iElement=0; iElement < nElements4; ++iElement){
+
+         node_ids = db_elements->get_elementByIndex(SHELL,iElement)->get_node_ids();
+         node_indexes = vector<int>(node_ids.size());
+
+         iNode = 0;
+         //for(size_t iNode=0; iNode < node_ids.size(); ++iNode){
+         for(it = node_ids.begin(); it != node_ids.end(); ++it){
+            node_indexes[iNode] = node_ids2index[*it];
+            ++iNode;
+         }
+         if(node_ids.size() == 3){
+            element4_trias.push_back(node_indexes);
+         }
+
+      }
+
+      elements_array = (PyObject*) vector_to_nparray(element4_trias,NPY_INT32);
+
+   }
+
+   // return Tuple
+   return Py_BuildValue("[O,O]",nodes_array,elements_array);
 
 }
 

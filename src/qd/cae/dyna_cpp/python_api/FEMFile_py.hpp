@@ -42,6 +42,18 @@ extern "C" {
   static PyObject *
   QD_FEMFile_get_parts(QD_FEMFile* self, PyObject* args);
 
+  /* FUNCTION get_mesh */
+  static PyObject *
+  QD_FEMFile_get_mesh(QD_FEMFile* self, PyObject* args);
+
+  /* FUNCTON get_nNodes */
+  static PyObject *
+  QD_FEMFile_get_nNodes(QD_FEMFile* self);
+
+  /* FUNCTON get_nElements */
+  static PyObject *
+  QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args);
+
   /* FUNCTION get_filepath */
   static PyObject *
   QD_FEMFile_get_filepath(QD_FEMFile* self);
@@ -53,6 +65,9 @@ extern "C" {
    {"get_elementByID", (PyCFunction) QD_FEMFile_get_elementByID, METH_VARARGS, "Get an element from it's id."},
    {"get_partByID", (PyCFunction) QD_FEMFile_get_partByID, METH_VARARGS, "Get a part from it's id."},
    {"get_parts", (PyCFunction) QD_FEMFile_get_parts, METH_NOARGS, "Get all the parts in a list."},
+   {"get_mesh", (PyCFunction) QD_FEMFile_get_mesh, METH_VARARGS, "Get the mesh of the model."},
+   {"get_nNodes", (PyCFunction) QD_FEMFile_get_nNodes, METH_NOARGS, "Get the number of nodes of the Mesh."},
+   {"get_nElements", (PyCFunction) QD_FEMFile_get_nElements, METH_VARARGS, "Get the number of elements."},
    {NULL}  /* Sentinel */
   };
 

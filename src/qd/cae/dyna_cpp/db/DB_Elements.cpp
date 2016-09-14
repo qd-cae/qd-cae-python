@@ -322,6 +322,15 @@ DB_Nodes* DB_Elements::get_db_nodes(){
 /** Get the number of  in the db.
  * @return unsigned int nElements : returns the total number of elements in the db
  */
-size_t DB_Elements::size(){
-  return elements4.size()+elements2.size()+elements8.size();
+size_t DB_Elements::size(ElementType _type){
+
+   if(_type == BEAM){
+      return elements2.size();
+   } else if (_type == SHELL){
+      return elements4.size();
+   } else if (_type == SOLID){
+      return elements8.size();
+   }
+   return elements4.size()+elements2.size()+elements8.size();
+   
 }

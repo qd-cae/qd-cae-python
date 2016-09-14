@@ -115,6 +115,18 @@ This is the super class for KeyFiles and D3plot. It contains all of the function
 
 Get the path of the file.
 
+**femfile.get_nNodes()**
+
+*return: (int) nNodes*
+
+Get the number of nodes in the FEMFile.
+
+**femfile.get_nNodes(element_type="")**
+
+*return: (int) nNodes*
+
+Get the number of elements in the FEMFile. The Element Type argument is optional and may be used to get the number of beams, shells or solids. In case it is empty, the total size will be returned.
+
 **femfile.get_nodeByID(arg)**
 
 *return: node or list of nodes*

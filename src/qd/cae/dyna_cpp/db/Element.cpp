@@ -75,8 +75,8 @@ int Element::get_elementID(){
 }
 
 
-/*
- * Get the nodes of the element in a set.
+/** Get the nodes of the element in a set.
+ *
  */
 set<Node*> Element::get_nodes(){
 
@@ -98,8 +98,16 @@ set<Node*> Element::get_nodes(){
 }
 
 
-/*
- * Append a value to the series of plastic strain.
+/** Return the ids of the elements nodes
+ *
+ */
+set<int> Element::get_node_ids(){
+   return this->nodes;
+}
+
+
+/** Append a value to the series of plastic strain
+ *
  */
 void Element::add_plastic_strain(float _platic_strain){
 
@@ -112,8 +120,8 @@ void Element::add_plastic_strain(float _platic_strain){
 }
 
 
-/*
- * Append a value to the series of internal energy.
+/** Append a value to the series of internal energy.
+ *
  */
 void Element::add_energy(float _energy){
 
