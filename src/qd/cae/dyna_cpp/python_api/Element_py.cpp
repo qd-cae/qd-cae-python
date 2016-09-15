@@ -22,7 +22,6 @@ QD_Element_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     self->element = NULL;
   }
 
-
   return (PyObject*) self;
 
 }

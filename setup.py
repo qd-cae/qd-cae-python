@@ -8,14 +8,12 @@ import numpy as np
 from setuptools import find_packages,setup,Extension
 
 # ======= S E T T I N G S ======= #
-debugging_mode = False
-useFemzip = True
 boost_path = "libs/boost_1_61_0"
 femzip_path = "libs/femzip" # optional
-# =============================== #
-
-# Version
+# ====== D E V E L O P E R ====== #
+debugging_mode = False
 _version = "0.1.5"
+# =============================== #
 
 # py -> pyc
 compileall.compile_dir('src/')
@@ -56,7 +54,7 @@ srcs_dyna = ["src/qd/cae/dyna_cpp/python_api/wrapper.cpp",
 # FEMZIP usage? Libraries present?
 # You need to download the femzip libraries yourself from SIDACT GmbH
 # If you have questions, write a mail.
-if useFemzip and os.path.isdir(femzip_path):
+if os.path.isdir(femzip_path):
     if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path,"Windows_VS2010_MT","x64")):
         srcs_dyna.append("src/qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
         lib_dirs_dyna.append(os.path.join(femzip_path,"Windows_VS2010_MT","x64"))
@@ -110,7 +108,7 @@ setup(name = 'qd',
                      'qd.numerics' : 'src/qd/numerics'},
         ext_package='qd.cae', # where to place c extensions
         ext_modules=[dyna_extension],
-		#install_requires=['openpyxl','matplotlib','numpy','codie'],
+		install_requires=['numpy'],
 		keywords=['cae','engineering','ls-dyna','postprocessing','preprocessing'],
         classifiers=['Development Status :: 3 - Alpha',
                      'Programming Language :: C++',

@@ -64,7 +64,7 @@ Read a d3plot with basic geometry into the memory. The second option is meant to
 
 **d3plot.get_timesteps()**
 
-*return: (list of floats) output time*
+*return: (np.array) output time*
 
 Get a list of time-steps at which the data was written to the d3plot.
 
@@ -170,31 +170,31 @@ The **Node** class handles all node related data. In case that the **Node** is o
 
 **node.get_id()**
 
-*return: int id.*
+*return: (int) id.*
 
 Returns the id of the node.
 
 **node.get_coords(int iTimestep = 0)**
 
-*return: (list of floats) 3D-coordinates*
+*return: (np.array(3)) 3D-coordinates*
 
 The geometrical coordinates of the node. In a d3plot, coordinates can also be loaded from different timesteps, in which case displacements must be loaded though (see d3plot.read_states). iTimestep may also be negative to access coordinates backwards (e.g. -1 for last timestep), similar to python array syntax.
 
 **node.get_disp()**
 
-*return (list of list of floats) time series of displacement*
+*return (np.array) time series of displacement*
 
 The time series of the displacement of the node. The first index is the time state and the second index the space coordinate index.
 
 **node.get_vel()**
 
-*return (list of list of floats) time series of the velocity vector*
+*return (np.array) time series of the velocity vector*
 
 Get the time series of the velocity vector.
 
 **node.get_accel()**
 
-*return (list of list of floats) time series of the acceleration vector*
+*return (np.array) time series of the acceleration vector*
 
 Get the time series of the acceleration vector.
 
@@ -212,31 +212,31 @@ The **Element** function works the same as the node function. In case it is owne
 
 **element.get_id()**
 
-*return: int id*
+*return: (int) id*
 
 Get the element id.
 
 **element.get_plastic_strain()**
 
-*return: (list of floats) time series of plastic strain values*
+*return: (np.array) time series of plastic strain values*
 
 Get the time series of the elements plastic strain.
 
 **element.get_energy()**
 
-*return: (list of floats) time series of element energy*
+*return: (np.array) time series of element energy*
 
 Get the element energy.
 
 **element.get_strain()**
 
-*return: (list of list of floats) time series of the strain vector*
+*return: (np.array) time series of the strain vector*
 
 This function returns a time series of the strain vector. The vector contains the 6 values of the strain vector [exx,eyy,ezz,exy,eyz,exz].
 
 **element.get_stress()**
 
-*return: (list of list of floats) time series of the stress vector*
+*return: (np.array) time series of the stress vector*
 
 This function returns a time series of the stress vector. The vector contains the 6 values of the stress vector [sxx,syy,szz,sxy,syz,sxz].
 
@@ -246,25 +246,25 @@ This function returns a time series of the stress vector. The vector contains th
 
 **element.get_coords(iTimestep=0)**
 
-*return: (list of flaot) Get the coordinates of the element.*
+*return: (np.array) Get the coordinates of the element.*
 
 You can get the coordinates of the element, which is the mean of it's nodes coordinates. If the optional flag iTimtestep != 0 then the displacements must be read in the D3plot. One also may use negative numbers like -1 for the last timestep.
 
 **element.get_history()**
 
-*return: (list of list of floats) time series of the history variable vector*
+*return: (np.array) time series of the history variable vector*
 
 This function returns the time series of the history variables. The first index is the timestep and the second index the loaded variable. The history variables loaded in shells and solids may be different!
 
 **element.get_estimated_size()**
 
-*return: estimated element size*
+*return: (float) estimated element size*
 
 Calculates an average element edge size for the element. The size is not highly accurate for performance reasons, but is a good indicator for the dimensional size though.
 
 **element.get_type()**
 
-*return: str element_type*
+*return: (str) element_type*
 
 Get the type of the element.
 

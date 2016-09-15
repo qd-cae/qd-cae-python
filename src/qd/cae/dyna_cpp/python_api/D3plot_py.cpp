@@ -113,21 +113,7 @@ QD_D3plot_get_timesteps(QD_D3plot* self){
       return NULL;
   }
 
-  vector<float> timesteps = self->d3plot->get_timesteps();
-
-  int check = 0;
-  PyObject* timesteps_list = PyList_New(timesteps.size());
-  for(unsigned int ii=0; ii<timesteps.size(); ii++){
-    check += PyList_SetItem(timesteps_list, ii,Py_BuildValue("f",timesteps[ii]));
-  }
-
-  if(check != 0){
-    Py_DECREF(timesteps_list);
-    PyErr_SetString(PyExc_AttributeError, "Developer Error during build of timestep list.");
-    return NULL;
-  }
-
-  return timesteps_list;
+  return (PyObject*) vector_to_nparray(self->d3plot->get_timesteps());
 
 }
 
