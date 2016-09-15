@@ -22,12 +22,22 @@ private:
   DB_Nodes* db_nodes;
   DB_Parts* db_parts;
 
+  /*
   vector<int> index2id_elements2;
   vector<int> index2id_elements4;
   vector<int> index2id_elements8;
+  */
+  map<int,int> id2index_elements2;
+  map<int,int> id2index_elements4;
+  map<int,int> id2index_elements8;
+  vector<Element*> elements2;
+  vector<Element*> elements4;
+  vector<Element*> elements8;
+  /*
   map<int,Element*> elements2;
   map<int,Element*> elements4;
   map<int,Element*> elements8;
+  */
 
 public:
   DB_Elements(FEMFile* _femfile);

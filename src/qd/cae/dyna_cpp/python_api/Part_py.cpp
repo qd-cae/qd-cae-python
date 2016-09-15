@@ -167,7 +167,7 @@ QD_Part_get_elements(QD_Part *self){
     PyObject *argList2 = Py_BuildValue("OOi",self->femFile_py, elementType_py, element->get_elementID());
     PyObject* ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
     Py_DECREF(argList2);
-   Py_DECREF(elementType_py);
+    Py_DECREF(elementType_py);
 
     check += PyList_SetItem(element_list, ii, ret);
 

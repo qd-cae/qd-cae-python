@@ -210,7 +210,16 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
 
      PyObject* elementType_py = Py_BuildValue("s","shell");
      for(size_t iElement=0; iElement<db_elements->size(SHELL); ++iElement){
+
         argList2 = Py_BuildValue("OOi",self, elementType_py, db_elements->get_elementByIndex(SHELL,iElement)->get_elementID());
+        try{
+           ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
+        } catch (const string& error){
+           Py_DECREF(argList2);
+           Py_DECREF(elementType_py);
+           PyErr_SetString(PyExc_SyntaxError, error.c_str());
+           return NULL;
+        }
         ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
         check += PyList_SetItem(element_list, iElement, ret);
         Py_DECREF(argList2);
