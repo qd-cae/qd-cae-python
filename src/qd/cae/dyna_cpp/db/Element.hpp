@@ -22,7 +22,7 @@ class Element {
 private:
 
   int elementID;
-  set<int> nodes;
+  vector<int> nodes;
   vector<float> energy;
   vector<float> plastic_strain;
   vector< vector<float> > strain;
@@ -33,7 +33,7 @@ private:
 
   /* PUBLIC */
 public:
-  Element(int,ElementType,set<Node*>,DB_Elements* db_elements);
+  Element(int,ElementType,vector<Node*>,DB_Elements* db_elements);
   ~Element();
   bool operator<(const Element &other) const;
   void check();
@@ -42,8 +42,8 @@ public:
   ElementType   get_elementType();
   int           get_elementID();
   float         get_estimated_element_size(); // fast
-  set<Node*>    get_nodes();
-  set<int>      get_node_ids();
+  vector<Node*>    get_nodes();
+  vector<int>      get_node_ids();
   vector<float> get_coords(int iTimestep = 0);
   vector<float> get_energy();
   vector<float> get_plastic_strain();

@@ -68,24 +68,18 @@ void Part::add_element(Element* _element){
 /**
  * Get the nodes of the part.
  */
-set<Node*> Part::get_nodes(){
+vector<Node*> Part::get_nodes(){
 
-  set<Node*> nodes;
-  set<Node*> elem_nodes;
+  vector<Node*> nodes;
+  vector<Node*> elem_nodes;
 
   for(set<Element*>::iterator it=this->elements.begin(); it != this->elements.end(); ++it){
     elem_nodes = ((Element*) *it)->get_nodes();
-    for(set<Node*>::iterator it2=elem_nodes.begin(); it2 != elem_nodes.end(); ++it2){
-	   nodes.insert((Node*) *it2);
+    for(vector<Node*>::iterator it2=elem_nodes.begin(); it2 != elem_nodes.end(); ++it2){
+	   nodes.push_back((Node*) *it2);
     }
   }
-  /*
-  for(auto elem : this->elements){
-    for(auto node : elem->get_nodes()){
-      nodes.insert(node);
-    }
-  }
-  */
+
   return nodes;
 }
 

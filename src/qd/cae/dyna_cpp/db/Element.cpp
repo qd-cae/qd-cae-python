@@ -14,7 +14,7 @@
 /*
  * Constructor.
  */
-Element::Element(int _elementID, ElementType _elementType, set<Node*> _nodes,DB_Elements* _db_elements){
+Element::Element(int _elementID, ElementType _elementType, vector<Node*> _nodes,DB_Elements* _db_elements){
 
   // Checks
   if (_db_elements == NULL)
@@ -25,8 +25,8 @@ Element::Element(int _elementID, ElementType _elementType, set<Node*> _nodes,DB_
   this->elementID = _elementID;
   this->elemType = _elementType;
 
-  for(set<Node*>::iterator it=_nodes.begin(); it != _nodes.end(); ++it){
-    this->nodes.insert(((Node*) *it)->get_nodeID());
+  for(vector<Node*>::iterator it=_nodes.begin(); it != _nodes.end(); ++it){
+    this->nodes.push_back(((Node*) *it)->get_nodeID());
   }
 
   this->check();
@@ -54,8 +54,9 @@ bool Element::operator<(const Element &other) const
 }
 
 
-/*
- * Get the element type of the element.
+/** Get the element type of the element.
+ *
+ * @return ElementType elementType : NONE, BEAM, SHELL or SOLID
  *
  * NONE = 0
  * BEAM = 1
@@ -67,8 +68,8 @@ ElementType Element::get_elementType(){
 }
 
 
-/*
- * Get the elementID.
+/** Get the elementID.
+ * @return int elementID
  */
 int Element::get_elementID(){
   return this->elementID;
@@ -78,30 +79,30 @@ int Element::get_elementID(){
 /** Get the nodes of the element in a set.
  *
  */
-set<Node*> Element::get_nodes(){
+vector<Node*> Element::get_nodes(){
 
   DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
-  set<Node*> node_set;
+  vector<Node*> node_vec;
 
-  for(set<int>::iterator it=nodes.begin(); it != nodes.end(); it++){
+  for(vector<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); it++){
 
     Node* _node = db_nodes->get_nodeByID(*it);
     if(_node != NULL){
-      node_set.insert(_node);
+      node_vec.push_back(_node);
     } else{
-      throw("Node with index:"+to_string(*it)+" in Element:"+to_string(this->elementID)+" was not found in DB.");
+      throw(string("Node with index:")+to_string(*it)+string(" in Element:")+to_string(this->elementID)+string(" was not found in DB."));
     }
 
   }
 
-  return node_set;
+  return node_vec;
 }
 
 
 /** Return the ids of the elements nodes
  *
  */
-set<int> Element::get_node_ids(){
+vector<int> Element::get_node_ids(){
    return this->nodes;
 }
 
@@ -171,7 +172,7 @@ void Element::add_history_vars(vector<float> vars,size_t iTimestep){
 }
 
 
-/*
+/**
  * Get the series of plastic strain. The
  * plastic strain here is accurately the
  * efficient plastic strain and thus a
@@ -224,7 +225,7 @@ vector<float> Element::get_coords(int iTimestep){
    vector<float> coords_node;
    vector< vector<float> > disp_node;
 
-   for(set<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
+   for(vector<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
 
       current_node = db_nodes->get_nodeByID(*it);
       coords_node = current_node->get_coords();
@@ -270,7 +271,7 @@ float Element::get_estimated_element_size(){
    float maxdist = -1.;
    vector<float> ncoords;
    vector<float> basis_coords;
-   for(set<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
+   for(vector<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
       ncoords = db_nodes->get_nodeByID(*it)->get_coords();
       if(it != this->nodes.begin()){
          ncoords = MathUtility::v_subtr(ncoords,basis_coords);

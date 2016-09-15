@@ -26,7 +26,7 @@ class Part {
 
   int get_partID();
   string get_name();
-  set<Node*> get_nodes();
+  vector<Node*> get_nodes();
   set<Element*> get_elements();
 
 };

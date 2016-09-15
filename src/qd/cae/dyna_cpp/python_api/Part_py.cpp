@@ -100,7 +100,7 @@ QD_Part_get_nodes(QD_Part *self){
     return NULL;
   }
 
-  set<Node*> nodes = self->part->get_nodes();
+  vector<Node*> nodes = self->part->get_nodes();
 
   int check=0;
   PyObject* node_list = PyList_New(nodes.size());
@@ -108,7 +108,7 @@ QD_Part_get_nodes(QD_Part *self){
   size_t ii=0;
 //   for(auto node : nodes){ // -std=c++11 rulez
   Node* node = NULL;
-  for(set<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
+  for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
     node = *it;
 
     PyObject *argList2 = Py_BuildValue("Oi",self->femFile_py ,node->get_nodeID());

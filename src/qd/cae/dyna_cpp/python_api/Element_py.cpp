@@ -159,15 +159,15 @@ QD_Element_get_nodes(QD_Element* self){
     return NULL;
   }
 
-  set<Node*> nodes = self->element->get_nodes();
+  vector<Node*> nodes = self->element->get_nodes();
 
-  set<Node*>::iterator it;
+  vector<Node*>::iterator it;
   int check=0;
   PyObject* node_list = PyList_New(nodes.size());
 
   unsigned int ii=0;
   Node* node = NULL;
-  for(set<Node*>::iterator it=nodes.begin(); it != nodes.end(); ++it){
+  for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); ++it){
     node = *it;
 
     PyObject *argList2 = Py_BuildValue("Oi",self->femFile_py ,node->get_nodeID());

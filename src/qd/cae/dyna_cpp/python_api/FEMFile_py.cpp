@@ -188,6 +188,7 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
 
   // Do the thing
   // Add all types if NONE
+  size_t iElementTotal = 0;
   int check=0;
   PyObject* element_list = PyList_New(db_elements->size(eType)); // allocate
   PyObject* ret;
@@ -199,8 +200,9 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
      for(size_t iElement=0; iElement<db_elements->size(BEAM); ++iElement){
         argList2 = Py_BuildValue("OOi",self, elementType_py, db_elements->get_elementByIndex(BEAM,iElement)->get_elementID());
         ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
-        check += PyList_SetItem(element_list, iElement, ret);
+        check += PyList_SetItem(element_list, iElementTotal, ret);
         Py_DECREF(argList2);
+        iElementTotal += 1;
      }
      Py_DECREF(elementType_py);
 
@@ -212,17 +214,11 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
      for(size_t iElement=0; iElement<db_elements->size(SHELL); ++iElement){
 
         argList2 = Py_BuildValue("OOi",self, elementType_py, db_elements->get_elementByIndex(SHELL,iElement)->get_elementID());
-        try{
-           ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
-        } catch (const string& error){
-           Py_DECREF(argList2);
-           Py_DECREF(elementType_py);
-           PyErr_SetString(PyExc_SyntaxError, error.c_str());
-           return NULL;
-        }
         ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
-        check += PyList_SetItem(element_list, iElement, ret);
+        ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
+        check += PyList_SetItem(element_list, iElementTotal, ret);
         Py_DECREF(argList2);
+        iElementTotal += 1;
      }
      Py_DECREF(elementType_py);
 
@@ -234,8 +230,9 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
      for(size_t iElement=0; iElement<db_elements->size(SOLID); ++iElement){
         argList2 = Py_BuildValue("OOi",self, elementType_py, db_elements->get_elementByIndex(SOLID,iElement)->get_elementID());
         ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
-        check += PyList_SetItem(element_list, iElement, ret);
+        check += PyList_SetItem(element_list, iElementTotal, ret);
         Py_DECREF(argList2);
+        iElementTotal += 1;
      }
      Py_DECREF(elementType_py);
 
@@ -497,8 +494,8 @@ QD_FEMFile_get_mesh(QD_FEMFile* self, PyObject* args){
       size_t nElements8 = db_elements->size(SOLID);
 
       size_t iNode = 0;
-      set<int>::iterator it;
-      set<int> node_ids;
+      vector<int>::iterator it;
+      vector<int> node_ids;
       vector<int> node_indexes;
       vector< vector<int> > element4_trias;
 

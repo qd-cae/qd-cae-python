@@ -1,6 +1,6 @@
 
 #include <string>
-#include <set>
+#include <vector>
 
 #include "DB_Elements.hpp"
 #include "DB_Nodes.hpp"
@@ -84,12 +84,16 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, v
   }
 
   // Find nodes
-  set<Node*> nodes;
+  vector<Node*> nodes;
   for(size_t iNode = 0; iNode < _elementData.size()-1; iNode++){ // last is mat
     Node* _node = this->db_nodes->get_nodeByIndex(_elementData[iNode]-1); // dyna starts at index 1, this program at 0 of course
     if(_node == NULL)
       throw(string("A node with index:")+to_string(_elementData[iNode])+string(" does not exist and can not be added to an element."));
-    nodes.insert(_node);
+    if(iNode > 0)
+      if(_elementData[iNode] == _elementData[iNode-1])
+        break; // repeating an id means that there are just dummy ids
+
+    nodes.push_back(_node);
   }
 
   // Create element
@@ -131,7 +135,7 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, v
   }
 
   // Register Elements
-  for(set<Node*>::iterator it=nodes.begin(); it != nodes.end(); ++it){
+  for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); ++it){
     ((Node*) *it)->add_element(element);
   }
   part->add_element(element);
@@ -164,12 +168,15 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
   }
 
   // Find nodes
-  set<Node*> nodes;
+  vector<Node*> nodes;
   for(size_t iNode = 0; iNode < _node_ids.size(); ++iNode){
     Node* _node = this->db_nodes->get_nodeByID(_node_ids[iNode]);
     if(_node == NULL)
       _node = this->db_nodes->add_node(_node_ids[iNode],vector<float>(3,0.0f));
-    nodes.insert(_node);
+    if(iNode > 0)
+      if(_node_ids[iNode] == _node_ids[iNode-1])
+        break; // dummy ids start
+    nodes.push_back(_node);
   }
 
   // Create element
@@ -212,7 +219,7 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
 
   // Register Elements
   //for(auto node : nodes) {
-  for(set<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
+  for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
     ((Node*) *it)->add_element(element);
   }
   part->add_element(element);
