@@ -12,6 +12,7 @@ class FEMFile;
 #include <vector>
 #include <map>
 #include "Element.hpp"
+#include "../utility/TextUtility.hpp"
 
 using namespace std;
 

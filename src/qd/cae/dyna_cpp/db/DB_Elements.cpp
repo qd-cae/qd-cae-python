@@ -9,7 +9,7 @@
 #include "Node.hpp"
 #include "Part.hpp"
 #include "FEMFile.hpp"
-#include "../utility/TextUtility.hpp"
+
 
 /** Constructor
  *

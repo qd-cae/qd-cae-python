@@ -123,7 +123,6 @@ QD_FEMFile_get_nodes(QD_FEMFile *self){
   PyObject* node_list = PyList_New(db_nodes->size());
 
   size_t ii=0;
-  Node* node = NULL;
   for(size_t iNode=0; iNode < db_nodes->size(); ++iNode){
 
     PyObject *argList2 = Py_BuildValue("Oi",self, db_nodes->get_nodeByIndex(iNode)->get_nodeID());
@@ -456,7 +455,7 @@ QD_FEMFile_get_mesh(QD_FEMFile* self, PyObject* args){
      return NULL;
    }
 
-
+   /*
    int iTimestep = 0;
    if (!PyArg_ParseTuple(args, "|i", &iTimestep))
      return NULL;
@@ -522,7 +521,10 @@ QD_FEMFile_get_mesh(QD_FEMFile* self, PyObject* args){
 
    // return Tuple
    return Py_BuildValue("[O,O]",nodes_array,elements_array);
+   */
 
+   return Py_None;
+   
 }
 
 
