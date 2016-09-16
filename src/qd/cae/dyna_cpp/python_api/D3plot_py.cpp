@@ -84,7 +84,7 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
   if(filepath_c){
 
     try{
-      self->d3plot = new D3plot(string(filepath_c), variables, (bool) useFemzip);
+      self->d3plot = new D3plot(string(filepath_c), variables, !(useFemzip == 0) );
       self->femfile.instance = self->d3plot;
     } catch (const char* e){
       PyErr_SetString(PyExc_RuntimeError, e);

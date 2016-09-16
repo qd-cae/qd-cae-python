@@ -61,7 +61,7 @@ string Part::get_name(){
  * Add a node to a part.
  */
 void Part::add_element(Element* _element){
-  this->elements.insert(_element);
+  this->elements.push_back(_element);
 }
 
 
@@ -73,7 +73,7 @@ vector<Node*> Part::get_nodes(){
   vector<Node*> nodes;
   vector<Node*> elem_nodes;
 
-  for(set<Element*>::iterator it=this->elements.begin(); it != this->elements.end(); ++it){
+  for(vector<Element*>::iterator it=this->elements.begin(); it != this->elements.end(); ++it){
     elem_nodes = ((Element*) *it)->get_nodes();
     for(vector<Node*>::iterator it2=elem_nodes.begin(); it2 != elem_nodes.end(); ++it2){
 	   nodes.push_back((Node*) *it2);
@@ -87,6 +87,6 @@ vector<Node*> Part::get_nodes(){
 /**
  * Get the elements of the part.
  */
-set<Element*> Part::get_elements(){
+vector<Element*> Part::get_elements(){
   return this->elements;
 }

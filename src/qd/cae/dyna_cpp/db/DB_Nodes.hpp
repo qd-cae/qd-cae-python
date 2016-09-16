@@ -18,8 +18,8 @@ class DB_Nodes {
 
 private:
   FEMFile* femfile;
-  vector<int> indexes2ids;
-  map<int,Node*> nodesByID;
+  map<int,size_t> id2index;
+  vector<Node*> nodes;
   DB_Elements* db_elements;
 
 public:
@@ -30,9 +30,42 @@ public:
   DB_Elements* get_db_elements();
   void set_db_elements(DB_Elements*);
   Node* add_node(int _id,vector<float> _coords);
-  Node* get_nodeByID(int _id);
-  Node* get_nodeByIndex(int _index);
+
+  template<typename T>
+  Node* get_nodeByID(T _id);
+  template<typename T>
+  Node* get_nodeByIndex(T _index);
 
 };
+
+/** Get a node from the node ID.
+ *
+ * @param int _nodeID : id of the node
+ * @return Node* node : pointer to the node or NULL if node is not existing!
+ */
+template <typename T>
+Node* DB_Nodes::get_nodeByID(T nodeID){
+
+  map<int,size_t>::iterator it = this->id2index.find(nodeID);
+  if(it == this->id2index.end())
+    return NULL;
+  return this->nodes[it->second];
+
+}
+
+
+/** Get a node from the node index.
+ *
+ * @param int _nodeIndex : index of the node
+ * @return Node* node : pointer to the node or NULL if node is not existing!
+ */
+template <typename T>
+Node* DB_Nodes::get_nodeByIndex(T _nodeIndex){
+
+  if(_nodeIndex >= this->nodes.size())
+     return NULL;
+  return this->nodes[_nodeIndex];
+
+}
 
 #endif

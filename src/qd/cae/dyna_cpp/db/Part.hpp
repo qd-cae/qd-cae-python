@@ -16,7 +16,7 @@ class Part {
   private:
   int partID;
   string partName;
-  set<Element*> elements;
+  vector<Element*> elements;
 
   public:
   Part(int _partID,string _partName);
@@ -27,7 +27,7 @@ class Part {
   int get_partID();
   string get_name();
   vector<Node*> get_nodes();
-  set<Element*> get_elements();
+  vector<Element*> get_elements();
 
 };
 

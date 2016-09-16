@@ -101,35 +101,35 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, v
 
   if(_eType == BEAM){
 
-    map<int,int>::iterator it = this->id2index_elements2.find(_elementID);
+    map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
     if(it != this->id2index_elements2.end()){
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
-    this->id2index_elements2.insert(pair<int,int>(_elementID,this->elements2.size()));
+    this->id2index_elements2.insert(pair<int,size_t>(_elementID,this->elements2.size()));
     this->elements2.push_back(element);
 
   } else if(_eType == SHELL){
 
-    map<int,int>::iterator it = this->id2index_elements4.find(_elementID);
+    map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
     if(it != this->id2index_elements4.end()){
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
-    this->id2index_elements4.insert(pair<int,int>(_elementID,this->elements4.size()));
+    this->id2index_elements4.insert(pair<int,size_t>(_elementID,this->elements4.size()));
     this->elements4.push_back(element);
 
   } else if(_eType == SOLID){
 
-    map<int,int>::iterator it = this->id2index_elements8.find(_elementID);
+    map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
     if(it != this->id2index_elements8.end()){
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
-    this->id2index_elements8.insert(pair<int,int>(_elementID,this->elements8.size()));
+    this->id2index_elements8.insert(pair<int,size_t>(_elementID,this->elements8.size()));
     this->elements8.push_back(element);
 
   }
@@ -184,35 +184,35 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
 
   if(_eType == BEAM){
 
-    map<int,int>::iterator it = this->id2index_elements2.find(_elementID);
+    map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
     if(it != this->id2index_elements2.end()){
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
-    this->id2index_elements2.insert(pair<int,int>(_elementID,this->elements2.size()));
+    this->id2index_elements2.insert(pair<int,size_t>(_elementID,this->elements2.size()));
     this->elements2.push_back(element);
 
   } else if(_eType == SHELL){
 
-    map<int,int>::iterator it = this->id2index_elements4.find(_elementID);
+    map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
     if(it != this->id2index_elements4.end()){
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
-    this->id2index_elements4.insert(pair<int,int>(_elementID,this->elements4.size()));
+    this->id2index_elements4.insert(pair<int,size_t>(_elementID,this->elements4.size()));
     this->elements4.push_back(element);
 
   } else if(_eType == SOLID){
 
-    map<int,int>::iterator it = this->id2index_elements8.find(_elementID);
+    map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
     if(it != this->id2index_elements8.end()){
       delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
-    this->id2index_elements8.insert(pair<int,int>(_elementID,this->elements8.size()));
+    this->id2index_elements8.insert(pair<int,size_t>(_elementID,this->elements8.size()));
     this->elements8.push_back(element);
 
   }
@@ -225,80 +225,6 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
   part->add_element(element);
 
   return element;
-}
-
-
-/** Get the element by it's internal id and it's type.
- *
- * @param int _elementType : see description
- * @param int _elementID : id of the element (like in the solver)
- * @return Element* _element
- *
- * Type may be: Element.ElementType
- * NONE = 0 -> error
- * BEAM = 1
- * SHELL = 2
- * SOLID = 3
- */
-Element* DB_Elements::get_elementByID(ElementType _elementType,int _elementID){
-
-  if(_elementType == BEAM){
-    map<int,int>::iterator it = this->id2index_elements2.find(_elementID);
-    if(it == id2index_elements2.end())
-      return NULL;
-    return elements2[it->second];
-
-  } else if(_elementType == SHELL){
-    map<int,int>::iterator it = this->id2index_elements4.find(_elementID);
-    if(it == id2index_elements4.end())
-      return NULL;
-    return elements4[it->second];
-
-  } else if(_elementType == SOLID){
-    map<int,int>::iterator it = this->id2index_elements8.find(_elementID);
-    if(it == id2index_elements8.end())
-      return NULL;
-    return elements8[it->second];
-
-  }
-
-  throw(string("Can not get element with elementType:")+to_string(_elementID));
-
-}
-
-/** Get the element by it's internal index and it's type.
- *
- * @param int _elementType : see description
- * @param int _elementIndex : index of the element (not id!)
- * @return Element* _element
- *
- * Type may be: Element.ElementType
- * NONE = 0 -> error
- * BEAM = 1
- * SHELL = 2
- * SOLID = 3
- */
-Element* DB_Elements::get_elementByIndex(ElementType _elementType,int _elementIndex){
-
-   if(_elementType == BEAM){
-     if(_elementIndex < elements2.size())
-       return elements2[_elementIndex];
-     return NULL;
-
-   } else if(_elementType == SHELL){
-     if(_elementIndex < elements4.size())
-       return elements4[_elementIndex];
-     return NULL;
-
-   } else if(_elementType == SOLID){
-     if(_elementIndex < elements8.size())
-       return elements8[_elementIndex];
-     return NULL;
-
-   }
-
-  throw("Can not get element with elementType:"+to_string(_elementIndex));
-
 }
 
 

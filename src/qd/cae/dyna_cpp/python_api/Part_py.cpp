@@ -140,16 +140,16 @@ QD_Part_get_elements(QD_Part *self){
     return NULL;
   }
 
-  set<Element*> elements = self->part->get_elements();
+  vector<Element*> elements = self->part->get_elements();
+  vector<Element*>::iterator it;
 
-  set<Element*>::iterator it;
   int check=0;
   PyObject* element_list = PyList_New(elements.size());
 
   size_t ii=0;
 //   for(auto element : elements){ // -std=c++11 rulez
   Element* element = NULL;
-  for(set<Element*>::iterator it=elements.begin(); it != elements.end(); it++){
+  for(vector<Element*>::iterator it=elements.begin(); it != elements.end(); it++){
     element = *it;
 
     PyObject* elementType_py;

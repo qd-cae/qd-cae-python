@@ -129,7 +129,6 @@ QD_FEMFile_get_nodes(QD_FEMFile *self){
     PyObject *argList2 = Py_BuildValue("Oi",self, db_nodes->get_nodeByIndex(iNode)->get_nodeID());
     PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
     Py_DECREF(argList2);
-
     check += PyList_SetItem(node_list, ii, ret);
 
     ii++;
@@ -198,6 +197,7 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
 
      PyObject* elementType_py = Py_BuildValue("s","beam");
      for(size_t iElement=0; iElement<db_elements->size(BEAM); ++iElement){
+
         argList2 = Py_BuildValue("OOi",self, elementType_py, db_elements->get_elementByIndex(BEAM,iElement)->get_elementID());
         ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
         check += PyList_SetItem(element_list, iElementTotal, ret);
@@ -479,7 +479,7 @@ QD_FEMFile_get_mesh(QD_FEMFile* self, PyObject* args){
       for(size_t iNode=0; iNode < nNodes; ++iNode){
          current_node = db_nodes->get_nodeByIndex(iNode);
          node_coords[iNode] = current_node->get_coords(iTimestep);
-         node_ids2index.insert(pair<int,int>(current_node->get_nodeID(),iNode));
+         node_ids2index.insert(pair<int,size_t>(current_node->get_nodeID(),iNode));
       }
 
       nodes_array = (PyObject*) vector_to_nparray(node_coords);

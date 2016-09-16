@@ -21,9 +21,10 @@ DB_Nodes::DB_Nodes(FEMFile* _femfile){
 DB_Nodes::~DB_Nodes(){
 
   // Delete Nodes
-  for (std::map<int,Node*>::iterator it=nodesByID.begin(); it!=nodesByID.end(); ++it){
-    delete it->second;
+  for(vector<Node*>::iterator it = this->nodes.begin(); it != this->nodes.end(); ++it){
+     delete (*it);
   }
+  this->nodes.clear();
 
 }
 
@@ -46,45 +47,15 @@ Node* DB_Nodes::add_node(int _nodeID, vector<float> coords){
   }
 
   // Check if node already is in map
-  if(nodesByID.count(_nodeID) != 0)
+  if(this->id2index.count(_nodeID) != 0)
     throw(string("Trying to insert a node with same id twice:")+to_string(_nodeID));
 
   // Create and add new node
   Node* node = new Node(_nodeID,coords,this);
-  this->nodesByID.insert(pair<int,Node*>(_nodeID,node));
-  indexes2ids.push_back(_nodeID);
+  id2index.insert(pair<int,size_t>(_nodeID,this->nodes.size()));
+  this->nodes.push_back(node);
 
   return node;
-
-}
-
-
-/** Get a node from the node ID.
- *
- * @param int _nodeID : id of the node
- * @return Node* node : pointer to the node or NULL if node is not existing!
- */
-Node* DB_Nodes::get_nodeByID(int nodeID){
-
-  map<int,Node*>::iterator it = this->nodesByID.find(nodeID);
-  if(it == nodesByID.end())
-    return NULL;
-  return it->second;
-
-}
-
-
-/** Get a node from the node index.
- *
- * @param int _nodeIndex : index of the node
- * @return Node* node : pointer to the node or NULL if node is not existing!
- */
-Node* DB_Nodes::get_nodeByIndex(int _nodeIndex){
-
-  map<int,Node*>::iterator it =this->nodesByID.find(indexes2ids[_nodeIndex]);
-  if(it == nodesByID.end())
-     return NULL;
-  return it->second;
 
 }
 
@@ -117,7 +88,7 @@ DB_Elements* DB_Nodes::get_db_elements(){
  * Get the number of nodes in the db.
  */
 size_t DB_Nodes::size(){
-  if(indexes2ids.size() != nodesByID.size())
-    throw(string("Node database encountered error: indexes2ids.size() != nodesByID.size()"));
-  return indexes2ids.size();
+  if(this->id2index.size() != this->nodes.size())
+    throw(string("Node database encountered error: id2index.size() != nodes.size()"));
+  return this->nodes.size();
 }
