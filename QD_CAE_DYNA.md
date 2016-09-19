@@ -11,6 +11,7 @@ The core-code is written entirely in C++ with a python wrapper. Even though the 
 [Example](#example)
 
 Classes:
+- [Binout](#binout)
 - [D3plot](#d3plot)
 - [KeyFile](#keyfile)
 - [FEMFile (D3plot & KeyFile)](#femfile-d3plot-keyfile)
@@ -45,6 +46,45 @@ for node in element.get_nodes():
 part = d3plot.get_partByID(13)
 part_elems = part.get_elements()
 
+```
+
+
+--------
+# Binout
+
+This class can be used in order to read the binout from LS-Dyna simulations. A
+binout contains time data at higher output frequencies in a binary version. In
+order to get a first impression of the content use binout.get_labels().
+
+**Binout(filepath)**
+
+*return: instance of Binout*
+
+Open a Binout. All related binouts with number extensions will be recognized
+too.
+
+**binout.get_labels(folder_name=None)**
+
+*return: list of str*
+
+In the default case, all the high level content such as matsum, nodout and so
+on are listed. If one of these folders is chosen as optional argument, the
+variable names in these subfolders are listed.
+
+**binout.get_data(folder_name,variable_name)**
+
+*return: tuple(list of float, list of float)*
+
+Get a data series from a certain folder, such as matsum and so on. The time series
+specifically for this variable is also returned as first tuple value, since other
+variables might have been written at higher or lower frequency.
+
+```python
+binout.get_labels()
+# >>> ['secforc', 'matsum', 'sprforc', 'glstat', 'sleout', 'spcforc', 'rcforc']
+binout.get_labels('matsum')
+# >>> [ ... ,'internal_energy', ... ]
+time, internal_energy = binout.get_data('matsum','internal_energy')
 ```
 
 ---------

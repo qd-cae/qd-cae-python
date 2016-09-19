@@ -22,8 +22,8 @@ Current Module List:
 
 1. [qd.cae.dyna](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md)
   - Read D3plot (DONE)
-  - Read Input Files (IN PPROGRESS)
-  - Read Binouts (TODO)
+  - Read Input Files (partially done)
+  - Read Binouts (partially done)
 2. qd.numerics
   - certain numerical functions missing in numpy or scipy
 

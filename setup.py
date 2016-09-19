@@ -85,7 +85,8 @@ else:
 	compiler_args_dyna.append("/EHa")
 	if debugging_mode:
 		compiler_args_dyna.append("/DQD_DEBUG")
-dyna_extension = Extension("dyna", srcs_dyna, extra_compile_args = compiler_args_dyna,
+dyna_extension = Extension("dyna_cpp", srcs_dyna,
+                                      extra_compile_args = compiler_args_dyna,
 									  library_dirs=lib_dirs_dyna,
 									  libraries=libs_dyna,
 									  include_dirs=include_dirs_dyna,)

@@ -199,7 +199,7 @@ extern "C" {
   PyInit_codie(void)
   */
   void
-  initdyna(void)
+  initdyna_cpp(void)
   {
     PyObject* m;
 
@@ -226,7 +226,7 @@ extern "C" {
 
     // Init Module
     // Python 2.7
-    m = Py_InitModule3("dyna", QDMethods,
+    m = Py_InitModule3("dyna_cpp", QDMethods,
                        "qd cae routines for LS-DYNA.");
     // PY3 m = PyModule_Create(&codie_module);
 
