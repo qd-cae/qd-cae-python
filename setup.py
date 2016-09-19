@@ -12,7 +12,7 @@ boost_path = "libs/boost_1_61_0"
 femzip_path = "libs/femzip" # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
-_version = "0.1.5"
+_version = "0.1.6"
 # =============================== #
 
 # py -> pyc
