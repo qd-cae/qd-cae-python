@@ -124,16 +124,18 @@ class Binout:
     # This routine is meant for looking into the file.
     def get_labels(self,folder_name=None):
 
+        # highest level info
         if folder_name == None:
 
             var_names = self.lsda.root.children.keys()
             return var_names
 
+        # subdir info
         else:
 
             name_symbol = self.lsda.root.get(folder_name)
             if not name_symbol:
-                raise Exception("%s does not exist." % folder_name)
+                raise ValueError("%s does not exist." % folder_name)
 
             # search vars ... a bit complicated
             #
@@ -142,8 +144,12 @@ class Binout:
             var_names = set()
             for subdir_name,subdir_symbol in name_symbol.children.iteritems():
 
-                # skip metadata
+                # metadata
                 if subdir_name == "metadata":
+                    # nodout metadata contains node ids
+                    if folder_name == "nodout":
+                        if 'ids' in subdir_symbol.children.keys():
+                            var_names.add('ids')
                     continue
 
                 for subsubdir_name in subdir_symbol.children.keys():
@@ -171,21 +177,34 @@ class Binout:
         if not folder_link:
             raise Exception("%s does not exist." % folder_name)
 
-        # collect
-        time, data = [], []
-        for subfolder_name, subfolder_link in folder_link.children.iteritems():
+        # special node ids in nodout treatment
+        elif (folder_name == "nodout") and (variable_name == "ids"):
 
-            if variable_name in subfolder_link.children:
-                time += subfolder_link.children["time"].read()
-                data += subfolder_link.children[variable_name].read()
+            return np.asarray(folder_link.children['metadata'].children['ids'].read())
 
-        # convert
-        time, data = np.asarray(time),np.asarray(data)
+        # treatment of arbitrary data
+        else:
 
-        # sort after time ... binout is not very structured ...
-        indexes = time.argsort()
-        time = time[indexes]
-        data = data[indexes]
+            # collect
+            time, data = [], []
+            for subfolder_name, subfolder_link in folder_link.children.iteritems():
+
+                if variable_name in subfolder_link.children:
+                    time += subfolder_link.children["time"].read()
+                    _tmp = subfolder_link.children[variable_name].read()
+                    if len(_tmp) == 1:
+                        data += _tmp
+                    else:
+                        data.append(_tmp)
+
+            # convert
+            time, data = np.asarray(time),np.asarray(data)
+            print data.shape
+
+            # sort after time ... binout is not very structured ...
+            indexes = time.argsort()
+            time = time[indexes]
+            data = data[indexes]
 
         return time, data
 

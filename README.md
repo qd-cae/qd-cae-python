@@ -51,4 +51,3 @@ For further licensing requests or questions contact us.
 # Authors
 
 - C. Diez
-- N. Klinke
