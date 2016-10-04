@@ -1,4 +1,42 @@
 #!/usr/bin/python
+
+'''
+from license.pdf in lsda
+
+LICENSE AND DISCLAIMER
+1. This source code is the property of Livermore Software Technology Corporation
+   (LSTC). Copyright (C) 2002 Livermore Software Technology Corporation. All
+   Rights Reserved.
+2. Subject to the conditions set forth in Paragraph 3 below, LSTC hereby grants
+   the user a no-charge, perpetual, non exclusive, and non-transferable right
+   and license to use the source code.
+3. By accepting the source code, the user acknowledges and assents to the
+   following:
+
+   A - THAT THIS SOFTWARE IS BEING PROVIDED "AS IS". LSTC DOES NOT WARRANT THAT
+       THE SOURCE CODE WILL MEET USER'S REQUIREMENTS, OPERATE IN COMBINATIONS
+       SELECTED BY USER, PRODUCE RESULTS DESIRED BY USER, OR OPERATE WITHOUT
+       INTERRUPTION OR ERROR FREE.
+   B - THAT LSTC DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+       LIMITED TO THE WARRANTIES OF MECHANTABILITY AND FITNESS FOR A PARTICULAR
+       PURPOSE.
+   C - THAT LSTC DOES NOT GUARANTEE THE ACCURACY OF THE SOURCE CODE. THE METHODS
+       AND MANNERS USED BY LSTC TO DEVELOP THE SOURCE CODE, OR THE AGREEMENT OF
+       LS-DYNA GENERATED DATA DEVELOPED WITH THE SOURCE CODE WITH "REAL WORLD"
+       RESULTS ACTUALLY EXPERIENCED BY USER.
+   D - THAT LSTC SHALL NOT BE LIABLE FOR ANY LOSS OR DAMAGE THAT MAY ARISE IN
+       CONNECTION WITH FURNISHING, PERFORMANCE, OR USE OF THE SOURCE CODE,
+       INCLUDING, WITHOUT LIMITATION, ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL,
+       OR CONSEQUENTIAL DAMAGES OF ANY KIND.
+
+4. The current version of this database source code has been designated Version
+   1.0. From time to time LSTC may at its sole discretion release updates. It is
+   the users responsibility to periodically check this site for updates. Please
+   report problems, bugs, concerns, or undesired occurrences to bugs@lstc.com
+'''
+
+
+
 #
 # Module of code to read/write LSDA binary files.
 #
