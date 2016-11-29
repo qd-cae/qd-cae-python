@@ -237,7 +237,7 @@ extern "C" {
       return;
 
     Py_INCREF(&QD_D3plot_Type);
-    PyModule_AddObject(m, "D3plot", (PyObject *)&QD_D3plot_Type);
+    PyModule_AddObject(m, "QD_D3plot", (PyObject *)&QD_D3plot_Type);
 
     Py_INCREF(&QD_KeyFile_Type);
     PyModule_AddObject(m, "KeyFile", (PyObject *)&QD_KeyFile_Type);
