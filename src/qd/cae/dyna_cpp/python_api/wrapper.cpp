@@ -232,7 +232,7 @@ extern "C" {
 
     import_array();
 
-    if (m == NULL)
+    if (m == NULL) 
       // PY3 return NULL;
       return;
 

@@ -11,7 +11,7 @@
 /*
  * Constructor.
  */
-Node::Node(int _nodeID, vector<float> _coords,DB_Nodes* _db_nodes){
+Node::Node(int _nodeID, vector<float> _coords, DB_Nodes* _db_nodes){
 
   this->nodeID = _nodeID;
   this->coords = vector<float>(_coords); //copy

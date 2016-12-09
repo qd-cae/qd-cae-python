@@ -11,7 +11,7 @@ QD_D3plot_dealloc(QD_D3plot* self)
   }
 
  #ifdef QD_DEBUG
- cout << "D3plot destructor" << endl;
+ cout << "D3plot destroyed" << endl;
  #endif
 
 }
@@ -109,7 +109,7 @@ static PyObject *
 QD_D3plot_get_timesteps(QD_D3plot* self){
 
   if (self->d3plot == NULL) {
-      PyErr_SetString(PyExc_AttributeError, "Developer Error d3plot pointer NULL.");
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer NULL.");
       return NULL;
   }
 
@@ -123,7 +123,7 @@ static PyObject *
 QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
 
   if (self->d3plot == NULL) {
-      PyErr_SetString(PyExc_AttributeError, "Developer Error d3plot pointer NULL.");
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer NULL.");
       return NULL;
   }
 

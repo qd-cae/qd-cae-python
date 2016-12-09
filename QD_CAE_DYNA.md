@@ -177,7 +177,13 @@ Get all the node objects in the femfile. Beware, asking for all node ojects may 
 
 *return: node or list of nodes*
 
-The a node or a list of nodes, depending on the argument. One can either use just a node id (thus an integer) or a list of ids (thus a list of int). In the second case the function returns a list of nodes.
+The return is a node or a list of nodes, depending on the argument. One can either use just a node id (thus an integer) or a list of ids (thus a list of int). In the second case the function returns a list of nodes.
+
+**femfile.get_nodeByIndex(arg)**
+
+*return: node or list of nodes*
+
+The return is a node or a list of nodes, depending on the argument. One can either use just a node index (thus an integer) or a list of indexes (thus a list of int). In the second case the function returns a list of nodes.
 
 **femfile.get_elements(element_type=None)**
 

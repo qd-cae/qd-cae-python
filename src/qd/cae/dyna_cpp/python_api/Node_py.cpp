@@ -33,13 +33,16 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
 {
 
   PyObject* femFile_obj_py;
+  PyObject* use_index_py;
   QD_FEMFile* femFile_py;
-  int nodeID;
-  static char *kwlist[] = {"femfile","nodeID", NULL}; // TODO Deprecated!
+  int iNode;
+  bool use_index = false;
+  static char *kwlist[] = {"femfile","nodeID","use_index", NULL}; // TODO Deprecated!
 
-  if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi", kwlist, &femFile_obj_py, &nodeID)){
+  if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi|O", kwlist, &femFile_obj_py, &iNode, &use_index_py)){
       return -1;
   }
+  use_index = PyObject_IsTrue(use_index_py);
 
   if (! PyObject_TypeCheck(femFile_obj_py, &QD_FEMFile_Type)) {
     PyErr_SetString(PyExc_SyntaxError, "arg #1 not a D3plot or KeyFile in node constructor");
@@ -49,17 +52,24 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
   femFile_py = (QD_FEMFile*) femFile_obj_py;
 
   if(femFile_py->instance == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ File-Object is NULL.");
+    string message("Pointer to C++ File-Object is NULL.");
+    PyErr_SetString(PyExc_RuntimeError, message.c_str());
     return -1;
   }
 
   self->femFile_py = femFile_py;
   Py_INCREF(self->femFile_py);
-  self->node = femFile_py->instance->get_db_nodes()->get_nodeByID(nodeID);
+
+  if(use_index != 0){
+    self->node = femFile_py->instance->get_db_nodes()->get_nodeByIndex(iNode);
+  } else {
+    self->node = femFile_py->instance->get_db_nodes()->get_nodeByID(iNode);
+  }
 
   if(self->node == NULL){
-    string message("Could not find any node with ID "+to_string(nodeID)+".");
+    string message("Could not find any node with ID/Index "+to_string(iNode)+".");
     PyErr_SetString(PyExc_RuntimeError,message.c_str());
+    Py_DECREF(self->femFile_py);
     return -1;
   }
 

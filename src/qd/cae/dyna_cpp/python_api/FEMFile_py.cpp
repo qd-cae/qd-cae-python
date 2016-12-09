@@ -335,6 +335,93 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
 }
 
 
+/* FUNCTION get_nodeByIndex */
+static PyObject *
+QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
+
+     if (self->instance == NULL) {
+       PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
+       return NULL;
+     }
+
+     PyObject* argument;
+     if (!PyArg_ParseTuple(args, "O", &argument))
+       return NULL;
+
+     // argument is only one id
+     if(PyInt_Check(argument)){
+
+       int nodeIndex;
+       if (!PyArg_ParseTuple(args, "i", &nodeIndex))
+         return NULL;
+
+
+       if(nodeIndex < 0){
+         PyErr_SetString(PyExc_SyntaxError, "Error, nodeIndex may not be negative.");
+         return NULL;
+       }
+
+       PyObject *argList2 = Py_BuildValue("OiO", self, nodeIndex, Py_True);
+       PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
+       Py_DECREF(argList2);
+
+       return ret;
+
+     // argument is a list of id's
+     } else if(PyList_Check(argument)){
+
+       int check=0;
+       PyObject* node_list = PyList_New(PySequence_Size(argument));
+
+       for(unsigned int ii=0; ii<PySequence_Size(argument); ii++){
+
+         PyObject* item = PyList_GET_ITEM(argument, ii);
+
+         int nodeID;
+         try {
+           nodeID = convert_obj_to_int(item);
+         } catch(string& e) {
+           PyErr_SetString(PyExc_AttributeError,e.c_str());
+           Py_DECREF(node_list);
+           return NULL;
+         }
+
+         if(nodeID < 0){
+           Py_DECREF(node_list);
+           PyErr_SetString(PyExc_AttributeError, "Error, nodeID may not be negative.");
+           return NULL;
+         }
+
+         PyObject *argList2 = Py_BuildValue("OiO",self ,nodeID, Py_True);
+         PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
+         Py_DECREF(argList2);
+
+         if(ret == NULL){
+           Py_DECREF(node_list);
+           return NULL;
+         }
+
+         check += PyList_SetItem(node_list, ii, ret);
+
+       }
+
+       if(check != 0){
+         PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of node list.");
+         Py_DECREF(node_list);
+         return NULL;
+       }
+
+       return node_list;
+
+     }
+
+     PyErr_SetString(PyExc_SyntaxError, "Error, argument is neither int nor list of int.");
+     return NULL;
+
+
+}
+
+
 /* FUNCTION get_elementByID */
 static PyObject *
 QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){

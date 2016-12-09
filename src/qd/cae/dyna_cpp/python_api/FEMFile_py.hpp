@@ -30,6 +30,10 @@ extern "C" {
   static PyObject *
   QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args);
 
+  /* FUNCTION get_nodeByIndex */
+  static PyObject *
+  QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args);
+
   /* FUNCTION get_elementByID */
   static PyObject *
   QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args);
@@ -70,6 +74,7 @@ extern "C" {
   static PyMethodDef QD_FEMFile_methods[] = {
    {"get_filepath", (PyCFunction) QD_FEMFile_get_filepath, METH_NOARGS, "Get the filepath."},
    {"get_nodeByID", (PyCFunction) QD_FEMFile_get_nodeByID, METH_VARARGS, "Get a node from it's id."},
+   {"get_nodeByIndex", (PyCFunction) QD_FEMFile_get_nodeByIndex, METH_VARARGS, "Get a node from it's index."},
    {"get_elementByID", (PyCFunction) QD_FEMFile_get_elementByID, METH_VARARGS, "Get an element from it's id."},
    {"get_partByID", (PyCFunction) QD_FEMFile_get_partByID, METH_VARARGS, "Get a part from it's id."},
    {"get_parts", (PyCFunction) QD_FEMFile_get_parts, METH_NOARGS, "Get all the parts in a list."},
