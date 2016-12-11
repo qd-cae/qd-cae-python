@@ -15,7 +15,6 @@ D3plotBuffer::D3plotBuffer(string _d3plot_path, int _wordSize){
   // Init vars
   iStateFile = 0;
   current_buffer = NULL;
-  wordSize = 4;
 
   // Check File
   if(!FileUtility::check_ExistanceAndAccess(_d3plot_path)){

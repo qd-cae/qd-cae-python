@@ -274,7 +274,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
          return NULL;
        }
 
-       PyObject *argList2 = Py_BuildValue("Oi",self ,nodeID);
+       PyObject *argList2 = Py_BuildValue("OiO", self ,nodeID, Py_False);
        PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
        Py_DECREF(argList2);
 
@@ -305,7 +305,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
            return NULL;
          }
 
-         PyObject *argList2 = Py_BuildValue("Oi",self ,nodeID);
+         PyObject *argList2 = Py_BuildValue("OiO",self ,nodeID, Py_False);
          PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
          Py_DECREF(argList2);
 

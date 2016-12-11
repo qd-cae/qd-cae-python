@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <set>
 #include "../utility/TextUtility.hpp"
+#include "../utility/QD_Time.hpp"
 #include "../dyna/KeyFile.hpp"
 #include "../dyna/D3plot.hpp"
 #include "../db/DB_Elements.hpp"
@@ -136,10 +137,10 @@ convert_obj_to_int(PyObject* item){
   long nodeID_long = PyLong_AsLong(item);
 
   // Overflow cast check
-  if((long) std::numeric_limits<int>::max() < nodeID_long){
+  if((long) std::numeric_limits<int>::max < nodeID_long){
     throw(string("Integer overflow error."));
     //PyErr_SetString(PyExc_SyntaxError, "Integer overflow error.");
-  } else if ((long) std::numeric_limits<int>::min() > nodeID_long){
+  } else if ((long) std::numeric_limits<int>::min > nodeID_long){
     throw(string("Integer underflow error."));
   }
 

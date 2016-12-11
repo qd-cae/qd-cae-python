@@ -84,7 +84,9 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
   if(filepath_c){
 
     try{
+      double wall_time = qd::get_wall_time();
       self->d3plot = new D3plot(string(filepath_c), variables, !(useFemzip == 0) );
+      cout << "Wall Time: " << wall_time << endl;
       self->femfile.instance = self->d3plot;
     } catch (const char* e){
       PyErr_SetString(PyExc_RuntimeError, e);

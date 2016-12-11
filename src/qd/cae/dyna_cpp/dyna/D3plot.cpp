@@ -481,16 +481,15 @@ vector< vector<float> > D3plot::read_geometry_nodes(){
   #endif
 
   wordsToRead = dyna_numnp*dyna_ndim;
-  vector< vector<float> > buffer_nodes(dyna_numnp);
+  vector< vector<float> > buffer_nodes(dyna_numnp,vector<float>(3));
 
-  int jj = 0;
+  size_t jj = 0;
   for (int ii=wordPosition;ii<wordPosition+wordsToRead;ii+=3){
-    vector<float> coords(3);
-    coords[0] = buffer->read_float(ii);
-    coords[1] = buffer->read_float(ii+1);
-    coords[2] = buffer->read_float(ii+2);
+    
+    buffer_nodes[jj][0] = buffer->read_float(ii);
+    buffer_nodes[jj][1] = buffer->read_float(ii+1);
+    buffer_nodes[jj][2] = buffer->read_float(ii+2);
 
-    buffer_nodes[jj] = coords;
     jj++;
   }
 
@@ -523,23 +522,21 @@ vector< vector<int> > D3plot::read_geometry_elem8(){
   const int nVarsElem8 = 9;
 
   // allocate
-  vector< vector<int> > buffer_elems8(dyna_nel8);
+  vector< vector<int> > buffer_elems8(dyna_nel8, vector<int>(nVarsElem8));
 
   wordsToRead = nVarsElem8*dyna_nel8;
-  int iElement = 0;
-  int iData = 0;
+  size_t iElement = 0;
+  size_t iData = 0;
   // Loop over elements
   for (int ii=wordPosition;ii<wordPosition+wordsToRead;ii+=nVarsElem8){
 
     // Loop over element data
     iData = 0;
-    vector<int> elemData(nVarsElem8);
     for(int jj=ii;jj<ii+nVarsElem8;jj++){
-      elemData[iData] = buffer->read_int(jj);
+      buffer_elems8[iElement][iData] = buffer->read_int(jj);
       iData++;
     }
 
-    buffer_elems8[iElement] = elemData;
     iElement++;
   }
 
@@ -572,24 +569,22 @@ vector< vector<int> > D3plot::read_geometry_elem4(){
   const int nVarsElem4 = 5;
 
   // allocate
-  vector< vector<int> > buffer_elems4(dyna_nel4);
+  vector< vector<int> > buffer_elems4(dyna_nel4, vector<int>(nVarsElem4));
 
   wordsToRead = nVarsElem4*dyna_nel4;
-  int iElement = 0;
-  int iData = 0;
+  size_t iElement = 0;
+  size_t iData = 0;
   // Loop over elements
-  for (int ii=wordPosition;ii<wordPosition+wordsToRead;ii+=nVarsElem4){
+  for (int ii=wordPosition; ii<wordPosition+wordsToRead; ii+=nVarsElem4){
 
     // Loop over element data
     iData = 0;
-    vector<int> elemData(nVarsElem4);
-    for(int jj=ii;jj<ii+nVarsElem4;jj++){
-      elemData[iData] = buffer->read_int(jj);
+    for(int jj=ii; jj<ii+nVarsElem4; ++jj){
+      buffer_elems4[iElement][iData] = buffer->read_int(jj);
       iData++;
     }
-
-    buffer_elems4[iElement] = elemData;
     iElement++;
+
   }
 
   // Update word position
@@ -619,7 +614,7 @@ vector< vector<int> > D3plot::read_geometry_elem2(){
   const int nVarsElem2 = 6;
 
   // allocate
-  vector< vector<int> > buffer_elems2(dyna_nel2);
+  vector< vector<int> > buffer_elems2(dyna_nel2, vector<int>(3));
 
   wordsToRead = nVarsElem2*dyna_nel2;
   int iElement = 0;
@@ -635,12 +630,10 @@ vector< vector<int> > D3plot::read_geometry_elem2(){
       iData++;
     }
     */
-    vector<int> elemData(3);
-    elemData[0] = buffer->read_int(ii);
-    elemData[1] = buffer->read_int(ii+1);
-    elemData[2] = buffer->read_int(ii+5); // mat
+    buffer_elems2[iElement][0] = buffer->read_int(ii);
+    buffer_elems2[iElement][1] = buffer->read_int(ii+1);
+    buffer_elems2[iElement][2] = buffer->read_int(ii+5); // mat
 
-    buffer_elems2[iElement] = elemData;
     iElement++;
   }
 
@@ -719,7 +712,7 @@ vector< vector<int> > D3plot::read_geometry_numbering(){
   //wordPosition += 16; // header length is 16
   wordsToRead = dyna_numnp;
   vector<int> nodeIDs(wordsToRead);
-  int jj = 0;
+  size_t jj = 0;
   for(int ii=wordPosition;ii<wordPosition+wordsToRead;ii++){
     nodeIDs[jj] = buffer->read_int(ii);
     jj++;
@@ -1353,7 +1346,7 @@ void D3plot::read_states_displacement(){
 
   int start = wordPosition + dyna_nglbv + 1;
   wordsToRead = dyna_numnp*dyna_ndim;
-  int iNode = 0;
+  size_t iNode = 0;
 
   for(int ii = start;ii < start+wordsToRead; ii+=dyna_ndim){
 
@@ -1382,7 +1375,7 @@ void D3plot::read_states_velocity(){
 
   int start = 1 + dyna_nglbv + (dyna_iu) * dyna_numnp * dyna_ndim + this->femzip_state_offset;
   wordsToRead = dyna_numnp*dyna_ndim;
-  int iNode = 0;
+  size_t iNode = 0;
 
   for(int ii = start;ii < start+wordsToRead; ii+=dyna_ndim){
 

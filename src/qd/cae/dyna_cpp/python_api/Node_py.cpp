@@ -33,7 +33,7 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
 {
 
   PyObject* femFile_obj_py;
-  PyObject* use_index_py;
+  PyObject* use_index_py = Py_False;
   QD_FEMFile* femFile_py;
   int iNode;
   bool use_index = false;

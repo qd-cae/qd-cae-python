@@ -300,9 +300,8 @@ int FemzipBuffer::read_int(int iWord){
   // BIG ENDIAN ?
   // SMALL ENDIAN ?
   int start=iWord*this->wordSize;
-
   return (((current_buffer[start + 3] & 0xff) << 24)
-          | ((current_buffer[ start+ 2] & 0xff) << 16)
+          | ((current_buffer[start+ 2] & 0xff) << 16)
           | ((current_buffer[start + 1] & 0xff) << 8)
           | ((current_buffer[start + 0] & 0xff)));
 
