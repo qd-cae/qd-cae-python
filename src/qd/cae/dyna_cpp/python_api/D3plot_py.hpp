@@ -42,17 +42,17 @@ extern "C" {
   static PyObject *
   QD_D3plot_read_states(QD_D3plot* self, PyObject* args);
 
+  /* FUNCTION info */
+  static PyObject *
+  QD_D3plot_info(QD_D3plot* self);
+
 
   /* METHOD TABLE */
   static PyMethodDef QD_D3plot_methods[] = {
     {"get_timesteps", (PyCFunction) QD_D3plot_get_timesteps, METH_NOARGS, "Get the timesteps in the d3plot."},
-//    {"get_filepath", (PyCFunction) QD_D3plot_get_filepath, METH_NOARGS, "Get the filepath of the d3plot."},
     {"read_states", (PyCFunction) QD_D3plot_read_states, METH_VARARGS, "Read a state variable."},
-//    {"get_nodeByID", (PyCFunction) QD_D3plot_get_nodeByID, METH_VARARGS, "Get a node from it's id."},
-//    {"get_elementByID", (PyCFunction) QD_D3plot_get_elementByID, METH_VARARGS, "Get an element from it's id."},
-//    {"get_partByID", (PyCFunction) QD_D3plot_get_partByID, METH_VARARGS, "Get a part from it's id."},
-//    {"get_parts", (PyCFunction) QD_D3plot_get_parts, METH_NOARGS, "Get all the parts in a list."},
-	{NULL}  /* Sentinel */
+    {"info", (PyCFunction) QD_D3plot_info, METH_NOARGS, "Read a state variable."},
+	  {NULL}  /* Sentinel */
   };
 
 

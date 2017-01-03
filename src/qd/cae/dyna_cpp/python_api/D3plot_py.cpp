@@ -51,9 +51,9 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
   }
 
   vector<string> variables;
-  if(PyString_Check(read_states_py)){
+  if(qd::isPyStr(read_states_py)){
 
-    char* variable_c = PyString_AsString(read_states_py);
+    char* variable_c = qd::PyStr2char(read_states_py);
     string variable = string(variable_c);
 
     variables.push_back(variable);
@@ -65,14 +65,14 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
         PyObject* item = PyList_GET_ITEM(read_states_py, ii);
 
         // Check
-        if(!PyString_Check(item)){
+        if(!qd::isPyStr(item)){
           string message = "Item in list is not of type string.";
           PyErr_SetString(PyExc_SyntaxError,message.c_str() );
           return -1;
         }
 
         // here we go
-        variables.push_back(PyString_AsString(item));
+        variables.push_back(qd::PyStr2char(item));
 
     }
 
@@ -119,6 +119,21 @@ QD_D3plot_get_timesteps(QD_D3plot* self){
 
 }
 
+/* FUNCTION info */
+static PyObject *
+QD_D3plot_info(QD_D3plot* self){
+
+  if (self->d3plot == NULL) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer NULL.");
+      return NULL;
+  }
+
+  self->d3plot->info();
+
+  return Py_None;
+
+}
+
 
 /* QD_D3plot FUNCTION read_states */
 static PyObject *
@@ -133,9 +148,9 @@ QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
   if (!PyArg_ParseTuple(args, "O", &argument))
     return NULL;
 
-  if(PyString_Check(argument)){
+  if(qd::isPyStr(argument)){
 
-    char* variable_c = PyString_AsString(argument);
+    char* variable_c = qd::PyStr2char(argument);
     string variable = string(variable_c);
 
     vector<string> variables;
@@ -161,14 +176,14 @@ QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
         PyObject* item = PyList_GET_ITEM(argument, ii);
 
         // Check
-        if(!PyString_Check(item)){
+        if(!qd::isPyStr(item)){
           string message = "Item in list is not of type string.";
           PyErr_SetString(PyExc_SyntaxError,message.c_str() );
           return NULL;
         }
 
         // here we go
-        variables.push_back(PyString_AsString(item));
+        variables.push_back(qd::PyStr2char(item));
 
       }
 

@@ -143,6 +143,7 @@ private:
   public:
   D3plot(string filepath, vector<string> _variables = vector<string>(),bool _use_femzip = false);
   ~D3plot();
+  void info();
   void read_states(vector<string> _variables);
   vector<float> get_timesteps();
   bool displacement_is_read();

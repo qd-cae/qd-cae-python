@@ -83,8 +83,8 @@ QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
 
   if(arg == Py_None){
      //Nothing
-  } else if( PyString_Check(arg) ){
-     element_type = PyString_AsString(arg);
+  } else if( qd::isPyStr(arg) ){
+     element_type = qd::PyStr2char(arg);
   } else {
      PyErr_SetString(PyExc_AttributeError,"Argument is not a string.");
      return NULL;
@@ -160,8 +160,8 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
 
   if(arg == Py_None){
      //Nothing
-  } else if( PyString_Check(arg) ){
-     element_type = PyString_AsString(arg);
+  } else if( qd::isPyStr(arg) ){
+     element_type = qd::PyStr2char(arg);
   } else {
      PyErr_SetString(PyExc_AttributeError,"Argument is not a string.");
      return NULL;
@@ -262,7 +262,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
        return NULL;
 
      // argument is only one id
-     if(PyInt_Check(argument)){
+     if(PyObject_isIntegral(argument)){
 
        int nodeID;
        if (!PyArg_ParseTuple(args, "i", &nodeID))
@@ -286,7 +286,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
        int check=0;
        PyObject* node_list = PyList_New(PySequence_Size(argument));
 
-       for(unsigned int ii=0; ii<PySequence_Size(argument); ii++){
+       for(size_t ii=0; ii<PySequence_Size(argument); ii++){
 
          PyObject* item = PyList_GET_ITEM(argument, ii);
 
@@ -349,7 +349,7 @@ QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
        return NULL;
 
      // argument is only one id
-     if(PyInt_Check(argument)){
+     if(PyObject_isIntegral(argument)){
 
        int nodeIndex;
        if (!PyArg_ParseTuple(args, "i", &nodeIndex))
@@ -437,7 +437,7 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
        return NULL;
 
      // argument is only one id
-     if(PyInt_Check(argument)){
+     if(PyObject_isIntegral(argument)){
 
        int elementID;
        try {
@@ -463,7 +463,7 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
        int check=0;
        PyObject* elem_list = PyList_New(PySequence_Size(argument));
 
-       for(unsigned int ii=0; ii<PySequence_Size(argument); ii++){
+       for(size_t ii=0; ii<PySequence_Size(argument); ii++){
 
          PyObject* item = PyList_GET_ITEM(argument, ii);
 

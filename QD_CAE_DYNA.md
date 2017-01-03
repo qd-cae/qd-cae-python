@@ -102,6 +102,12 @@ This class can read binary result files and give access to it. It has the follow
 
 Read a d3plot with basic geometry into the memory. The second option is meant to be used for femzipped result files. use_femzip is optional and False by default. The pre-compiled .whl is compiled with femzip. The option read_states works the same as the function d3plot.read_states and is meant to save time to already load state variables on first time loading.
 
+**d3plot.info()**
+
+*return None*
+
+Prints info about the data within the d3plot (nodes, elements, materials, results, ...) 
+
 **d3plot.get_timesteps()**
 
 *return: (np.array) output time*

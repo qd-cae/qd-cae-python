@@ -67,7 +67,7 @@ extern "C" {
     {"get_nodes", (PyCFunction) QD_Element_get_nodes, METH_NOARGS, "Get the nodes of the element."},
     {"get_coords", (PyCFunction) QD_Element_get_coords, METH_VARARGS, "Get the coords of the element at a given timestep."},
 	 {"get_history", (PyCFunction) QD_Element_get_history, METH_NOARGS, "Get the history vars of the element."},
-    {"get_estimated_size", (PyCFunction) QD_Element_get_estimated_size, METH_NOARGS, "Get the estimated size of the element."},
+    {"get_estimated_size", (PyCFunction) QD_Element_get_estimated_size, METH_NOARGS, "Get the rough element edge size."},
     {"get_type", (PyCFunction) QD_Element_get_type, METH_NOARGS, "Get the element type."},
    {NULL}  /* Sentinel */
   };

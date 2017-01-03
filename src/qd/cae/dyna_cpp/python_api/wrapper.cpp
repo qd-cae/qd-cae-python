@@ -27,6 +27,33 @@
 
 using namespace std;
 
+// Python2 or Python3?
+#if PY_MAJOR_VERSION >= 3
+#define ISPY3
+#endif
+
+// function termination for error stuff
+#ifdef ISPY3
+#define RETURN_INIT_ERROR return NULL
+#define PyInt_Check(arg) PyLong_Check(arg)
+#else
+#define RETURN_INIT_ERROR return
+#endif
+
+// Wrapper functions for PY3 and PY2
+namespace qd{
+// PY3
+#ifdef ISPY3
+inline int isPyStr(PyObject* obj){return PyUnicode_Check(obj);}
+inline char* PyStr2char(PyObject* arg){return PyUnicode_AsUTF8(arg);}
+// PY2
+#else
+inline int isPyStr(PyObject* obj){return PyString_Check(obj);}
+inline char* PyStr2char(PyObject* arg){return PyString_AsString(arg);}
+#endif
+}
+
+
 /** Convert a c++ 2D vector into a numpy array
  *
  * @param const vector< vector<T> >& vec : 2D vector data
@@ -118,6 +145,27 @@ static PyArrayObject* vector_to_nparray(const vector<T>& vec, int type_num = PyA
 }
 
 
+/** Test if a PyObject is an integral (int or long)
+ * @param PyObject* obj
+ * @return bool isIntegral
+ */
+static bool
+PyObject_isIntegral(PyObject* obj){
+
+  if( PyLong_Check(obj) ){
+    return true;
+
+  #ifndef ISPY3
+  } else if(PyInt_Check(obj)){
+    return true;
+  #endif
+
+  } else {
+    return false;
+  }
+
+}
+
 /** convert_obj_to_int: cast python object to long with checks
  *
  * @param PyObject* item : python object to convert
@@ -129,18 +177,26 @@ static PyArrayObject* vector_to_nparray(const vector<T>& vec, int type_num = PyA
 static int
 convert_obj_to_int(PyObject* item){
 
-  if(!PyInt_Check(item)){
-        PyErr_SetString(PyExc_SyntaxError, "Error, argument list entry is not an integer.");
-        throw(-1);
-  }
+  // check type
+  PyObject_isIntegral(item);
 
-  long nodeID_long = PyLong_AsLong(item);
+  // convert
+  long nodeID_long = -1;
+  if( PyLong_Check(item) ){
+    nodeID_long = PyLong_AsLong(item);
+
+  #ifndef ISPY3
+  } else if(PyInt_Check(item)){
+    nodeID_long = PyInt_AsLong(item);
+  #endif
+  } 
 
   // Overflow cast check
-  if((long) std::numeric_limits<int>::max < nodeID_long){
+  //if(nodeID_long > (long) std::numeric_limits<int>::max){
+  if(nodeID_long > (long) INT_MAX){
     throw(string("Integer overflow error."));
-    //PyErr_SetString(PyExc_SyntaxError, "Integer overflow error.");
-  } else if ((long) std::numeric_limits<int>::min > nodeID_long){
+  //} else if (nodeID_long < (long) std::numeric_limits<int>::min){
+  } else if (nodeID_long < (long) INT_MIN){
     throw(string("Integer underflow error."));
   }
 
@@ -182,60 +238,59 @@ extern "C" {
     {NULL, NULL, 0, NULL}        /* Sentinel */
   };
 
-  /* MODULE codie */
-  /* PYTHON 3 STUFF ?!?!?
-  static PyModuleDef codie_module = {
+  /* MODULE (Python3 only) */
+  #ifdef ISPY3
+  static PyModuleDef dyna_cpp_module = {
     PyModuleDef_HEAD_INIT,
-    "codie",
-    "Codie Python cae module.",
+    "dyna_cpp",
+    "qd cae routines for LS-DYNA.",
     -1,
-	CodieMethods
+	  QDMethods
     //NULL, NULL, NULL, NULL, NULL
   };
-  */
+  #endif
 
-  /* MODULE INIT codie */
-  /* PY3
+  /* MODULE INIT */
+  #ifdef ISPY3
   PyMODINIT_FUNC
-  PyInit_codie(void)
-  */
+  PyInit_dyna_cpp(void)
+  #else
   void
   initdyna_cpp(void)
+  #endif
   {
     PyObject* m;
 
     // Constructor
     if (PyType_Ready(&QD_D3plot_Type) < 0)
+      RETURN_INIT_ERROR;
       // PY3 return NULL;
-      return;
+      //return;
 
     if (PyType_Ready(&QD_Node_Type) < 0)
-      // PY3 return NULL;
-      return;
+      RETURN_INIT_ERROR;
 
     if (PyType_Ready(&QD_Element_Type) < 0)
-      // PY3 return NULL;
-      return;
+      RETURN_INIT_ERROR;
 
     if (PyType_Ready(&QD_Part_Type) < 0)
-      // PY3 return NULL;
-      return;
+      RETURN_INIT_ERROR;
 
    if (PyType_Ready(&QD_KeyFile_Type) < 0)
-      // PY3 return NULL;
-      return;
+      RETURN_INIT_ERROR;
 
     // Init Module
-    // Python 2.7
+    #ifdef ISPY3
+    m = PyModule_Create(&dyna_cpp_module);
+    #else
     m = Py_InitModule3("dyna_cpp", QDMethods,
                        "qd cae routines for LS-DYNA.");
-    // PY3 m = PyModule_Create(&codie_module);
+    #endif
 
     import_array();
 
     if (m == NULL) 
-      // PY3 return NULL;
-      return;
+      RETURN_INIT_ERROR;
 
     Py_INCREF(&QD_D3plot_Type);
     PyModule_AddObject(m, "QD_D3plot", (PyObject *)&QD_D3plot_Type);
@@ -252,7 +307,9 @@ extern "C" {
     Py_INCREF(&QD_Element_Type);
     PyModule_AddObject(m, "Part", (PyObject *)&QD_Part_Type);
 
-    // PY3 return m;
+    #ifdef ISPY3
+    return m;
+    #endif
   }
 
 }

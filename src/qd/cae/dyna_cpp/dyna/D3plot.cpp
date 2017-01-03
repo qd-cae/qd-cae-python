@@ -305,35 +305,7 @@ void D3plot::read_header(){
   }
 
   #ifdef QD_DEBUG
-  cout << "Title:  " << this->dyna_title << endl;
-  cout << "nNodes : " << this->dyna_numnp << endl;
-  cout << "nElem2 : " << this->dyna_nel2 << endl;
-  cout << "nElem4 : " << this->dyna_nel4 << endl;
-  cout << "nElem8 : " << this->dyna_nel8 << endl;
-  cout << "nElem20: " << this->dyna_nel20 << endl;
-  cout << "nElemTh: " << this->dyna_nelth << endl;
-  cout << "nElem48: " << this->dyna_nel48 << endl;
-  cout << "nMats-Dyn: " << this->dyna_nmmat << endl;
-  cout << "nMats-Inp: " << this->dyna_nummat2
-                          +this->dyna_nummat4
-                          +this->dyna_nummat8
-                          +this->dyna_nummatth << endl;
-  cout << "nMat2 : " << this->dyna_nummat2 << endl;
-  cout << "nMat4 : " << this->dyna_nummat4 << endl;
-  cout << "nMat8 : " << this->dyna_nummat8 << endl;
-  cout << "nMatTh: " << this->dyna_nummatth << endl;
-  cout << "disp : " << this->dyna_iu << endl;
-  cout << "vel  : " << this->dyna_iv << endl;
-  cout << "accel: " << this->dyna_ia << endl;
-  cout << "temp : " << this->dyna_it << endl;
-  cout << "shell-stress: " << this->dyna_ioshl1 << endl;
-  cout << "shell-plstrn: " << this->dyna_ioshl2 << endl;
-  cout << "shell-forces: " << this->dyna_ioshl3 << endl;
-  cout << "shell-stuff : " << this->dyna_ioshl4 << endl;
-  cout << "shell-strn  : " << this->dyna_istrn << endl;
-  cout << "nVar1D: " << this->dyna_nv1d << endl;
-  cout << "nVar2D: " << this->dyna_nv2d << endl;
-  cout << "nVar3D: " << this->dyna_nv3d << endl;
+  this->info();
   #endif
 
   /* === CHECKS === */
@@ -363,6 +335,43 @@ void D3plot::read_header(){
   } else {
     wordPosition = 64; // header has 64 words
   }
+
+}
+
+/** Print info about the data in the d3plot to the console.
+ *
+ */
+void D3plot::info(){
+
+  cout << "Title:  " << this->dyna_title << endl;
+  cout << "nNodes : " << this->dyna_numnp << endl;
+  cout << "nElem2 : " << this->dyna_nel2 << endl;
+  cout << "nElem4 : " << this->dyna_nel4 << endl;
+  cout << "nElem8 : " << this->dyna_nel8 << endl;
+  cout << "nElem20: " << this->dyna_nel20 << endl;
+  cout << "nElemTh: " << this->dyna_nelth << endl;
+  cout << "nElem48: " << this->dyna_nel48 << endl;
+  cout << "nMats-Dyn: " << this->dyna_nmmat << endl;
+  cout << "nMats-Inp: " << this->dyna_nummat2
+                          +this->dyna_nummat4
+                          +this->dyna_nummat8
+                          +this->dyna_nummatth << endl;
+  cout << "nMat2 : " << this->dyna_nummat2 << endl;
+  cout << "nMat4 : " << this->dyna_nummat4 << endl;
+  cout << "nMat8 : " << this->dyna_nummat8 << endl;
+  cout << "nMatTh: " << this->dyna_nummatth << endl;
+  cout << "disp : " << this->dyna_iu << endl;
+  cout << "vel  : " << this->dyna_iv << endl;
+  cout << "accel: " << this->dyna_ia << endl;
+  cout << "temp : " << this->dyna_it << endl;
+  cout << "shell-stress: " << this->dyna_ioshl1 << endl;
+  cout << "shell-plstrn: " << this->dyna_ioshl2 << endl;
+  cout << "shell-forces: " << this->dyna_ioshl3 << endl;
+  cout << "shell-stuff : " << this->dyna_ioshl4 << endl;
+  cout << "shell-strn  : " << this->dyna_istrn << endl;
+  cout << "nVar1D: " << this->dyna_nv1d << endl;
+  cout << "nVar2D: " << this->dyna_nv2d << endl;
+  cout << "nVar3D: " << this->dyna_nv3d << endl;
 
 }
 
@@ -1560,8 +1569,10 @@ void D3plot::read_states_elem4(unsigned int iState){
         // mean
         else if((this->plastic_strain_read == 6))
           plastic_strain = _tmp;
+        /*
         else
-          throw("Unknown var_mode plastic strain:"+to_string(this->plastic_strain_read));
+          throw("Unknown var_mode for plastic_strain:"+to_string(this->plastic_strain_read));
+        */
 
       }
 

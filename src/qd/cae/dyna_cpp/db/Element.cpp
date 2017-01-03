@@ -312,7 +312,7 @@ float Element::get_estimated_element_size(){
          throw("Unknown node number:"+to_string(this->nodes.size())+" of element +"+to_string(this->elementID)+"+ for beams.");
       return sqrt(maxdist); // beam
    }
-
+   throw(string("Unknown element type, expected BEAM/SHELL/SOLID."));
 
 }
 
