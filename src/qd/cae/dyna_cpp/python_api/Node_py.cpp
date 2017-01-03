@@ -141,7 +141,7 @@ QD_Node_get_vel(QD_Node* self){
     return NULL;
   }
 
-  (PyObject*) vector_to_nparray(self->node->get_vel());
+  return  (PyObject*) vector_to_nparray(self->node->get_vel());
 
 }
 
@@ -155,7 +155,7 @@ QD_Node_get_accel(QD_Node* self){
     return NULL;
   }
 
-  (PyObject*) vector_to_nparray(self->node->get_accel());
+  return (PyObject*) vector_to_nparray(self->node->get_accel());
 
 }
 

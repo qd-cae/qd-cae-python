@@ -5,14 +5,17 @@ import sys
 import platform
 import compileall
 import numpy as np
+import unittest
 from setuptools import find_packages,setup,Extension
 
 # ======= S E T T I N G S ======= #
 boost_path = "libs/boost_1_61_0"
 femzip_path = "libs/femzip" # optional
+femzip_path = ""
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
-_version = "0.2.0"
+measure_time = False
+_version = "0.3.0"
 # =============================== #
 
 # py -> pyc
@@ -80,17 +83,25 @@ if (platform.system().lower() == "linux") or (platform.system().lower() == "linu
 		compiler_args_dyna.append("-fPIC")
 	if debugging_mode:
 		compiler_args_dyna.append("-DQD_DEBUG")
+	if measure_time:
+		compiler_args_dyna.append("-DQD_MEASURE_TIME")
 # CFLAGS Windows
 else:
 	compiler_args_dyna.append("/EHa")
 	if debugging_mode:
 		compiler_args_dyna.append("/DQD_DEBUG")
+	if measure_time:
+		compiler_args_dyna.append("/DQD_MEASURE_TIME")
 dyna_extension = Extension("dyna_cpp", srcs_dyna,
                                       extra_compile_args = compiler_args_dyna,
 									  library_dirs=lib_dirs_dyna,
 									  libraries=libs_dyna,
 									  include_dirs=include_dirs_dyna,)
 
+def my_test_suite():
+    test_loader = unittest.TestLoader()
+    test_suite = test_loader.discover('test', pattern='test_*.py')
+    return test_suite
 
 # (2) setup
 setup(name = 'qd',
@@ -101,12 +112,10 @@ setup(name = 'qd',
         url    = 'www.qd-eng.de',
         author_email = 'constantin.diez@gmail.com',
 		packages=(['qd',
-                 'qd.cae',
-                 'qd.numerics']),
+                 'qd.cae',]),
 		#packages=find_packages(),
 		package_dir={'qd'    : 'src/qd',
-                     'qd.cae' : 'src/qd/cae',
-                     'qd.numerics' : 'src/qd/numerics'},
+                     'qd.cae' : 'src/qd/cae',},
         ext_package='qd.cae', # where to place c extensions
         ext_modules=[dyna_extension],
 		install_requires=['numpy'],
@@ -119,4 +128,6 @@ setup(name = 'qd',
                      'Topic :: Engineering',
                      'Topic :: CAE',
                      'Topic :: FEM',
-                     'Programming Language :: Python :: 2.7'],)
+                     'Programming Language :: Python :: 2.7',
+                     'Programming Language :: Python :: 3.5'],
+        test_suite = 'setup.my_test_suite',)

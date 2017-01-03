@@ -183,7 +183,7 @@ convert_obj_to_int(PyObject* item){
   // convert
   long nodeID_long = -1;
   if( PyLong_Check(item) ){
-    nodeID_long = PyLong_AsLong(item);
+    nodeID_long = PyLong_AsLong(item); 
 
   #ifndef ISPY3
   } else if(PyInt_Check(item)){

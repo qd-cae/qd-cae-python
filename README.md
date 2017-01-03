@@ -24,8 +24,7 @@ Current Module List:
   - Read D3plot (DONE)
   - Read Input Files (partially done)
   - Read Binouts (partially done)
-2. qd.numerics
-  - certain numerical functions missing in numpy or scipy
+2. ?
 
 For more details, look into the helper files.
 

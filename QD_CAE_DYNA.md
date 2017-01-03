@@ -104,7 +104,7 @@ Read a d3plot with basic geometry into the memory. The second option is meant to
 
 **d3plot.info()**
 
-*return None*
+*return: None*
 
 Prints info about the data within the d3plot (nodes, elements, materials, results, ...) 
 
