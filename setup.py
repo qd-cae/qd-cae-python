@@ -3,7 +3,6 @@
 import os
 import sys
 import platform
-import compileall
 import numpy as np
 import unittest
 from setuptools import find_packages,setup,Extension
@@ -11,15 +10,14 @@ from setuptools import find_packages,setup,Extension
 # ======= S E T T I N G S ======= #
 boost_path = "libs/boost_1_61_0"
 femzip_path = "libs/femzip" # optional
-femzip_path = ""
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-_version = "0.3.0"
+_version = "0.3.1"
 # =============================== #
 
-# py -> pyc
-compileall.compile_dir('src/')
+if sys.version_info[0] >= 3:
+    femzip_path = "#python3_no_femzip"
 
 # (0) Compiler Stuff
 # Check for MinGW usage
@@ -30,8 +28,9 @@ for ii in range(len(sys.argv)):
 	if (sys.argv[ii] == "--compiler=mingw32"):
 		use_mingw=True
 
+
 # (1) Native Code Stuff
-# (1.1) DYNA-POST toolbox
+# (1.1) DYNA-CPP toolbox
 if not os.path.isdir(boost_path):
     raise Exception("Invalid boost library path: %s." % boost_path)
     #b2 --toolset=msvc-10.0 --build-type=complete architecture=x86 address-model=64 stage
@@ -39,34 +38,34 @@ compiler_args_dyna = []
 include_dirs_dyna = [boost_path,np.get_include()]
 lib_dirs_dyna = [] # ["libs/boost_1_61_0/lib64-msvc-9.0"]
 libs_dyna  = [] # ["boost_python"]
-srcs_dyna = ["src/qd/cae/dyna_cpp/python_api/wrapper.cpp",
-    "src/qd/cae/dyna_cpp/db/FEMFile.cpp",
-    "src/qd/cae/dyna_cpp/db/DB_Elements.cpp",
-    "src/qd/cae/dyna_cpp/db/DB_Nodes.cpp",
-    "src/qd/cae/dyna_cpp/db/DB_Parts.cpp",
-    "src/qd/cae/dyna_cpp/db/Element.cpp",
-    "src/qd/cae/dyna_cpp/db/Node.cpp",
-    "src/qd/cae/dyna_cpp/db/Part.cpp",
-    "src/qd/cae/dyna_cpp/dyna/D3plotBuffer.cpp",
-    "src/qd/cae/dyna_cpp/dyna/D3plot.cpp",
-    "src/qd/cae/dyna_cpp/dyna/KeyFile.cpp",
-    "src/qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
-    "src/qd/cae/dyna_cpp/utility/FileUtility.cpp",
-    "src/qd/cae/dyna_cpp/utility/TextUtility.cpp",
-    "src/qd/cae/dyna_cpp/utility/MathUtility.cpp"]
+srcs_dyna = ["qd/cae/dyna_cpp/python_api/wrapper.cpp",
+    "qd/cae/dyna_cpp/db/FEMFile.cpp",
+    "qd/cae/dyna_cpp/db/DB_Elements.cpp",
+    "qd/cae/dyna_cpp/db/DB_Nodes.cpp",
+    "qd/cae/dyna_cpp/db/DB_Parts.cpp",
+    "qd/cae/dyna_cpp/db/Element.cpp",
+    "qd/cae/dyna_cpp/db/Node.cpp",
+    "qd/cae/dyna_cpp/db/Part.cpp",
+    "qd/cae/dyna_cpp/dyna/D3plotBuffer.cpp",
+    "qd/cae/dyna_cpp/dyna/D3plot.cpp",
+    "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
+    "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
+    "qd/cae/dyna_cpp/utility/FileUtility.cpp",
+    "qd/cae/dyna_cpp/utility/TextUtility.cpp",
+    "qd/cae/dyna_cpp/utility/MathUtility.cpp"]
 # FEMZIP usage? Libraries present?
 # You need to download the femzip libraries yourself from SIDACT GmbH
 # If you have questions, write a mail.
 if os.path.isdir(femzip_path):
     if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path,"Windows_VS2010_MT","x64")):
-        srcs_dyna.append("src/qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
+        srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
         lib_dirs_dyna.append(os.path.join(femzip_path,"Windows_VS2010_MT","x64"))
         libs_dyna = ['femunziplib_standard_dyna','ipp_zlib','ippcoremt',
             'ippdcmt','ippsmt','ifwin','ifconsol','ippvmmt','libmmt',
             'libirc','svml_dispmt','msvcrt']
         compiler_args_dyna.append("/DQD_USE_FEMZIP")
     elif (platform.system() == "Linux") and os.path.isdir(os.path.join(femzip_path,"Linux","64Bit")):
-        srcs_dyna.append("src/qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
+        srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
         lib_dirs_dyna.append(os.path.join(femzip_path,"Linux","64Bit"))
         libs_dyna = ['femunzip_dyna_standard','ipp_z','ippcore',
             'ippdc','ipps','ifcore_pic','ifcoremt','imf',
@@ -98,12 +97,13 @@ dyna_extension = Extension("dyna_cpp", srcs_dyna,
 									  libraries=libs_dyna,
 									  include_dirs=include_dirs_dyna,)
 
+# (2) UNIT-TESTING
 def my_test_suite():
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('test', pattern='test_*.py')
     return test_suite
 
-# (2) setup
+# (3) SETUP
 setup(name = 'qd',
 		version = _version,
 		license = 'GNU GPL v3',
@@ -114,8 +114,8 @@ setup(name = 'qd',
 		packages=(['qd',
                  'qd.cae',]),
 		#packages=find_packages(),
-		package_dir={'qd'    : 'src/qd',
-                     'qd.cae' : 'src/qd/cae',},
+		package_dir={'qd'    : 'qd',
+                     'qd.cae' : 'qd/cae',},
         ext_package='qd.cae', # where to place c extensions
         ext_modules=[dyna_extension],
 		install_requires=['numpy'],
