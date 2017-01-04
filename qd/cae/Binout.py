@@ -3,7 +3,13 @@ import os
 import sys
 import struct
 import numpy as np
-from lsda import Lsda
+
+import sys
+if sys.version_info[0] < 3:
+    from lsda_py2 import Lsda
+else:
+    from lsda_py3 import Lsda
+
 
 '''
 ## Recoded stuff from lsda from LSTC, but much more readable and quoted ...
@@ -114,6 +120,12 @@ class Binout:
         self.filepath = filepath
         self.lsda = Lsda(filepath,"r")
 
+        if sys.version_info[0] < 3:
+            self.lsda_root = self.lsda.root
+        else:
+            self.lsda_root = self.lsda.root.children[""]
+        
+
 
     ## Get the labels of the file
     #
@@ -127,13 +139,12 @@ class Binout:
         # highest level info
         if folder_name == None:
 
-            var_names = self.lsda.root.children.keys()
-            return var_names
+            return self._bStrToStr_list( list( self.lsda_root.children.keys() ) )
 
         # subdir info
         else:
 
-            name_symbol = self.lsda.root.get(folder_name)
+            name_symbol = self.lsda_root.get(folder_name)
             if not name_symbol:
                 raise ValueError("%s does not exist." % folder_name)
 
@@ -142,20 +153,22 @@ class Binout:
             # each subdir is data written at a timestep so we need to iterate
             # through all in order to catch all vars
             var_names = set()
-            for subdir_name,subdir_symbol in name_symbol.children.iteritems():
+            for subdir_name, subdir_symbol in name_symbol.children.items():
+                
+                subdir_name = self._bStrToStr(subdir_name)
 
                 # metadata
                 if subdir_name == "metadata":
                     # nodout metadata contains node ids
-                    if folder_name == "nodout":
-                        if 'ids' in subdir_symbol.children.keys():
+                    if folder_name == "nodout" or folder_name == "swforc":
+                        if 'ids' in self._bStrToStr_list(list(subdir_symbol.children.keys())):
                             var_names.add('ids')
                     continue
 
                 for subsubdir_name in subdir_symbol.children.keys():
                     var_names.add(subsubdir_name)
 
-            var_names = list(var_names)
+            var_names = self._bStrToStr_list( list(var_names) ) 
 
             # remove time, since we add it anyways for every var
             if "time" in var_names:
@@ -171,27 +184,27 @@ class Binout:
     #
     # Fetch data from the binout. If you have no idea what data is inside and
     # how it is called, use get_labels() first.
-    def get_data(self,folder_name,variable_name):
+    def get_data(self, folder_name, variable_name):
 
-        folder_link = self.lsda.root.get(folder_name)
+        folder_link = self.lsda_root.get(folder_name)
         if not folder_link:
             raise Exception("%s does not exist." % folder_name)
 
         # special node ids in nodout treatment
-        elif (folder_name == "nodout") and (variable_name == "ids"):
+        elif (folder_name == "nodout" or folder_name == "swforc") and (variable_name == "ids"):
 
-            return np.asarray(folder_link.children['metadata'].children['ids'].read())
+            return np.asarray(folder_link.children['metadata'].children[self._str_to_bstr('ids')].read())
 
         # treatment of arbitrary data
         else:
 
             # collect
             time, data = [], []
-            for subfolder_name, subfolder_link in folder_link.children.iteritems():
+            for subfolder_name, subfolder_link in folder_link.children.items():
 
-                if variable_name in subfolder_link.children:
-                    time += subfolder_link.children["time"].read()
-                    _tmp = subfolder_link.children[variable_name].read()
+                if variable_name in self._bStrToStr_list(list(subfolder_link.children)):
+                    time += subfolder_link.children[self._str_to_bstr("time")].read()
+                    _tmp = subfolder_link.children[self._str_to_bstr(variable_name)].read()
                     if len(_tmp) == 1:
                         data += _tmp
                     else:
@@ -199,7 +212,6 @@ class Binout:
 
             # convert
             time, data = np.asarray(time),np.asarray(data)
-            print data.shape
 
             # sort after time ... binout is not very structured ...
             indexes = time.argsort()
@@ -208,12 +220,54 @@ class Binout:
 
         return time, data
 
+    
+    ## Encodes or decodes a list of string correctly regarding python version
+    #
+    # @param list(str/unicode/bytes) string
+    # @return list(str) string : converted to python version
+    #
+    def _bStrToStr_list(self, strings):
+
+        return [ self._bStrToStr(string) for string in strings ]
+
+
+    ## Encodes or decodes a string correctly regarding python version
+    #
+    # @param str/unicode/bytes string
+    # @return str string : converted to python version
+    #
+    def _bStrToStr(self, string):
+
+        if sys.version_info[0] < 3:
+
+            if not isinstance(string, bytes):
+                return string.encode("utf-8")
+            else:
+                return string
+
+        else:
+
+            if not isinstance(string, str):
+                return string.decode("utf-8")
+            else:
+                return string
+
+    ## Convert a string to a binary string python version independent
+    #
+    # @param str string
+    # @param bstr string
+    def _str_to_bstr(self,string):
+
+        if sys.version_info[0] < 3:
+            return string
+        else:
+            return string.encode("utf-8")
 
     ## Developers only: Scan the file subdirs.
     #
     # @param int nMaxChildren = 10 : limit of children to abort (e.g. we hit data)
     def _scan_file(self,nMaxChildren=10):
-        self._print_tree_item(self.lsda.root,0,nMaxChildren=nMaxChildren)
+        self._print_tree_item(self.lsda_root,0,nMaxChildren=nMaxChildren)
 
 
     ## Developers only: print a lsda symbol item recursively

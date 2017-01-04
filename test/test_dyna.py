@@ -1,11 +1,18 @@
 
+# add current module to search path
+import os
+import sys
+sys.path.append( os.path.join(os.path.realpath(__file__),"..") )
+
+
+import unittest2 as unittest
 from qd.cae.dyna import *
-import unittest
+
 
 class TestDynaModule(unittest.TestCase):
     """Tests the dyna module."""
 
-    def test_dyna(self):
+    def test_dyna_d3plot(self):
         """Test all D3plot functions"""
 
         d3plot_filepath = "test/d3plot"
@@ -66,6 +73,29 @@ class TestDynaModule(unittest.TestCase):
             pass
         # .. TODO Error stoff
         
+
+
+    def test_binout(self):
+        """Testing all Binout functions."""
+
+        binout_filepath = "test/binout"
+        content = ["swforc"]
+        content_subdirs = [ ['ids','axial', 'failure_time', 'failure', 'length', 'resultant_moment', 'shear'] ]
+        nTimesteps = 321
+        
+        binout = Binout(binout_filepath)
+        self.assertEqual( len(binout.get_labels()) , 1)
+        self.assertItemsEqual( content , binout.get_labels() )
+        
+        for content_dir, content_subdirs in zip(content,content_subdirs):
+            self.assertItemsEqual( content_subdirs , binout.get_labels(content_dir) )
+            for subdir in content_subdirs:
+                if subdir == "ids":
+                    binout.get_data(content_dir,subdir)
+                else:
+                    time,data = binout.get_data(content_dir,subdir)
+                    self.assertEqual( len(time) , nTimesteps )
+                    self.assertEqual( len(time) , len(data) )
 
 
 if __name__ == "__main__":
