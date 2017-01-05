@@ -16,7 +16,7 @@ measure_time = False
 _version = "0.3.1"
 # =============================== #
 
-if sys.version_info[0] >= 3:
+if sys.version_info[0] >= 3 and not "linux" in platform.system().lower():
     femzip_path = "#python3_no_femzip"
 
 # (0) Compiler Stuff
