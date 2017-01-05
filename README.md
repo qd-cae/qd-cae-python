@@ -16,6 +16,16 @@ We want to tackle this issue with this free library, in order to give engineerin
 a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
+*Changelog 05.01.2017*
+
+New functions:
+ - d3plot.info() : listing information about data in d3plot.
+ - d3plot.get_nodeByIndex(index) : get a node by $index \in [0,nNodes)$
+ 
+Python3 wheels work with following limits:
+ - No femzip support on windows
+ - Binout reader buggy (linux and windows)
+
 # Sub-Modules
 
 Current Module List:
