@@ -120,12 +120,12 @@ class Binout:
         self.filepath = filepath
         self.lsda = Lsda(filepath,"r")
 
-        if sys.version_info[0] < 3:
-            self.lsda_root = self.lsda.root
-        else:
-            self.lsda_root = self.lsda.root.children[""]
+        #if sys.version_info[0] < 3:
+        #    self.lsda_root = self.lsda.root
+        #else:
+        #    self.lsda_root = self.lsda.root.children[""]
+        self.lsda_root = self.lsda.root
         
-
 
     ## Get the labels of the file
     #

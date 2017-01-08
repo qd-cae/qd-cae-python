@@ -514,6 +514,12 @@ class Lsda:
   def cd(self,path,create=2):      # change CWD
     '''Change the current working directory in the file.  The optional
     argument "create" is for internal use only'''
+    # DEBUG FIX qd-codie:
+    # Someone forgot to decode bytes into str here. Due to this the 
+    # following comparisons always went wrong (of course they were)
+    # not similar ...
+    if isinstance(path,bytes):
+      path = path.decode("utf-8")
     if(path == "/"):
       self.cwd = self.root
       return self.root
