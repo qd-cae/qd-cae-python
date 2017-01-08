@@ -13,7 +13,7 @@ class TestDynaModule(unittest.TestCase):
     """Tests the dyna module."""
 
     def test_dyna_d3plot(self):
-        """Test all D3plot functions"""
+        """Testing all D3plot functions"""
 
         d3plot_filepath = "test/d3plot"
         d3plot_modes = ["in","mid","out","max","min","mean"]
@@ -76,26 +76,27 @@ class TestDynaModule(unittest.TestCase):
 
 
     def test_binout(self):
-        """Testing all Binout functions."""
+        """Testing all Binout functions"""
 
         binout_filepath = "test/binout"
-        content = ["swforc"]
-        content_subdirs = [ ['ids','axial', 'failure_time', 'failure', 'length', 'resultant_moment', 'shear'] ]
         nTimesteps = 321
+        content = ["swforc"]
+        content_subdirs = [['title', 'failure', 'ids', 'failure_time', 
+                            'typenames', 'axial', 'version', 'shear', 'time', 'date', 
+                            'length', 'resultant_moment', 'types', 'revision']]
         
         binout = Binout(binout_filepath)
-        self.assertEqual( len(binout.get_labels()) , 1)
-        self.assertItemsEqual( content , binout.get_labels() )
+        self.assertEqual( len(binout.read()) , len(content) )
+        self.assertItemsEqual( content , binout.read() )
         
+        # goe through content dirs and check a lot of stuff
         for content_dir, content_subdirs in zip(content,content_subdirs):
-            self.assertItemsEqual( content_subdirs , binout.get_labels(content_dir) )
-            for subdir in content_subdirs:
-                if subdir == "ids":
-                    binout.get_data(content_dir,subdir)
-                else:
-                    time,data = binout.get_data(content_dir,subdir)
-                    self.assertEqual( len(time) , nTimesteps )
-                    self.assertEqual( len(time) , len(data) )
+            self.assertItemsEqual( content_subdirs , binout.read(content_dir) )
+            self.assertEqual( nTimesteps , len(binout.read(content_dir,"time")) )
+
+            for content_subdir in content_subdirs:
+                # check if data containers not empty ... 
+                self.assertGreater( len(binout.read(content_dir,content_subdir) ) , 0 ) 
 
 
 if __name__ == "__main__":

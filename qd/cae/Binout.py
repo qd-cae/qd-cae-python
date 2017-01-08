@@ -127,6 +127,84 @@ class Binout:
         self.lsda_root = self.lsda.root
         
 
+    ## Read all data from Binout (top to low level)
+    # 
+    # @param str/list(str) *path : path to read within binout. Leave empty fir top level.
+    # @return see description
+    #
+    # @example read()/read("swforc")/read("swforc","time")/read("swforc/time")
+    #
+    # Since this command reads everything, the following return types are possible:
+    #   - path/to/dir : list(str) names of directory content
+    #   - path/to/ids : np.array(int) ids
+    #   - path/to/variable : np.array(float) vars
+    #
+    def read(self, *path):
+        
+        # TODO decode path if str (by /)
+
+        var_names = [] # dummy
+        iLevel = len(path)
+
+        # LEVEL 0 : no args (top)
+        if iLevel == 0: 
+            return self._bstr_to_str( list( self.lsda_root.children.keys() ) )
+        
+        # LEVEL 1 : Subdirs(Names) (swforc, nodout, ...)
+        elif iLevel == 1:
+            
+            dir_name = path[0]
+
+            # subdir
+            subdir_symbol = self.lsda_root.get(dir_name)
+            if not subdir_symbol:
+                raise ValueError("dir %s does not exist." % dir_name)
+
+            # search subsubdir vars (metadata + states)
+            var_names = set()
+            for subsubdir_name, subsubdir_symbol in subdir_symbol.children.items():
+                var_names = var_names.union( subsubdir_symbol.children.keys() )
+
+            return self._bstr_to_str( list(var_names) ) 
+
+        # LEVEL 2 : Variables (reading of data series)
+        elif iLevel == 2:
+
+            dir_name = path[0]
+            variable_name = self._str_to_bstr(path[1]) # variables are somehow binary strings ... dirs not
+
+            dir_symbol = self.lsda_root.get(dir_name)
+            if not dir_symbol:
+                raise ValueError("dir %s does not exist." % dir_name)
+
+            # search var in metadata
+            if "metadata" in dir_symbol.children and variable_name in dir_symbol.get("metadata").children:
+                return np.asarray( dir_symbol.get("metadata").get(variable_name).read() )
+            # var in state data ... hopefully
+            else:
+
+                time = []
+                data = []
+                for subdir_name, subdir_symbol in dir_symbol.children.items():
+                    
+                    # skip metadata
+                    if subdir_name == "metadata":
+                        continue
+                    
+                    # read data
+                    if variable_name in subdir_symbol.children:
+                        time += subdir_symbol.get(b"time").read()
+                        data += subdir_symbol.get(variable_name).read()
+                
+                # return sorted by time
+                return np.array(data)[np.argsort(time)]
+            
+        
+        # LEVEL 3+ : Error
+        else:
+            raise ValueError("Your path is longer than 3 ")
+
+
     ## Get the labels of the file
     #
     # @param str folder_name = None : subdirectory to investigate. None is root
@@ -135,100 +213,7 @@ class Binout:
     # or the labels of data in the subdirectories, e.g  folder_name="matsum".
     # This routine is meant for looking into the file.
     def get_labels(self,folder_name=None):
-
-        # highest level info
-        if folder_name == None:
-
-            return self._bStrToStr_list( list( self.lsda_root.children.keys() ) )
-
-        # subdir info
-        else:
-
-            name_symbol = self.lsda_root.get(folder_name)
-            if not name_symbol:
-                raise ValueError("%s does not exist." % folder_name)
-
-            # search vars ... a bit complicated
-            #
-            # each subdir is data written at a timestep so we need to iterate
-            # through all in order to catch all vars
-            var_names = set()
-            for subdir_name, subdir_symbol in name_symbol.children.items():
-                
-                subdir_name = self._bStrToStr(subdir_name)
-
-                # metadata
-                if subdir_name == "metadata":
-                    # nodout metadata contains node ids
-                    if folder_name == "nodout" or folder_name == "swforc":
-                        if 'ids' in self._bStrToStr_list(list(subdir_symbol.children.keys())):
-                            var_names.add('ids')
-                    continue
-
-                for subsubdir_name in subdir_symbol.children.keys():
-                    var_names.add(subsubdir_name)
-
-            var_names = self._bStrToStr_list( list(var_names) ) 
-
-            # remove time, since we add it anyways for every var
-            if "time" in var_names:
-                del var_names[var_names.index("time")]
-
-            return var_names
-
-
-    ## Get some data from the Binout
-    #
-    # @param str folder_name : name of top level folder e.g. "matsum"
-    # @param str variable_name : name of variable e.g. "internal_energy"
-    #
-    # Fetch data from the binout. If you have no idea what data is inside and
-    # how it is called, use get_labels() first.
-    def get_data(self, folder_name, variable_name):
-
-        folder_link = self.lsda_root.get(folder_name)
-        if not folder_link:
-            raise Exception("%s does not exist." % folder_name)
-
-        # special node ids in nodout treatment
-        elif (folder_name == "nodout" or folder_name == "swforc") and (variable_name == "ids"):
-
-            return np.asarray(folder_link.children['metadata'].children[self._str_to_bstr('ids')].read())
-
-        # treatment of arbitrary data
-        else:
-
-            # collect
-            time, data = [], []
-            for subfolder_name, subfolder_link in folder_link.children.items():
-
-                if variable_name in self._bStrToStr_list(list(subfolder_link.children)):
-                    time += subfolder_link.children[self._str_to_bstr("time")].read()
-                    _tmp = subfolder_link.children[self._str_to_bstr(variable_name)].read()
-                    if len(_tmp) == 1:
-                        data += _tmp
-                    else:
-                        data.append(_tmp)
-
-            # convert
-            time, data = np.asarray(time),np.asarray(data)
-
-            # sort after time ... binout is not very structured ...
-            indexes = time.argsort()
-            time = time[indexes]
-            data = data[indexes]
-
-        return time, data
-
-    
-    ## Encodes or decodes a list of string correctly regarding python version
-    #
-    # @param list(str/unicode/bytes) string
-    # @return list(str) string : converted to python version
-    #
-    def _bStrToStr_list(self, strings):
-
-        return [ self._bStrToStr(string) for string in strings ]
+        raise DeprecationWarning("\"binout.get_labels\" is deprecated. Use \"binout.read\".")
 
 
     ## Encodes or decodes a string correctly regarding python version
@@ -236,21 +221,18 @@ class Binout:
     # @param str/unicode/bytes string
     # @return str string : converted to python version
     #
-    def _bStrToStr(self, string):
+    def _bstr_to_str(self, arg):
 
-        if sys.version_info[0] < 3:
+        # in case of a list call this function with its atomic strings
+        if isinstance(arg, (list,tuple) ):
+            return [ self._bstr_to_str(entry) for entry in arg ]
 
-            if not isinstance(string, bytes):
-                return string.encode("utf-8")
-            else:
-                return string
-
+        # convert a string (dependent on python version)
+        if not isinstance(arg, str):
+            return arg.encode("utf-8")
         else:
+            return arg
 
-            if not isinstance(string, str):
-                return string.decode("utf-8")
-            else:
-                return string
 
     ## Convert a string to a binary string python version independent
     #
@@ -258,10 +240,11 @@ class Binout:
     # @param bstr string
     def _str_to_bstr(self,string):
 
-        if sys.version_info[0] < 3:
-            return string
+        if not isinstance(string, bytes):
+            return string.decode("utf-8")
         else:
-            return string.encode("utf-8")
+            return string
+
 
     ## Developers only: Scan the file subdirs.
     #

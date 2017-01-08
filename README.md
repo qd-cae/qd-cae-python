@@ -24,7 +24,6 @@ New functions:
  
 Python3 wheels work with following limits:
  - No femzip support on windows
- - Binout reader buggy (linux and windows)
 
 # Sub-Modules
 
