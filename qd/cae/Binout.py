@@ -229,7 +229,7 @@ class Binout:
 
         # convert a string (dependent on python version)
         if not isinstance(arg, str):
-            return arg.encode("utf-8")
+            return arg.decode("utf-8")
         else:
             return arg
 
@@ -241,7 +241,7 @@ class Binout:
     def _str_to_bstr(self,string):
 
         if not isinstance(string, bytes):
-            return string.decode("utf-8")
+            return string.encode("utf-8")
         else:
             return string
 
