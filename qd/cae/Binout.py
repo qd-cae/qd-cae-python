@@ -193,8 +193,13 @@ class Binout:
                     
                     # read data
                     if variable_name in subdir_symbol.children:
+                        state_data = subdir_symbol.get(variable_name).read()
+                        if len(state_data) == 1:
+                            data.append(state_data[0])
+                        else: # more than one data entry
+                            data.append(state_data)
                         time += subdir_symbol.get(b"time").read()
-                        data += subdir_symbol.get(variable_name).read()
+                        #data += subdir_symbol.get(variable_name).read()
                 
                 # return sorted by time
                 return np.array(data)[np.argsort(time)]
@@ -204,6 +209,14 @@ class Binout:
         else:
             raise ValueError("Your path is longer than 3 ")
 
+    
+    ## Convert a data series of numbers (usually ints) to a string
+    #
+    # @param np.array(int) data : binary data
+    # @return str string
+    @staticmethod
+    def to_string(data_array):
+        return "".join([chr(entry) for entry in data_array])
 
     ## Get the labels of the file
     #

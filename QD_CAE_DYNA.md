@@ -63,28 +63,54 @@ order to get a first impression of the content use binout.get_labels().
 Open a Binout. All related binouts with number extensions will be recognized
 too.
 
-**binout.get_labels(folder_name=None)**
+**binout.read(*path)**
 
-*return: list of str*
+*return: list(str) or np.array(float/int) content_names/data*
 
-In the default case, all the high level content such as matsum, nodout and so
-on are listed. If one of these folders is chosen as optional argument, the
-variable names in these subfolders are listed.
+This function is used to read any data from the binout. It has been used to make
+the access to the data more comfortable. The return type depends on the given path:
+ - binout.read() : list(str) names of directories (in binout)
+ - binout.read(directory) : list(str) names of variables (in directory)
+ - binout.read(directory,variable) : np.array(float/int) data
 
-**binout.get_data(folder_name,variable_name)**
+If you have multiple outputs with different ids (e.g. in nodout for multiple
+nodes) then don't forget to read the ids array for identification or id-labels.
 
-*return: tuple(list of float, list of float)*
+IMPORTANT FOR STRINGS: 
 
-Get a data series from a certain folder, such as matsum and so on. The time series
-specifically for this variable is also returned as first tuple value, since other
-variables might have been written at higher or lower frequency.
+Since all data is binary, the API can not infer when you want to retrieve a
+string. In that case use the ```binout.to_string``` method on the data array.
 
 ```python
-binout.get_labels()
-# >>> ['secforc', 'matsum', 'sprforc', 'glstat', 'sleout', 'spcforc', 'rcforc']
-binout.get_labels('matsum')
-# >>> [ ... ,'internal_energy', ... ]
-time, internal_energy = binout.get_data('matsum','internal_energy')
+from qd.cae.dyna import Binout
+binout = Binout("test/binout")
+
+binout.read()
+# >>> ['swforc']
+binout.read("swforc")
+# >>> ['title', 'failure', 'ids', 'failure_time', ...]
+len(binout.read("swforc","time"))
+# >>> 321
+binout.read("swforc","shear").shape
+# >>> (321L, 26L)
+binout.read("swforc","ids")
+# >>> array([52890, 52891, 52892, ...])
+binout.read("swforc","typenames") # strings also are just plain numbers 
+# >>> array([99, 111, 110, ...]) 
+
+```
+
+**binout.to_string(data_array)**
+
+*return: str converted : converted data array to string*
+
+Convert a binary data array to a string.
+
+```python
+binout.read("swforc","typenames") # strings also are just plain numbers 
+# >>> array([99, 111, 110, ...]) 
+binout.to_string(binout.read("swforc","typenames"))
+# >>> 'constraint,weld,beam,solid,non nodal, ,solid assembly'
 ```
 
 ---------

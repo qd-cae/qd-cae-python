@@ -21,7 +21,9 @@ too and if possible contribute.
 New functions:
  - d3plot.info() : listing information about data in d3plot.
  - d3plot.get_nodeByIndex(index) : get a node by $index \in [0,nNodes)$
- 
+ - binout.read(*path) : new API for binout reading 
+ - Binout.to_string(data_array) : utility for string conversion
+
 Python3 wheels with following limits:
  - No femzip support on windows
  - ~~Binout reader buggy (linux and windows)~~

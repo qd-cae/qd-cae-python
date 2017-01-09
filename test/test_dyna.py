@@ -85,11 +85,14 @@ class TestDynaModule(unittest.TestCase):
                             'typenames', 'axial', 'version', 'shear', 'time', 'date', 
                             'length', 'resultant_moment', 'types', 'revision']]
         
+        # open file
         binout = Binout(binout_filepath)
+
+        # check directory stuff
         self.assertEqual( len(binout.read()) , len(content) )
         self.assertItemsEqual( content , binout.read() )
-        
-        # goe through content dirs and check a lot of stuff
+
+        # check variables reading
         for content_dir, content_subdirs in zip(content,content_subdirs):
             self.assertItemsEqual( content_subdirs , binout.read(content_dir) )
             self.assertEqual( nTimesteps , len(binout.read(content_dir,"time")) )
@@ -97,7 +100,10 @@ class TestDynaModule(unittest.TestCase):
             for content_subdir in content_subdirs:
                 # check if data containers not empty ... 
                 self.assertGreater( len(binout.read(content_dir,content_subdir) ) , 0 ) 
-
+        
+        # check string conversion
+        self.assertEqual( binout.to_string(binout.read("swforc","typenames")) ,
+                          'constraint,weld,beam,solid,non nodal, ,solid assembly' )
 
 if __name__ == "__main__":
     unittest.main()
