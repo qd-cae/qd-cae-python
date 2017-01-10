@@ -31,9 +31,19 @@ for ii in range(len(sys.argv)):
 
 # (1) Native Code Stuff
 # (1.1) DYNA-CPP toolbox
-if not os.path.isdir(boost_path):
+
+# BOOST
+if not os.path.isdir(boost_path) and "linux" in platform.system().lower():
+    if os.path.isdir("/usr/include/boost"):
+        boost_path = "/usr/include/boost"
+    elif os.path.isdir("/usr/local/include/boost"):
+        boost_path = "/usr/local/include/boost"
+    else:
+        raise Exception("Could neither detect boost on system, nor was %s correct." % boost_path)
+if not os.path.isdir(boost_path) and (platform.system() == "Windows"):
     raise Exception("Invalid boost library path: %s." % boost_path)
     #b2 --toolset=msvc-10.0 --build-type=complete architecture=x86 address-model=64 stage
+    
 compiler_args_dyna = []
 include_dirs_dyna = [boost_path,np.get_include()]
 lib_dirs_dyna = [] # ["libs/boost_1_61_0/lib64-msvc-9.0"]
@@ -53,6 +63,7 @@ srcs_dyna = ["qd/cae/dyna_cpp/python_api/wrapper.cpp",
     "qd/cae/dyna_cpp/utility/FileUtility.cpp",
     "qd/cae/dyna_cpp/utility/TextUtility.cpp",
     "qd/cae/dyna_cpp/utility/MathUtility.cpp"]
+     
 # FEMZIP usage? Libraries present?
 # You need to download the femzip libraries yourself from SIDACT GmbH
 # If you have questions, write a mail.

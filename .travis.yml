@@ -7,10 +7,12 @@ notifications:
   
 before_install:
   - sudo apt-get install python-numpy
+  - sudo apt-get install libboost-dev
   
 install:
   - pip install --upgrade pip setuptools wheel
   - pip install --only-binary=numpy numpy
+  - pip install unittest2
   - python setup.py install
 
 script: 
