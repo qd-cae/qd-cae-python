@@ -1536,6 +1536,8 @@ void D3plot::read_states_elem4(unsigned int iState){
 
     // preallocate layer vars
     vector<float> stress(6);
+    int pstrain_offset = dyna_ioshl1 != 0 ? 6 : 0; // are there stresses before?
+    int size_stress_pstrain = dyna_ioshl2 != 0 ? pstrain_offset + 1 : pstrain_offset; // is there plastic strain?
     float plastic_strain = 0;
     vector<float> history_vars;
     if(this->history_shell_read.size()){
@@ -1545,11 +1547,11 @@ void D3plot::read_states_elem4(unsigned int iState){
     // Loop: layers
     for(int iLayer = 0; iLayer < dyna_maxint; iLayer++){
 
-      int layerStart = ii + iLayer*(7 + dyna_neips);
+      int layerStart = ii + iLayer*(size_stress_pstrain + dyna_neips);
 
       // layers: plastic strain (in/out,min/mid/max)
       if( (this->plastic_strain_read) && (dyna_ioshl2)){
-        float _tmp = this->buffer->read_float(layerStart+6);
+        float _tmp = this->buffer->read_float(layerStart+pstrain_offset);
 
         // max
         if(this->plastic_strain_read == 1)
@@ -1577,7 +1579,7 @@ void D3plot::read_states_elem4(unsigned int iState){
       }
 
       // layers: stress tensor (in/mid/out,mean,min/max)
-      if( (this->stress_read) && (dyna_ioshl1)){
+      if( (this->stress_read) && (dyna_ioshl1) ){
         // max
         if(this->stress_read == 1) {
           float _tmp;

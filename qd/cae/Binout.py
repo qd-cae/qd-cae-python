@@ -151,63 +151,124 @@ class Binout:
             return self._bstr_to_str( list( self.lsda_root.children.keys() ) )
         
         # LEVEL 1 : Subdirs(Names) (swforc, nodout, ...)
+        # Special Treatment:
+        #   - rwforc
         elif iLevel == 1:
             
             dir_name = path[0]
 
             # subdir
-            subdir_symbol = self.lsda_root.get(dir_name)
-            if not subdir_symbol:
-                raise ValueError("dir %s does not exist." % dir_name)
+            dir_symbol = self._get_symbol(self.lsda_root, path)
 
             # search subsubdir vars (metadata + states)
-            var_names = set()
-            for subsubdir_name, subsubdir_symbol in subdir_symbol.children.items():
-                var_names = var_names.union( subsubdir_symbol.children.keys() )
+            if dir_name == "rwforc": # sometimes I have the feeling no one cares about a good general data structure ...
+                return self._bstr_to_str( list( dir_symbol.children.keys() ) ) 
 
-            return self._bstr_to_str( list(var_names) ) 
+            # standard variable search
+            else:
+                return self._collect_variables(dir_symbol)
 
         # LEVEL 2 : Variables (reading of data series)
         elif iLevel == 2:
 
             dir_name = path[0]
-            variable_name = self._str_to_bstr(path[1]) # variables are somehow binary strings ... dirs not
+            
+            # (1) Special Treatments ... sigh
+            if dir_name == "rwforc":
+                return self._collect_variables( self._get_symbol(self.lsda_root, path) )
 
-            dir_symbol = self.lsda_root.get(dir_name)
-            if not dir_symbol:
-                raise ValueError("dir %s does not exist." % dir_name)
-
+            # (2) Normal Reading
             # search var in metadata
-            if "metadata" in dir_symbol.children and variable_name in dir_symbol.get("metadata").children:
-                return np.asarray( dir_symbol.get("metadata").get(variable_name).read() )
-            # var in state data ... hopefully
-            else:
-
-                time = []
-                data = []
-                for subdir_name, subdir_symbol in dir_symbol.children.items():
-                    
-                    # skip metadata
-                    if subdir_name == "metadata":
-                        continue
-                    
-                    # read data
-                    if variable_name in subdir_symbol.children:
-                        state_data = subdir_symbol.get(variable_name).read()
-                        if len(state_data) == 1:
-                            data.append(state_data[0])
-                        else: # more than one data entry
-                            data.append(state_data)
-                        time += subdir_symbol.get(b"time").read()
-                        #data += subdir_symbol.get(variable_name).read()
-                
-                # return sorted by time
-                return np.array(data)[np.argsort(time)]
+            return self._get_variable(path)
             
         
         # LEVEL 3+ : Error
         else:
-            raise ValueError("Your path is longer than 3 ")
+
+            if path[0] == "rwforc":
+                return self._get_variable(path)
+            else:
+                raise ValueError("Your path for %s is longer than 2 entries." % path[0])
+
+    
+    ## Get a symbol from a path via lsda
+    #
+    # @param Symbol symbol : current directory which is a Lsda.Symbol 
+    # @return Symbol : final symbol after recursive search of path
+    def _get_symbol(self, symbol, path):
+
+        # check
+        if symbol == None:
+            raise ValueError("Symbol may not be none.")
+        
+        # no further path, return current symbol
+        if len(path) == 0:
+            return symbol
+        # more subsymbols to search for
+        else:
+            
+            sub_path = list(path) # copy
+            next_symbol_name = sub_path.pop(0) 
+            
+            next_symbol = symbol.get( next_symbol_name )
+            if next_symbol == None:
+                raise ValueError("Can not find: %s" % next_symbol_name)
+            
+            return self._get_symbol(next_symbol, sub_path)
+        
+
+    ## Read a variable from a given path
+    #
+    # @param list(str) path : path to the variable
+    # @return np.array(int/float) data
+    def _get_variable(self, path):
+
+        dir_symbol = self._get_symbol(self.lsda_root, path[:-1])
+        variable_name = self._str_to_bstr(path[-1]) # variables are somehow binary strings ... dirs not   
+
+        # var in metadata
+        if ("metadata" in dir_symbol.children) and (variable_name in dir_symbol.get("metadata").children):
+            return np.asarray( dir_symbol.get("metadata").get(variable_name).read() )
+        # var in state data ... hopefully
+        else:
+            
+            time = []
+            data = []
+            for subdir_name, subdir_symbol in dir_symbol.children.items():
+                
+                # skip metadata
+                if subdir_name == "metadata":
+                    continue
+                
+                # read data
+                if variable_name in subdir_symbol.children:
+                    state_data = subdir_symbol.get(variable_name).read()
+                    if len(state_data) == 1:
+                        data.append(state_data[0])
+                    else: # more than one data entry
+                        data.append(state_data)
+                    time += subdir_symbol.get(b"time").read()
+                    #data += subdir_symbol.get(variable_name).read()
+            
+            # return sorted by time
+            return np.array(data)[np.argsort(time)]
+
+        raise ValueError("Could not find and read: %s" % str(path))
+
+
+    ## Collect all variables from a symbol
+    #
+    # @param Lsda.Symbol symbol
+    # @return list(str) variable_names
+    #
+    # This function collect all variables from the state dirs and metadata
+    def _collect_variables(self,symbol):
+
+        var_names = set()
+        for subdir_name, subdir_symbol in symbol.children.items():
+            var_names = var_names.union( subdir_symbol.children.keys() )
+
+        return self._bstr_to_str( list(var_names) ) 
 
     
     ## Convert a data series of numbers (usually ints) to a string

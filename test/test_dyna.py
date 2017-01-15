@@ -80,7 +80,7 @@ class TestDynaModule(unittest.TestCase):
 
         binout_filepath = "test/binout"
         nTimesteps = 321
-        content = ["swforc"]
+        content = ["swforc"] # TODO: special case rwforc
         content_subdirs = [['title', 'failure', 'ids', 'failure_time', 
                             'typenames', 'axial', 'version', 'shear', 'time', 'date', 
                             'length', 'resultant_moment', 'types', 'revision']]
@@ -104,6 +104,8 @@ class TestDynaModule(unittest.TestCase):
         # check string conversion
         self.assertEqual( binout.to_string(binout.read("swforc","typenames")) ,
                           'constraint,weld,beam,solid,non nodal, ,solid assembly' )
+
+        
 
 if __name__ == "__main__":
     unittest.main()
