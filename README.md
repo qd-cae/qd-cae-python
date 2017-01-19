@@ -18,7 +18,15 @@ We want to tackle this issue with this free library, in order to give engineerin
 a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
+*Changelog 19.01.2017*
+Version 0.3.5
+
+Binout reader now complete:
+ - binout.read(...) for finding and getting data
+ - binout.to_string(...) for array conversion to string
+
 *Changelog 08.01.2017*
+Version 0.3.4
 
 New functions:
  - d3plot.info() : listing information about data in d3plot.
@@ -36,8 +44,8 @@ Current Module List:
 
 1. [qd.cae.dyna](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md)
   - Read D3plot (DONE)
+  - Read Binouts (DONE)
   - Read Input Files (partially done)
-  - Read Binouts (partially done)
 2. ?
 
 For more details, look into the helper files.

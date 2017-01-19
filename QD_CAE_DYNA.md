@@ -29,8 +29,9 @@ Functions:
 # Example
 
 ```python
-from qd.cae.dyna import D3plot
+from qd.cae.dyna import Binout, D3plot
 
+# D3plot
 d3plot = D3plot("filepath/to/d3plot",read_states="disp")
 timesteps = d3plot.get_timesteps()
 d3plot.read_states(["plastic_strain max","history 2 shell max"])
@@ -46,6 +47,15 @@ for node in element.get_nodes():
 part = d3plot.get_partByID(13)
 part_elems = part.get_elements()
 
+# Binout
+binout = Binout("filepath/to/binout")
+binout.read()
+# >>> ['nodout']
+binout.read("swforc")
+# >>> ['title','failure','ids',...]
+binout.read("swforc","ids").shape # read ids array
+# >>> (26L,)
+
 ```
 
 
@@ -53,8 +63,7 @@ part_elems = part.get_elements()
 # Binout
 
 This class can be used in order to read the binout from LS-Dyna simulations. A
-binout contains time data at higher output frequencies in a binary version. In
-order to get a first impression of the content use binout.get_labels().
+binout contains time data at higher output frequencies in a binary version. 
 
 **Binout(filepath)**
 

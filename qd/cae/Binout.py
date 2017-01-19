@@ -141,54 +141,89 @@ class Binout:
     #
     def read(self, *path):
         
-        # TODO decode path if str (by /)
+        iLevel = len(path)
 
-        var_names = [] # dummy
+        if iLevel == 0: 
+            return self._bstr_to_str( list( self.lsda_root.children.keys() ) )
+        elif (path[0] == "jntforc") or (path[0] == "rwforc"):
+            return self._decode_three_levels(path)
+        else:
+            return self._decode_two_levels(path)
+
+
+
+    ## Decode a path, which has depth 2 (default)
+    #
+    # @param list(str) : path list
+    # @return list(str)/np.array(int)/np.array(float) ret : either path children or data
+    def _decode_two_levels(self, path):
+
         iLevel = len(path)
 
         # LEVEL 0 : no args (top)
         if iLevel == 0: 
             return self._bstr_to_str( list( self.lsda_root.children.keys() ) )
-        
-        # LEVEL 1 : Subdirs(Names) (swforc, nodout, ...)
-        # Special Treatment:
-        #   - rwforc
+
+        # LEVEL 1 : variable names
         elif iLevel == 1:
-            
-            dir_name = path[0]
+
+            # subdir
+            dir_symbol = self._get_symbol(self.lsda_root, path)
+
+            # collect variable names
+            return self._collect_variables(dir_symbol)
+
+        # LEVEL 2 : read variable data
+        elif iLevel == 2:
+            return self._get_variable(path)
+
+        # LEVEL 3+ : Error
+        else:
+            raise ValueError("Invalid path depth of \"%d > 2\"." % len(iLevel))
+
+
+    ## Decode a path, which has depth 3 instread of 2 like default.
+    #
+    # @param list(str) : path list
+    # @return list(str)/np.array(int)/np.array(float) ret : either path children or data
+    #
+    # Level 3 Files are:
+    #   - rwforc
+    #   - jntforc
+    def _decode_three_levels(self, path):
+
+        iLevel = len(path)
+
+        # LEVEL 0 : no args (top)
+        if iLevel == 0: 
+            return self._bstr_to_str( list( self.lsda_root.children.keys() ) )
+
+        # LEVEL 1 : categories
+        elif iLevel == 1:
 
             # subdir
             dir_symbol = self._get_symbol(self.lsda_root, path)
 
             # search subsubdir vars (metadata + states)
-            if dir_name == "rwforc": # sometimes I have the feeling no one cares about a good general data structure ...
-                return self._bstr_to_str( list( dir_symbol.children.keys() ) ) 
+            return self._bstr_to_str( list( dir_symbol.children.keys() ) )
 
-            # standard variable search
-            else:
-                return self._collect_variables(dir_symbol)
-
-        # LEVEL 2 : Variables (reading of data series)
+        # LEVEL 2 : variable names
         elif iLevel == 2:
 
-            dir_name = path[0]
-            
-            # (1) Special Treatments ... sigh
-            if dir_name == "rwforc":
-                return self._collect_variables( self._get_symbol(self.lsda_root, path) )
+            # subdir
+            dir_symbol = self._get_symbol(self.lsda_root, path)
 
-            # (2) Normal Reading
-            # search var in metadata
+            # collect variable names
+            return self._collect_variables(dir_symbol)
+
+        # LEVEL 3 : read variable data
+        elif iLevel == 3:
             return self._get_variable(path)
-            
-        
-        # LEVEL 3+ : Error
-        else:
 
-            if path[0] == "rwforc":
-                return self._get_variable(path)
-            else:
-                raise ValueError("Your path for %s is longer than 2 entries." % path[0])
+        # LEVEL 4+ : Error
+        else:
+            raise ValueError("Invalid path depth \"%d > 3\"." % len(iLevel))
+
 
     
     ## Get a symbol from a path via lsda
