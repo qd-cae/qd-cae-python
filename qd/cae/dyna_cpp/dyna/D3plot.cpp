@@ -369,9 +369,11 @@ void D3plot::info(){
   cout << "shell-forces: " << this->dyna_ioshl3 << endl;
   cout << "shell-stuff : " << this->dyna_ioshl4 << endl;
   cout << "shell-strn  : " << this->dyna_istrn << endl;
+  cout << "shell-nInteg: " << this->dyna_maxint << endl;
   cout << "nVar1D: " << this->dyna_nv1d << endl;
   cout << "nVar2D: " << this->dyna_nv2d << endl;
   cout << "nVar3D: " << this->dyna_nv3d << endl;
+  cout << "state-globals: " << this->dyna_nglbv << endl;
 
 }
 
@@ -902,7 +904,7 @@ void D3plot::read_states_init(){
       wordPosition = 0;
     }*/
     // No femzip case
-    if((!this->useFemzip) && firstFileDone){
+    if( (!this->useFemzip) && firstFileDone ){
       wordPosition = 0;
     }
     // femzip case
@@ -961,7 +963,7 @@ void D3plot::read_states_parse(vector<string> _variables){
   this->history_solid_read.clear();
   this->history_solid_mode.clear();
 
-  for(unsigned int ii=0; ii<_variables.size(); ++ii){
+  for(size_t ii=0; ii<_variables.size(); ++ii){
     // Displacement
     if(_variables[ii].find("disp") != string::npos){
       if( dyna_iu == 0)
@@ -1181,7 +1183,7 @@ void D3plot::read_states(vector<string> _variables){
 
   #ifdef QD_DEBUG
   cout << "> STATES" << endl;
-  for(unsigned int ii=0; ii<_variables.size(); ++ii)
+  for(size_t ii=0; ii<_variables.size(); ++ii)
     cout << "variable: " << _variables[ii] << endl;
   #endif
 
@@ -1206,7 +1208,7 @@ void D3plot::read_states(vector<string> _variables){
       return;
 
   // Calculate loop properties
-  unsigned int iState = 0;
+  size_t iState = 0;
   int nVarsNodes = dyna_ndim*(dyna_iu+dyna_iv+dyna_ia)*dyna_numnp;
   int nVarsElems = dyna_nel2*dyna_nv1d+dyna_nel4*dyna_nv2d+dyna_nel8*dyna_nv3d;
 
@@ -1269,8 +1271,7 @@ void D3plot::read_states(vector<string> _variables){
         float state_time = buffer->read_float(wordPosition);
         this->timesteps.push_back(state_time);
         #ifdef QD_DEBUG
-        printf("State %u: %.4f\n",iState,state_time);
-        //cout << "State " << iState << ": " << state_time << endl;
+        cout << "State: " << iState << " Time: " << state_time << endl;
         #endif
       }
 
@@ -1437,25 +1438,28 @@ void D3plot::read_states_acceleration(){
  * > Strain Mises
  * > Stress Tensor
  * > Stress Mises
- * > Eq. Plastic Strain (done)
+ * > Eq. Plastic Strain 
  *
  */
-void D3plot::read_states_elem8(unsigned int iState){
+void D3plot::read_states_elem8(size_t iState){
 
   if((dyna_nv3d <= 0) && (dyna_nel8 <= 0))
     return;
 
-  int start = 1 + dyna_nglbv + (dyna_iu+dyna_iv+dyna_ia) * dyna_numnp * dyna_ndim + this->femzip_state_offset;
+  int start = this->wordPosition 
+             + 1 // time
+             + dyna_nglbv 
+             + (dyna_iu+dyna_iv+dyna_ia) * dyna_numnp * dyna_ndim 
+             + this->femzip_state_offset;
   wordsToRead = dyna_nv3d * dyna_nel8;
 
-  int iElement = 0;
-  int delta = 7+dyna_neiph;
-  for(int ii = start;ii < start+wordsToRead; ii+=delta){
+  size_t iElement = 0;
+  for(int ii = start;ii < start+wordsToRead; ii+=dyna_nv3d){
 
     Element* element = this->get_db_elements()->get_elementByIndex(SOLID,iElement);
 
     // stress tensor
-    if(this->stress_read){
+    if(this->stress_read && this->dyna_ioshl1){
       vector<float> sigma(6);
       sigma[0] = this->buffer->read_float(ii);
       sigma[1] = this->buffer->read_float(ii+1);
@@ -1468,18 +1472,18 @@ void D3plot::read_states_elem8(unsigned int iState){
 
     // plastic strain
     if(this->plastic_strain_read){
-      element->add_plastic_strain(this->buffer->read_float(ii+6));
+      element->add_plastic_strain(this->buffer->read_float(ii+6*this->dyna_ioshl1));
     }
 
     // strain tensor
     if( (dyna_istrn == 1) && this->strain_read ){
       vector<float> strain(6);
-      strain[0] = this->buffer->read_float(ii+delta-6);
-      strain[1] = this->buffer->read_float(ii+delta-5);
-      strain[2] = this->buffer->read_float(ii+delta-4);
-      strain[3] = this->buffer->read_float(ii+delta-3);
-      strain[4] = this->buffer->read_float(ii+delta-2);
-      strain[5] = this->buffer->read_float(ii+delta-1);
+      strain[0] = this->buffer->read_float(ii+dyna_nv3d-6);
+      strain[1] = this->buffer->read_float(ii+dyna_nv3d-5);
+      strain[2] = this->buffer->read_float(ii+dyna_nv3d-4);
+      strain[3] = this->buffer->read_float(ii+dyna_nv3d-3);
+      strain[4] = this->buffer->read_float(ii+dyna_nv3d-2);
+      strain[5] = this->buffer->read_float(ii+dyna_nv3d-1);
       element->add_strain(strain);
     }
 
@@ -1517,29 +1521,33 @@ void D3plot::read_states_elem8(unsigned int iState){
  * > Eq. Plastic Strain (done)
  *
  */
-void D3plot::read_states_elem4(unsigned int iState){
+void D3plot::read_states_elem4(size_t iState){
 
   if((dyna_istrn != 1) && (dyna_nv2d <= 0) && (dyna_nel4>0))
     return;
 
   // prepare looping
-  int start = 1 + dyna_nglbv
+  int start = this->wordPosition 
+             + 1 // time 
+             + dyna_nglbv
              + (dyna_iu+dyna_iv+dyna_ia) * dyna_numnp * dyna_ndim
              + dyna_nv3d * dyna_nel8
              + dyna_nv1d * dyna_nel2
              + this->femzip_state_offset;
-
   wordsToRead = dyna_nv2d*dyna_nel4;
+
+  int iPlastStrainOffset = this->dyna_ioshl1*6; // stresses before?
+  int iHistoryOffset     = iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
+  int iLayerSize         = iPlastStrainOffset + iHistoryOffset;
 
   int iElement = 0;
   for(int ii = start;ii < start+wordsToRead; ii+=dyna_nv2d){
 
     // preallocate layer vars
     vector<float> stress(6);
-    int pstrain_offset = dyna_ioshl1 != 0 ? 6 : 0; // are there stresses before?
-    int size_stress_pstrain = dyna_ioshl2 != 0 ? pstrain_offset + 1 : pstrain_offset; // is there plastic strain?
-    float plastic_strain = 0;
     vector<float> history_vars;
+    float plastic_strain = 0;
+    
     if(this->history_shell_read.size()){
       history_vars.assign(this->history_shell_read.size(),0.f);
     }
@@ -1547,11 +1555,11 @@ void D3plot::read_states_elem4(unsigned int iState){
     // Loop: layers
     for(int iLayer = 0; iLayer < dyna_maxint; iLayer++){
 
-      int layerStart = ii + iLayer*(size_stress_pstrain + dyna_neips);
+      int layerStart = ii + iLayer*this->dyna_nv2d;
 
       // layers: plastic strain (in/out,min/mid/max)
       if( (this->plastic_strain_read) && (dyna_ioshl2)){
-        float _tmp = this->buffer->read_float(layerStart+pstrain_offset);
+        float _tmp = this->buffer->read_float(layerStart+iPlastStrainOffset);
 
         // max
         if(this->plastic_strain_read == 1)
@@ -1566,16 +1574,14 @@ void D3plot::read_states_elem4(unsigned int iState){
         else if((this->plastic_strain_read == 4) && (iLayer == dyna_maxint / 2) )
           plastic_strain = _tmp;
         // in
-        else if((this->plastic_strain_read == 5) && (iLayer == 1) )
+        else if((this->plastic_strain_read == 5) && (iLayer == 0) )
           plastic_strain = _tmp;
         // mean
-        else if((this->plastic_strain_read == 6))
-          plastic_strain = _tmp;
-        /*
-        else
-          throw("Unknown var_mode for plastic_strain:"+to_string(this->plastic_strain_read));
-        */
-
+        else if((this->plastic_strain_read == 6)){
+          plastic_strain += _tmp;
+          if( iLayer == dyna_maxint -1 )
+            plastic_strain /= (float) dyna_maxint;
+        }
       }
 
       // layers: stress tensor (in/mid/out,mean,min/max)
@@ -1673,8 +1679,7 @@ void D3plot::read_states_elem4(unsigned int iState){
 
         }
       } // loop:history
-
-      } // loop:layers
+    } // loop:layers
 
     Element* element = this->get_db_elements()->get_elementByIndex(SHELL,iElement);
 
