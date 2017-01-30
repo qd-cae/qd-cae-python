@@ -124,6 +124,8 @@ void D3plotBuffer::init_nextState(){
  */
 void D3plotBuffer::read_nextState(){
 
+  // Do not load next buffer in case of first file
+  // It will be read if the end marker is hit anyways.
   if(iStateFile == 0){
     iStateFile++;
     return;

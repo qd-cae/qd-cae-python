@@ -18,6 +18,13 @@ We want to tackle this issue with this free library, in order to give engineerin
 a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
+*Changelog 31.01.2017*
+Version 0.3.6
+
+D3plot:
+ - Added few outputs to d3plot.info()
+ - Bugfix causing read of only data from state 0 if multiple states are in one file
+
 *Changelog 19.01.2017*
 Version 0.3.5
 
@@ -25,18 +32,6 @@ Binout reader now complete:
  - binout.read(...) for finding and getting data
  - binout.to_string(...) for array conversion to string
 
-*Changelog 08.01.2017*
-Version 0.3.4
-
-New functions:
- - d3plot.info() : listing information about data in d3plot.
- - d3plot.get_nodeByIndex(index) : get a node by $index \in [0,nNodes)$
- - binout.read(*path) : new API for binout reading 
- - Binout.to_string(data_array) : utility for string conversion
-
-Python3 wheels with following limits:
- - No femzip support on windows
- - ~~Binout reader buggy (linux and windows)~~
 
 # Sub-Modules
 

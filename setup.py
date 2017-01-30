@@ -13,7 +13,7 @@ femzip_path = "libs/femzip" # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-_version = "0.3.5"
+_version = "0.3.6"
 # =============================== #
 
 if sys.version_info[0] >= 3 and not "linux" in platform.system().lower():

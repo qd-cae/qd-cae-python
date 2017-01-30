@@ -135,8 +135,8 @@ private:
   void read_states_displacement();
   void read_states_velocity();
   void read_states_acceleration();
-  void read_states_elem8(unsigned int iState);
-  void read_states_elem4(unsigned int iState);
+  void read_states_elem8(size_t iState);
+  void read_states_elem4(size_t iState);
   bool isFileEnding(int);
 
   // === P U B L I C === //
