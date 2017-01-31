@@ -10,15 +10,10 @@ before_install:
   - sudo apt-get install libboost-dev
   
 install:
-  - pip install coveralls
   - pip install --upgrade pip setuptools wheel
   - pip install --only-binary=numpy numpy
   - pip install unittest2
   - python setup.py install
 
 script: 
-  - coverage run --source=qd setup.py test
-  #- python setup.py test
-
-after_success:
-  coveralls
+  - python setup.py test
