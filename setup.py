@@ -2,10 +2,11 @@
 
 import os
 import sys
+import glob
 import platform
 import numpy as np
 import unittest
-from setuptools import find_packages,setup,Extension
+from setuptools import setup, Extension
 
 # ======= S E T T I N G S ======= #
 boost_path = "libs/boost_1_61_0"
@@ -13,7 +14,7 @@ femzip_path = "libs/femzip" # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-_version = "0.3.6"
+_version = "0.4.0"
 # =============================== #
 
 if sys.version_info[0] >= 3 and not "linux" in platform.system().lower():
@@ -118,15 +119,21 @@ def my_test_suite():
 setup(name = 'qd',
 		version = _version,
 		license = 'GNU GPL v3',
-		description = 'QD-Engineering python library',
-		author = 'C. Diez',
+		description = 'QD-Engineering Python Library for CAE',
+		author = 'C. Diez, D. Toewe',
         url    = 'www.qd-eng.de',
         author_email = 'constantin.diez@gmail.com',
 		packages=(['qd',
-                 'qd.cae',]),
-		#packages=find_packages(),
+                   'qd.cae',]),
 		package_dir={'qd'    : 'qd',
                      'qd.cae' : 'qd/cae',},
+        data_files = [
+            ('qd/cae/resources', ['resources/chroma.min.js',
+                                  'resources/jquery.min.js',
+                                  'resources/jszip.min.js',
+                                  'resources/three.min.js',
+                                  'resources/html.template'])
+        ],
         ext_package='qd.cae', # where to place c extensions
         ext_modules=[dyna_extension],
 		install_requires=['numpy'],

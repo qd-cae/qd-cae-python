@@ -425,7 +425,7 @@ void D3plot::read_geometry(){
 
   if(!isFileEnding(wordPosition)){
     //cout << this->buffer->read_float(wordPosition) << endl;
-    throw("Anticipated file ending wrong in geometry section.");
+    throw(string("Anticipated file ending wrong in geometry section."));
   }
 
   this->buffer->free_partBuffer();
@@ -866,83 +866,6 @@ bool D3plot::isFileEnding(int iWord){
 
 
 /*
- * Checks if the states are alle fine and sets a few variables.
- *
- */
-void D3plot::read_states_init(){
-
-  #ifdef QD_DEBUG
-  cout << "> STATES INIT" << endl;
-  #endif
-
-  wordPositionStates = wordPosition;
-
-  int iState = 0;
-  int nVarsNodes = dyna_ndim*(dyna_iu+dyna_iv+dyna_ia)*dyna_numnp;
-  int nVarsElems = dyna_nel2*dyna_nv1d+dyna_nel4*dyna_nv2d+dyna_nel8*dyna_nv3d;
-
-  int nDeletionVars = -1;
-  if (dyna_mdlopt == 0){
-    // ok
-  } else if(dyna_mdlopt == 1){
-    nDeletionVars = dyna_numnp;
-  } else if(dyna_mdlopt == 2){
-    nDeletionVars = dyna_nel2+dyna_nel4+dyna_nel8+dyna_nelth;
-  } else {
-    throw("Parameter mdlopt:"+to_string(dyna_mdlopt)+" makes no sense.");
-  }
-
-  // Loop through state files
-  this->buffer->init_nextState();
-  bool firstFileDone = false;
-  while(this->buffer->has_nextState()){
-
-    this->buffer->read_nextState();
-
-    /*
-    if(firstFileDone){
-      wordPosition = 0;
-    }*/
-    // No femzip case
-    if( (!this->useFemzip) && firstFileDone ){
-      wordPosition = 0;
-    }
-    // femzip case
-    if(this->useFemzip){
-      // 0 = endmark
-      // 1 = ntype = 90001
-      // 2 = numprop
-      int dyna_numprop_states = this->buffer->read_int(2);
-      if(this->dyna_numprop != dyna_numprop_states)
-        throw("Numprop in geometry section != numprop in states section!");
-      wordPosition = 1;
-      wordPosition += 1 + (this->dyna_numprop+1)*19+1;
-    }
-
-    // Loop through states
-    while(!this->isFileEnding(wordPosition)){
-
-      float state_time = buffer->read_float(wordPosition);
-      this->timesteps.push_back(state_time);
-
-      // update position
-      wordPosition += nVarsNodes + nVarsElems + nDeletionVars + dyna_nglbv + 1;
-
-      iState++;
-    }
-
-    firstFileDone = true;
-  }
-
-
-  this->buffer->end_nextState();
-  #ifdef QD_DEBUG
-  cout << "nTimeSteps: " << this->timesteps.size() << endl;
-  #endif
-}
-
-
-/*
  * Parse the user input for state reading.
  *
  */
@@ -1188,10 +1111,10 @@ void D3plot::read_states(vector<string> _variables){
   #endif
 
   if( (_variables.size() < 1) && (this->timesteps.size() > 0))
-    throw("The list of state variables to load is empty.");
+    throw(string("The list of state variables to load is empty."));
 
   // Decode variable reading
-  read_states_parse(_variables);
+  this->read_states_parse(_variables);
 
   // Check if variables are already read.
   // If just 1 is not read yet, the routine runs through.
@@ -1213,7 +1136,7 @@ void D3plot::read_states(vector<string> _variables){
   int nVarsElems = dyna_nel2*dyna_nv1d+dyna_nel4*dyna_nv2d+dyna_nel8*dyna_nv3d;
 
   // Variable Deletion table
-  int nDeletionVars = -1;
+  int nDeletionVars = 0;
   if (dyna_mdlopt == 0){
     // ok
   } else if(dyna_mdlopt == 1){
@@ -1236,10 +1159,10 @@ void D3plot::read_states(vector<string> _variables){
   // the FemzipBuffer.
   if(this->timesteps.size() < 1){
     this->buffer->init_nextState();
-    wordPositionStates = this->wordPosition;
+    this->wordPositionStates = this->wordPosition;
   } else{
     this->buffer->rewind_nextState();
-    this->wordPosition = wordPositionStates;
+    this->wordPosition = this->wordPositionStates;
   }
 
    // Loop over state files
@@ -1260,8 +1183,8 @@ void D3plot::read_states(vector<string> _variables){
       if(this->dyna_numprop != dyna_numprop_states)
         throw("Numprop in geometry section != numprop in states section!");
       wordPosition = 1; // endline symbol at 0 in case of femzip ...
-      wordPosition += 1 + (this->dyna_numprop+1)*19+1;
-      this->femzip_state_offset = wordPosition;
+      wordPosition += 1 + (this->dyna_numprop+1)*19 + 1;
+      //this->femzip_state_offset = wordPosition;
     }
 
     // Loop through states
@@ -1383,7 +1306,7 @@ void D3plot::read_states_velocity(){
   if(dyna_iv != 1)
     return;
 
-  int start = 1 + dyna_nglbv + (dyna_iu) * dyna_numnp * dyna_ndim + this->femzip_state_offset;
+  int start = 1 + dyna_nglbv + (dyna_iu) * dyna_numnp * dyna_ndim + wordPosition;
   wordsToRead = dyna_numnp*dyna_ndim;
   size_t iNode = 0;
 
@@ -1412,7 +1335,7 @@ void D3plot::read_states_acceleration(){
   if(dyna_ia != 1)
     return;
 
-  int start = 1 + dyna_nglbv + (dyna_iu+dyna_iv) * dyna_numnp * dyna_ndim + this->femzip_state_offset;
+  int start = 1 + dyna_nglbv + (dyna_iu+dyna_iv) * dyna_numnp * dyna_ndim + wordPosition;
   wordsToRead = dyna_numnp*dyna_ndim;
   int iNode = 0;
 
@@ -1449,8 +1372,7 @@ void D3plot::read_states_elem8(size_t iState){
   int start = this->wordPosition 
              + 1 // time
              + dyna_nglbv 
-             + (dyna_iu+dyna_iv+dyna_ia) * dyna_numnp * dyna_ndim 
-             + this->femzip_state_offset;
+             + (dyna_iu+dyna_iv+dyna_ia) * dyna_numnp * dyna_ndim;
   wordsToRead = dyna_nv3d * dyna_nel8;
 
   size_t iElement = 0;
@@ -1532,16 +1454,15 @@ void D3plot::read_states_elem4(size_t iState){
              + dyna_nglbv
              + (dyna_iu+dyna_iv+dyna_ia) * dyna_numnp * dyna_ndim
              + dyna_nv3d * dyna_nel8
-             + dyna_nv1d * dyna_nel2
-             + this->femzip_state_offset;
+             + dyna_nv1d * dyna_nel2;
   wordsToRead = dyna_nv2d*dyna_nel4;
 
   int iPlastStrainOffset = this->dyna_ioshl1*6; // stresses before?
   int iHistoryOffset     = iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
-  int iLayerSize         = iPlastStrainOffset + iHistoryOffset;
+  int iLayerSize         = dyna_neips + iHistoryOffset;
 
   int iElement = 0;
-  for(int ii = start;ii < start+wordsToRead; ii+=dyna_nv2d){
+  for(int ii = start; ii < start+wordsToRead; ii+=dyna_nv2d){
 
     // preallocate layer vars
     vector<float> stress(6);
@@ -1555,7 +1476,7 @@ void D3plot::read_states_elem4(size_t iState){
     // Loop: layers
     for(int iLayer = 0; iLayer < dyna_maxint; iLayer++){
 
-      int layerStart = ii + iLayer*this->dyna_nv2d;
+      int layerStart = ii + iLayer*iLayerSize;
 
       // layers: plastic strain (in/out,min/mid/max)
       if( (this->plastic_strain_read) && (dyna_ioshl2)){

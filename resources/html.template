@@ -1,0 +1,442 @@
+<!---
+  Copyright 2016 Dirk Toewe
+  
+  This file is part of PUP.
+  
+  PUP is free software: you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published
+  by the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
+  
+  PUP is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+  License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with PUP. If not, see <http://www.gnu.org/licenses/>.
+--->
+<div id="{div_id}">
+</div>
+<script type="text/javascript">
+'use strict';
+{{
+  let deg2rad = Math.PI/180;
+
+  class CameraControls
+  {{
+    updateNearFar()
+    {{
+      this.camera.far  = this.distance + this.diameter/2;
+      this.camera.near = this.distance - this.diameter/2;
+      this.camera.near = Math.max(this.diameter/1024, this.camera.near);
+      this.camera.updateProjectionMatrix();
+    }}
+
+    updateCamera()
+    {{
+      this.camera.position.set(0, 0, this.distance)
+        .applyEuler(this.angles)
+        .add(this.focus);
+      this.camera.setRotationFromEuler(this.angles);
+    }}
+
+    mouseMove( event )
+    {{
+      if( this.rotate + this.drag > 1 )
+        return;
+      let
+        x = event.pageX,
+        y = event.pageY,
+        dx= x - this.lastX,
+        dy= y - this.lastY;
+      this.lastX = x;
+      this.lastY = y;
+      if( this.rotate )
+      {{
+        this.angles.x -= dy*deg2rad/2;
+        this.angles.z -= dx*deg2rad/2;
+        this.angles.x = Math.min(Math.max(this.angles.x,0),+180*deg2rad);
+        this.angles.z %= 2*Math.PI;
+        this.updateCamera();
+      }}
+      if( this.drag )
+      {{
+        let
+          cos = Math.cos(this.angles.z),
+          sin = Math.sin(this.angles.z);
+        this.focus.x -= ( dx*cos + dy*sin ) * this.camera.fov * this.distance/100/1000;
+        this.focus.y += ( dy*cos - dx*sin ) * this.camera.fov * this.distance/100/1000;
+        this.updateCamera();
+      }}
+    }}
+
+    mouseWheel( event )
+    {{
+      event.preventDefault();
+      this.distance *= Math.pow(1.05, Math.sign(event.deltaY) );
+      this.distance  = Math.max(this.distance,this.camera.near);
+      this.updateNearFar();
+      this.updateCamera();
+    }}
+ 
+    mouseDown( event )
+    {{
+      if( 1 & event.buttons )
+      {{
+        this.rotate = true;
+        this.lastX = event.pageX,
+        this.lastY = event.pageY;
+      }}
+      if( 4 & event.buttons )
+      {{
+        event.preventDefault();
+        this.drag = true;
+        this.lastX = event.pageX,
+        this.lastY = event.pageY;
+      }}
+    }}
+
+    mouseUp( event )
+    {{
+      if( 1 & ~event.buttons )
+        this.rotate = false;
+      if( 4 & ~event.buttons )
+        this.drag = false;
+    }}
+ 
+    mouseLeave( event )
+    {{
+      this.rotate = false;
+      this.drag   = false;
+    }}
+
+    keyDown( event ) {{ console.log(event); }}
+    keyUp( event ) {{ console.log(event); }}
+
+    constructor( camera, boundingBox, eventSrc )
+    {{
+      this.focus = boundingBox.min.clone().add(boundingBox.max).divideScalar(2);
+      this.angles = new THREE.Euler( 45*deg2rad, 0, 45*deg2rad, 'ZYX');
+      this.diameter = boundingBox.min .distanceTo (boundingBox.max);
+      this.distance = this.diameter / Math.tan(camera.fov*deg2rad/2);
+      this.camera = camera;
+      this.updateNearFar();
+      this.updateCamera();
+
+      eventSrc.addEventListener("wheel", e => this.mouseWheel(e), false);
+
+      eventSrc.addEventListener('keydown', e => this.keyDown(e), false);
+      eventSrc.addEventListener('keyup',   e => this.keyUp  (e), false);
+
+      $(eventSrc).mousedown( e => this.mouseDown (e) );
+      $(eventSrc).mousemove( e => this.mouseMove (e) );
+      $(eventSrc).mouseup  ( e => this.mouseUp   (e) );
+      eventSrc.addEventListener('mouseleave',e => this.mouseLeave(e), false);
+    }}
+  }}
+
+  // TODO: move viridis code into ColorMap class
+  class ColorMap
+  {{
+    constructor( ticks, colors, lowIntensityColor, highIntensityColor )
+    {{
+      this.ticks = ticks;
+      this.colors = colors.map( x => chroma.hex(x) );
+      this. lowIntensityColor = chroma.hex( lowIntensityColor);
+      this.highIntensityColor = chroma.hex(highIntensityColor);
+    }}
+
+    mapToColors( intensities, minIntensity, maxIntensity )
+    {{
+      let
+        range = maxIntensity - minIntensity,
+        ticks = this.ticks,
+        colors = this.colors;
+
+      console.log('minIntensity = '+minIntensity);
+      console.log('range = '+range);
+
+      function color( intensity, start, end )
+      {{
+        while( start+1 < end )
+        {{
+          let i = (start+end) >>> 1
+          if( intensity < ticks[i] )
+            end = i;
+          else
+            start = i;
+        }}
+        let
+          ts = ticks[start],
+          te = ticks[end];
+        return chroma.mix( colors[start], colors[end], (intensity-ts) / (te-ts), 'lch');
+      }}
+
+      return Float32Array.from(
+        function*() {{
+          for( let intensity of intensities  )
+            yield* (
+                intensity <= minIntensity ? this. lowIntensityColor
+              : intensity >= maxIntensity ? this.highIntensityColor
+              : color( (intensity - minIntensity) / range, 0,ticks.length-1 )
+            ).rgb().slice(0,3);
+        }}.call(this),
+        x => x/255.0
+      );
+    }}
+
+    plotScale(canvas, intensities, minIntensity, maxIntensity)
+    {{
+      let
+        ctx = canvas.getContext('2d'),
+        gradient = ctx.createLinearGradient(0,0, 0,canvas.height);
+      this.ticks.forEach(
+        (tick,i) => gradient.addColorStop(0.05+0.9*tick, this.colors[i])
+      );
+      ctx.fillStyle = 'black';
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      let
+        w = canvas.width/2,
+        h = canvas.height;
+      for( let tick=0; tick <= 10; tick++ )
+        ctx.fillText( minIntensity*(1-tick/10) + maxIntensity*tick/10, w+8,h*(0.05+0.9*tick/10) );
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0,h*0.05, w,h*0.95);
+      ctx.fillStyle = this. lowIntensityColor;
+      ctx.fillRect(0,0, w,h*0.05);
+      ctx.fillStyle = this.highIntensityColor;
+      ctx.fillRect(0,h*0.95, w,h);
+    }}
+  }}
+
+  let colorMaps = {{
+    jet: new ColorMap(
+      new Float32Array([0, 0.125, 0.375, 0.625, 0.875, 1]),
+      ['#000083', '#003caa', '#05ffff', '#ffff00', '#fa0000', '#800000'],
+      '#bbbbbb', '#800000'
+    ),
+    viridis: new ColorMap(
+      new Float32Array([0, 0.06274509803921569, 0.12549019607843137, 0.18823529411764706, 0.25098039215686274, 0.3137254901960784, 0.3764705882352941, 0.4392156862745098, 0.5019607843137255, 0.5647058823529412, 0.6274509803921569, 0.6901960784313725, 0.7529411764705882, 0.8156862745098039, 0.8784313725490196, 0.9411764705882353, 1]),
+      ['#440154', '#48186a', '#472d7b', '#424086', '#3b528b', '#33638d', '#2c728e', '#26828e', '#21918c', '#1fa088', '#28ae80', '#3fbc73', '#5ec962', '#84d44b', '#addc30', '#d8e219', '#fde725'],
+      '#bbbbbb', '#fde725'
+    )
+  }}
+
+  let
+    zip = new JSZip().loadAsync( "{zdata}", {{"base64": true}} ),
+    data = [
+      zip
+        .then( zip => zip.file("/positions").async("arraybuffer") )
+        .then( buf => new Float32Array(buf) ),
+      zip
+        .then( zip => zip.file("/intensities").async("arraybuffer") )
+        .then( buf => new Float32Array(buf) ),
+      zip
+        .then( zip => zip.file("/text").async("string") )
+        .then( buf => JSON.parse(buf) )
+    ];
+
+  function makeScene(positions,intensities,text)
+  {{
+    console.log(intensities);
+    let
+	  div = document.getElementById('{div_id}'),
+      width = window.innerWidth,
+      height = window.innerHeight,
+      scene        = new THREE.Scene(),
+      sceneOverlay = new THREE.Scene(),
+      camera        = new THREE.PerspectiveCamera( 10, width / height, 0.1, 1000 ),
+      cameraOverlay = new THREE.OrthographicCamera( 0,width, 0,-height, /*near,far=*/1,20 );
+    cameraOverlay.position.z = 10;
+
+    let
+	  renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor( 0xffffff, 1.0 );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.autoClear = false;
+    div.appendChild(renderer.domElement);
+
+    let bounds = {{
+      min: [+Infinity,+Infinity,+Infinity],
+      max: [-Infinity,-Infinity,-Infinity]
+    }}
+    for( let i=0; i < positions.length; i+=3 )
+      for( let j=0; j < 3; j++ )
+      {{ 
+        bounds.min[j] = Math.min( bounds.min[j], positions[i+j] );
+        bounds.max[j] = Math.max( bounds.max[j], positions[i+j] );
+      }}
+    bounds.min = new THREE.Vector3(...bounds.min);
+    bounds.max = new THREE.Vector3(...bounds.max);
+
+    let
+       lowIntensity =  {lowIntensity},
+      highIntensity = {highIntensity},
+      colorMap = colorMaps.jet,
+      colors = colorMap.mapToColors( intensities, {lowIntensity}, {highIntensity} ),//intensities.reduce( (x,y) => Math.min(x,y) ) ),
+      material = new THREE.MeshStandardMaterial({{ 
+        vertexColors: THREE.VertexColors,
+        shading: THREE.FlatShading,
+        side: THREE.DoubleSide,
+        // roughness: 0.5,
+        // metalness: 0.75
+      }});
+ 
+    let geometry = new THREE.BufferGeometry();
+    geometry.addAttribute('position', new THREE.BufferAttribute(positions,3) );
+    geometry.addAttribute('color',    new THREE.BufferAttribute(colors,   3) );
+    geometry.computeFaceNormals();
+
+    let mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+ 
+    let
+      ambiLight = new THREE.    AmbientLight(0xffffff, 1.6),
+      dirLights = [];
+ 
+    scene.add(ambiLight);
+    
+    for( let i=0; i<8; i++ )
+    {{
+      let dirLight = new THREE.DirectionalLight(0xffffff, 0.05 );
+      dirLight.position.x = i & 1 ? bounds.min.x : bounds.max.x
+      dirLight.position.y = i & 2 ? bounds.min.y : bounds.max.y
+      dirLight.position.z = i & 4 ? bounds.min.z : bounds.max.z
+      dirLight.target.position.addVectors(bounds.min,bounds.max).divideScalar(2);
+      scene.add(dirLight);
+      scene.add(dirLight.target);
+    }}
+    
+
+    let tooltip = {{ canvas: document.createElement('canvas') }};
+    tooltip.canvas.width  = 256;
+    tooltip.canvas.height =  32;
+    
+    tooltip.texture = new THREE.Texture(tooltip.canvas);
+
+    tooltip.context = tooltip.canvas.getContext('2d');
+
+    tooltip.setText = text =>
+    {{
+      let ctx = tooltip.context;
+      ctx.font = '10pt Arial';
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, tooltip.canvas.width, tooltip.canvas.height);
+      ctx.fillStyle = 'white';
+      ctx.fillRect(1, 1, tooltip.canvas.width - 2, tooltip.canvas.height - 2);
+      ctx.fillStyle = 'black';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, tooltip.canvas.width / 2, tooltip.canvas.height / 2);
+      tooltip.texture.needsUpdate = true;
+    }}
+
+    tooltip.material = new THREE.SpriteMaterial({{ map: tooltip.texture, color: 0xffffff }});
+
+    tooltip.sprite = new THREE.Sprite(tooltip.material);
+    tooltip.sprite.scale.set(tooltip.canvas.width,tooltip.canvas.height,1);
+    tooltip.sprite.position.set(
+      +100 + tooltip.canvas.width /2,
+      -100 - tooltip.canvas.height/2,
+      2
+    );
+
+    let colorScale = {{ canvas: document.createElement('canvas') }};
+    colorScale.canvas.width  = 128;
+    colorScale.canvas.height = 512;
+    
+    colorScale.texture = new THREE.Texture(colorScale.canvas);
+    colorScale.texture.needsUpdate = true;
+    colorMap.plotScale(colorScale.canvas,intensities,lowIntensity,highIntensity);
+
+    colorScale.material = new THREE.SpriteMaterial({{ map: colorScale.texture, color: 0xffffff }});
+
+    colorScale.sprite = new THREE.Sprite(colorScale.material);
+    colorScale.sprite.scale.set(colorScale.canvas.width,colorScale.canvas.height,1);
+    colorScale.sprite.position.set(
+      +16 + colorScale.canvas.width /2,
+      -16 - colorScale.canvas.height/2,
+      2
+    );
+    
+
+    let mouse = {{ x: NaN, y: NaN }};
+    $(renderer.domElement).mousemove(
+      function(e) {{
+        mouse.x = e.pageX - this.offsetLeft;
+        mouse.y = e.pageY - this.offsetTop;
+      }}
+    );
+    renderer.domElement.addEventListener(
+      'mouseleave',
+      e => {{
+        mouse.x = NaN;
+        mouse.y = NaN;
+      }},
+      false
+    );
+    document.addEventListener(
+      'keyup',
+      e => {{
+        console.log(e);
+        mouse.debug = true;
+      }},
+      false
+    );
+
+    sceneOverlay.add(   tooltip.sprite);
+    sceneOverlay.add(colorScale.sprite);
+
+    let camControls = new CameraControls(camera,bounds,renderer.domElement);
+
+    console.log(text);
+
+    let undoHighlight = () => {{}}
+    function loop()
+    {{
+      let
+        rayDir = new THREE.Vector3(
+          + (mouse.x / window.innerWidth )*2 - 1,
+          - (mouse.y / window.innerHeight)*2 + 1,
+          1
+        ).unproject(camera)
+         .sub(camera.position)
+         .normalize(),
+        ray = new THREE.Raycaster( camera.position, rayDir ),
+        hits = ray.intersectObject(mesh);
+      if( 0 < hits.length )
+      {{
+        if( mouse.debug ) {{
+          delete mouse.debug;
+        }}
+        let i = hits[0].faceIndex/3;
+        while( null == text[i] )
+          i -= 1;
+        tooltip.setText(text[i]);
+      }}
+      else {{
+        mouse.x = NaN;
+        mouse.y = NaN;
+      }}
+      tooltip.sprite.position.set(
+        +mouse.x + tooltip.canvas.width /2 + 16,
+        -mouse.y - tooltip.canvas.height/2 - 16,
+        2
+      );
+
+      requestAnimationFrame(loop);
+
+      renderer.clear();
+      renderer.render(scene,camera);
+      renderer.clearDepth();
+      renderer.render(sceneOverlay,cameraOverlay);
+    }}
+    loop();
+  }}
+
+  Promise.all(data).then( x => makeScene(...x) );
+}}
+</script>

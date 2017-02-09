@@ -36,14 +36,17 @@ d3plot = D3plot("filepath/to/d3plot",read_states="disp")
 timesteps = d3plot.get_timesteps()
 d3plot.read_states(["plastic_strain max","history 2 shell max"])
 
+# Node
 node = d3plot.get_nodeByID(7)
 node_displacement = node.get_disp()
 
+# Element
 element = d3plot.get_elementByID("shell",11)
 elem_plastic_strain = element.get_plastic_strain()
 for node in element.get_nodes():
   print("Node:"+str(node.get_id()))
 
+# Part
 part = d3plot.get_partByID(13)
 part_elems = part.get_elements()
 
@@ -142,6 +145,21 @@ Read a d3plot with basic geometry into the memory. The second option is meant to
 *return: None*
 
 Prints info about the data within the d3plot (nodes, elements, materials, results, ...) 
+
+**d3plot.plot(iTimestep=0, result\_type=None, fringe\_bounds=[None,None], export\_filepath=None)**
+
+*return: None*
+
+This function plots the d3plot in your browser (beware of large models!). One has the option
+to fringe the model with "energy" or "plastic_strain" by using result\_type. The bounds of the
+fringe may be set manually if desired. By adding a filepath for export the model will not be
+plotted but saved to the given location.
+
+```python
+d3plot.plot(iTimestep=25, result_type="plastic_strain", fringe_bounds=[0,0.05])
+```
+
+<img src="resources/pix/rail_plastic_strain.png" alt="Drawing" style="width: 300px;"/>
 
 **d3plot.get_timesteps()**
 

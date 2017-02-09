@@ -18,19 +18,19 @@ We want to tackle this issue with this free library, in order to give engineerin
 a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
-*Changelog 31.01.2017*
+*Changelog 9.2.2017*
+Version 0.4.0
+
+D3plot:
+  - Added d3plot.plot() for plotting as 3D HTML model (see [here](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md))
+  - Small bugfix occurring under rare conditions
+
+*Changelog 30.1.2017*
 Version 0.3.6
 
 D3plot:
  - Added few outputs to d3plot.info()
  - Bugfix causing read of only data from state 0 if multiple states are in one file
-
-*Changelog 19.01.2017*
-Version 0.3.5
-
-Binout reader now complete:
- - binout.read(...) for finding and getting data
- - binout.to_string(...) for array conversion to string
 
 
 # Sub-Modules
