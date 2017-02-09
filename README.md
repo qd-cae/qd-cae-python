@@ -23,7 +23,7 @@ Version 0.4.0
 
 D3plot:
   - Added d3plot.plot() for plotting as 3D HTML model (see [here](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md))
-  - Small bugfix occurring under rare conditions
+  - Small femzip bugfix occurring under rare conditions
 
 *Changelog 30.1.2017*
 Version 0.3.6
