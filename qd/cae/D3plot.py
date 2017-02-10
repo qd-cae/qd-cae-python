@@ -41,16 +41,17 @@ class D3plot(QD_D3plot):
 
     
 
-    def plot(self, iTimestep=0, result_type=None, fringe_bounds=[None,None], export_filepath=None):
+    def plot(self, iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None):
         '''Plot the D3plot, currently shells only!
 
         Parameters:
         -----------
         iTimestep : int
             timestep at which to plot the D3plot
-        result_type : str
+        element_result : str or function
             which type of results to use as fringe
             None means no fringe is used
+            Function shall take elem as input and return a float value (for fringe)
         fringe_bounds : list(float,float) or tuple(float,float)
             bounds for the fringe, default will use min and max value
         export_filepath : str
@@ -61,7 +62,7 @@ class D3plot(QD_D3plot):
 
         _html = _parts_to_html(self.get_parts(), 
                                iTimestep=iTimestep, 
-                               result_type=result_type,
+                               element_result=element_result,
                                fringe_bounds=fringe_bounds)
         
         # save if export path present
@@ -72,7 +73,7 @@ class D3plot(QD_D3plot):
         # plot if no export
         else:
 
-            # clean temporary dir first (yeah keeps mem low)
+            # clean temporary dir first (keeps mem low)
             tempdir = tempfile.gettempdir()
             tempdir = os.path.join(tempdir,"qd_eng")
             if not os.path.isdir(tempdir):
@@ -87,3 +88,6 @@ class D3plot(QD_D3plot):
             with tempfile.NamedTemporaryFile(dir=tempdir,suffix=".html", mode="w", delete=False) as fp:
                 fp.write(_html)
                 webbrowser.open(fp.name)
+
+
+        

@@ -3,6 +3,7 @@ import os
 import io
 import json
 import uuid
+import numbers
 import numpy as np
 from base64 import b64encode
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -27,7 +28,7 @@ def _read_file(filepath):
         return fp.read()
 
 
-def _extract_elem_data(element, iTimestep=0, result_type=None):
+def _extract_elem_data(element, iTimestep=0, element_result=None):
     '''Extract fringe data from the element
 
     Parameters:
@@ -36,8 +37,10 @@ def _extract_elem_data(element, iTimestep=0, result_type=None):
         Element to extract the data of
     iTimestep : int
         timestep at which to extract the element data
-    result_type : str
-        type of result data to extract
+    element_result : str or function
+        which type of results to use as fringe
+        None means no fringe is used
+        Function shall take elem as input and return a float value (for fringe)
 
     Returns:
     --------
@@ -46,17 +49,25 @@ def _extract_elem_data(element, iTimestep=0, result_type=None):
     Returns None in case that no result type is desired.
     '''
 
-    if result_type == None:
+    if element_result == None:
         return None
-    elif "plastic_strain" in result_type:
-        return element.get_plastic_strain()[iTimestep]
-    elif "energy" in result_type:
-        return element.get_energy()[iTimestep]
+    elif callable(element_result):
+        elem_result = element_result(element)
+        assert isinstance(elem_result, numbers.Number), "The return from the element_result function must be a number!"
+        return elem_result
+    elif isinstance(element_result,str):
+
+        if "plastic_strain" in element_result:
+            return element.get_plastic_strain()[iTimestep]
+        elif "energy" in element_result:
+            return element.get_energy()[iTimestep]
+        else:
+            raise ValueError("Unknown result type %s. Try energy or plastic_strain." % element_result)
+
     else:
-        raise ValueError("Unknown result type %s. Try energy or plastic_strain." % result_type)
+        raise ValueError("Unkown argument type %s for _extract_elem_data." % str(element_result) )
 
-
-def _extract_mesh_from_parts(parts, iTimestep=0, result_type=None):
+def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
     '''Extract the mesh data from a part or list of parts
 
     Parameters:
@@ -65,8 +76,10 @@ def _extract_mesh_from_parts(parts, iTimestep=0, result_type=None):
         parts to extract mesh of
     iTimestep : int
         timestep at which to extract the mesh coords
-    result_type : str
-        type of results to read
+    element_result : str or function
+        which type of results to use as fringe
+        None means no fringe is used
+        Function shall take elem as input and return a float value (for fringe)
 
     Returns:
     --------
@@ -90,7 +103,7 @@ def _extract_mesh_from_parts(parts, iTimestep=0, result_type=None):
             elem_nodes = elem.get_nodes()
 
             # element fringe
-            elem_result = _extract_elem_data(elem, iTimestep, result_type)
+            elem_result = _extract_elem_data(elem, iTimestep, element_result)
 
             # element annotation
             if elem_result == None:
@@ -121,7 +134,7 @@ def _extract_mesh_from_parts(parts, iTimestep=0, result_type=None):
     return node_data, node_fringe, element_texts
 
 
-def _parts_to_html(parts, iTimestep=0, result_type=None, fringe_bounds=[None,None]):
+def _parts_to_html(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None]):
     '''Convert a part or multiple parts to a 3D HTML
 
     Parameters:
@@ -130,8 +143,10 @@ def _parts_to_html(parts, iTimestep=0, result_type=None, fringe_bounds=[None,Non
         part to convert (from a d3plot)
     iTimestep : int
         timestep at which the coordinates are taken
-    result_type : str
-        type of results to read, None means no fringe
+    element_result : str or function
+        which type of results to use as fringe
+        None means no fringe is used
+        Function shall take elem as input and return a float value (for fringe)
     fringe_bounds : list(float,float) or tuple(float,float)
         bounds for the fringe, default will use min and max value
 
@@ -142,7 +157,7 @@ def _parts_to_html(parts, iTimestep=0, result_type=None, fringe_bounds=[None,Non
     '''
     
     # extract mesh dta
-    node_coords, node_fringe, element_texts = _extract_mesh_from_parts(parts, iTimestep=iTimestep, result_type=result_type)
+    node_coords, node_fringe, element_texts = _extract_mesh_from_parts(parts, iTimestep=iTimestep, element_result=element_result)
 
     # fringe bounds
     fringe_bounds = list(fringe_bounds) # convert in case of tuple (no assignments)

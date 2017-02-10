@@ -146,17 +146,23 @@ Read a d3plot with basic geometry into the memory. The second option is meant to
 
 Prints info about the data within the d3plot (nodes, elements, materials, results, ...) 
 
-**d3plot.plot(iTimestep=0, result\_type=None, fringe\_bounds=[None,None], export\_filepath=None)**
+**d3plot.plot(iTimestep=0, element\_result=None, fringe\_bounds=[None,None], export\_filepath=None)**
 
 *return: None*
 
-This function plots the d3plot in your browser (beware of large models!). One has the option
-to fringe the model with "energy" or "plastic_strain" by using result\_type. The bounds of the
-fringe may be set manually if desired. By adding a filepath for export the model will not be
-plotted but saved to the given location.
+This function plots the d3plot in your browser (beware of large models!). 
+One has the option to fringe the model with either a specific result ("energy" or "plastic_strain")
+or by a user defined evaluation function which takes the element as input and returns
+its fringe value from whatever result.The bounds of the fringe may be set manually if desired. 
+By adding a filepath for export the model will not be plotted but saved to the given location.
 
 ```python
-d3plot.plot(iTimestep=25, result_type="plastic_strain", fringe_bounds=[0,0.05])
+# plot plastic strain
+d3plot.plot(iTimestep=25, element_result="plastic_strain", fringe_bounds=[0,0.05])
+
+# export with user defined result function
+eval_function = lambda elem : elem.get_plastic_strain()[-1]
+d3plot.plot(iTimestep=25, element_result=eval_function, fringe_bounds=[0,0.05], export_filepath="Path/To/export.html")
 ```
 
 <img src="resources/pix/rail_plastic_strain.png" alt="Drawing" style="width: 300px;"/>
