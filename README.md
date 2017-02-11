@@ -18,6 +18,14 @@ We want to tackle this issue with this free library, in order to give engineerin
 a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
+*Changelog 11.2.2017*
+Version 0.4.1
+
+D3plot & KeyFile:
+  - Added static function: D3plot.plot_parts
+  - Added plot_parts to qd.cae.dyna
+  - Added part.plot() (same as for d3plot.plot)
+
 *Changelog 9.2.2017*
 Version 0.4.0
 

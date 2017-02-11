@@ -14,7 +14,7 @@ femzip_path = "libs/femzip" # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-_version = "0.4.0"
+_version = "0.4.1"
 # =============================== #
 
 if sys.version_info[0] >= 3 and not "linux" in platform.system().lower():
@@ -133,13 +133,6 @@ setup(name = 'qd',
 		package_data={
 			'qd.cae.resources' : ['*.js','html.template']
 		},
-#        data_files = [
-#            ('qd/cae/resources', ['resources/chroma.min.js',
-#                                  'resources/jquery.min.js',
-#                                  'resources/jszip.min.js',
-#                                  'resources/three.min.js',
-#                                  'resources/html.template'])
-#        ],		
         ext_package='qd.cae', # where to place c extensions
         ext_modules=[dyna_extension],
 		install_requires=['numpy'],

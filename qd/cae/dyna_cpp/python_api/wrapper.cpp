@@ -296,7 +296,7 @@ extern "C" {
     PyModule_AddObject(m, "QD_D3plot", (PyObject *)&QD_D3plot_Type);
 
     Py_INCREF(&QD_KeyFile_Type);
-    PyModule_AddObject(m, "KeyFile", (PyObject *)&QD_KeyFile_Type);
+    PyModule_AddObject(m, "QD_KeyFile", (PyObject *)&QD_KeyFile_Type);
 
     Py_INCREF(&QD_Node_Type);
     PyModule_AddObject(m, "Node", (PyObject *)&QD_Node_Type);
@@ -305,7 +305,10 @@ extern "C" {
     PyModule_AddObject(m, "Element", (PyObject *)&QD_Element_Type);
 
     Py_INCREF(&QD_Element_Type);
-    PyModule_AddObject(m, "Part", (PyObject *)&QD_Part_Type);
+    PyModule_AddObject(m, "QD_Part", (PyObject *)&QD_Part_Type);
+
+    Py_INCREF(&QD_FEMFile_Type);
+    PyModule_AddObject(m, "FEMFile", (PyObject *)&QD_FEMFile_Type);
 
     #ifdef ISPY3
     return m;

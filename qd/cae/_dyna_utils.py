@@ -4,11 +4,13 @@ import io
 import json
 import uuid
 import numbers
+import tempfile
+import webbrowser
 import numpy as np
 from base64 import b64encode
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from .dyna import Part
+from .dyna_cpp import QD_Part
 
 
 def _read_file(filepath):
@@ -67,6 +69,7 @@ def _extract_elem_data(element, iTimestep=0, element_result=None):
     else:
         raise ValueError("Unkown argument type %s for _extract_elem_data." % str(element_result) )
 
+
 def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
     '''Extract the mesh data from a part or list of parts
 
@@ -86,7 +89,7 @@ def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
         mesh_coords, mesh_fringe, elem_texts : tuple(np.ndarray, np.ndarray, list)
     '''
 
-    if isinstance(parts, Part):
+    if isinstance(parts, QD_Part):
         parts = [parts]
 
     node_data   = []
@@ -207,3 +210,72 @@ def _parts_to_html(parts, iTimestep=0, element_result=None, fringe_bounds=[None,
     _chroma_js= _html_chroma_js,
     _jquery_js= _html_jquery_js)
 
+
+
+def _plot_html(_html, export_filepath=None):
+    '''Plot a 3D html
+
+    Parameters:
+    -----------
+    _html : str
+        html as string
+    export_filepath : str
+        optional filepath for saving
+
+    This function takes an html as string and if no export_filepath
+    is given, directly plots it with your current webbrowser. If 
+    a filepath is given, the html will be saved to the given location.
+    '''
+
+    # save if export path present
+    if export_filepath:
+        with open(export_filepath,"w") as fp:
+            fp.write(_html)
+
+    # plot if no export
+    else:
+
+        # clean temporary dir first (keeps mem low)
+        tempdir = tempfile.gettempdir()
+        tempdir = os.path.join(tempdir,"qd_eng")
+        if not os.path.isdir(tempdir):
+            os.mkdir(tempdir)
+
+        for tmpfile in os.listdir(tempdir):
+            tmpfile = os.path.join(tempdir,tmpfile)
+            if os.path.isfile(tmpfile):
+                os.remove(tmpfile)
+        
+        # create new temp file
+        with tempfile.NamedTemporaryFile(dir=tempdir,suffix=".html", mode="w", delete=False) as fp:
+            fp.write(_html)
+            webbrowser.open(fp.name)
+
+
+def plot_parts(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None):
+    '''Plot a single or multiple parts from a d3plot
+
+    Parameters:
+    -----------
+    parts : Part or list(Part)
+        part to convert (from a d3plot)
+    iTimestep : int
+        timestep at which the coordinates are taken
+    element_result : str or function
+        None means no fringe is used
+        str -> type of results to use as fringe (plastic_strain or energy)
+        function -> take elem as input and return a float value (for fringe)
+    fringe_bounds : list(float,float) or tuple(float,float)
+        bounds for the fringe, default will use min and max value
+    export_filepath : str
+        optional filepath for saving. If none, the model
+        is exported to a temporary file and shown in the
+        browser.
+    '''
+
+    _html = _parts_to_html(parts, 
+                           iTimestep=iTimestep, 
+                           element_result=element_result,
+                           fringe_bounds=fringe_bounds)
+        
+    _plot_html(_html,export_filepath=export_filepath)
