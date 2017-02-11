@@ -124,16 +124,22 @@ setup(name = 'qd',
         url    = 'www.qd-eng.de',
         author_email = 'constantin.diez@gmail.com',
 		packages=(['qd',
-                   'qd.cae',]),
+                   'qd.cae',
+				   'qd.cae.resources',
+				   ]),
 		package_dir={'qd'    : 'qd',
-                     'qd.cae' : 'qd/cae',},
-        data_files = [
-            ('qd/cae/resources', ['resources/chroma.min.js',
-                                  'resources/jquery.min.js',
-                                  'resources/jszip.min.js',
-                                  'resources/three.min.js',
-                                  'resources/html.template'])
-        ],
+                     'qd.cae' : 'qd/cae',
+					 'qd.cae.resources' : 'qd/cae/resources',},
+		package_data={
+			'qd.cae.resources' : ['*.js','html.template']
+		},
+#        data_files = [
+#            ('qd/cae/resources', ['resources/chroma.min.js',
+#                                  'resources/jquery.min.js',
+#                                  'resources/jszip.min.js',
+#                                  'resources/three.min.js',
+#                                  'resources/html.template'])
+#        ],		
         ext_package='qd.cae', # where to place c extensions
         ext_modules=[dyna_extension],
 		install_requires=['numpy'],
