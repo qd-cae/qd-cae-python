@@ -3,11 +3,14 @@ import os
 import io
 import json
 import uuid
+import numbers
+import tempfile
+import webbrowser
 import numpy as np
 from base64 import b64encode
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from .dyna import Part
+from .dyna_cpp import QD_Part
 
 
 def _read_file(filepath):
@@ -27,7 +30,7 @@ def _read_file(filepath):
         return fp.read()
 
 
-def _extract_elem_data(element, iTimestep=0, result_type=None):
+def _extract_elem_data(element, iTimestep=0, element_result=None):
     '''Extract fringe data from the element
 
     Parameters:
@@ -36,8 +39,10 @@ def _extract_elem_data(element, iTimestep=0, result_type=None):
         Element to extract the data of
     iTimestep : int
         timestep at which to extract the element data
-    result_type : str
-        type of result data to extract
+    element_result : str or function
+        which type of results to use as fringe
+        None means no fringe is used
+        Function shall take elem as input and return a float value (for fringe)
 
     Returns:
     --------
@@ -46,17 +51,26 @@ def _extract_elem_data(element, iTimestep=0, result_type=None):
     Returns None in case that no result type is desired.
     '''
 
-    if result_type == None:
+    if element_result == None:
         return None
-    elif "plastic_strain" in result_type:
-        return element.get_plastic_strain()[iTimestep]
-    elif "energy" in result_type:
-        return element.get_energy()[iTimestep]
+    elif callable(element_result):
+        elem_result = element_result(element)
+        assert isinstance(elem_result, numbers.Number), "The return from the element_result function must be a number!"
+        return elem_result
+    elif isinstance(element_result,str):
+
+        if "plastic_strain" in element_result:
+            return element.get_plastic_strain()[iTimestep]
+        elif "energy" in element_result:
+            return element.get_energy()[iTimestep]
+        else:
+            raise ValueError("Unknown result type %s. Try energy or plastic_strain." % element_result)
+
     else:
-        raise ValueError("Unknown result type %s. Try energy or plastic_strain." % result_type)
+        raise ValueError("Unkown argument type %s for _extract_elem_data." % str(element_result) )
 
 
-def _extract_mesh_from_parts(parts, iTimestep=0, result_type=None):
+def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
     '''Extract the mesh data from a part or list of parts
 
     Parameters:
@@ -65,15 +79,17 @@ def _extract_mesh_from_parts(parts, iTimestep=0, result_type=None):
         parts to extract mesh of
     iTimestep : int
         timestep at which to extract the mesh coords
-    result_type : str
-        type of results to read
+    element_result : str or function
+        which type of results to use as fringe
+        None means no fringe is used
+        Function shall take elem as input and return a float value (for fringe)
 
     Returns:
     --------
         mesh_coords, mesh_fringe, elem_texts : tuple(np.ndarray, np.ndarray, list)
     '''
 
-    if isinstance(parts, Part):
+    if isinstance(parts, QD_Part):
         parts = [parts]
 
     node_data   = []
@@ -90,7 +106,7 @@ def _extract_mesh_from_parts(parts, iTimestep=0, result_type=None):
             elem_nodes = elem.get_nodes()
 
             # element fringe
-            elem_result = _extract_elem_data(elem, iTimestep, result_type)
+            elem_result = _extract_elem_data(elem, iTimestep, element_result)
 
             # element annotation
             if elem_result == None:
@@ -121,7 +137,7 @@ def _extract_mesh_from_parts(parts, iTimestep=0, result_type=None):
     return node_data, node_fringe, element_texts
 
 
-def _parts_to_html(parts, iTimestep=0, result_type=None, fringe_bounds=[None,None]):
+def _parts_to_html(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None]):
     '''Convert a part or multiple parts to a 3D HTML
 
     Parameters:
@@ -130,8 +146,10 @@ def _parts_to_html(parts, iTimestep=0, result_type=None, fringe_bounds=[None,Non
         part to convert (from a d3plot)
     iTimestep : int
         timestep at which the coordinates are taken
-    result_type : str
-        type of results to read, None means no fringe
+    element_result : str or function
+        which type of results to use as fringe
+        None means no fringe is used
+        Function shall take elem as input and return a float value (for fringe)
     fringe_bounds : list(float,float) or tuple(float,float)
         bounds for the fringe, default will use min and max value
 
@@ -142,7 +160,7 @@ def _parts_to_html(parts, iTimestep=0, result_type=None, fringe_bounds=[None,Non
     '''
     
     # extract mesh dta
-    node_coords, node_fringe, element_texts = _extract_mesh_from_parts(parts, iTimestep=iTimestep, result_type=result_type)
+    node_coords, node_fringe, element_texts = _extract_mesh_from_parts(parts, iTimestep=iTimestep, element_result=element_result)
 
     # fringe bounds
     fringe_bounds = list(fringe_bounds) # convert in case of tuple (no assignments)
@@ -192,3 +210,72 @@ def _parts_to_html(parts, iTimestep=0, result_type=None, fringe_bounds=[None,Non
     _chroma_js= _html_chroma_js,
     _jquery_js= _html_jquery_js)
 
+
+
+def _plot_html(_html, export_filepath=None):
+    '''Plot a 3D html
+
+    Parameters:
+    -----------
+    _html : str
+        html as string
+    export_filepath : str
+        optional filepath for saving
+
+    This function takes an html as string and if no export_filepath
+    is given, directly plots it with your current webbrowser. If 
+    a filepath is given, the html will be saved to the given location.
+    '''
+
+    # save if export path present
+    if export_filepath:
+        with open(export_filepath,"w") as fp:
+            fp.write(_html)
+
+    # plot if no export
+    else:
+
+        # clean temporary dir first (keeps mem low)
+        tempdir = tempfile.gettempdir()
+        tempdir = os.path.join(tempdir,"qd_eng")
+        if not os.path.isdir(tempdir):
+            os.mkdir(tempdir)
+
+        for tmpfile in os.listdir(tempdir):
+            tmpfile = os.path.join(tempdir,tmpfile)
+            if os.path.isfile(tmpfile):
+                os.remove(tmpfile)
+        
+        # create new temp file
+        with tempfile.NamedTemporaryFile(dir=tempdir,suffix=".html", mode="w", delete=False) as fp:
+            fp.write(_html)
+            webbrowser.open(fp.name)
+
+
+def plot_parts(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None):
+    '''Plot a single or multiple parts from a d3plot
+
+    Parameters:
+    -----------
+    parts : Part or list(Part)
+        part to convert (from a d3plot)
+    iTimestep : int
+        timestep at which the coordinates are taken
+    element_result : str or function
+        None means no fringe is used
+        str -> type of results to use as fringe (plastic_strain or energy)
+        function -> take elem as input and return a float value (for fringe)
+    fringe_bounds : list(float,float) or tuple(float,float)
+        bounds for the fringe, default will use min and max value
+    export_filepath : str
+        optional filepath for saving. If none, the model
+        is exported to a temporary file and shown in the
+        browser.
+    '''
+
+    _html = _parts_to_html(parts, 
+                           iTimestep=iTimestep, 
+                           element_result=element_result,
+                           fringe_bounds=fringe_bounds)
+        
+    _plot_html(_html,export_filepath=export_filepath)

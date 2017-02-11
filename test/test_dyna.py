@@ -20,6 +20,10 @@ class TestDynaModule(unittest.TestCase):
         d3plot_vars = ["disp","vel","accel",
                        "stress","strain","plastic_strain",
                        "history 1 shell","history 1 solid"]
+        element_result_list = [None,
+                               "plastic_strain",
+                               lambda elem : elem.get_plastic_strain()[-1]] 
+        part_ids = [1]
 
         ## D3plot loading
         d3plot = D3plot(d3plot_filepath)
@@ -37,6 +41,30 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual( len(d3plot.get_elements()) ,4696)
         self.assertEqual( d3plot.get_timesteps()[0]  ,0.)
         self.assertEqual( len(d3plot.get_timesteps()) ,1)
+        self.assertEqual( len(d3plot.get_parts())     ,1)
+        export_path = os.path.join( os.path.dirname(__file__), "test_export.html" )
+        for element_result in element_result_list:
+            
+            # test d3plot.plot directly
+            d3plot.plot(iTimestep=-1, element_result=element_result, export_filepath=export_path)
+            self.assertTrue( os.path.isfile(export_path) )
+            os.remove(export_path)
+            
+            # test plotting by parts
+            D3plot.plot_parts(d3plot.get_parts(), iTimestep=-1, element_result=element_result, export_filepath=export_path)
+            self.assertTrue( os.path.isfile(export_path) )
+            os.remove(export_path)
+
+            for part in d3plot.get_parts():
+                part.plot(iTimestep=-1, element_result=element_result, export_filepath=export_path)
+                self.assertTrue( os.path.isfile(export_path) )
+                os.remove(export_path)
+
+            for part_id in part_ids:
+                d3plot.get_partByID(part_id).plot(iTimestep=-1, element_result=None, export_filepath=export_path)
+                self.assertTrue( os.path.isfile(export_path) )
+                os.remove(export_path)
+        
         ## D3plot error handling
         # ... TODO
 
