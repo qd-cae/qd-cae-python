@@ -20,10 +20,17 @@ Classes:
 - [Part](#part)
 
 Functions:
-(None)
+- plot_parts
 
 [FAQ](#faq)
 
+
+-----------------
+# Videos
+
+[![D3plot Tutorial](https://www.youtube.com/watch?v=w8qIzqPJ4VY/0.jpg)](https://www.youtube.com/watch?v=w8qIzqPJ4VY "Reading a D3plot (LS-Dyna) in Python with \"qd\"")
+
+[![Binout Tutorial](https://www.youtube.com/watch?v=w8qIzqPJ4VY/0.jpg)](https://www.youtube.com/watch?v=w8qIzqPJ4VY "Reading a Binout (LS-Dyna) in Python with \"qd\"")
 
 ---------
 # Example
@@ -156,6 +163,8 @@ d3plot.info()
 ```
 
 **d3plot.plot(iTimestep=0, element\_result=None, fringe\_bounds=[None,None], export\_filepath=None)**
+
+Warning: currently shells only!
 
 *return: None*
 
@@ -661,6 +670,39 @@ part.plot(iTimestep=0,
           fringe_bounds=[0,0.05]) 
 ```
 
+----------
+# Functions
+
+This section contains all functions in ```qd.cae.dyna```
+
+**plot_parts(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None)**
+
+*return: None*
+
+This function plots multiple parts in your browser. One has the option to fringe the model with either a specific result ("energy" or "plastic_strain"),
+or by a user defined evaluation function which takes the element as input and returns
+its fringe value from any result. The bounds of the fringe may be set manually if desired. 
+By adding a filepath for export the model will not be plotted but saved to the given location.
+
+```python
+from qd.cae.dyna import plot_parts
+
+# plot plastic strain of all parts of one model
+d3plot = D3plot("path/to/d3plot")
+parts = d3plot.get_parts() # list of part objects
+plot_parts(parts, iTimestep=25, element_result="plastic_strain", fringe_bounds=[0,0.05])
+
+# compare a part of two different files
+d3plot2 = D3plot("path/to/different/d3plot")
+parts = [ d3plot.get_partByID(1), 
+          d3plot2.get_partByID(1) ]
+
+eval_function = lambda elem : elem.get_plastic_strain()[-1] # eval function returns last pstrain
+
+plot_parts(parts, iTimestep=25, element_result=eval_function, fringe_bounds=[0,0.05], export_filepath="path/To/export.html") # saves to given location
+```
+
+
 -----
 # FAQ
 
@@ -678,3 +720,7 @@ The file might be written in double precision (1), or the files endian is differ
 ## nsrh != nsort + numnp
 
 Your file might be compressed with FEMZIP. Use the flag: use_fezmip=True in the constructor of the D3plot.
+
+## no solids are plotted
+
+The plot function currently only supports shells. Make a resquest if you need it.
