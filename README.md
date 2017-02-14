@@ -40,8 +40,38 @@ D3plot:
  - Added few outputs to d3plot.info()
  - Bugfix causing read of only data from state 0 if multiple states are in one file
 
+# Installation
 
-# Sub-Modules
+For **Windows** (x64 python 2.7 or 3.5 and higher) use:
+
+```
+pip install qd
+```
+or
+```
+python -m pip install qd
+```
+
+For **Linux** I have also compiled some wheels in the ```dist``` folder, though they might not work for any distribution. If you need to compile it for yourself, run:
+
+```
+git clone https://github.com/qd-cae/qd-eng.git
+cd qd-eng
+sudo apt-get install python-numpy
+sudo apt-get install libboost-dev
+pip install --upgrade pip setuptools wheel
+pip install --only-binary=numpy numpy
+pip install unittest2
+python setup.py install
+```
+
+**If your distribution is missing please open a request**
+
+If possible, use the pre-compiled python-wheels in the dist folder and install with pip.
+The wheel is always compiled with FEMZIP support (not). For compiling the code yourself,
+the library needs Boost.
+
+# Descriptions
 
 Current Module List:
 
@@ -53,19 +83,12 @@ Current Module List:
 
 For more details, look into the helper files.
 
-# Installation
-
-If possible, use the pre-compiled python-wheels in the dist folder and install with pip.
-The wheel is always compiled with FEMZIP support. For compiling the code yourself,
-the library needs Boost.
 
 # Compilation
 
-If one wants to compile the code himself, register your boost directory in the top of the setup script. If one want's to compile with femzip support, the link libraries
-need to be downloaded from the official website from SIDACT.
+If one wants to compile the code himself, register your boost directory in the top of the setup script. If one want's to compile with femzip support, the link libraries need to be downloaded from the official website from SIDACT.
 
-In case one wants to use it for another C++ application, the source code may
-also be compiled without the python2 wrapper. CMake is recommended in that case.
+In case one wants to use it for another C++ application, the source code may also be compiled without the python wrapper. CMake is recommended in that case.
 
 # License
 
@@ -75,3 +98,4 @@ For further licensing requests or questions contact us.
 # Authors
 
 - C. Diez
+- D. Toewe
