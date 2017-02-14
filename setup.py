@@ -24,10 +24,10 @@ if sys.version_info[0] >= 3 and not "linux" in platform.system().lower():
 # Check for MinGW usage
 use_mingw = False
 for ii in range(len(sys.argv)):
-	if (sys.argv[ii] == "-c") and (sys.argv[ii+1] == "mingw32"):
-		use_mingw=True
-	if (sys.argv[ii] == "--compiler=mingw32"):
-		use_mingw=True
+    if (sys.argv[ii] == "-c") and (sys.argv[ii+1] == "mingw32"):
+        use_mingw=True
+    if (sys.argv[ii] == "--compiler=mingw32"):
+        use_mingw=True
 
 
 # (1) Native Code Stuff
@@ -84,30 +84,30 @@ if os.path.isdir(femzip_path):
             'ipgo','irc','svml','ippcore_l','stdc++','dl']
         compiler_args_dyna.append("-DQD_USE_FEMZIP")
 else:
-	print("FEMZIP library %s not found. Compiling without femzip support." % femzip_path)
+    print("FEMZIP library %s not found. Compiling without femzip support." % femzip_path)
 
 # CFLAGS linux
 if (platform.system().lower() == "linux") or (platform.system().lower() == "linux2") or use_mingw:
-	#compiler_args_dyna.append("-std=c++11") # I really wish so ...
-	compiler_args_dyna.append("-O3")
-	if not use_mingw:
-		compiler_args_dyna.append("-fPIC")
-	if debugging_mode:
-		compiler_args_dyna.append("-DQD_DEBUG")
-	if measure_time:
-		compiler_args_dyna.append("-DQD_MEASURE_TIME")
+    #compiler_args_dyna.append("-std=c++11") # I really wish so ...
+    compiler_args_dyna.append("-O3")
+    if not use_mingw:
+        compiler_args_dyna.append("-fPIC")
+    if debugging_mode:
+        compiler_args_dyna.append("-DQD_DEBUG")
+    if measure_time:
+        compiler_args_dyna.append("-DQD_MEASURE_TIME")
 # CFLAGS Windows
 else:
-	compiler_args_dyna.append("/EHa")
-	if debugging_mode:
-		compiler_args_dyna.append("/DQD_DEBUG")
-	if measure_time:
-		compiler_args_dyna.append("/DQD_MEASURE_TIME")
+    compiler_args_dyna.append("/EHa")
+    if debugging_mode:
+        compiler_args_dyna.append("/DQD_DEBUG")
+    if measure_time:
+        compiler_args_dyna.append("/DQD_MEASURE_TIME")
 dyna_extension = Extension("dyna_cpp", srcs_dyna,
                                       extra_compile_args = compiler_args_dyna,
-									  library_dirs=lib_dirs_dyna,
-									  libraries=libs_dyna,
-									  include_dirs=include_dirs_dyna,)
+                                      library_dirs=lib_dirs_dyna,
+                                      libraries=libs_dyna,
+                                      include_dirs=include_dirs_dyna,)
 
 # (2) UNIT-TESTING
 def my_test_suite():
@@ -117,34 +117,38 @@ def my_test_suite():
 
 # (3) SETUP
 setup(name = 'qd',
-		version = _version,
-		license = 'GNU GPL v3',
-		description = 'QD-Engineering Python Library for CAE',
-		author = 'C. Diez, D. Toewe',
-        url    = 'www.qd-eng.de',
-        author_email = 'constantin.diez@gmail.com',
-		packages=(['qd',
+        version = _version,
+        license = 'GNU GPL v3',
+        description = 'QD-Engineering Python Library for CAE',
+        author = 'C. Diez, D. Toewe',
+        url    = 'http://www.qd-eng.de',
+        author_email = 'qd.eng.contact@gmail.com',
+        packages=(['qd',
                    'qd.cae',
-				   'qd.cae.resources',
-				   ]),
-		package_dir={'qd'    : 'qd',
+                   'qd.cae.resources',
+                   ]),
+        package_dir={'qd'    : 'qd',
                      'qd.cae' : 'qd/cae',
-					 'qd.cae.resources' : 'qd/cae/resources',},
-		package_data={
-			'qd.cae.resources' : ['*.js','html.template']
-		},
+                     'qd.cae.resources' : 'qd/cae/resources',},
+        package_data={
+            'qd.cae.resources' : ['*.js','html.template']
+        },
         ext_package='qd.cae', # where to place c extensions
         ext_modules=[dyna_extension],
-		install_requires=['numpy'],
-		keywords=['cae','engineering','ls-dyna','postprocessing','preprocessing'],
-        classifiers=['Development Status :: 3 - Alpha',
+        install_requires=['numpy'],
+        keywords=['cae',
+                  'simulation',
+                  'engineering',
+                  'ls-dyna',
+                  'postprocessing',
+                  'preprocessing'],
+        classifiers=['Development Status :: 4 - Beta',
                      'Programming Language :: C++',
+                     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
                      'Topic :: Scientific/Engineering',
                      'Intended Audience :: Science/Research',
                      'Topic :: Utilities',
-                     'Topic :: Engineering',
-                     'Topic :: CAE',
-                     'Topic :: FEM',
                      'Programming Language :: Python :: 2.7',
-                     'Programming Language :: Python :: 3.5'],
+                     'Programming Language :: Python :: 3.5',
+                     'Programming Language :: Python :: 3.6'],
         test_suite = 'setup.my_test_suite',)
