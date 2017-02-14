@@ -30,7 +30,7 @@ Functions:
 
 [![D3plot Tutorial](https://www.youtube.com/watch?v=w8qIzqPJ4VY/0.jpg)](https://www.youtube.com/watch?v=w8qIzqPJ4VY "Reading a D3plot (LS-Dyna) in Python with \"qd\"")
 
-[![Binout Tutorial](https://www.youtube.com/watch?v=w8qIzqPJ4VY/0.jpg)](https://www.youtube.com/watch?v=w8qIzqPJ4VY "Reading a Binout (LS-Dyna) in Python with \"qd\"")
+[![Binout Tutorial](https://www.youtube.com/watch?v=P96Vkuvg02w&list=PLUNAZ7gxTEATtRTFt_nofPcn3m6PBiT2Y&index=2&t=2s/0.jpg)](https://www.youtube.com/watch?v=P96Vkuvg02w&list=PLUNAZ7gxTEATtRTFt_nofPcn3m6PBiT2Y&index=2&t=2s "Reading a Binout (LS-Dyna) in Python with \"qd\"")
 
 ---------
 # Example
