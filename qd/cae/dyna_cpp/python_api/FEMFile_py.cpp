@@ -617,7 +617,7 @@ QD_FEMFile_get_mesh(QD_FEMFile* self, PyObject* args){
 
 /* FUNCTION get_parts */
 static PyObject *
-QD_FEMFile_get_parts(QD_FEMFile* self, PyObject* args){
+QD_FEMFile_get_parts(QD_FEMFile* self){
 
 
      if (self->instance == NULL) {

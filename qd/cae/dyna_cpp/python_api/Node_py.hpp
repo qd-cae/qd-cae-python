@@ -48,7 +48,7 @@ extern "C" {
 
   static PyMethodDef QD_Node_methods[] = {
     {"get_id", (PyCFunction) QD_Node_get_NodeID, METH_NOARGS, "Get the node id."},
-    {"get_coords", (PyCFunction) QD_Node_get_coords, METH_VARARGS, "Get the node coordinates."},
+    {"get_coords", (PyCFunction) QD_Node_get_coords, METH_VARARGS | METH_KEYWORDS, "Get the node coordinates."},
     {"get_disp", (PyCFunction) QD_Node_get_disp, METH_NOARGS, "Get the node displacement over time."},
     {"get_vel", (PyCFunction) QD_Node_get_vel, METH_NOARGS, "Get the node velocity over time."},
     {"get_accel", (PyCFunction) QD_Node_get_accel, METH_NOARGS, "Get the node acceleration over time."},

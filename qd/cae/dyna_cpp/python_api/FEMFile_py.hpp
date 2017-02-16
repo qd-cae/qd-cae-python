@@ -44,7 +44,7 @@ extern "C" {
 
   /* FUNCTION get_parts */
   static PyObject *
-  QD_FEMFile_get_parts(QD_FEMFile* self, PyObject* args);
+  QD_FEMFile_get_parts(QD_FEMFile* self);
 
   /* FUNCTION get_mesh */
   static PyObject *

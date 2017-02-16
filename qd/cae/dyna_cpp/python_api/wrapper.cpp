@@ -42,6 +42,9 @@ using namespace std;
 
 // Wrapper functions for PY3 and PY2
 namespace qd{
+
+
+
 // PY3
 #ifdef ISPY3
 inline int isPyStr(PyObject* obj){return PyUnicode_Check(obj);}
@@ -52,6 +55,20 @@ inline int isPyStr(PyObject* obj){return PyString_Check(obj);}
 inline char* PyStr2char(PyObject* arg){return PyString_AsString(arg);}
 #endif
 }
+
+
+struct module_state {
+    PyObject *error;
+};
+
+
+
+#if PY_MAJOR_VERSION >= 3
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+#else
+#define GETSTATE(m) (&_state)
+static struct module_state _state;
+#endif
 
 
 /** Convert a c++ 2D vector into a numpy array
@@ -178,7 +195,8 @@ static int
 convert_obj_to_int(PyObject* item){
 
   // check type
-  PyObject_isIntegral(item);
+  if( !PyObject_isIntegral(item) )
+    throw(string("convert_obj_to_int: Python Object is not Integral."));  
 
   // convert
   long nodeID_long = -1;
@@ -232,21 +250,44 @@ extern "C" {
    return Py_None;
   }
 
+  static PyObject *
+  error_out(PyObject *m) {
+    struct module_state *st = GETSTATE(m);
+    PyErr_SetString(st->error, "something bad happened");
+    return NULL;
+  }
+
   /* MODULE codie function table */
   static PyMethodDef QDMethods[] = {
+    {"error_out", (PyCFunction)error_out, METH_NOARGS, NULL},
     {"test_codie",  test_codie, METH_VARARGS,"Used for debugging sometimes."},
     {NULL, NULL, 0, NULL}        /* Sentinel */
   };
 
+
   /* MODULE (Python3 only) */
   #ifdef ISPY3
+
+  static int dyna_cpp_traverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(GETSTATE(m)->error);
+    return 0;
+  } 
+
+  static int dyna_cpp_clear(PyObject *m) {
+    Py_CLEAR(GETSTATE(m)->error);
+    return 0; 
+  }
+
   static PyModuleDef dyna_cpp_module = {
     PyModuleDef_HEAD_INIT,
     "dyna_cpp",
     "qd cae routines for LS-DYNA.",
-    -1,
-	  QDMethods
-    //NULL, NULL, NULL, NULL, NULL
+    sizeof(struct module_state),
+	  QDMethods,
+    NULL,
+    dyna_cpp_traverse,
+    dyna_cpp_clear,
+    NULL
   };
   #endif
 

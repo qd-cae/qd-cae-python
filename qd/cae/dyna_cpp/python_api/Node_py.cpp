@@ -101,6 +101,7 @@ QD_Node_get_coords(QD_Node* self, PyObject *args, PyObject *kwds){
     return NULL;
   }
 
+  PyObject* _test = NULL;
   int iTimestep = 0;
   static char *kwlist[] = {"iTimestep",NULL}; // TODO Deprecated!
 
