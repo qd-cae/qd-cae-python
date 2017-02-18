@@ -37,7 +37,9 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
   QD_FEMFile* femFile_py;
   int iNode;
   bool use_index = false;
-  static char *kwlist[] = {"femfile","nodeID","use_index", NULL}; // TODO Deprecated!
+  static char *kwlist[] = {const_cast<char*>("femfile"),
+                           const_cast<char*>("nodeID"),
+                           const_cast<char*>("use_index"), NULL}; // TODO Deprecated!
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi|O", kwlist, &femFile_obj_py, &iNode, &use_index_py)){
       return -1;
@@ -101,9 +103,8 @@ QD_Node_get_coords(QD_Node* self, PyObject *args, PyObject *kwds){
     return NULL;
   }
 
-  PyObject* _test = NULL;
   int iTimestep = 0;
-  static char *kwlist[] = {"iTimestep",NULL}; // TODO Deprecated!
+  static char *kwlist[] = {const_cast<char*>("iTimestep"),NULL}; // TODO Deprecated!
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &iTimestep)){
       return NULL;

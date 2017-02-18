@@ -125,7 +125,7 @@ vector<float> Node::get_coords(int iTimestep){
             if( (iTimestep < 0) )
                throw(string("Specified timestep exceeds real time step size."));
 
-            if( iTimestep >= this->disp.size() )
+            if( iTimestep >= static_cast<long>(this->disp.size()) )
                throw(string("Specified timestep exceeds real time step size."));
 
             vector<float> ret;

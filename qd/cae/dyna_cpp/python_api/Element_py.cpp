@@ -35,7 +35,9 @@ QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
   PyObject* femfile_obj_py;
   char* elementType_c;
   int elementID;
-  static char *kwlist[] = {"femfile","elementType","elementID", NULL}; // TODO Deprecated!
+  static char *kwlist[] = {const_cast<char*>("femfile"),
+                           const_cast<char*>("elementType"),
+                           const_cast<char*>("elementID"), NULL}; // TODO Deprecated!
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "Osi", kwlist, &femfile_obj_py, &elementType_c, &elementID)){
      return -1;
@@ -198,7 +200,7 @@ QD_Element_get_coords(QD_Element* self, PyObject *args, PyObject *kwds){
   }
 
   int iTimestep = 0;
-  static char *kwlist[] = {"iTimestep",NULL}; // TODO Deprecated!
+  static char *kwlist[] = {const_cast<char*>("iTimestep"),NULL}; // TODO Deprecated!
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &iTimestep)){
      return NULL;

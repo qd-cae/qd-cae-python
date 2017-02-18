@@ -41,7 +41,7 @@ QD_KeyFile_init(QD_KeyFile *self, PyObject *args, PyObject *kwds)
 {
 
    char* filepath_c = NULL;
-   static char *kwlist[] = {"filepath",NULL};
+   static char *kwlist[] = { const_cast<char*>("filepath"), NULL};
 
    if (! PyArg_ParseTupleAndKeywords(args, kwds, "|s", kwlist, &filepath_c)){
       return -1;

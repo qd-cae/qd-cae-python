@@ -92,7 +92,7 @@ void KeyFile::read_mesh(string _filepath){
    vector<int> elemNodes_shell(4);
    vector<int> elemNodes_solid(8);
    int id;
-   int partID;
+   int partID = -1;
    string title;
    size_t iCardLine = 0;
    bool line_has_keyword = false;

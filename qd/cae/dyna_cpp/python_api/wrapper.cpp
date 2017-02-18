@@ -93,7 +93,8 @@ static PyArrayObject* vector_to_nparray(const vector< vector<T> >& vec, int type
 
         size_t nRows = vec.size();
         size_t nCols = vec[0].size();
-        npy_intp dims[2] = {nRows, nCols};
+        npy_intp dims[2] = {static_cast<npy_intp>(nRows), 
+                            static_cast<npy_intp>(nCols)};
         PyArrayObject* vec_array = (PyArrayObject *) PyArray_SimpleNew(2, dims, type_num);
 
         T *vec_array_pointer = (T*) PyArray_DATA(vec_array);
@@ -113,7 +114,7 @@ static PyArrayObject* vector_to_nparray(const vector< vector<T> >& vec, int type
 
      // Empty columns
      } else {
-        npy_intp dims[2] = {vec.size(), 0};
+        npy_intp dims[2] = {static_cast<npy_intp>(vec.size()), 0};
         return (PyArrayObject*) PyArray_ZEROS(2, dims, PyArray_FLOAT, 0);
      }
 
@@ -145,7 +146,7 @@ static PyArrayObject* vector_to_nparray(const vector<T>& vec, int type_num = PyA
    if( !vec.empty() ){
 
        size_t nRows = vec.size();
-       npy_intp dims[1] = {nRows};
+       npy_intp dims[1] = {static_cast<npy_intp>(nRows)};
 
        PyArrayObject* vec_array = (PyArrayObject *) PyArray_SimpleNew(1, dims, type_num);
        T *vec_array_pointer = (T*) PyArray_DATA(vec_array);

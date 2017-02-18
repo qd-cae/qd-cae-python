@@ -65,6 +65,7 @@ std::vector<T> extract_integers(const std::string& text){
 /** Check if a string has only numbers
  * @param std::string _text : strig to check
  * @param size_t _pos = 0 : starting position
+ * @return bool is_number
  *
  * Also returns true if the string is empty.
  */

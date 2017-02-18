@@ -240,7 +240,7 @@ vector<float> Element::get_coords(int iTimestep){
          disp_node = current_node->get_disp();
 
          // Check correctness
-         if( iTimestep >= disp_node.size() )
+         if( iTimestep >= static_cast<long>(disp_node.size()) )
             throw(string("Specified timestep exceeds real time step size."));
 
          coords_elem[0] += disp_node[iTimestep][0];

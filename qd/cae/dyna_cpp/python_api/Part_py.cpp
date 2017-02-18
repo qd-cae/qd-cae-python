@@ -30,7 +30,8 @@ QD_Part_init(QD_Part *self, PyObject *args, PyObject *kwds){
 
   PyObject* femFile_obj_py;
   int partID;
-  static char *kwlist[] = {"femfile","partID", NULL}; // TODO Deprecated!
+  static char *kwlist[] = {const_cast<char*>("femfile"),
+                           const_cast<char*>("partID"), NULL}; // TODO Deprecated!
 
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi", kwlist, &femFile_obj_py, &partID)){

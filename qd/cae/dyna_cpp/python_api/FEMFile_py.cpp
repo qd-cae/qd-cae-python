@@ -286,7 +286,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
        int check=0;
        PyObject* node_list = PyList_New(PySequence_Size(argument));
 
-       for(size_t ii=0; ii<PySequence_Size(argument); ii++){
+       for(long ii=0; ii<PySequence_Size(argument); ii++){
 
          PyObject* item = PyList_GET_ITEM(argument, ii);
 
@@ -463,7 +463,7 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
        int check=0;
        PyObject* elem_list = PyList_New(PySequence_Size(argument));
 
-       for(size_t ii=0; ii<PySequence_Size(argument); ii++){
+       for(long ii=0; ii<PySequence_Size(argument); ii++){
 
          PyObject* item = PyList_GET_ITEM(argument, ii);
 

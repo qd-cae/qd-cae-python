@@ -22,13 +22,46 @@ public:
 
   size_t size();
   void print_parts();
-  vector<Part*>& get_parts();
+  vector<Part*> get_parts();
   Part* get_part_byName(string);
-  Part* get_part_byID(int _id);
-  Part* get_part_byIndex(int _index);
+  template<typename T>
+  Part* get_part_byID(T _id);
+  template<typename T>
+  Part* get_part_byIndex(T _index);
   Part* add_part(int _partIndex, int _partID);
   Part* add_part_byID(int _partID);
 
 };
 
+
+template<typename T>
+Part* DB_Parts::get_part_byID(T _id){
+
+  map<int,Part*>::iterator it = this->parts.find(_id);
+
+  // Part existing
+  if(it != parts.end()){
+    return it->second;
+  } else {
+    // :(
+    return NULL;
+  }
+
+}
+
+
+template<typename T>
+Part* DB_Parts::get_part_byIndex(T _index){
+
+  map<int,Part*>::iterator it = this->partsByIndex.find(_index);
+
+  // Part existing
+  if(it != this->partsByIndex.end()){
+    return it->second;
+  } else {
+    // :(
+    return NULL;
+  }
+
+}
 #endif

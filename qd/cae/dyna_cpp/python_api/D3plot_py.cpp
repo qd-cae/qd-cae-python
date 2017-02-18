@@ -42,7 +42,9 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
 
   int useFemzip = 0;
   char* filepath_c;
-  static char *kwlist[] = {"filepath","use_femzip","read_states",NULL}; // TODO Deprecated!
+  static char *kwlist[] = {const_cast<char*>("filepath"),
+                           const_cast<char*>("use_femzip"),
+                           const_cast<char*>("read_states"),NULL}; // TODO Deprecated!
 
 
   PyObject* read_states_py = Py_None;

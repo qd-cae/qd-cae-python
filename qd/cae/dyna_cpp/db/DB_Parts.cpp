@@ -50,7 +50,7 @@ Part* DB_Parts::add_part_byID(int _partID){
 /**
  * Get the parts in the db in a vector.
  */
-vector<Part*>& DB_Parts::get_parts(){
+vector<Part*> DB_Parts::get_parts(){
 
 	vector<Part*> ret(this->parts.size());
 	for (map<int,Part*>::iterator it=this->parts.begin(); it!=this->parts.end(); ++it) {
@@ -58,42 +58,6 @@ vector<Part*>& DB_Parts::get_parts(){
       cout << it->second << endl; // DEBUG
 	}
 	return ret;
-
-}
-
-
-/**
- * Get a part by it's partID.
- */
-Part* DB_Parts::get_part_byID(int partID){
-
-  map<int,Part*>::iterator it = this->parts.find(partID);
-
-  // Part existing
-  if(it != parts.end()){
-    return it->second;
-  }
-
-  // :(
-  return NULL;
-
-}
-
-
-/**
- * Get a part by it's part index.
- */
-Part* DB_Parts::get_part_byIndex(int partIndex){
-
-  map<int,Part*>::iterator it = this->partsByIndex.find(partIndex);
-
-  // Part existing
-  if(it != this->partsByIndex.end()){
-    return it->second;
-  }
-
-  // Part not found
-  return NULL;
 
 }
 
