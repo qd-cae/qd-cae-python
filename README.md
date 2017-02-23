@@ -60,7 +60,7 @@ sudo apt-get install python-numpy
 sudo apt-get install libboost-dev
 pip install --upgrade pip setuptools wheel
 pip install --only-binary=numpy numpy
-pip install unittest2
+pip install diversipy
 python setup.py install
 ```
 
