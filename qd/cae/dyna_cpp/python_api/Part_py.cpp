@@ -134,37 +134,63 @@ QD_Part_get_nodes(QD_Part *self){
 
 /* QD_Part FUNCTION get_elements */
 static PyObject*
-QD_Part_get_elements(QD_Part *self){
+QD_Part_get_elements(QD_Part *self, PyObject *args){
 
   if(self->part == NULL){
     PyErr_SetString(PyExc_AttributeError,"Pointer to part is NULL.");
     return NULL;
   }
 
-  vector<Element*> elements = self->part->get_elements();
-  vector<Element*>::iterator it;
+  // Parse args
+  char* _filter_etype_cstr = NULL;
+  if (!PyArg_ParseTuple(args, "|s", &_filter_etype_cstr))
+    return NULL;  
+
+  // user defined filter
+  ElementType _filter_etype = NONE;
+  if( _filter_etype_cstr != NULL ){
+
+    string _filter_etype_str = string(_filter_etype_cstr);
+    if( _filter_etype_str == "shell" ){
+      _filter_etype = SHELL;
+    } else if ( _filter_etype_str == "solid" ){
+      _filter_etype = SOLID;
+    } else if ( _filter_etype_str == "beam" ){
+      _filter_etype = BEAM;
+    } else {
+      string err_msg =  "Error: unknown element-type \""
+                      + _filter_etype_str
+                      + "\", use beam, shell or solid.";
+      PyErr_SetString(PyExc_ValueError, err_msg.c_str() );
+      return NULL;
+    }
+  }
+
+  vector<Element*> elements = self->part->get_elements(_filter_etype);
+  //vector<Element*>::iterator it;
 
   int check=0;
   PyObject* element_list = PyList_New(elements.size());
 
   size_t ii=0;
-//   for(auto element : elements){ // -std=c++11 rulez
   Element* element = NULL;
   for(vector<Element*>::iterator it=elements.begin(); it != elements.end(); it++){
     element = *it;
 
+    // create string for constructor
     PyObject* elementType_py;
     if(element->get_elementType() == BEAM){
       elementType_py = Py_BuildValue("s","beam");
-   } else if(element->get_elementType() == SHELL) {
+    } else if(element->get_elementType() == SHELL) {
       elementType_py = Py_BuildValue("s","shell");
-   } else if(element->get_elementType() == SOLID) {
+    } else if(element->get_elementType() == SOLID) {
       elementType_py = Py_BuildValue("s","solid");
     } else {
       PyErr_SetString(PyExc_SyntaxError, "Developer Error, unknown element-type.");
       return NULL;
     }
 
+    // create python object
     PyObject *argList2 = Py_BuildValue("OOi",self->femFile_py, elementType_py, element->get_elementID());
     PyObject* ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
     Py_DECREF(argList2);

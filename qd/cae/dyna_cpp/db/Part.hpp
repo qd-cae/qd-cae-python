@@ -4,11 +4,12 @@
 
 // forward declaration
 class Node;
-class Element;
+//class Element;
 
 #include <set>
 #include <vector>
 #include <iostream>
+#include "Element.hpp"
 using namespace std;
 
 class Part {
@@ -27,7 +28,7 @@ class Part {
   int get_partID();
   string get_name();
   vector<Node*> get_nodes();
-  vector<Element*> get_elements();
+  vector<Element*> get_elements(ElementType _etype = NONE);
 
 };
 

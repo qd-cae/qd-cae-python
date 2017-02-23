@@ -279,3 +279,31 @@ def plot_parts(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None
                            fringe_bounds=fringe_bounds)
         
     _plot_html(_html,export_filepath=export_filepath)
+
+
+def _extract_surface_mesh(parts):
+    '''Extract the surface mesh from parts
+
+    Parameters:
+    -----------
+    parts : Part or list(Part)
+        parts from which to extract the mesh
+
+    Returns:
+    --------
+    ? : ?
+    '''
+    if not isinstance(parts, (list,tuple,np.ndarray)):
+        parts = [parts]
+    assert all( isinstance(QD_Part, entry) for entry in parts )
+
+    faces = {}
+    for _part in parts:
+        for _element in _part.get_elements("solid"):
+            
+            # get neighbor elems nodes (complicated ...)
+            neighbor_elems_nodes = []
+            nodes = _element.get_nodes()
+            for _node in nodes:
+                neighbor_elems += _node.get_elements()
+            

@@ -18,6 +18,18 @@ We want to tackle this issue with this free library, in order to give engineerin
 a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
+
+*Changelog 11.2.2017*
+Version 0.4.2
+
+qd.cae.dyna
+  - part.get_elements now supports element type filtering
+
+qd.numerics.sampling:
+  - Added new module
+  - added function uniform_lhs (latin hypercube sampling)
+
+
 *Changelog 11.2.2017*
 Version 0.4.1
 
@@ -26,19 +38,6 @@ D3plot & KeyFile:
   - Added plot_parts to qd.cae.dyna
   - Added part.plot() (same as for d3plot.plot)
 
-*Changelog 9.2.2017*
-Version 0.4.0
-
-D3plot:
-  - Added d3plot.plot() for plotting as 3D HTML model (see [here](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md))
-  - Small femzip bugfix occurring under rare conditions
-
-*Changelog 30.1.2017*
-Version 0.3.6
-
-D3plot:
- - Added few outputs to d3plot.info()
- - Bugfix causing read of only data from state 0 if multiple states are in one file
 
 # Installation
 
@@ -79,7 +78,8 @@ Current Module List:
   - Read D3plot (DONE)
   - Read Binouts (DONE)
   - Read Input Files (partially done)
-2. ?
+2. [qd.numerics](https://github.com/qd-cae/qd/blob/master/QD_NUMERICS.md)
+  - Submodule: sampling
 
 For more details, look into the helper files.
 

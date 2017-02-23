@@ -87,6 +87,25 @@ vector<Node*> Part::get_nodes(){
 /**
  * Get the elements of the part.
  */
-vector<Element*> Part::get_elements(){
-  return this->elements;
+vector<Element*> Part::get_elements(ElementType _etype){
+
+  if(_etype == NONE){
+    return this->elements;
+
+  } else {
+    
+    Element* tmp_elem = NULL;
+    vector<Element*> _elems;
+
+    for(vector<Element*>::iterator it=this->elements.begin(); it != this->elements.end(); ++it ){
+
+      tmp_elem = (Element*) *it;
+      if( tmp_elem->get_elementType() == _etype ){
+        _elems.push_back(tmp_elem);
+      }
+    }
+
+    return _elems;
+  }
+  
 }

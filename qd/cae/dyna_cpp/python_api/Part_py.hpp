@@ -45,14 +45,14 @@ extern "C" {
 
   /* QD_Part FUNCTION get_elements */
   static PyObject*
-  QD_Part_get_elements(QD_Part *self);
+  QD_Part_get_elements(QD_Part *self, PyObject *args);
 
   /* QD_Part METHOD TABLE */
   static PyMethodDef QD_Part_methods[] = {
     {"get_id", (PyCFunction) QD_Part_get_id, METH_NOARGS, "Get the id of the part."},
     {"get_name", (PyCFunction) QD_Part_get_name, METH_NOARGS, "Get the name of the part."},
     {"get_nodes", (PyCFunction) QD_Part_get_nodes, METH_NOARGS, "Get the nodes of the part."},
-    {"get_elements", (PyCFunction) QD_Part_get_elements, METH_NOARGS, "Get the elements of the part."},
+    {"get_elements", (PyCFunction) QD_Part_get_elements, METH_VARARGS, "Get the elements of the part."},
     {NULL}  /* Sentinel */
   };
 

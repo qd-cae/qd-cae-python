@@ -638,15 +638,17 @@ len( part.get_nodes() )
 # >>> 64068
 ```
 
-**part.get_elements()**
+**part.get_elements(element_type=None)**
 
 *return: (list) elements of the part*
 
-Get all elements, which belong to the part.
+Get all elements, which belong to the part. An element filter type may be specified if wanted.
 
 ```python
 len( part.get_elements() )
 # >>> 16020
+len( part.get_elements("solid") )
+# >>> 1536
 ```
 
 **part.plot(iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None)**
