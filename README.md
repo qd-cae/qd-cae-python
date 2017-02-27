@@ -20,6 +20,12 @@ too and if possible contribute.
 
 
 *Changelog 11.2.2017*
+Version 0.4.3
+
+qd.numerics.sampling:
+ - changed diversipy method for lhd design
+
+*Changelog 24.2.2017*
 Version 0.4.2
 
 qd.cae.dyna
@@ -28,15 +34,6 @@ qd.cae.dyna
 qd.numerics.sampling:
   - Added new module
   - added function uniform_lhs (latin hypercube sampling)
-
-
-*Changelog 11.2.2017*
-Version 0.4.1
-
-D3plot & KeyFile:
-  - Added static function: D3plot.plot_parts
-  - Added plot_parts to qd.cae.dyna
-  - Added part.plot() (same as for d3plot.plot)
 
 
 # Installation

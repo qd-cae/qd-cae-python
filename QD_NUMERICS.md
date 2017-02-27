@@ -20,7 +20,7 @@ Do a uniform latin hypercube sampling.
 Parameters:
   - int nSamples : number of samples to draw
   - dict(str, list(float,float)) variables : variables dictionary, the key must be the variable name and the value must be a tuple or list of the lower and upper bound for the variable
-  - **kwargs : arguments passed on to from diversipy.hycusampling.maximin_reconstruction
+  - **kwargs : arguments passed on to from diversipy.hycusampling.improved_lhd_matrix
 
 Returns:
   - list(str) column_names, np.ndarray samples : returns as first entry a list with the column names for the LHS and as second argument a numpy array with latin hypercube samples

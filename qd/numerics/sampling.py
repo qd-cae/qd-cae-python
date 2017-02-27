@@ -1,13 +1,13 @@
 
 import numpy as np
-from diversipy.hycusampling import maximin_reconstruction
+from diversipy.hycusampling import improved_lhd_matrix
 
 
 def uniform_lhs(nSamples, variables, **kwargs):
     '''Do a uniform Latin Hypercube Sampling
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     nSamples : int
         number of samples to draw
     variables : dict(str, tuple(mean,delta) )
@@ -15,11 +15,10 @@ def uniform_lhs(nSamples, variables, **kwargs):
         must be a tuple. The first value of the tuple is the lower bound
         for the variable and the second one is the upper bound
     **kwargs
-        arguments passed on to \"maximin_reconstruction\" 
-        from diversipy.hycusampling
+        arguments passed on to diversipy.hycusampling.improved_lhd_matrix
 
-    Returns:
-    --------
+    Returns
+    -------
     column_names, samples : list(str), np.ndarray
         returns as first entry a list with the column names for the LHS
         and as second argument a numpy array with latin hypercube samples 
@@ -38,7 +37,8 @@ def uniform_lhs(nSamples, variables, **kwargs):
     vars_bounds = np.vstack( variables[label] for label in variable_labels )
 
     # lhs sampling in a unit square
-    data = maximin_reconstruction(nSamples, len(variable_labels), **kwargs)
+    #data = maximin_reconstruction(nSamples, len(variable_labels), **kwargs)
+    data = improved_lhd_matrix(nSamples, len(variable_labels), **kwargs)
 
     # adapt to variable limits: [0;1] -> [min, max]
     vars_min = vars_bounds[:,0]
