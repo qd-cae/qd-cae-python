@@ -145,7 +145,9 @@ class Binout:
 
         if iLevel == 0: 
             return self._bstr_to_str( list( self.lsda_root.children.keys() ) )
-        elif (path[0] == "jntforc") or (path[0] == "rwforc"):
+        elif ( (path[0] == "jntforc") 
+               or (path[0] == "rwforc")
+               or (path[0] == "elout" ) ):
             return self._decode_three_levels(path)
         else:
             return self._decode_two_levels(path)
@@ -179,7 +181,7 @@ class Binout:
 
         # LEVEL 3+ : Error
         else:
-            raise ValueError("Invalid path depth of \"%d > 2\"." % len(iLevel))
+            raise ValueError("Invalid path depth of %d > 2" % iLevel)
 
 
     ## Decode a path, which has depth 3 instread of 2 like default.

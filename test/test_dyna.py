@@ -157,7 +157,7 @@ class TestDynaModule(unittest.TestCase):
 
         from qd.numerics.sampling import uniform_lhs
         
-        nSamples = 1000
+        nSamples = 100
         vars = {"a":[0,5], "b":[-10,10], "c":[0,1]}
         var_labels, samples = uniform_lhs(nSamples, vars)
         

@@ -1,6 +1,6 @@
 
 import numpy as np
-from diversipy.hycusampling import improved_lhd_matrix
+from diversipy.hycusampling import maximin_reconstruction
 
 
 def uniform_lhs(nSamples, variables, **kwargs):
@@ -15,7 +15,7 @@ def uniform_lhs(nSamples, variables, **kwargs):
         must be a tuple. The first value of the tuple is the lower bound
         for the variable and the second one is the upper bound
     **kwargs
-        arguments passed on to diversipy.hycusampling.improved_lhd_matrix
+        arguments passed on to diversipy.hycusampling.maximin_reconstruction
 
     Returns
     -------
@@ -37,8 +37,7 @@ def uniform_lhs(nSamples, variables, **kwargs):
     vars_bounds = np.vstack( variables[label] for label in variable_labels )
 
     # lhs sampling in a unit square
-    #data = maximin_reconstruction(nSamples, len(variable_labels), **kwargs)
-    data = improved_lhd_matrix(nSamples, len(variable_labels), **kwargs)
+    data = maximin_reconstruction(nSamples, len(variable_labels), **kwargs)
 
     # adapt to variable limits: [0;1] -> [min, max]
     vars_min = vars_bounds[:,0]

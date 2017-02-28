@@ -22,8 +22,8 @@ too and if possible contribute.
 *Changelog 11.2.2017*
 Version 0.4.3
 
-qd.numerics.sampling:
- - changed diversipy method for lhd design
+ qd.cae.dyna
+  - fixed elout in Binout (was wrong)
 
 *Changelog 24.2.2017*
 Version 0.4.2
