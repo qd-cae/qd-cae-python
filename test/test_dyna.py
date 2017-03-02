@@ -24,7 +24,7 @@ class TestDynaModule(unittest.TestCase):
 
 
     def test_dyna_d3plot(self):
-        """Testing all D3plot functions"""
+        """Testing qd.cae.dyna.D3plot"""
 
         d3plot_filepath = "test/d3plot"
         d3plot_modes = ["in","mid","out","max","min","mean"]
@@ -122,7 +122,7 @@ class TestDynaModule(unittest.TestCase):
 
 
     def test_binout(self):
-        """Testing all Binout functions"""
+        """Testing qd.cae.dyna.Binout"""
 
         binout_filepath = "test/binout"
         nTimesteps = 321
@@ -153,7 +153,7 @@ class TestDynaModule(unittest.TestCase):
 
 
     def test_numerics_sampling(self):
-        '''Testing all sampling functions'''
+        '''Testing qd.numerics'''
 
         from qd.numerics.sampling import uniform_lhs
         
@@ -172,6 +172,13 @@ class TestDynaModule(unittest.TestCase):
         assert np.amin( samples[:,var_labels.index("c")] ) >= 0
         assert np.amax( samples[:,var_labels.index("c")] ) <= 1
 
+    
+    def test_qd_cae_beta(self):
+        '''Testing qd.cae.beta'''
+
+        from qd.cae.beta import MetaCommunicator
+        # ... 
+
+
 if __name__ == "__main__":
-    #unittest.main()
     pass

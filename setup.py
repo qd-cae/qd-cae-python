@@ -125,16 +125,19 @@ setup(name = 'qd',
         author_email = 'qd.eng.contact@gmail.com',
         packages=(['qd',
                    'qd.cae',
+                   'qd.cae.beta',
                    'qd.cae.resources',
                    'qd.numerics',
                    ]),
         package_dir={'qd'    : 'qd',
                      'qd.cae' : 'qd/cae',
+                     'qd.cae.beta' : 'qd/cae/beta',
                      'qd.cae.resources' : 'qd/cae/resources',
                      'qd.numerics' : 'qd/numerics',
                      },
         package_data={
-            'qd.cae.resources' : ['*.js','html.template']
+            'qd.cae.resources' : ['*.js','html.template'],
+            'qd.cae.beta'      : ['meta_remote_control','meta_remote_control.exe']
         },
         ext_package='qd.cae', # where to place c extensions
         ext_modules=[dyna_extension],
