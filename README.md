@@ -20,21 +20,32 @@ too and if possible contribute.
 
 
 *Changelog 11.2.2017*
+Version 0.4.4
+
+ qd.cae.beta
+  - added new module (for Beta CAE Systems)
+  - added class MetaCommunicator
+
+*Changelog 11.2.2017*
 Version 0.4.3
 
  qd.cae.dyna
   - fixed elout in Binout (was wrong)
 
-*Changelog 24.2.2017*
-Version 0.4.2
+# Descriptions
 
-qd.cae.dyna
-  - part.get_elements now supports element type filtering
+Current Module List:
 
-qd.numerics.sampling:
-  - Added new module
-  - added function uniform_lhs (latin hypercube sampling)
+1. [qd.cae.dyna](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md)
+  - Read D3plot (DONE)
+  - Read Binouts (DONE)
+  - Read Input Files (partially done)
+2. [qd.numerics](https://github.com/qd-cae/qd/blob/master/QD_NUMERICS.md)
+  - Submodule: sampling
+3. [qd.cae.beta](https://github.com/qd-cae/qd/blob/master/QD_CAE_BETA.md)
+  - MetaCommunicator (control META remotely)
 
+For more details, look into the helper files.
 
 # Installation
 
@@ -66,19 +77,6 @@ python setup.py install
 If possible, use the pre-compiled python-wheels in the dist folder and install with pip.
 The wheel is always compiled with FEMZIP support (not). For compiling the code yourself,
 the library needs Boost.
-
-# Descriptions
-
-Current Module List:
-
-1. [qd.cae.dyna](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md)
-  - Read D3plot (DONE)
-  - Read Binouts (DONE)
-  - Read Input Files (partially done)
-2. [qd.numerics](https://github.com/qd-cae/qd/blob/master/QD_NUMERICS.md)
-  - Submodule: sampling
-
-For more details, look into the helper files.
 
 
 # Compilation
