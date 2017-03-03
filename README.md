@@ -19,7 +19,7 @@ a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
 
-*Changelog 11.2.2017*
+*Changelog 03.03.2017*
 Version 0.4.4
 
  qd.cae.beta
