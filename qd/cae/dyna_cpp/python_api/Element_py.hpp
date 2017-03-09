@@ -29,6 +29,9 @@ extern "C" {
   QD_Element_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 
   static PyObject *
+  QD_Element_richcompare(QD_Element *self, PyObject *other, int op);
+
+  static PyObject *
   QD_Element_get_elementID(QD_Element* self);
 
   static PyObject *
@@ -94,11 +97,11 @@ extern "C" {
     0,                         /* tp_setattro */
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT |
-        Py_TPFLAGS_BASETYPE,   /* tp_flags */
+    Py_TPFLAGS_BASETYPE,       /* tp_flags */
     "QD_Element",                 /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    (richcmpfunc)& QD_Element_richcompare, /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */

@@ -890,7 +890,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Displacement
     if(_variables[ii].find("disp") != string::npos){
       if( dyna_iu == 0)
-        throw("Unable to read displacements, since there are none.");
+        throw(string("Unable to read displacements, since there are none."));
       this->disp_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->disp_is_read){
@@ -902,7 +902,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Velocity
     } else if(_variables[ii].find("vel") != string::npos){
       if( dyna_iv == 0)
-        throw("Unable to read velocities, since there are none.");
+        throw(string("Unable to read velocities, since there are none."));
       this->vel_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->vel_is_read){
@@ -914,7 +914,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Acceleration
     } else if(_variables[ii].find("accel") != string::npos){
       if( dyna_ia == 0)
-        throw("Unable to read accelerations, since there are none.");
+        throw(string("Unable to read accelerations, since there are none."));
       this->acc_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->acc_is_read){
@@ -951,7 +951,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Strain
     } else if(_variables[ii].find("strain") != string::npos){
       if( dyna_istrn == 0)
-        throw("Unable to read strains, since there are none.");
+        throw(string("Unable to read strains, since there are none."));
       this->strain_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->strain_is_read){
@@ -963,7 +963,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Internal Energy
     } else if(_variables[ii].find("energy") != string::npos){
       if( dyna_ioshl4 == 0)
-        throw("Unable to read energies, since there are none.");
+        throw(string("Unable to read energies, since there are none."));
       this->energy_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->energy_is_read){
@@ -978,7 +978,7 @@ void D3plot::read_states_parse(vector<string> _variables){
       // retrieve history var indexes
       vector<unsigned int> hist_vars = extract_integers<unsigned int>(_variables[ii]);
       if(hist_vars.size() < 1)
-         throw("No history variable index specified. Please input at least one number seperated by spaces.");
+         throw(string("No history variable index specified. Please input at least one number seperated by spaces."));
       unsigned int var_mode = read_states_parse_readMode(_variables[ii]);
 
       /* SHELLS */
@@ -1008,7 +1008,7 @@ void D3plot::read_states_parse(vector<string> _variables){
          for(size_t jj=0; jj < hist_vars.size(); ++jj){
 
             if(hist_vars[jj] < 1){
-               throw("History variable index must be at least 1.");
+               throw(string("History variable index must be at least 1."));
             }
             if( hist_vars[jj] > this->dyna_neips ){
                cout << "Warning: history variable " << hist_vars[jj] << " exceeds the limit for shells of " << this->dyna_neips << endl;
@@ -1048,7 +1048,7 @@ void D3plot::read_states_parse(vector<string> _variables){
          for(size_t jj=0; jj < hist_vars.size(); ++jj){
 
             if(hist_vars[jj] < 1){
-               throw("History variable index must be at least 1.");
+               throw(string("History variable index must be at least 1."));
             }
             if( hist_vars[jj] > this->dyna_neiph ){
                cout << "Warning: history variable " << hist_vars[jj] << " exceeds the limit for solids of " << this->dyna_neiph << endl;
@@ -1063,7 +1063,7 @@ void D3plot::read_states_parse(vector<string> _variables){
 
       // unknown element type
       } else {
-         throw("Please specify the element type for all history variables as shell or solid");
+         throw(string("Please specify the element type for all history variables as shell or solid"));
       }
 
     } else {
@@ -1075,9 +1075,9 @@ void D3plot::read_states_parse(vector<string> _variables){
 
   /*
    * Returns the int code for the read mode of the state variables in the d3plot.
-   * Modes are: min,max,outer,mid,innter,mean
+   * Modes are: min,max,outer,mid,inner,mean
    */
-unsigned int D3plot::read_states_parse_readMode(string _variable){
+unsigned int D3plot::read_states_parse_readMode(const string& _variable) const {
 
    if(_variable.find("max") != string::npos){
      return 1;
@@ -1682,9 +1682,9 @@ void D3plot::read_states_elem4(size_t iState){
 }
 
 
-/*
- * Get the timestamps of the timesteps.
+/** Get the timestamps of the timesteps.
  *
+ * @return timesteps vector with the timestamp of the given state
  */
 vector<float> D3plot::get_timesteps() {
   return this->timesteps;
@@ -1692,9 +1692,178 @@ vector<float> D3plot::get_timesteps() {
 
 
 
-/*
- * Tells whether displacements were loaded.
+/** Tells whether displacements were loaded.
+ * 
+ * @return disp_is_read boolean whether the disp was read
  */
 bool D3plot::displacement_is_read(){
    return this->disp_is_read;
 }
+
+
+/** Clears loaded result data loaded from the file
+ *
+ * @param _variables optional arg for cleansing only specific variables
+ *
+ * Clears all variables by default!
+ */
+void D3plot::clear( const vector<string>& _variables ){
+
+  // Default: Clear all
+  if( _variables.size() == 0 ) {
+
+    // hihi this is a naughty trick ... calling myself again
+    vector<string> _tmp;
+    _tmp.push_back("disp");
+    _tmp.push_back("vel");
+    _tmp.push_back("accel");
+    _tmp.push_back("energy");
+    _tmp.push_back("plastic_strain");
+    _tmp.push_back("strain");
+    _tmp.push_back("stress");
+    _tmp.push_back("history shell");
+    _tmp.push_back("history solid");
+    this->clear( _tmp );
+
+  } else {
+
+    // Convert strings to booleans (faster later)
+    bool delete_disp  = false;
+    bool delete_vel   = false;
+    bool delete_accel = false;
+    bool delete_energy = false;
+    bool delete_plastic_strain = false;
+    bool delete_strain = false;
+    bool delete_stress = false;
+    bool delete_history_shell = false;
+    bool delete_history_solid = false;
+    for(size_t iVar=0; iVar<_variables.size(); ++iVar){
+
+      if( _variables[iVar].find("disp") != string::npos ){
+        delete_disp = true;
+      } else if ( _variables[iVar].find("vel") != string::npos ) {
+        delete_vel = true;
+      } else if ( _variables[iVar].find("accel") != string::npos ) {
+        delete_accel = true;
+      } else if ( _variables[iVar].find("energy") != string::npos ) {
+        delete_energy = true;
+      } else if ( _variables[iVar].find("plastic_strain") != string::npos ) {
+        delete_plastic_strain = true;
+      } else if ( _variables[iVar].find("strain") != string::npos ) {
+        delete_strain = true;
+      } else if ( _variables[iVar].find("stress") != string::npos ) {
+        delete_stress = true;
+      } else if ( _variables[iVar].find("history") != string::npos ) {
+
+        // shell or solid specified?
+        // delete both if unspecified
+        if( _variables[iVar].find("shell") != string::npos ){
+          delete_history_shell = true;
+        } else if ( _variables[iVar].find("solid") != string::npos ){
+          delete_history_solid = true;
+        } else {
+          delete_history_shell = true;
+          delete_history_solid = true;
+        }
+
+      } else {
+        throw(string("Unknown variable type:")+_variables[iVar]);
+      }
+
+    } // end:for
+
+    // NODES: data deletion
+    if( delete_disp || delete_vel || delete_accel ){
+
+      DB_Nodes *db_nodes = this->get_db_nodes();
+      Node *_node = NULL;
+      for(size_t iNode=0; iNode<db_nodes->size(); ++iNode){
+
+        _node = db_nodes->get_nodeByIndex(iNode);
+        if( _node ){
+          
+          if(delete_disp)
+            _node->clear_disp();
+          if(delete_vel)
+            _node->clear_vel();
+          if(delete_accel)
+            _node->clear_accel();
+
+        }
+
+      } // end:for
+
+      // reset flags
+      if(delete_disp)
+        this->disp_is_read = false;
+      if(delete_vel)
+        this->vel_is_read = false;
+      if(delete_accel)
+        this->acc_is_read = false;
+    }
+
+    // ELEMENT: data deletion
+    if( delete_energy ||
+        delete_plastic_strain ||
+        delete_strain ||
+        delete_stress ||
+        delete_history_shell ||
+        delete_history_solid ){
+
+      DB_Elements *db_elems = this->get_db_elements();
+      Element *_elem = NULL;
+
+      // shells      
+      for(size_t iElement=0; iElement<db_elems->size(SHELL); iElement++){
+
+        _elem = db_elems->get_elementByIndex(SHELL, iElement);
+        if( _elem ){
+          if(delete_energy)
+            _elem->clear_energy();
+          if(delete_plastic_strain)
+            _elem->clear_plastic_strain();
+          if(delete_strain)
+            _elem->clear_strain();
+          if(delete_stress)
+            _elem->clear_stress();
+          if(delete_history_shell)
+            _elem->clear_history_vars();
+        }
+      }
+      // solids
+      for(size_t iElement=0; iElement<db_elems->size(SOLID); iElement++){
+      
+        _elem = db_elems->get_elementByIndex(SOLID, iElement);
+        if( _elem ){
+          if(delete_energy)
+            _elem->clear_energy();
+          if(delete_plastic_strain)
+            _elem->clear_plastic_strain();
+          if(delete_strain)
+            _elem->clear_strain();
+          if(delete_stress)
+            _elem->clear_stress();
+          if(delete_history_solid)
+            _elem->clear_history_vars();
+        }
+      }
+
+      // reset flags
+      if(delete_energy)
+        this->energy_is_read = false;
+      if(delete_plastic_strain)
+        this->plastic_strain_is_read = false;
+      if(delete_strain)
+        this->strain_is_read = false;
+      if(delete_stress)
+        this->stress_is_read = false;
+      if(delete_history_shell)
+        this->history_shell_is_read.clear();
+      if(delete_history_solid)
+        this->history_solid_is_read.clear();
+
+    } // end:if Elements
+
+  } // end:else for deletion
+
+} // end:function clear

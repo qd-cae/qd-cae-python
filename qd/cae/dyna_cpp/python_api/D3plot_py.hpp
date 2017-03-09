@@ -46,12 +46,16 @@ extern "C" {
   static PyObject *
   QD_D3plot_info(QD_D3plot* self);
 
+  /* FUNCTION clear */
+  static PyObject *
+  QD_D3plot_clear(QD_D3plot* self, PyObject* args);
 
   /* METHOD TABLE */
   static PyMethodDef QD_D3plot_methods[] = {
     {"get_timesteps", (PyCFunction) QD_D3plot_get_timesteps, METH_NOARGS, "Get the timesteps in the d3plot."},
     {"read_states", (PyCFunction) QD_D3plot_read_states, METH_VARARGS, "Read a state variable."},
     {"info", (PyCFunction) QD_D3plot_info, METH_NOARGS, "Read a state variable."},
+    {"clear", (PyCFunction) QD_D3plot_clear, METH_VARARGS, "Clear state variable."},
 	  {NULL}  /* Sentinel */
   };
 

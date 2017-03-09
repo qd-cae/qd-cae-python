@@ -211,8 +211,7 @@ Read a variable from the state files. If this is not done, the nodes and element
 - history [id1] [id2] ... [shell or solid] [(optional) mode]
 
 Additionally one has to keep in mind that shells contain multiple output layers with results. Therefore additional modes where introduced in order to specify the handling of multiple outputs.
-- in/mid/out
-- max/min/mean
+- in/mid/out/max/min/mean
 
 In order to read the plastic-strain considering only the maximum over all integration layers use: "plastic_strain max". Default is mean, if no mode is given. When reading history variables, one MUST specify type (shell/solid) and at least one index starting at 1.
 
@@ -230,6 +229,26 @@ len( node.get_disp() ) # here they are
 d3plot.read_states(["disp","vel","plastic_strain max","shell history 1 mean"]) 
 # most efficient way, load the results directly when opening
 D3plot("path/to/d3plot", read_states=["disp","vel","plastic_strain max"]) 
+```
+
+**d3plot.clear(arg)**
+
+*return: None*
+
+ This function may be used if one wants to clear certain state data from the memory. Argument may be a string or a list of string nominating the variables which shall be cleared.
+
+```python
+d3plot = D3plot("path/to/d3plot", read_states="disp")
+node = d3plot.get_nodeByIndex(1)
+len(node.get_disp())
+# >>> 34
+d3plot.clear("disp") # clear specific field
+len(node.get_disp())
+# >>> 0
+d3plot.read_states("disp")
+d3plot.clear() # clear all
+len(node.get_disp())
+# >>> 0
 ```
 
 ----------

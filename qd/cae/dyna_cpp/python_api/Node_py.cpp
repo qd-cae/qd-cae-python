@@ -44,7 +44,7 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi|O", kwlist, &femFile_obj_py, &iNode, &use_index_py)){
       return -1;
   }
-  use_index = PyObject_IsTrue(use_index_py);
+  use_index = PyObject_IsTrue(use_index_py) != 0;
 
   if (! PyObject_TypeCheck(femFile_obj_py, &QD_FEMFile_Type)) {
     PyErr_SetString(PyExc_SyntaxError, "arg #1 not a D3plot or KeyFile in node constructor");

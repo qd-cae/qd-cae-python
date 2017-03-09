@@ -30,11 +30,89 @@ def _read_file(filepath):
         return fp.read()
 
 
+def _parse_element_result(arg, iTimestep=-1):
+    '''Get the element result function from the argument
+
+    Parameter
+    ---------
+    arg : str or function(elem)
+        type of element result. If it is a function, itself
+        is returned. If it is a string, it is converted into
+        an evaluation function.
+    iTimestep : int
+        timestep at which to extract the results
+    
+    Returns
+    -------
+    d3plot_load_var : str
+        string for loading variable in a d3plot. None if arg
+        is already a function.
+    evaluation_function : function(elem)
+        evaluation function which takes an element as argument
+    '''
+
+    assert isinstance(arg, str) or callable(arg)
+
+    if callable(arg):
+        return None, arg
+    
+    if arg == "plastic_strain":
+
+        def eval_function(elem):
+            _etype = elem.get_type()
+            if _etype == "shell" or _etype == "solid":
+                return elem.get_plastic_strain()[iTimestep]
+            else:
+                return 0.
+
+        return "plastic_strain max", eval_function
+
+    elif arg == "energy":
+
+        def eval_function(elem):
+            _etype = elem.get_type()
+            if _etype == "shell" or _etype == "solid":
+                return elem.get_energy()[iTimestep]
+            else:
+                return 0.
+
+        return "energy", eval_function
+
+    elif arg == "disp":
+        return "disp", lambda elem : elem.get_disp(iTimestep)
+    else:
+        raise ValueError("Unknown result type: %s, Try plastic_strain, energy or disp." % arg )
+
+
+def _extract_elem_coords(parts, iTimestep=0):
+    '''Extract the coordinates of the elements
+
+    Parameters
+    ----------
+    parts : list(Part)
+        list of parts of which to extract the coordinates
+
+    Returns
+    -------
+    elem_coords : np.ndarray
+        coordinates of the elements
+    '''
+
+    assert all( isinstance(entry, QD_Part) for entry in parts )
+
+    def _elem_iterator(parts):
+        for _part in parts:
+            for _elem in _part.get_elements():
+                yield _elem.get_coords(iTimestep)
+
+    return np.vstack( _elem_iterator(parts) )
+
+
 def _extract_elem_data(element, iTimestep=0, element_result=None):
     '''Extract fringe data from the element
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     element : Element
         Element to extract the data of
     iTimestep : int
@@ -44,8 +122,8 @@ def _extract_elem_data(element, iTimestep=0, element_result=None):
         None means no fringe is used
         Function shall take elem as input and return a float value (for fringe)
 
-    Returns:
-    --------
+    Returns
+    -------
     result : float
 
     Returns None in case that no result type is desired.
@@ -73,8 +151,8 @@ def _extract_elem_data(element, iTimestep=0, element_result=None):
 def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
     '''Extract the mesh data from a part or list of parts
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     parts : part or list(part)
         parts to extract mesh of
     iTimestep : int
@@ -84,8 +162,8 @@ def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
         None means no fringe is used
         Function shall take elem as input and return a float value (for fringe)
 
-    Returns:
-    --------
+    Returns
+    -------
         mesh_coords, mesh_fringe, elem_texts : tuple(np.ndarray, np.ndarray, list)
     '''
 
@@ -140,8 +218,8 @@ def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
 def _parts_to_html(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None]):
     '''Convert a part or multiple parts to a 3D HTML
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     parts : Part or list(Part)
         part to convert (from a d3plot)
     iTimestep : int
@@ -153,8 +231,8 @@ def _parts_to_html(parts, iTimestep=0, element_result=None, fringe_bounds=[None,
     fringe_bounds : list(float,float) or tuple(float,float)
         bounds for the fringe, default will use min and max value
 
-    Returns:
-    --------
+    Returns
+    -------
     html : str
         the 3D HTML as string
     '''
@@ -215,8 +293,8 @@ def _parts_to_html(parts, iTimestep=0, element_result=None, fringe_bounds=[None,
 def _plot_html(_html, export_filepath=None):
     '''Plot a 3D html
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     _html : str
         html as string
     export_filepath : str
@@ -255,8 +333,8 @@ def _plot_html(_html, export_filepath=None):
 def plot_parts(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None):
     '''Plot a single or multiple parts from a d3plot
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     parts : Part or list(Part)
         part to convert (from a d3plot)
     iTimestep : int
@@ -284,13 +362,13 @@ def plot_parts(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None
 def _extract_surface_mesh(parts):
     '''Extract the surface mesh from parts
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     parts : Part or list(Part)
         parts from which to extract the mesh
 
-    Returns:
-    --------
+    Returns
+    -------
     ? : ?
     '''
     if not isinstance(parts, (list,tuple,np.ndarray)):

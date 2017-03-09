@@ -19,6 +19,13 @@ a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
 
+*Changelog 09.03.2017*
+Version 0.4.5
+
+qd.cae.dyna
+ - D3plot.clear for removing already read data
+ - Element equals operator is now correct
+
 *Changelog 03.03.2017*
 Version 0.4.4
 

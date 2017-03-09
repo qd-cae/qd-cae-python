@@ -369,3 +369,38 @@ void Element::check(){
    }
 
 }
+
+
+/** Clear the elements energy data
+ */
+void Element::clear_energy(){
+  this->energy.clear();
+}
+
+
+/** Clear the elements plastic strain
+ */
+void Element::clear_plastic_strain(){
+  this->plastic_strain.clear();
+}
+
+
+/** Clear the elements stress
+ */
+void Element::clear_stress(){
+  this->stress.clear();
+}
+
+
+/** Clear the elements strain
+ */
+void Element::clear_strain(){
+  this->strain.clear();
+}
+
+
+/** Clear the elements history data
+ */
+void Element::clear_history_vars(){
+  this->history_vars.clear();
+}

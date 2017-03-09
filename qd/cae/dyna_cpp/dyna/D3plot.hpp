@@ -131,7 +131,7 @@ private:
   void                  read_geometry_parts();
   void read_states_init();
   void read_states_parse(vector<string>);
-  unsigned int read_states_parse_readMode(string _variable);
+  unsigned int read_states_parse_readMode(const string& _variable) const;
   void read_states_displacement();
   void read_states_velocity();
   void read_states_acceleration();
@@ -140,11 +140,12 @@ private:
   bool isFileEnding(int);
 
   // === P U B L I C === //
-  public:
+public:
   D3plot(string filepath, vector<string> _variables = vector<string>(),bool _use_femzip = false);
   ~D3plot();
   void info();
   void read_states(vector<string> _variables);
+  void clear( const vector<string>& _variables = vector<string>() );
   vector<float> get_timesteps();
   bool displacement_is_read();
   bool is_d3plot(){return true;};

@@ -184,3 +184,25 @@ vector< vector<float> > Node::get_vel(){
 vector< vector<float> > Node::get_accel(){
   return this->accel;
 }
+
+
+/** Clear a node of it's displacement field
+ *
+ */
+void Node::clear_disp(){
+  this->disp.clear();
+}
+
+/** Clear a node of it's velocity field
+ *
+ */
+void Node::clear_vel(){
+  this->vel.clear();
+}
+
+/** Clear a node of it's acceleration field
+ *
+ */
+void Node::clear_accel(){
+  this->accel.clear();
+}

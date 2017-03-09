@@ -56,7 +56,14 @@ public:
   void add_plastic_strain(float);
   void add_stress(vector<float>);
   void add_strain(vector<float>);
-  void add_history_vars(vector<float> vars,size_t iTimestep);
+  void add_history_vars(vector<float> vars, size_t iTimestep);
+
+  // clearer
+  void clear_energy();
+  void clear_plastic_strain();
+  void clear_stress();
+  void clear_strain();
+  void clear_history_vars();
 
 };
 

@@ -1,6 +1,6 @@
 
 
-from ._dyna_utils import plot_parts
+from ._dyna_utils import plot_parts, _parse_element_result, _extract_elem_coords
 from .dyna_cpp import QD_D3plot, QD_Part
 from .Part import Part
 
@@ -21,8 +21,8 @@ class D3plot(QD_D3plot):
         in the constructor or with the member function.
             
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         filepath : str
             path to the d3plot
         use_femzip : bool
@@ -31,25 +31,127 @@ class D3plot(QD_D3plot):
             read state information directly (saves time), 
             see the function read_states
 
-        Returns:
-        --------
+        Returns
+        -------
             D3plot d3plot : instance
 
         '''
         super(D3plot, self).__init__(*args, **kwargs)
 
+
+    def get_parts(self):
+        '''Get parts of the D3plot
+        
+        Returns
+        -------
+        parts : list(Part)
+            parts within the D3plot
+
+        Overwritten function.
+        '''
+
+        part_ids = [_part.get_id() for _part in super(D3plot, self).get_parts() ]
+        return [ Part(self, part_id) for part_id in part_ids ]
+
+
+    def get_partByID(self, *args, **kwargs):
+        '''Get the part by its id
+        
+        Returns
+        -------
+        part_id : int
+            id of the part
+        '''
+
+        part_id = super(D3plot, self).get_partByID(*args,**kwargs).get_id()
+        return Part(self, part_id)
     
+
+    def compare_scatter(self, filepath_list, 
+                              element_result="plastic_strain",
+                              export_filepath = None,
+                              **kwargs):
+        '''Compare this d3plot to others
+
+        Parameters
+        ----------
+        filepath_list : list(str)
+            list of filepaths of d3plot for comparison
+        element_result : str or function(element)
+            element results to compare. Either specify a user defined
+            function or use predefined results. Available are
+            disp, plastic_strain or energy.
+        export_filepath : str
+            optional filepath for saving. If none, the model
+            is exported to a temporary file and shown in the
+            browser.
+        **kwargs : unwrapped dict
+            additional arguments passed on to d3plot constructor
+
+        This file will be used as basis for the comparison. The other files
+        results will be mapped onto this mesh. The scatter is computed as 
+        maximum between all runs. 
+        '''
+
+        from sklearn.neighbors import KDTree
+
+        # yay checks :)
+        assert isinstance(filepath_list, (list,tuple))
+        assert all( isinstance(entry, str) for entry in filepath_list )
+        assert isinstance(element_result,str) or callable(element_result)
+
+        # parse element result
+        read_vars_str, eval_function =  _parse_element_result(element_result)
+        if read_vars_str != None:
+            kwargs['read_states'] = read_vars_str
+
+        # base run element coords
+        elem_coords = _extract_elem_coords( self.get_parts() )
+        coords_tree = KDTree(elem_coords)
+
+        # init vars for comparison
+        if read_vars_str == "disp":
+            element_result_max = np.zeros( (len(elem_coords),3) )
+            element_result_min = np.zeros( (len(elem_coords),3) )
+        else:
+            element_result_max = np.zeros( len(elem_coords) )
+            element_result_min = np.zeros( len(elem_coords) )
+
+        # loop other files
+        for _filepath in filepath_list:
+
+            # new mesh with results
+            _d3plot = D3plot(_filepath,**kwargs) 
+            _d3plot_elem_coords = _extract_elem_coords( _d3plot.get_parts() )
+            # TODO results extraction
+            
+            # compute mapping
+            mapping_indexes = coords_tree.query(_d3plot_elem_coords, 
+                                                return_distance=False,
+                                                sort_results=False)
+            # TODO map results (multiple matches?)
+
+            # update min and max
+            # TODO
+
+        # compute scatter
+        # TODO
+
+        # plot scatter
+        # TODO
+            
 
     def plot(self, iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None):
         '''Plot the D3plot, currently shells only!
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         iTimestep : int
             timestep at which to plot the D3plot
         element_result : str or function
             which type of results to use as fringe
-            None means no fringe is used
+            None means no fringe is used.
+            When using string as arg you may use plastic_strain or energy.
             Function shall take elem as input and return a float value (for fringe)
         fringe_bounds : list(float,float) or tuple(float,float)
             bounds for the fringe, default will use min and max value
@@ -79,6 +181,7 @@ class D3plot(QD_D3plot):
         element_result : str or function
             which type of results to use as fringe
             None means no fringe is used
+            When using string as arg you may use plastic_strain or energy.
             Function shall take elem as input and return a float value (for fringe)
         fringe_bounds : list(float,float) or tuple(float,float)
             bounds for the fringe, default will use min and max value
@@ -98,31 +201,3 @@ class D3plot(QD_D3plot):
                    element_result=element_result, 
                    fringe_bounds=fringe_bounds, 
                    export_filepath=export_filepath)
-
-
-    def get_parts(self):
-        '''Get parts of the D3plot
-        
-        Returns:
-        --------
-        parts : list(Part)
-            parts within the D3plot
-
-        Overwritten function.
-        '''
-
-        part_ids = [_part.get_id() for _part in super(D3plot, self).get_parts() ]
-        return [ Part(self, part_id) for part_id in part_ids ]
-
-
-    def get_partByID(self, *args, **kwargs):
-        '''Get the part by its id
-        
-        Returns:
-        --------
-        part_id : int
-            id of the part
-        '''
-
-        part_id = super(D3plot, self).get_partByID(*args,**kwargs).get_id()
-        return Part(self, part_id)
