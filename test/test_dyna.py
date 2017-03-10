@@ -95,6 +95,8 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual( d3plot.get_timesteps()[0]  ,0.)
         self.assertEqual( len(d3plot.get_timesteps()) ,1)
         self.assertEqual( len(d3plot.get_parts())     ,1)
+
+        # plotting
         export_path = os.path.join( os.path.dirname(__file__), "test_export.html" )
         for element_result in element_result_list:
             
@@ -121,6 +123,15 @@ class TestDynaModule(unittest.TestCase):
         ## D3plot error handling
         # ... TODO
 
+        ## Part
+        part1 = d3plot.get_parts()[0]
+        part2 = d3plot.get_parts()[0]
+        self.assertTrue( part1 == part2 )
+        self.assertFalse( part1 > part2 )
+        self.assertFalse( part1 < part2 )
+        self.assertTrue( part1 >= part2 )
+        self.assertTrue( part1 <= part2 )
+
         ## Node
         node_ids = [1,2]
         nodes_ids_v1 = [d3plot.get_nodeByID(node_id) for node_id in node_ids]
@@ -134,6 +145,12 @@ class TestDynaModule(unittest.TestCase):
             self.assertEqual( len(node.get_vel())      , 1 ) 
             self.assertEqual( len(node.get_accel())    , 1 ) 
             self.assertGreater( len(node.get_elements()) , 0)
+        self.assertTrue( nodes_ids_v1[0] == nodes_ids_v2[0] )
+        self.assertFalse( nodes_ids_v1[0] != nodes_ids_v2[0] )
+        self.assertFalse( nodes_ids_v1[0] > nodes_ids_v2[0] )
+        self.assertFalse( nodes_ids_v1[0] < nodes_ids_v2[0] )
+        self.assertTrue( nodes_ids_v1[0] >= nodes_ids_v2[0] )
+        self.assertTrue( nodes_ids_v1[0] <= nodes_ids_v2[0] )
 
         node_indexes = [0,1]
         node_matching_ids = [1,2] # looked it up manually

@@ -29,6 +29,9 @@ extern "C" {
   QD_Node_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 
   static PyObject *
+  QD_Node_richcompare(QD_Node *self, PyObject *other, int op);
+
+  static PyObject *
   QD_Node_get_NodeID(QD_Node* self);
 
   static PyObject *
@@ -82,7 +85,7 @@ extern "C" {
     "QD_Node",                 /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    (richcmpfunc)& QD_Node_richcompare, /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */

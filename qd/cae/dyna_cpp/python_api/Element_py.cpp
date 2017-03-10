@@ -81,7 +81,7 @@ QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
 }
 
 /* FUNCTION richcompare */
-PyObject* 
+static PyObject* 
 QD_Element_richcompare(QD_Element *self, PyObject *other, int op){
 
   PyObject *result = NULL;
@@ -109,14 +109,16 @@ QD_Element_richcompare(QD_Element *self, PyObject *other, int op){
           }
           break;
       case Py_EQ:
-          if( self->element == other_elem->element ) { // same element in memory
+          if( self->element->get_elementID() == other_elem->element->get_elementID()
+           && self->element->get_elementType() == other_elem->element->get_elementType() ) { 
             result = Py_True; 
           } else {
             result = Py_False;
           }
           break;
       case Py_NE:
-          if( self->element != other_elem->element ) { // same element in memory
+          if( self->element->get_elementID() != other_elem->element->get_elementID() 
+           || self->element->get_elementType() != other_elem->element->get_elementType()) { 
             result = Py_True; 
           } else {
             result = Py_False;

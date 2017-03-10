@@ -1,5 +1,5 @@
 
-/* QD_Node DEALLOC */
+/* DEALLOC */
 static void
 QD_Node_dealloc(QD_Node* self)
 {
@@ -9,7 +9,7 @@ QD_Node_dealloc(QD_Node* self)
 }
 
 
-/* QD_Node NEW */
+/* NEW */
 static PyObject *
 QD_Node_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
@@ -27,7 +27,7 @@ QD_Node_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 
-/* QD_Node INIT */
+/* INIT */
 static int
 QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
 {
@@ -78,7 +78,71 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
   return 0;
 }
 
-/* QD_Node FUNCTION get_NodeID */
+/* FUNCTION richcompare */
+static PyObject* 
+QD_Node_richcompare(QD_Node *self, PyObject *other, int op){
+
+  PyObject *result = NULL;
+
+  if( !PyObject_TypeCheck(other, &QD_Node_Type) ){
+    PyErr_SetString(PyExc_ValueError, "Comparison of nodes work only with other nodes.");
+    return NULL;
+  }
+
+  QD_Node *other_node = (QD_Node*) other;
+
+  switch(op){
+      case Py_LT:
+          if( self->node->get_nodeID() < other_node->node->get_nodeID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_LE:
+          if( self->node->get_nodeID() <= other_node->node->get_nodeID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_EQ:
+          if( self->node->get_nodeID() == other_node->node->get_nodeID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_NE:
+          if( self->node->get_nodeID() != other_node->node->get_nodeID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_GT:
+          if( self->node->get_nodeID() > other_node->node->get_nodeID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_GE:
+          if( self->node->get_nodeID() >= other_node->node->get_nodeID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+  }
+  
+  Py_XINCREF(result);
+  return result;
+
+}
+
+
+/* FUNCTION get_NodeID */
 static PyObject *
 QD_Node_get_NodeID(QD_Node* self){
 
@@ -94,7 +158,7 @@ QD_Node_get_NodeID(QD_Node* self){
 }
 
 
-/* QD_Node FUNCTION get_coords */
+/* FUNCTION get_coords */
 static PyObject *
 QD_Node_get_coords(QD_Node* self, PyObject *args, PyObject *kwds){
 
@@ -119,7 +183,7 @@ QD_Node_get_coords(QD_Node* self, PyObject *args, PyObject *kwds){
 
 }
 
-/* QD_Node FUNCTION get_disp */
+/* FUNCTION get_disp */
 static PyObject *
 QD_Node_get_disp(QD_Node* self){
 
@@ -134,7 +198,7 @@ QD_Node_get_disp(QD_Node* self){
 }
 
 
-/* QD_Node FUNCTION get_vel */
+/* FUNCTION get_vel */
 static PyObject *
 QD_Node_get_vel(QD_Node* self){
 
@@ -148,7 +212,7 @@ QD_Node_get_vel(QD_Node* self){
 }
 
 
-/* QD_Node FUNCTION get_accel */
+/* FUNCTION get_accel */
 static PyObject *
 QD_Node_get_accel(QD_Node* self){
 
@@ -161,7 +225,7 @@ QD_Node_get_accel(QD_Node* self){
 
 }
 
-/* QD_Node FUNCTION get_elements */
+/* FUNCTION get_elements */
 static PyObject *
 QD_Node_get_elements(QD_Node* self){
 
