@@ -14,16 +14,20 @@
 /*
  * Constructor.
  */
-Element::Element(int _elementID, ElementType _elementType, vector<Node*> _nodes,DB_Elements* _db_elements){
+Element::Element(int _elementID, ElementType _elementType, vector<Node*> _nodes,DB_Elements* _db_elements) : is_rigid(false),
+                elementID( _elementID ),
+                elemType( _elementType ),
+                db_elements( _db_elements ),
+                 {
 
   // Checks
   if (_db_elements == NULL)
     throw("DB_Elements of an element may not be NULL in constructor.");
 
   // Assignment
-  this->db_elements = _db_elements;
-  this->elementID = _elementID;
-  this->elemType = _elementType;
+  //this->db_elements = _db_elements;
+  //this->elementID = _elementID;
+  //this->elemType = _elementType;
 
   for(vector<Node*>::iterator it=_nodes.begin(); it != _nodes.end(); ++it){
     this->nodes.push_back(((Node*) *it)->get_nodeID());
@@ -51,6 +55,23 @@ Element::~Element(){
 bool Element::operator<(const Element &other) const
 {
   return(this->elementID < other.elementID);
+}
+
+
+/** Set whether the element is rigid
+ * 
+ * @param _is_rigid rigid status of the element
+ */
+void Element::set_is_rigid(bool _is_rigid){
+  this->is_rigid = _is_rigid;
+}
+
+/** Get whether the element is rigid or not
+ *
+ * @return is_rigid rigid status of the element
+ */
+bool Element::get_is_rigid(){
+  return this->is_rigid;
 }
 
 

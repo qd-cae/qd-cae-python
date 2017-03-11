@@ -78,9 +78,9 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, v
   }
 
   // Find part
-  Part* part = this->db_parts->get_part_byIndex(_elementData[_elementData.size()-1]);
+  Part* part = this->db_parts->get_part_byIndex( _elementData.back() );
   if(part == NULL){
-    throw(string("Could not find part with index:")+to_string(_elementData[_elementData.size()-1])+string(" in db."));
+    throw(string("Could not find part with index:")+to_string(_elementData.back())+string(" in db."));
   }
 
   // Find nodes

@@ -23,8 +23,9 @@ too and if possible contribute.
 Version 0.4.5
 
 qd.cae.dyna
- - D3plot.clear for removing already read data
- - Element equals operator is now correct
+ - Added D3plot.clear for removing already read data
+ - D3plot can now handle rigid shell elements (mattyp != 0)
+ - Element, Node and Part equals operator is now correct
 
 *Changelog 03.03.2017*
 Version 0.4.4
