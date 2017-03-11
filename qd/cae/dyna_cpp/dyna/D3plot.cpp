@@ -311,7 +311,7 @@ void D3plot::read_header(){
 
   /* === CHECKS === */
   // mattyp
-  if(this->dyna_mattyp != 0) throw(string("MATTYP != 0 can not be handled (material type section)."));
+  //if(this->dyna_mattyp != 0) throw(string("MATTYP != 0 can not be handled (material type section)."));
   // sph
   if((this->dyna_nmsph != 0) | (this->dyna_ngpsph != 0)) throw(string("SPH mats and elements can not be handled."));
   // ale
@@ -344,36 +344,37 @@ void D3plot::read_header(){
  */
 void D3plot::info(){
 
-  cout << "Title:  " << this->dyna_title << endl;
-  cout << "nNodes : " << this->dyna_numnp << endl;
-  cout << "nElem2 : " << this->dyna_nel2 << endl;
-  cout << "nElem4 : " << this->dyna_nel4 << endl;
-  cout << "nElem8 : " << this->dyna_nel8 << endl;
-  cout << "nElem20: " << this->dyna_nel20 << endl;
-  cout << "nElemTh: " << this->dyna_nelth << endl;
-  cout << "nElem48: " << this->dyna_nel48 << endl;
-  cout << "nMats-Dyn: " << this->dyna_nmmat << endl;
+  cout << "Title:  " << this->dyna_title << '\n';
+  cout << "nNodes : " << this->dyna_numnp << '\n';
+  cout << "nElem2 : " << this->dyna_nel2 << '\n';
+  cout << "nElem4 : " << this->dyna_nel4 << '\n';
+  cout << "nElem8 : " << this->dyna_nel8 << '\n';
+  cout << "nElem20: " << this->dyna_nel20 << '\n';
+  cout << "nElemTh: " << this->dyna_nelth << '\n';
+  cout << "nElem48: " << this->dyna_nel48 << '\n';
+  cout << "nMats-Dyn: " << this->dyna_nmmat << '\n';
   cout << "nMats-Inp: " << this->dyna_nummat2
                           +this->dyna_nummat4
                           +this->dyna_nummat8
-                          +this->dyna_nummatth << endl;
-  cout << "nMat2 : " << this->dyna_nummat2 << endl;
-  cout << "nMat4 : " << this->dyna_nummat4 << endl;
-  cout << "nMat8 : " << this->dyna_nummat8 << endl;
-  cout << "nMatTh: " << this->dyna_nummatth << endl;
-  cout << "disp : " << this->dyna_iu << endl;
-  cout << "vel  : " << this->dyna_iv << endl;
-  cout << "accel: " << this->dyna_ia << endl;
-  cout << "temp : " << this->dyna_it << endl;
-  cout << "shell-stress: " << this->dyna_ioshl1 << endl;
-  cout << "shell-plstrn: " << this->dyna_ioshl2 << endl;
-  cout << "shell-forces: " << this->dyna_ioshl3 << endl;
-  cout << "shell-stuff : " << this->dyna_ioshl4 << endl;
-  cout << "shell-strn  : " << this->dyna_istrn << endl;
-  cout << "shell-nInteg: " << this->dyna_maxint << endl;
-  cout << "nVar1D: " << this->dyna_nv1d << endl;
-  cout << "nVar2D: " << this->dyna_nv2d << endl;
-  cout << "nVar3D: " << this->dyna_nv3d << endl;
+                          +this->dyna_nummatth << '\n';
+  cout << "nMat2 : " << this->dyna_nummat2 << '\n';
+  cout << "nMat4 : " << this->dyna_nummat4 << '\n';
+  cout << "nMat8 : " << this->dyna_nummat8 << '\n';
+  cout << "nMatTh: " << this->dyna_nummatth << '\n';
+  cout << "mattyp: " << this->dyna_mattyp << '\n';
+  cout << "disp : " << this->dyna_iu << '\n';
+  cout << "vel  : " << this->dyna_iv << '\n';
+  cout << "accel: " << this->dyna_ia << '\n';
+  cout << "temp : " << this->dyna_it << '\n';
+  cout << "shell-stress: " << this->dyna_ioshl1 << '\n';
+  cout << "shell-plstrn: " << this->dyna_ioshl2 << '\n';
+  cout << "shell-forces: " << this->dyna_ioshl3 << '\n';
+  cout << "shell-stuff : " << this->dyna_ioshl4 << '\n';
+  cout << "shell-strn  : " << this->dyna_istrn << '\n';
+  cout << "shell-nInteg: " << this->dyna_maxint << '\n';
+  cout << "nVar1D: " << this->dyna_nv1d << '\n';
+  cout << "nVar2D: " << this->dyna_nv2d << '\n';
+  cout << "nVar3D: " << this->dyna_nv3d << '\n';
   cout << "state-globals: " << this->dyna_nglbv << endl;
 
 }
@@ -399,7 +400,7 @@ void D3plot::read_matsection(){
     this->dyna_irbtyp.push_back( this->buffer->read_int(iPosition) );
   }
 
-  this->wordPosition += 2 + dyna_numm
+  this->wordPosition += 2 + tmp_nummat;
 
 }
 
@@ -488,7 +489,7 @@ void D3plot::read_geometry(){
   for(size_t ii=0; ii < buffer_elems4.size() ;++ii){
     elem = this->get_db_elements()->add_element_byD3plot(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
     
-    if( (dyna_mattyp!=0) && this->dyna_irbtyp( buffer_elems4[ii].back() )==20 )
+    if( (dyna_mattyp!=0) && this->dyna_irbtyp[ buffer_elems4[ii].back() ]==20 )
       elem->set_is_rigid(true);
   }
   #ifdef QD_DEBUG

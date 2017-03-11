@@ -17,7 +17,7 @@
 Element::Element(int _elementID, ElementType _elementType, vector<Node*> _nodes,DB_Elements* _db_elements) : is_rigid(false),
                 elementID( _elementID ),
                 elemType( _elementType ),
-                db_elements( _db_elements ),
+                db_elements( _db_elements )
                  {
 
   // Checks
@@ -70,7 +70,7 @@ void Element::set_is_rigid(bool _is_rigid){
  *
  * @return is_rigid rigid status of the element
  */
-bool Element::get_is_rigid(){
+bool Element::get_is_rigid() const {
   return this->is_rigid;
 }
 
