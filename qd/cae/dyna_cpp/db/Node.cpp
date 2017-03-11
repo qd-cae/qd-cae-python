@@ -120,7 +120,7 @@ vector<float> Node::get_coords(int iTimestep){
          if(d3plot->displacement_is_read()){
 
             if( iTimestep < 0 )
-               iTimestep = d3plot->get_timesteps().size() + iTimestep; // Python array style
+               iTimestep = static_cast<int>(d3plot->get_timesteps().size()) + iTimestep; // Python array style
 
             if( (iTimestep < 0) )
                throw(string("Specified timestep exceeds real time step size."));

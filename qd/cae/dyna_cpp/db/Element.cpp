@@ -234,7 +234,7 @@ vector<float> Element::get_coords(int iTimestep){
    }
 
    if( iTimestep < 0 )
-      iTimestep = this->db_elements->get_femfile()->get_d3plot()->get_timesteps().size() + iTimestep; // Python array style
+      iTimestep = static_cast<int>(this->db_elements->get_femfile()->get_d3plot()->get_timesteps().size()) + iTimestep; // Python array style
 
    if( (iTimestep < 0) )
       throw(string("Specified timestep exceeds real time step size."));

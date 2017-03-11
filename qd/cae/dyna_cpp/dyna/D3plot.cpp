@@ -869,7 +869,8 @@ void D3plot::read_geometry_parts(){
     int partID = this->buffer->read_int(start);
     string partName = this->buffer->read_str(start+1,18);
 
-    this->get_db_parts()->add_part(this->get_db_parts()->size()+1,partID)->set_name(partName);
+    this->get_db_parts()->add_part( static_cast<int>(this->get_db_parts()->size()) +1 ,
+                                    partID)->set_name(partName);
 
   }
 
@@ -1036,10 +1037,10 @@ void D3plot::read_states_parse(vector<string> _variables){
          // Check: var index beyond limit neips
          for(size_t jj=0; jj < hist_vars.size(); ++jj){
 
-            if(hist_vars[jj] < 1){
+            if( hist_vars[jj] < 1){
                throw(string("History variable index must be at least 1."));
             }
-            if( hist_vars[jj] > this->dyna_neips ){
+            if( static_cast<int>(hist_vars[jj]) > this->dyna_neips ){
                cout << "Warning: history variable " << hist_vars[jj] << " exceeds the limit for shells of " << this->dyna_neips << endl;
             }
          }
@@ -1079,7 +1080,7 @@ void D3plot::read_states_parse(vector<string> _variables){
             if(hist_vars[jj] < 1){
                throw(string("History variable index must be at least 1."));
             }
-            if( hist_vars[jj] > this->dyna_neiph ){
+            if( static_cast<int>(hist_vars[jj]) > this->dyna_neiph ){
                cout << "Warning: history variable " << hist_vars[jj] << " exceeds the limit for solids of " << this->dyna_neiph << endl;
             }
          }

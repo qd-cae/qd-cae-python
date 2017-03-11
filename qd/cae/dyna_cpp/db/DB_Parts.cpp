@@ -40,7 +40,7 @@ Part* DB_Parts::add_part(int _partIndex, int _partID){
 Part* DB_Parts::add_part_byID(int _partID){
 
   Part* part = new Part(_partID,"");
-  int partIndex = this->parts.size()+1;
+  int partIndex = static_cast<int>(this->parts.size())+1;
   this->parts.insert(pair<int,Part*>(_partID,part));
   this->partsByIndex.insert(pair<int,Part*>(partIndex,part));
   return part;
