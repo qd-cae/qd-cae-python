@@ -19,11 +19,11 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(D3plot_overloads, D3plot, 1, 3)
 // wrapper
 BOOST_PYTHON_MODULE(dyna_cpp)
 {
-   //py::class_<D3plot>("D3plot",py::init<string,py::list,bool>());
+   py::class_<D3plot>("D3plot",py::init<string,py::list,bool>());
    //py::class_<D3plot>("D3plot",py::init<string,py::list,bool>())
 //   py::class_<D3plot>("D3plot",py::init<string,py::list,bool>())
 //       .def(py::init<string, py::optional<py::list, bool> >());
-   py::class_<D3plot>("D3plot",py::no_init)
+   //py::class_<D3plot>("D3plot",py::no_init)
        .def(py::init<string, py::optional<py::list,bool> >());
    /*
     def("name", function_ptr);

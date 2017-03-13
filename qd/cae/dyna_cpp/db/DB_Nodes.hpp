@@ -26,6 +26,7 @@ public:
   DB_Nodes(FEMFile* _femfile);
   ~DB_Nodes();
   size_t size();
+  void reserve(const size_t _size);
   FEMFile* get_femfile();
   DB_Elements* get_db_elements();
   void set_db_elements(DB_Elements*);

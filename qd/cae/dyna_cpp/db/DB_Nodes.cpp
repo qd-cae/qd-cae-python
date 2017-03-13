@@ -92,3 +92,13 @@ size_t DB_Nodes::size(){
     throw(string("Node database encountered error: id2index.size() != nodes.size()"));
   return this->nodes.size();
 }
+
+/** Reserve memory for incoming nodes
+ *
+ * @param _size size to reserve for new nodes
+ */
+void DB_Nodes::reserve(const size_t _size){
+
+  this->nodes.reserve(_size);
+
+}

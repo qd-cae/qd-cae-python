@@ -67,11 +67,12 @@ class D3plot(QD_D3plot):
         return Part(self, part_id)
     
 
-    def compare_scatter(self, filepath_list, 
+    def _compare_scatter(self, filepath_list, 
                               element_result="plastic_strain",
                               export_filepath = None,
                               **kwargs):
         '''Compare this d3plot to others
+        ! UNFINISHED !
 
         Parameters
         ----------
@@ -123,13 +124,22 @@ class D3plot(QD_D3plot):
             # new mesh with results
             _d3plot = D3plot(_filepath,**kwargs) 
             _d3plot_elem_coords = _extract_elem_coords( _d3plot.get_parts() )
-            # TODO results extraction
+            _d3plot_elem_results = np.empty( len(elem_coords) )
+            iElem = 0
+            for _part in _d3plot.get_parts():
+                for _elem in _part.get_elements():
+                    _d3plot_elem_results[iElem] = eval_function(_elem)
+                    iElem += 1
             
             # compute mapping
-            mapping_indexes = coords_tree.query(_d3plot_elem_coords, 
-                                                return_distance=False,
-                                                sort_results=False)
+            distances, mapping_indexes = coords_tree.query(_d3plot_elem_coords, 
+                                                           return_distance=True,
+                                                           sort_results=False,
+                                                           k=4)
+            distances = np.exp(distances) / np.sum( distances, axis=1) # softmax weights
+
             # TODO map results (multiple matches?)
+
 
             # update min and max
             # TODO

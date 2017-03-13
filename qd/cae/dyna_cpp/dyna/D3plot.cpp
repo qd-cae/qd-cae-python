@@ -457,14 +457,16 @@ void D3plot::read_geometry(){
 
   /* ====== D A T A B A S E S ====== */
 
-  // Node-DB
+  // Nodes
   #ifdef QD_DEBUG
   cout << "Adding nodes ... ";
   #endif
   if(buffer_numbering[0].size() != buffer_nodes.size())
     throw(string("Buffer node-numbering and buffer-nodes have different sizes."));
+  DB_Nodes *db_nodes = this->get_db_nodes();
+  db_nodes->reserve(buffer_nodes.size());
   for(unsigned int ii=0; ii < buffer_nodes.size() ;ii++){
-    this->get_db_nodes()->add_node(buffer_numbering[0][ii],buffer_nodes[ii]);
+    db_nodes->add_node(buffer_numbering[0][ii],buffer_nodes[ii]);
   }
   #ifdef QD_DEBUG
   cout << this->get_db_nodes()->size() << " done." << endl;
@@ -474,8 +476,10 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding beams ... ";
   #endif
+  DB_Elements *db_elems = this->get_db_elements();
+  db_elems->reserve(BEAM, buffer_elems2.size());
   for(size_t ii=0; ii < buffer_elems2.size() ;++ii){
-    this->get_db_elements()->add_element_byD3plot(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
+    db_elems->add_element_byD3plot(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
   }
   #ifdef QD_DEBUG
   cout << this->get_db_elements()->size() << " done." << endl;
@@ -485,9 +489,9 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding shells ... ";
   #endif
-  Element *elem = NULL;
+  db_elems->reserve(SHELL, buffer_elems4.size());
   for(size_t ii=0; ii < buffer_elems4.size() ;++ii){
-    elem = this->get_db_elements()->add_element_byD3plot(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
+    Element *elem = db_elems->add_element_byD3plot(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
     
     if( (dyna_mattyp!=0) && this->dyna_irbtyp[ buffer_elems4[ii].back() ]==20 )
       elem->set_is_rigid(true);
@@ -500,8 +504,9 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding solids ... ";
   #endif
+  db_elems->reserve(SOLID, buffer_elems8.size());
   for(size_t ii=0; ii < buffer_elems8.size() ;++ii){
-    this->get_db_elements()->add_element_byD3plot(SOLID,buffer_numbering[1][ii],buffer_elems8[ii]);
+    db_elems->add_element_byD3plot(SOLID, buffer_numbering[1][ii], buffer_elems8[ii]);
   }
   #ifdef QD_DEBUG
   cout << get_db_elements()->size() << " done." << endl;

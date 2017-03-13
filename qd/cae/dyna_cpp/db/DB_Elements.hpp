@@ -50,6 +50,7 @@ public:
   Element* add_element_byKeyFile(ElementType _eType, int _id, int _partid, vector<int> _node_ids);
 
   size_t size(ElementType _type = NONE);
+  void reserve(const ElementType _type, const size_t _size);
   template <typename T>
   Element* get_elementByID(ElementType _eType, T _id);
   template <typename T>
