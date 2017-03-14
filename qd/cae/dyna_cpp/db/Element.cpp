@@ -14,11 +14,11 @@
 /*
  * Constructor.
  */
-Element::Element(int _elementID, ElementType _elementType, vector<Node*> _nodes,DB_Elements* _db_elements) : is_rigid(false),
+Element::Element(int _elementID, ElementType _elementType, vector<Node*> _nodes,DB_Elements* _db_elements) 
+              : is_rigid( false ),
                 elementID( _elementID ),
                 elemType( _elementType ),
-                db_elements( _db_elements )
-                 {
+                db_elements( _db_elements ){
 
   // Checks
   if (_db_elements == NULL)
@@ -147,8 +147,8 @@ void Element::add_plastic_strain(float _platic_strain){
  */
 void Element::add_energy(float _energy){
 
-  if(_energy < 0)
-    throw("Element:"+to_string(this->elementID)+" tries to add a negative energy:"+to_string(_energy));
+//  if(_energy < 0)
+//    throw("Element:"+to_string(this->elementID)+" tries to add a negative energy:"+to_string(_energy));
 
   this->energy.push_back(_energy);
 }

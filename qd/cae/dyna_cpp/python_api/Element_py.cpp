@@ -331,3 +331,21 @@ QD_Element_get_type(QD_Element* self){
   }
 
 }
+
+/* FUNCTION get_is_rigid */
+static PyObject *
+QD_Element_get_is_rigid(QD_Element* self){
+
+  if(self->element == NULL){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
+    return NULL;
+  }
+
+  if( self->element->get_is_rigid() ){
+    Py_INCREF(Py_True);
+    return Py_True;
+  } else {
+    Py_INCREF(Py_False);
+    return Py_False;
+  }
+}

@@ -54,6 +54,14 @@ D3plot::D3plot (string _filename,vector<string> _state_variables,bool _useFemzip
   // Header + Geometry
   this->read_header();
   this->read_matsection();
+  #ifdef QD_DEBUG
+  cout << "dyna_irbtyp.size():" << dyna_irbtyp.size() << "\n";
+  cout << "dyna_irbtyp:" << "\n";
+  for(size_t iEntry=0; iEntry < dyna_irbtyp.size(); ++iEntry){
+    cout << dyna_irbtyp[iEntry] << ' ';
+  }
+  cout << "dyna_numrbe: " << dyna_numrbe << endl;
+  #endif
   this->read_geometry();
 
   // States
@@ -132,6 +140,8 @@ void D3plot::init_vars(){
   this->dyna_extra = -1; // double header length indicator
   this->dyna_numprop = -1; // number of mats
 
+  this->dyna_numrbe = -1; // number of rigid body shell elems
+  
   // just for checks ... can not be handled.
   this->dyna_nmsph = -1; // #nodes of sph
   this->dyna_ngpsph = -1; // #mats of sph
@@ -352,8 +362,8 @@ void D3plot::info(){
   cout << "nElem20: " << this->dyna_nel20 << '\n';
   cout << "nElemTh: " << this->dyna_nelth << '\n';
   cout << "nElem48: " << this->dyna_nel48 << '\n';
-  cout << "nMats-Dyn: " << this->dyna_nmmat << '\n';
-  cout << "nMats-Inp: " << this->dyna_nummat2
+  cout << "nMats-Solver: " << this->dyna_nmmat << '\n';
+  cout << "nMats-Input : " << this->dyna_nummat2
                           +this->dyna_nummat4
                           +this->dyna_nummat8
                           +this->dyna_nummatth << '\n';
@@ -392,6 +402,8 @@ void D3plot::read_matsection(){
 
   this->dyna_numrbe = this->buffer->read_int(wordPosition); // rigid shells
   int tmp_nummat = this->buffer->read_int(wordPosition + 1);
+  if( tmp_nummat != dyna_nmmat )
+    throw(string("dyna_nmmat != nummat in matsection!"));
 
   int start = wordPosition+2;
   int end   = start+tmp_nummat;
@@ -471,7 +483,7 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << this->get_db_nodes()->size() << " done." << endl;
   #endif
-
+  
   // Beams
   #ifdef QD_DEBUG
   cout << "Adding beams ... ";
@@ -493,12 +505,16 @@ void D3plot::read_geometry(){
   for(size_t ii=0; ii < buffer_elems4.size() ;++ii){
     Element *elem = db_elems->add_element_byD3plot(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
     
-    if( (dyna_mattyp!=0) && this->dyna_irbtyp[ buffer_elems4[ii].back() ]==20 )
+    // check if rigid material, very complicated ...
+    if( (dyna_mattyp!=0) && this->dyna_irbtyp[ buffer_elems4[ii].back() ]==20 ) {
       elem->set_is_rigid(true);
+    }
   }
   #ifdef QD_DEBUG
   cout << this->get_db_elements()->size() << " done." << endl;
   #endif
+  //if( nRigidShells != this->dyna_numrbe )
+  //  throw(string("nRigidShells != numrbe: ")+to_string(nRigidShells)+" != "+to_string(this->dyna_numrbe));
 
   // Solids
   #ifdef QD_DEBUG
@@ -511,7 +527,7 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << get_db_elements()->size() << " done." << endl;
   #endif
-
+  
 }
 
 
@@ -626,9 +642,9 @@ vector< vector<int> > D3plot::read_geometry_elem4(){
     iData = 0;
     for(int jj=ii; jj<ii+nVarsElem4; ++jj){
       buffer_elems4[iElement][iData] = buffer->read_int(jj);
-      iData++;
+      ++iData;
     }
-    iElement++;
+    ++iElement;
 
   }
 
@@ -1168,7 +1184,7 @@ void D3plot::read_states(vector<string> _variables){
   // Calculate loop properties
   size_t iState = 0;
   int nVarsNodes = dyna_ndim*(dyna_iu+dyna_iv+dyna_ia)*dyna_numnp;
-  int nVarsElems = dyna_nel2*dyna_nv1d+dyna_nel4*dyna_nv2d+dyna_nel8*dyna_nv3d;
+  int nVarsElems = dyna_nel2*dyna_nv1d+(dyna_nel4-dyna_numrbe)*dyna_nv2d+dyna_nel8*dyna_nv3d;
 
   // Variable Deletion table
   int nDeletionVars = 0;
@@ -1480,7 +1496,7 @@ void D3plot::read_states_elem8(size_t iState){
  */
 void D3plot::read_states_elem4(size_t iState){
 
-  if((dyna_istrn != 1) && (dyna_nv2d <= 0) && (dyna_nel4>0))
+  if((dyna_istrn != 1) && (dyna_nv2d <= 0) && (dyna_nel4-dyna_numrbe>0))
     return;
 
   // prepare looping
@@ -1490,18 +1506,17 @@ void D3plot::read_states_elem4(size_t iState){
              + (dyna_iu+dyna_iv+dyna_ia) * dyna_numnp * dyna_ndim
              + dyna_nv3d * dyna_nel8
              + dyna_nv1d * dyna_nel2;
-  wordsToRead = dyna_nv2d*dyna_nel4;
+  wordsToRead = dyna_nv2d*(dyna_nel4-dyna_numrbe);
 
   int iPlastStrainOffset = this->dyna_ioshl1*6; // stresses before?
   int iHistoryOffset     = iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
   int iLayerSize         = dyna_neips + iHistoryOffset;
 
-  Element *element = NULL;
-  int iElement = 0;
-  for(int ii = start; ii < start+wordsToRead; ii+=dyna_nv2d){
+  size_t iElement = 0;
+  for(int ii = start; ii < start+wordsToRead; ii+=dyna_nv2d, ++iElement){
 
     // get element (and check for rigidity)
-    element = this->get_db_elements()->get_elementByIndex(SHELL, iElement);
+    Element *element = this->get_db_elements()->get_elementByIndex(SHELL, iElement);
     if( element->get_is_rigid() )
       continue;
 
@@ -1515,7 +1530,7 @@ void D3plot::read_states_elem4(size_t iState){
     }
 
     // Loop: layers
-    for(int iLayer = 0; iLayer < dyna_maxint; iLayer++){
+    for(int iLayer = 0; iLayer < dyna_maxint; ++iLayer){
 
       int layerStart = ii + iLayer*iLayerSize;
 
@@ -1715,7 +1730,6 @@ void D3plot::read_states_elem4(size_t iState){
       }
     }
 
-    ++iElement;
   }
 
 }
