@@ -1,6 +1,6 @@
 
 
-/* QD_Element DEALLOC */
+/* DEALLOC */
 static void
 QD_Element_dealloc(QD_Element* self)
 {
@@ -9,7 +9,7 @@ QD_Element_dealloc(QD_Element* self)
 
 }
 
-/* QD_Element NEW */
+/* NEW */
 static PyObject *
 QD_Element_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
@@ -27,7 +27,7 @@ QD_Element_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 
-/* QD_Element INIT */
+/* INIT */
 static int
 QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
 {
@@ -80,8 +80,72 @@ QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
   return 0;
 }
 
+/* FUNCTION richcompare */
+static PyObject* 
+QD_Element_richcompare(QD_Element *self, PyObject *other, int op){
 
-/* QD_Element FUNCTION get_id */
+  PyObject *result = NULL;
+
+  if( !PyObject_TypeCheck(other, &QD_Element_Type) ){
+    PyErr_SetString(PyExc_ValueError, "Comparison of elements work only with other elements.");
+    return NULL;
+  }
+
+  QD_Element *other_elem = (QD_Element*) other;
+
+  switch(op){
+      case Py_LT:
+          if( self->element->get_elementID() < other_elem->element->get_elementID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_LE:
+          if( self->element->get_elementID() <= other_elem->element->get_elementID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_EQ:
+          if( self->element->get_elementID() == other_elem->element->get_elementID()
+           && self->element->get_elementType() == other_elem->element->get_elementType() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_NE:
+          if( self->element->get_elementID() != other_elem->element->get_elementID() 
+           || self->element->get_elementType() != other_elem->element->get_elementType()) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_GT:
+          if( self->element->get_elementID() > other_elem->element->get_elementID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_GE:
+          if( self->element->get_elementID() >= other_elem->element->get_elementID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+  }
+  
+  Py_XINCREF(result);
+  return result;
+
+}
+
+/* FUNCTION get_id */
 static PyObject *
 QD_Element_get_elementID(QD_Element* self){
 
@@ -96,7 +160,7 @@ QD_Element_get_elementID(QD_Element* self){
 }
 
 
-/* QD_Element FUNCTION get_plastic_strain */
+/* FUNCTION get_plastic_strain */
 static PyObject *
 QD_Element_get_plastic_strain(QD_Element* self){
 
@@ -110,7 +174,7 @@ QD_Element_get_plastic_strain(QD_Element* self){
 }
 
 
-/* QD_Element FUNCTION get_energy */
+/* FUNCTION get_energy */
 static PyObject *
 QD_Element_get_energy(QD_Element* self){
 
@@ -124,7 +188,7 @@ QD_Element_get_energy(QD_Element* self){
 }
 
 
-/* QD_Element FUNCTION get_strain */
+/* FUNCTION get_strain */
 static PyObject *
 QD_Element_get_strain(QD_Element* self){
 
@@ -138,7 +202,7 @@ QD_Element_get_strain(QD_Element* self){
 }
 
 
-/* QD_Element FUNCTION get_stress */
+/* FUNCTION get_stress */
 static PyObject *
 QD_Element_get_stress(QD_Element* self){
 
@@ -151,7 +215,7 @@ QD_Element_get_stress(QD_Element* self){
 
 }
 
-/* QD_Element FUNCTION get_nodes */
+/* FUNCTION get_nodes */
 static PyObject *
 QD_Element_get_nodes(QD_Element* self){
 
@@ -190,7 +254,7 @@ QD_Element_get_nodes(QD_Element* self){
 
 }
 
-/* QD_Element FUNCTION get_coords */
+/* FUNCTION get_coords */
 static PyObject *
 QD_Element_get_coords(QD_Element* self, PyObject *args, PyObject *kwds){
 
@@ -218,7 +282,7 @@ QD_Element_get_coords(QD_Element* self, PyObject *args, PyObject *kwds){
 
 }
 
-/* QD_Element FUNCTION get_history */
+/* FUNCTION get_history */
 static PyObject *
 QD_Element_get_history(QD_Element* self){
 
@@ -231,7 +295,7 @@ QD_Element_get_history(QD_Element* self){
 
 }
 
-/* QD_Element FUNCTION get_estimated_size */
+/* FUNCTION get_estimated_size */
 static PyObject *
 QD_Element_get_estimated_size(QD_Element* self){
 
@@ -245,7 +309,7 @@ QD_Element_get_estimated_size(QD_Element* self){
 }
 
 
-/* QD_Element FUNCTION get_type */
+/* FUNCTION get_type */
 static PyObject *
 QD_Element_get_type(QD_Element* self){
 

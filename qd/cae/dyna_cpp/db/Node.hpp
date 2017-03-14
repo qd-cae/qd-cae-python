@@ -32,6 +32,9 @@ class Node {
   void add_disp (vector<float>);
   void add_vel  (vector<float>);
   void add_accel(vector<float>);
+  void clear_disp();
+  void clear_vel();
+  void clear_accel();
 
   // Getter
   int get_nodeID();

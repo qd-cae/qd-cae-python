@@ -78,9 +78,9 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, v
   }
 
   // Find part
-  Part* part = this->db_parts->get_part_byIndex(_elementData[_elementData.size()-1]);
+  Part* part = this->db_parts->get_part_byIndex( _elementData.back() );
   if(part == NULL){
-    throw(string("Could not find part with index:")+to_string(_elementData[_elementData.size()-1])+string(" in db."));
+    throw(string("Could not find part with index:")+to_string(_elementData.back())+string(" in db."));
   }
 
   // Find nodes
@@ -242,6 +242,24 @@ DB_Nodes* DB_Elements::get_db_nodes(){
   return this->db_nodes;
 }
 
+
+/** Reserve memory for future elements
+ * @param _type element type to apply reserve on
+ * @param _size size to reserve internally
+ *
+ * Does nothing if _type is NONE.
+ */
+void DB_Elements::reserve(const ElementType _type, const size_t _size){
+
+   if(_type == BEAM){
+     elements2.reserve(_size);
+   } else if (_type == SHELL){
+     elements4.reserve(_size);
+   } else if (_type == SOLID){
+     elements8.reserve(_size);
+   }
+
+}
 
 /** Get the number of  in the db.
  * @return unsigned int nElements : returns the total number of elements in the db

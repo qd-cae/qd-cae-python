@@ -27,7 +27,7 @@ class TestDynaModule(unittest.TestCase):
         """Testing qd.cae.dyna.D3plot"""
 
         d3plot_filepath = "test/d3plot"
-        d3plot_modes = ["in","mid","out","max","min","mean"]
+        d3plot_modes = ["inner","mid","outer","max","min","mean"]
         d3plot_vars = ["disp","vel","accel",
                        "stress","strain","plastic_strain",
                        "history 1 shell","history 1 solid"]
@@ -36,7 +36,7 @@ class TestDynaModule(unittest.TestCase):
                                lambda elem : elem.get_plastic_strain()[-1]] 
         part_ids = [1]
 
-        ## D3plot loading
+        ## D3plot loading/unloading
         d3plot = D3plot(d3plot_filepath)
         for mode in d3plot_modes: # load every var with every mode
             d3plot = D3plot(d3plot_filepath)
@@ -44,8 +44,43 @@ class TestDynaModule(unittest.TestCase):
             for var in vars2:
                 d3plot.read_states(var)
             d3plot = D3plot(d3plot_filepath,read_states=vars2) # all at once
+        d3plot = D3plot(d3plot_filepath)
+        d3plot.read_states("disp")
+        d3plot.clear("disp")
+        self.assertEqual( len(d3plot.get_nodeByIndex(1).get_disp()), 0)
+        d3plot.read_states("vel")
+        d3plot.clear("vel")
+        self.assertEqual( len(d3plot.get_nodeByIndex(1).get_vel()), 0)
+        d3plot.read_states("accel")
+        d3plot.clear("accel")
+        self.assertEqual( len(d3plot.get_nodeByIndex(1).get_accel()), 0)
+        d3plot.read_states("energy")
+        d3plot.clear("energy")
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_energy()), 0)
+        d3plot.read_states("plastic_strain")
+        d3plot.clear("plastic_strain")
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_plastic_strain()), 0)
+        d3plot.read_states("stress")
+        d3plot.clear("stress")
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_stress()), 0)
+        d3plot.read_states("strain")
+        d3plot.clear("strain")
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_strain()), 0)
+        d3plot.read_states("history shell 1")
+        d3plot.clear("history")
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_history()), 0)
         d3plot = D3plot(d3plot_filepath,read_states=d3plot_vars) # default mode (mode=mean)
+        d3plot.clear()
+        self.assertEqual( len(d3plot.get_nodeByIndex(1).get_disp()), 0)
+        self.assertEqual( len(d3plot.get_nodeByIndex(1).get_vel()), 0)
+        self.assertEqual( len(d3plot.get_nodeByIndex(1).get_accel()), 0)
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_energy()), 0)
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_plastic_strain()), 0)
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_stress()), 0)
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_strain()), 0)
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_history()), 0)
         # D3plot functions
+        d3plot = D3plot(d3plot_filepath,read_states=d3plot_vars) # default mode (mode=mean)
         self.assertEqual( d3plot.get_nNodes()        ,4915)
         self.assertEqual( len(d3plot.get_nodes())    ,4915)
         self.assertEqual( d3plot.get_nElements()     ,4696)
@@ -60,6 +95,8 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual( d3plot.get_timesteps()[0]  ,0.)
         self.assertEqual( len(d3plot.get_timesteps()) ,1)
         self.assertEqual( len(d3plot.get_parts())     ,1)
+
+        # plotting
         export_path = os.path.join( os.path.dirname(__file__), "test_export.html" )
         for element_result in element_result_list:
             
@@ -86,6 +123,15 @@ class TestDynaModule(unittest.TestCase):
         ## D3plot error handling
         # ... TODO
 
+        ## Part
+        part1 = d3plot.get_parts()[0]
+        part2 = d3plot.get_parts()[0]
+        self.assertTrue( part1 == part2 )
+        self.assertFalse( part1 > part2 )
+        self.assertFalse( part1 < part2 )
+        self.assertTrue( part1 >= part2 )
+        self.assertTrue( part1 <= part2 )
+
         ## Node
         node_ids = [1,2]
         nodes_ids_v1 = [d3plot.get_nodeByID(node_id) for node_id in node_ids]
@@ -99,6 +145,12 @@ class TestDynaModule(unittest.TestCase):
             self.assertEqual( len(node.get_vel())      , 1 ) 
             self.assertEqual( len(node.get_accel())    , 1 ) 
             self.assertGreater( len(node.get_elements()) , 0)
+        self.assertTrue( nodes_ids_v1[0] == nodes_ids_v2[0] )
+        self.assertFalse( nodes_ids_v1[0] != nodes_ids_v2[0] )
+        self.assertFalse( nodes_ids_v1[0] > nodes_ids_v2[0] )
+        self.assertFalse( nodes_ids_v1[0] < nodes_ids_v2[0] )
+        self.assertTrue( nodes_ids_v1[0] >= nodes_ids_v2[0] )
+        self.assertTrue( nodes_ids_v1[0] <= nodes_ids_v2[0] )
 
         node_indexes = [0,1]
         node_matching_ids = [1,2] # looked it up manually
@@ -115,6 +167,13 @@ class TestDynaModule(unittest.TestCase):
         element_ids_shell_v2 = d3plot.get_elementByID("shell", element_ids)
         self.assertCountEqual( [element.get_id() for element in element_ids_shell_v1] , element_ids )
         self.assertCountEqual( [element.get_id() for element in element_ids_shell_v2] , element_ids )
+        elem1 = element_ids_shell_v1[0]
+        elem2 = element_ids_shell_v2[0]
+        self.assertTrue( elem1 == elem2 )
+        self.assertFalse( elem1 > elem2 )
+        self.assertFalse( elem1 < elem2 )
+        self.assertTrue( elem1 >= elem2 )
+        self.assertTrue( elem1 <= elem2 )
         for element in element_ids_shell_v1:
             pass
         # .. TODO Error stoff

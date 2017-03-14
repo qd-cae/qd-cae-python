@@ -22,6 +22,7 @@ class Element {
 private:
 
   int elementID;
+  bool is_rigid;
   vector<int> nodes;
   vector<float> energy;
   vector<float> plastic_strain;
@@ -41,6 +42,7 @@ public:
   // getter
   ElementType   get_elementType();
   int           get_elementID();
+  bool          get_is_rigid() const;
   float         get_estimated_element_size(); // fast
   vector<Node*>    get_nodes();
   vector<int>      get_node_ids();
@@ -52,11 +54,19 @@ public:
   vector< vector<float> > get_history_vars();
 
   // setter
+  void set_is_rigid(bool _is_rigid);
   void add_energy(float);
   void add_plastic_strain(float);
   void add_stress(vector<float>);
   void add_strain(vector<float>);
-  void add_history_vars(vector<float> vars,size_t iTimestep);
+  void add_history_vars(vector<float> vars, size_t iTimestep);
+
+  // clearer
+  void clear_energy();
+  void clear_plastic_strain();
+  void clear_stress();
+  void clear_strain();
+  void clear_history_vars();
 
 };
 

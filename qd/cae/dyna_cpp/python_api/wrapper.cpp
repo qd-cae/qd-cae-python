@@ -186,8 +186,8 @@ PyObject_isIntegral(PyObject* obj){
 
 /** convert_obj_to_int: cast python object to long with checks
  *
- * @param PyObject* item : python object to convert
- * @return int ret : converted long
+ * @param item python object to convert
+ * @return ret converted long
  *
  * The checks usually are done in python > 3 automatically but in python27
  * one has to deal with dirty stuff oneself.
@@ -223,6 +223,44 @@ convert_obj_to_int(PyObject* item){
 
 }
 
+/** Convert a Python list of strings to a vector of strings
+ *
+ * @param obj the python list or str to convert
+ * @return vec vector of strings
+ * 
+ * If the obj is a string, a list with one entry is returned.
+ */
+static vector<string> convert_list_to_str_vector(PyObject* obj){
+
+  // arg is str
+  if(qd::isPyStr(obj)){
+    vector<string> vec;
+    vec.push_back( string( qd::PyStr2char(obj) ) );
+    return vec;
+  }
+
+  // arg must be list now
+  if(!PyList_Check(obj))
+    throw(string("Argument is not a python list for conversion."));
+
+  PyObject *item = NULL;
+  vector<string> vec;
+  for(size_t ii=0; ii<PySequence_Size(obj); ++ii){
+
+    item = PyList_GET_ITEM(obj, ii);
+
+    // check for str (yes Im a strict dude)
+    if(!qd::isPyStr(item)){
+      throw(string("Item in list is not of type string."));
+    }
+
+    // Convert and Add
+    vec.push_back( string( qd::PyStr2char(item) ) );
+
+  }
+
+  return vec;
+}
 
 
 extern "C" {

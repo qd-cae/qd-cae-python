@@ -44,7 +44,7 @@ D3plot::D3plot (string _filename,vector<string> _state_variables,bool _useFemzip
   }
   #else
   if(this->useFemzip){
-	  throw("d3plot.cpp was compiled without femzip support.");
+	  throw(string("d3plot.cpp was compiled without femzip support."));
   }
   this->buffer = new D3plotBuffer(this->get_filepath(),bytesPerWord);
   #endif
@@ -53,6 +53,7 @@ D3plot::D3plot (string _filename,vector<string> _state_variables,bool _useFemzip
 
   // Header + Geometry
   this->read_header();
+  this->read_matsection();
   this->read_geometry();
 
   // States
@@ -209,9 +210,9 @@ void D3plot::read_header(){
     // connectivities are unpacked?
     this->dyna_ndim = 3;
   } else if (this->dyna_ndim > 5) {
-    throw("State data contains rigid road surface which can not be handled.");
+    throw(string("State data contains rigid road surface which can not be handled."));
   } else {
-    throw("Invalid parameter dyna_ndim="+to_string(this->dyna_ndim));
+    throw(string("Invalid parameter dyna_ndim=")+to_string(this->dyna_ndim));
   }
 
   this->dyna_numnp = this->buffer->read_int(16);
@@ -310,17 +311,17 @@ void D3plot::read_header(){
 
   /* === CHECKS === */
   // mattyp
-  if(this->dyna_mattyp != 0) throw("MATTYP != 0 can not be handled (material type section).");
+  //if(this->dyna_mattyp != 0) throw(string("MATTYP != 0 can not be handled (material type section)."));
   // sph
-  if((this->dyna_nmsph != 0) | (this->dyna_ngpsph != 0)) throw("SPH mats and elements can not be handled.");
+  if((this->dyna_nmsph != 0) | (this->dyna_ngpsph != 0)) throw(string("SPH mats and elements can not be handled."));
   // ale
-  if(this->dyna_ialemat != 0) throw("ALE can not be handled.");
+  if(this->dyna_ialemat != 0) throw(string("ALE can not be handled."));
   // thick shells not implemented
-  if(this->dyna_nelth > 0) throw("Can not handle thick shell elements.");
+  if(this->dyna_nelth > 0) throw(string("Can not handle thick shell elements."));
   // no temps
-  if(this->dyna_it != 0) throw("dyna_it != 0: Can not handle temperatures.");
+  if(this->dyna_it != 0) throw(string("dyna_it != 0: Can not handle temperatures."));
   //
-  if(own_external_numbers_I8) throw("Can not handle external ids with double length.");
+  if(own_external_numbers_I8) throw(string("Can not handle external ids with double length."));
 
   /* hopefully I do not regret this ...
   // no 8 node shells
@@ -343,44 +344,68 @@ void D3plot::read_header(){
  */
 void D3plot::info(){
 
-  cout << "Title:  " << this->dyna_title << endl;
-  cout << "nNodes : " << this->dyna_numnp << endl;
-  cout << "nElem2 : " << this->dyna_nel2 << endl;
-  cout << "nElem4 : " << this->dyna_nel4 << endl;
-  cout << "nElem8 : " << this->dyna_nel8 << endl;
-  cout << "nElem20: " << this->dyna_nel20 << endl;
-  cout << "nElemTh: " << this->dyna_nelth << endl;
-  cout << "nElem48: " << this->dyna_nel48 << endl;
-  cout << "nMats-Dyn: " << this->dyna_nmmat << endl;
+  cout << "Title:  " << this->dyna_title << '\n';
+  cout << "nNodes : " << this->dyna_numnp << '\n';
+  cout << "nElem2 : " << this->dyna_nel2 << '\n';
+  cout << "nElem4 : " << this->dyna_nel4 << '\n';
+  cout << "nElem8 : " << this->dyna_nel8 << '\n';
+  cout << "nElem20: " << this->dyna_nel20 << '\n';
+  cout << "nElemTh: " << this->dyna_nelth << '\n';
+  cout << "nElem48: " << this->dyna_nel48 << '\n';
+  cout << "nMats-Dyn: " << this->dyna_nmmat << '\n';
   cout << "nMats-Inp: " << this->dyna_nummat2
                           +this->dyna_nummat4
                           +this->dyna_nummat8
-                          +this->dyna_nummatth << endl;
-  cout << "nMat2 : " << this->dyna_nummat2 << endl;
-  cout << "nMat4 : " << this->dyna_nummat4 << endl;
-  cout << "nMat8 : " << this->dyna_nummat8 << endl;
-  cout << "nMatTh: " << this->dyna_nummatth << endl;
-  cout << "disp : " << this->dyna_iu << endl;
-  cout << "vel  : " << this->dyna_iv << endl;
-  cout << "accel: " << this->dyna_ia << endl;
-  cout << "temp : " << this->dyna_it << endl;
-  cout << "shell-stress: " << this->dyna_ioshl1 << endl;
-  cout << "shell-plstrn: " << this->dyna_ioshl2 << endl;
-  cout << "shell-forces: " << this->dyna_ioshl3 << endl;
-  cout << "shell-stuff : " << this->dyna_ioshl4 << endl;
-  cout << "shell-strn  : " << this->dyna_istrn << endl;
-  cout << "shell-nInteg: " << this->dyna_maxint << endl;
-  cout << "nVar1D: " << this->dyna_nv1d << endl;
-  cout << "nVar2D: " << this->dyna_nv2d << endl;
-  cout << "nVar3D: " << this->dyna_nv3d << endl;
+                          +this->dyna_nummatth << '\n';
+  cout << "nMat2 : " << this->dyna_nummat2 << '\n';
+  cout << "nMat4 : " << this->dyna_nummat4 << '\n';
+  cout << "nMat8 : " << this->dyna_nummat8 << '\n';
+  cout << "nMatTh: " << this->dyna_nummatth << '\n';
+  cout << "mattyp: " << this->dyna_mattyp << '\n';
+  cout << "disp : " << this->dyna_iu << '\n';
+  cout << "vel  : " << this->dyna_iv << '\n';
+  cout << "accel: " << this->dyna_ia << '\n';
+  cout << "temp : " << this->dyna_it << '\n';
+  cout << "shell-stress: " << this->dyna_ioshl1 << '\n';
+  cout << "shell-plstrn: " << this->dyna_ioshl2 << '\n';
+  cout << "shell-forces: " << this->dyna_ioshl3 << '\n';
+  cout << "shell-stuff : " << this->dyna_ioshl4 << '\n';
+  cout << "shell-strn  : " << this->dyna_istrn << '\n';
+  cout << "shell-nInteg: " << this->dyna_maxint << '\n';
+  cout << "nVar1D: " << this->dyna_nv1d << '\n';
+  cout << "nVar2D: " << this->dyna_nv2d << '\n';
+  cout << "nVar3D: " << this->dyna_nv3d << '\n';
   cout << "state-globals: " << this->dyna_nglbv << endl;
 
 }
 
 
-/*
- * Read the geometry part after the header.
+/** Read the material section
  *
+ * Does nothing if mattyp==0.
+ */
+void D3plot::read_matsection(){
+
+  // Nothing to do
+  if( this->dyna_mattyp==0 )
+    return;
+
+  this->dyna_numrbe = this->buffer->read_int(wordPosition); // rigid shells
+  int tmp_nummat = this->buffer->read_int(wordPosition + 1);
+
+  int start = wordPosition+2;
+  int end   = start+tmp_nummat;
+  this->dyna_irbtyp.reserve(tmp_nummat);
+  for(int iPosition=start; iPosition<end; ++iPosition){
+    this->dyna_irbtyp.push_back( this->buffer->read_int(iPosition) );
+  }
+
+  this->wordPosition += 2 + tmp_nummat;
+
+}
+
+
+/** Read the geometry mesh (after the header)
  */
 void D3plot::read_geometry(){
 
@@ -411,7 +436,7 @@ void D3plot::read_geometry(){
 
   if(!isFileEnding(wordPosition)){
     //cout << this->buffer->read_float(wordPosition) << endl;
-    throw("Anticipated file ending wrong in geometry section.");
+    throw(string("Anticipated file ending wrong in geometry section."));
   }
   wordPosition++;
 
@@ -432,14 +457,16 @@ void D3plot::read_geometry(){
 
   /* ====== D A T A B A S E S ====== */
 
-  // Node-DB
+  // Nodes
   #ifdef QD_DEBUG
   cout << "Adding nodes ... ";
   #endif
   if(buffer_numbering[0].size() != buffer_nodes.size())
     throw(string("Buffer node-numbering and buffer-nodes have different sizes."));
+  DB_Nodes *db_nodes = this->get_db_nodes();
+  db_nodes->reserve(buffer_nodes.size());
   for(unsigned int ii=0; ii < buffer_nodes.size() ;ii++){
-    this->get_db_nodes()->add_node(buffer_numbering[0][ii],buffer_nodes[ii]);
+    db_nodes->add_node(buffer_numbering[0][ii],buffer_nodes[ii]);
   }
   #ifdef QD_DEBUG
   cout << this->get_db_nodes()->size() << " done." << endl;
@@ -449,8 +476,10 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding beams ... ";
   #endif
+  DB_Elements *db_elems = this->get_db_elements();
+  db_elems->reserve(BEAM, buffer_elems2.size());
   for(size_t ii=0; ii < buffer_elems2.size() ;++ii){
-    this->get_db_elements()->add_element_byD3plot(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
+    db_elems->add_element_byD3plot(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
   }
   #ifdef QD_DEBUG
   cout << this->get_db_elements()->size() << " done." << endl;
@@ -460,8 +489,12 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding shells ... ";
   #endif
+  db_elems->reserve(SHELL, buffer_elems4.size());
   for(size_t ii=0; ii < buffer_elems4.size() ;++ii){
-    this->get_db_elements()->add_element_byD3plot(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
+    Element *elem = db_elems->add_element_byD3plot(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
+    
+    if( (dyna_mattyp!=0) && this->dyna_irbtyp[ buffer_elems4[ii].back() ]==20 )
+      elem->set_is_rigid(true);
   }
   #ifdef QD_DEBUG
   cout << this->get_db_elements()->size() << " done." << endl;
@@ -471,8 +504,9 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding solids ... ";
   #endif
+  db_elems->reserve(SOLID, buffer_elems8.size());
   for(size_t ii=0; ii < buffer_elems8.size() ;++ii){
-    this->get_db_elements()->add_element_byD3plot(SOLID,buffer_numbering[1][ii],buffer_elems8[ii]);
+    db_elems->add_element_byD3plot(SOLID, buffer_numbering[1][ii], buffer_elems8[ii]);
   }
   #ifdef QD_DEBUG
   cout << get_db_elements()->size() << " done." << endl;
@@ -694,18 +728,18 @@ vector< vector<int> > D3plot::read_geometry_numbering(){
   int nsort = buffer->read_int(wordPosition);
   // pointer to elem8 numbering
   int nsrh = buffer->read_int(wordPosition+1);
-  if(nsrh != dyna_numnp+abs(nsort)) throw("nsrh != nsort + numnp is inconsistent in dyna file. Your file might be using FEMZIP.");
+  if(nsrh != dyna_numnp+abs(nsort)) throw(string("nsrh != nsort + numnp is inconsistent in dyna file. Your file might be using FEMZIP."));
   // pointer to elem2 numbering
   int nsrb = buffer->read_int(wordPosition+2);
-  if(nsrb != nsrh+dyna_nel8) throw("nsrb != nsrh + nel8 is inconsistent in dyna file.");
+  if(nsrb != nsrh+dyna_nel8) throw(string("nsrb != nsrh + nel8 is inconsistent in dyna file."));
   // pointer to elem4 numbering
   int nsrs = buffer->read_int(wordPosition+3);
-  if(nsrs != nsrb+dyna_nel2) throw("nsrs != nsrb + nel2 is inconsistent in dyna file.");
+  if(nsrs != nsrb+dyna_nel2) throw(string("nsrs != nsrb + nel2 is inconsistent in dyna file."));
   // pointer to elemth numbering
   int nsrt = buffer->read_int(wordPosition+4);
-  if(nsrt != nsrs+dyna_nel4) throw("nsrt != nsrs + nel4 is inconsistent in dyna file.");
+  if(nsrt != nsrs+dyna_nel4) throw(string("nsrt != nsrs + nel4 is inconsistent in dyna file."));
   // nNode consistent?
-  if(buffer->read_int(wordPosition+5) != dyna_numnp) throw("Number of nodes is not defined consistent in d3plot geometry section.");
+  if(buffer->read_int(wordPosition+5) != dyna_numnp) throw(string("Number of nodes is not defined consistent in d3plot geometry section."));
 
   int nMaterials = dyna_nummat2+dyna_nummat4+dyna_nummat8+dyna_nummatth;
 
@@ -828,19 +862,20 @@ void D3plot::read_geometry_parts(){
 
   int ntype = this->buffer->read_int(wordPosition);
   if (ntype != 90001){
-    throw("ntype must be 90001 in part section.");
+    throw(string("ntype must be 90001 in part section."));
   }
 
   this->dyna_numprop = this->buffer->read_int(wordPosition+1);
   if (this->dyna_numprop < 0)
-    throw("negative number of parts in part section makes no sense.");
+    throw(string("negative number of parts in part section makes no sense."));
   for(int ii=0; ii<this->dyna_numprop; ii++){
 
     int start = (wordPosition + 1) + ii*19 + 1;
     int partID = this->buffer->read_int(start);
     string partName = this->buffer->read_str(start+1,18);
 
-    this->get_db_parts()->add_part(this->get_db_parts()->size()+1,partID)->set_name(partName);
+    this->get_db_parts()->add_part( static_cast<int>(this->get_db_parts()->size()) +1 ,
+                                    partID)->set_name(partName);
 
   }
 
@@ -890,7 +925,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Displacement
     if(_variables[ii].find("disp") != string::npos){
       if( dyna_iu == 0)
-        throw("Unable to read displacements, since there are none.");
+        throw(string("Unable to read displacements, since there are none."));
       this->disp_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->disp_is_read){
@@ -902,7 +937,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Velocity
     } else if(_variables[ii].find("vel") != string::npos){
       if( dyna_iv == 0)
-        throw("Unable to read velocities, since there are none.");
+        throw(string("Unable to read velocities, since there are none."));
       this->vel_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->vel_is_read){
@@ -914,7 +949,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Acceleration
     } else if(_variables[ii].find("accel") != string::npos){
       if( dyna_ia == 0)
-        throw("Unable to read accelerations, since there are none.");
+        throw(string("Unable to read accelerations, since there are none."));
       this->acc_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->acc_is_read){
@@ -951,7 +986,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Strain
     } else if(_variables[ii].find("strain") != string::npos){
       if( dyna_istrn == 0)
-        throw("Unable to read strains, since there are none.");
+        throw(string("Unable to read strains, since there are none."));
       this->strain_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->strain_is_read){
@@ -963,7 +998,7 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Internal Energy
     } else if(_variables[ii].find("energy") != string::npos){
       if( dyna_ioshl4 == 0)
-        throw("Unable to read energies, since there are none.");
+        throw(string("Unable to read energies, since there are none."));
       this->energy_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->energy_is_read){
@@ -978,7 +1013,7 @@ void D3plot::read_states_parse(vector<string> _variables){
       // retrieve history var indexes
       vector<unsigned int> hist_vars = extract_integers<unsigned int>(_variables[ii]);
       if(hist_vars.size() < 1)
-         throw("No history variable index specified. Please input at least one number seperated by spaces.");
+         throw(string("No history variable index specified. Please input at least one number seperated by spaces."));
       unsigned int var_mode = read_states_parse_readMode(_variables[ii]);
 
       /* SHELLS */
@@ -1007,10 +1042,10 @@ void D3plot::read_states_parse(vector<string> _variables){
          // Check: var index beyond limit neips
          for(size_t jj=0; jj < hist_vars.size(); ++jj){
 
-            if(hist_vars[jj] < 1){
-               throw("History variable index must be at least 1.");
+            if( hist_vars[jj] < 1){
+               throw(string("History variable index must be at least 1."));
             }
-            if( hist_vars[jj] > this->dyna_neips ){
+            if( static_cast<int>(hist_vars[jj]) > this->dyna_neips ){
                cout << "Warning: history variable " << hist_vars[jj] << " exceeds the limit for shells of " << this->dyna_neips << endl;
             }
          }
@@ -1048,9 +1083,9 @@ void D3plot::read_states_parse(vector<string> _variables){
          for(size_t jj=0; jj < hist_vars.size(); ++jj){
 
             if(hist_vars[jj] < 1){
-               throw("History variable index must be at least 1.");
+               throw(string("History variable index must be at least 1."));
             }
-            if( hist_vars[jj] > this->dyna_neiph ){
+            if( static_cast<int>(hist_vars[jj]) > this->dyna_neiph ){
                cout << "Warning: history variable " << hist_vars[jj] << " exceeds the limit for solids of " << this->dyna_neiph << endl;
             }
          }
@@ -1063,11 +1098,11 @@ void D3plot::read_states_parse(vector<string> _variables){
 
       // unknown element type
       } else {
-         throw("Please specify the element type for all history variables as shell or solid");
+         throw(string("Please specify the element type for all history variables as shell or solid"));
       }
 
     } else {
-        throw("Reading of variable:"+_variables[ii]+" is undefined");
+        throw(string("Reading of variable:")+_variables[ii]+string(" is undefined"));
     } // if:variable.find
   } //for:variables
 
@@ -1075,9 +1110,9 @@ void D3plot::read_states_parse(vector<string> _variables){
 
   /*
    * Returns the int code for the read mode of the state variables in the d3plot.
-   * Modes are: min,max,outer,mid,innter,mean
+   * Modes are: min,max,outer,mid,inner,mean
    */
-unsigned int D3plot::read_states_parse_readMode(string _variable){
+unsigned int D3plot::read_states_parse_readMode(const string& _variable) const {
 
    if(_variable.find("max") != string::npos){
      return 1;
@@ -1098,9 +1133,9 @@ unsigned int D3plot::read_states_parse_readMode(string _variable){
 }
 
 
-/*
- * Read the states into memory.
- *
+/** Read the state data.
+ * 
+ * @param _variables vector of variables to read
  */
 void D3plot::read_states(vector<string> _variables){
 
@@ -1181,7 +1216,7 @@ void D3plot::read_states(vector<string> _variables){
       // 2 = numprop
       int dyna_numprop_states = this->buffer->read_int(2);
       if(this->dyna_numprop != dyna_numprop_states)
-        throw("Numprop in geometry section != numprop in states section!");
+        throw(string("Numprop in geometry section != numprop in states section!"));
       wordPosition = 1; // endline symbol at 0 in case of femzip ...
       wordPosition += 1 + (this->dyna_numprop+1)*19 + 1;
       //this->femzip_state_offset = wordPosition;
@@ -1461,8 +1496,14 @@ void D3plot::read_states_elem4(size_t iState){
   int iHistoryOffset     = iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
   int iLayerSize         = dyna_neips + iHistoryOffset;
 
+  Element *element = NULL;
   int iElement = 0;
   for(int ii = start; ii < start+wordsToRead; ii+=dyna_nv2d){
+
+    // get element (and check for rigidity)
+    element = this->get_db_elements()->get_elementByIndex(SHELL, iElement);
+    if( element->get_is_rigid() )
+      continue;
 
     // preallocate layer vars
     vector<float> stress(6);
@@ -1602,8 +1643,6 @@ void D3plot::read_states_elem4(size_t iState){
       } // loop:history
     } // loop:layers
 
-    Element* element = this->get_db_elements()->get_elementByIndex(SHELL,iElement);
-
     if(dyna_istrn && this->plastic_strain_read)
       element->add_plastic_strain(plastic_strain);
     if( this->stress_read )
@@ -1682,9 +1721,9 @@ void D3plot::read_states_elem4(size_t iState){
 }
 
 
-/*
- * Get the timestamps of the timesteps.
+/** Get the timestamps of the timesteps.
  *
+ * @return timesteps vector with the timestamp of the given state
  */
 vector<float> D3plot::get_timesteps() {
   return this->timesteps;
@@ -1692,9 +1731,178 @@ vector<float> D3plot::get_timesteps() {
 
 
 
-/*
- * Tells whether displacements were loaded.
+/** Tells whether displacements were loaded.
+ * 
+ * @return disp_is_read boolean whether the disp was read
  */
 bool D3plot::displacement_is_read(){
    return this->disp_is_read;
 }
+
+
+/** Clears loaded result data loaded from the file
+ *
+ * @param _variables optional arg for cleansing only specific variables
+ *
+ * Clears all variables by default!
+ */
+void D3plot::clear( const vector<string>& _variables ){
+
+  // Default: Clear all
+  if( _variables.size() == 0 ) {
+
+    // hihi this is a naughty trick ... calling myself again
+    vector<string> _tmp;
+    _tmp.push_back("disp");
+    _tmp.push_back("vel");
+    _tmp.push_back("accel");
+    _tmp.push_back("energy");
+    _tmp.push_back("plastic_strain");
+    _tmp.push_back("strain");
+    _tmp.push_back("stress");
+    _tmp.push_back("history shell");
+    _tmp.push_back("history solid");
+    this->clear( _tmp );
+
+  } else {
+
+    // Convert strings to booleans (faster later)
+    bool delete_disp  = false;
+    bool delete_vel   = false;
+    bool delete_accel = false;
+    bool delete_energy = false;
+    bool delete_plastic_strain = false;
+    bool delete_strain = false;
+    bool delete_stress = false;
+    bool delete_history_shell = false;
+    bool delete_history_solid = false;
+    for(size_t iVar=0; iVar<_variables.size(); ++iVar){
+
+      if( _variables[iVar].find("disp") != string::npos ){
+        delete_disp = true;
+      } else if ( _variables[iVar].find("vel") != string::npos ) {
+        delete_vel = true;
+      } else if ( _variables[iVar].find("accel") != string::npos ) {
+        delete_accel = true;
+      } else if ( _variables[iVar].find("energy") != string::npos ) {
+        delete_energy = true;
+      } else if ( _variables[iVar].find("plastic_strain") != string::npos ) {
+        delete_plastic_strain = true;
+      } else if ( _variables[iVar].find("strain") != string::npos ) {
+        delete_strain = true;
+      } else if ( _variables[iVar].find("stress") != string::npos ) {
+        delete_stress = true;
+      } else if ( _variables[iVar].find("history") != string::npos ) {
+
+        // shell or solid specified?
+        // delete both if unspecified
+        if( _variables[iVar].find("shell") != string::npos ){
+          delete_history_shell = true;
+        } else if ( _variables[iVar].find("solid") != string::npos ){
+          delete_history_solid = true;
+        } else {
+          delete_history_shell = true;
+          delete_history_solid = true;
+        }
+
+      } else {
+        throw(string("Unknown variable type:")+_variables[iVar]);
+      }
+
+    } // end:for
+
+    // NODES: data deletion
+    if( delete_disp || delete_vel || delete_accel ){
+
+      DB_Nodes *db_nodes = this->get_db_nodes();
+      Node *_node = NULL;
+      for(size_t iNode=0; iNode<db_nodes->size(); ++iNode){
+
+        _node = db_nodes->get_nodeByIndex(iNode);
+        if( _node ){
+          
+          if(delete_disp)
+            _node->clear_disp();
+          if(delete_vel)
+            _node->clear_vel();
+          if(delete_accel)
+            _node->clear_accel();
+
+        }
+
+      } // end:for
+
+      // reset flags
+      if(delete_disp)
+        this->disp_is_read = false;
+      if(delete_vel)
+        this->vel_is_read = false;
+      if(delete_accel)
+        this->acc_is_read = false;
+    }
+
+    // ELEMENT: data deletion
+    if( delete_energy ||
+        delete_plastic_strain ||
+        delete_strain ||
+        delete_stress ||
+        delete_history_shell ||
+        delete_history_solid ){
+
+      DB_Elements *db_elems = this->get_db_elements();
+      Element *_elem = NULL;
+
+      // shells      
+      for(size_t iElement=0; iElement<db_elems->size(SHELL); iElement++){
+
+        _elem = db_elems->get_elementByIndex(SHELL, iElement);
+        if( _elem ){
+          if(delete_energy)
+            _elem->clear_energy();
+          if(delete_plastic_strain)
+            _elem->clear_plastic_strain();
+          if(delete_strain)
+            _elem->clear_strain();
+          if(delete_stress)
+            _elem->clear_stress();
+          if(delete_history_shell)
+            _elem->clear_history_vars();
+        }
+      }
+      // solids
+      for(size_t iElement=0; iElement<db_elems->size(SOLID); iElement++){
+      
+        _elem = db_elems->get_elementByIndex(SOLID, iElement);
+        if( _elem ){
+          if(delete_energy)
+            _elem->clear_energy();
+          if(delete_plastic_strain)
+            _elem->clear_plastic_strain();
+          if(delete_strain)
+            _elem->clear_strain();
+          if(delete_stress)
+            _elem->clear_stress();
+          if(delete_history_solid)
+            _elem->clear_history_vars();
+        }
+      }
+
+      // reset flags
+      if(delete_energy)
+        this->energy_is_read = false;
+      if(delete_plastic_strain)
+        this->plastic_strain_is_read = false;
+      if(delete_strain)
+        this->strain_is_read = false;
+      if(delete_stress)
+        this->stress_is_read = false;
+      if(delete_history_shell)
+        this->history_shell_is_read.clear();
+      if(delete_history_solid)
+        this->history_solid_is_read.clear();
+
+    } // end:if Elements
+
+  } // end:else for deletion
+
+} // end:function clear
