@@ -75,7 +75,7 @@ extern "C" {
     {"get_history", (PyCFunction) QD_Element_get_history, METH_NOARGS, "Get the history vars of the element."},
     {"get_estimated_size", (PyCFunction) QD_Element_get_estimated_size, METH_NOARGS, "Get the rough element edge size."},
     {"get_type", (PyCFunction) QD_Element_get_type, METH_NOARGS, "Get the element type."},
-    {"get_is_rigid", (PyCFunction) QD_Element_get_is_rigid, METH_NOARGS, "Get the info if the element is rigid."},
+    {"is_rigid", (PyCFunction) QD_Element_get_is_rigid, METH_NOARGS, "Get the info if the element is rigid."},
     {NULL}  /* Sentinel */
   };
 

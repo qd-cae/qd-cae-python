@@ -89,9 +89,8 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, v
     Node* _node = this->db_nodes->get_nodeByIndex(_elementData[iNode]-1); // dyna starts at index 1, this program at 0 of course
     if(_node == NULL)
       throw(string("A node with index:")+to_string(_elementData[iNode])+string(" does not exist and can not be added to an element."));
-    if(iNode > 0)
-      if(_elementData[iNode] == _elementData[iNode-1])
-        break; // repeating an id means that there are just dummy ids
+    if(iNode > 0 && (_elementData[iNode] == _elementData[iNode-1]) )
+      break; // repeating an id means that there are just dummy ids
 
     nodes.push_back(_node);
   }

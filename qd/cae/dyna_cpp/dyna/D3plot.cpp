@@ -11,6 +11,8 @@
 #include "../utility/TextUtility.hpp"
 #include "../utility/FileUtility.hpp"
 
+#include <set>
+
 #ifdef QD_USE_FEMZIP
 #include "FemzipBuffer.hpp"
 #endif
@@ -54,14 +56,6 @@ D3plot::D3plot (string _filename,vector<string> _state_variables,bool _useFemzip
   // Header + Geometry
   this->read_header();
   this->read_matsection();
-  #ifdef QD_DEBUG
-  cout << "dyna_irbtyp.size():" << dyna_irbtyp.size() << "\n";
-  cout << "dyna_irbtyp:" << "\n";
-  for(size_t iEntry=0; iEntry < dyna_irbtyp.size(); ++iEntry){
-    cout << dyna_irbtyp[iEntry] << ' ';
-  }
-  cout << "dyna_numrbe: " << dyna_numrbe << endl;
-  #endif
   this->read_geometry();
 
   // States
@@ -371,7 +365,6 @@ void D3plot::info(){
   cout << "nMat4 : " << this->dyna_nummat4 << '\n';
   cout << "nMat8 : " << this->dyna_nummat8 << '\n';
   cout << "nMatTh: " << this->dyna_nummatth << '\n';
-  cout << "mattyp: " << this->dyna_mattyp << '\n';
   cout << "disp : " << this->dyna_iu << '\n';
   cout << "vel  : " << this->dyna_iv << '\n';
   cout << "accel: " << this->dyna_ia << '\n';
@@ -488,30 +481,38 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding beams ... ";
   #endif
+  size_t nRigids_BEAM=0;
   DB_Elements *db_elems = this->get_db_elements();
   db_elems->reserve(BEAM, buffer_elems2.size());
   for(size_t ii=0; ii < buffer_elems2.size() ;++ii){
     db_elems->add_element_byD3plot(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
+	if( (dyna_mattyp==1) && (this->dyna_irbtyp[ buffer_elems2[ii].back() ] == 20) ) {
+      ++nRigids_BEAM;
+    }
   }
   #ifdef QD_DEBUG
-  cout << this->get_db_elements()->size() << " done." << endl;
+  cout << this->get_db_elements()->size(BEAM) << " done." << endl;
+  cout << "nRigids_BEAM: " << nRigids_BEAM << endl;
   #endif
 
   // Shells
   #ifdef QD_DEBUG
   cout << "Adding shells ... ";
   #endif
+  size_t nRigids_SHELL=0;
   db_elems->reserve(SHELL, buffer_elems4.size());
   for(size_t ii=0; ii < buffer_elems4.size() ;++ii){
     Element *elem = db_elems->add_element_byD3plot(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
     
     // check if rigid material, very complicated ...
-    if( (dyna_mattyp!=0) && this->dyna_irbtyp[ buffer_elems4[ii].back() ]==20 ) {
+    if( (dyna_mattyp==1) && (this->dyna_irbtyp[ buffer_elems4[ii].back() ] == 20) ) {
       elem->set_is_rigid(true);
+	  ++nRigids_SHELL;
     }
   }
   #ifdef QD_DEBUG
-  cout << this->get_db_elements()->size() << " done." << endl;
+  cout << this->get_db_elements()->size(SHELL) << " done." << endl;
+  cout << "nRigids_SHELL: " << nRigids_SHELL << endl;
   #endif
   //if( nRigidShells != this->dyna_numrbe )
   //  throw(string("nRigidShells != numrbe: ")+to_string(nRigidShells)+" != "+to_string(this->dyna_numrbe));
@@ -520,12 +521,17 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding solids ... ";
   #endif
+  size_t nRigids_SOLIDS=0;
   db_elems->reserve(SOLID, buffer_elems8.size());
   for(size_t ii=0; ii < buffer_elems8.size() ;++ii){
     db_elems->add_element_byD3plot(SOLID, buffer_numbering[1][ii], buffer_elems8[ii]);
+	if( (dyna_mattyp==1) && (this->dyna_irbtyp[ buffer_elems8[ii].back() ] == 20) ) {
+      ++nRigids_SOLIDS;
+    }
   }
   #ifdef QD_DEBUG
-  cout << get_db_elements()->size() << " done." << endl;
+  cout << get_db_elements()->size(SOLID) << " done." << endl;
+  cout << "nRigids_SOLIDS: " << nRigids_SOLIDS << endl;
   #endif
   
 }
