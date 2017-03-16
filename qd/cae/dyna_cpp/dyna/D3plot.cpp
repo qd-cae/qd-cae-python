@@ -483,57 +483,51 @@ void D3plot::read_geometry(){
   #ifdef QD_DEBUG
   cout << "Adding beams ... ";
   #endif
-  size_t nRigids_BEAM=0;
   DB_Elements *db_elems = this->get_db_elements();
   db_elems->reserve(BEAM, buffer_elems2.size());
   for(size_t ii=0; ii < buffer_elems2.size() ;++ii){
     db_elems->add_element_byD3plot(BEAM,buffer_numbering[2][ii],buffer_elems2[ii]);
 	if( (dyna_mattyp==1) && (this->dyna_irbtyp[ buffer_elems2[ii].back() ] == 20) ) {
-      ++nRigids_BEAM;
     }
   }
   #ifdef QD_DEBUG
   cout << this->get_db_elements()->size(BEAM) << " done." << endl;
-  cout << "nRigids_BEAM: " << nRigids_BEAM << endl;
   #endif
 
   // Shells
   #ifdef QD_DEBUG
   cout << "Adding shells ... ";
   #endif
-  size_t nRigids_SHELL=0;
+  size_t nRigidShells = 0;
   db_elems->reserve(SHELL, buffer_elems4.size());
   for(size_t ii=0; ii < buffer_elems4.size() ;++ii){
     Element *elem = db_elems->add_element_byD3plot(SHELL,buffer_numbering[3][ii],buffer_elems4[ii]);
     
     // check if rigid material, very complicated ...
-    if( (dyna_mattyp==1) && (this->dyna_irbtyp[ buffer_elems4[ii].back() ] == 20) ) {
+    // this bug took me 3 Days! material indexes start again at 1, not 0 :(
+    if( (dyna_mattyp==1) && (this->dyna_irbtyp[ buffer_elems4[ii].back()-1 ] == 20) ) { 
       elem->set_is_rigid(true);
-	  ++nRigids_SHELL;
+      ++nRigidShells;
     }
   }
   #ifdef QD_DEBUG
   cout << this->get_db_elements()->size(SHELL) << " done." << endl;
-  cout << "nRigids_SHELL: " << nRigids_SHELL << endl;
   #endif
-  //if( nRigidShells != this->dyna_numrbe )
-  //  throw(string("nRigidShells != numrbe: ")+to_string(nRigidShells)+" != "+to_string(this->dyna_numrbe));
+  if( nRigidShells != this->dyna_numrbe )
+    throw(string("nRigidShells != numrbe: ")+to_string(nRigidShells)+" != "+to_string(this->dyna_numrbe));
 
   // Solids
   #ifdef QD_DEBUG
   cout << "Adding solids ... ";
   #endif
-  size_t nRigids_SOLIDS=0;
   db_elems->reserve(SOLID, buffer_elems8.size());
   for(size_t ii=0; ii < buffer_elems8.size() ;++ii){
     db_elems->add_element_byD3plot(SOLID, buffer_numbering[1][ii], buffer_elems8[ii]);
 	if( (dyna_mattyp==1) && (this->dyna_irbtyp[ buffer_elems8[ii].back() ] == 20) ) {
-      ++nRigids_SOLIDS;
     }
   }
   #ifdef QD_DEBUG
   cout << get_db_elements()->size(SOLID) << " done." << endl;
-  cout << "nRigids_SOLIDS: " << nRigids_SOLIDS << endl;
   #endif
   
 }

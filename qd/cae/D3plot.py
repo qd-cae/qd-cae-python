@@ -70,7 +70,7 @@ class D3plot(QD_D3plot):
             assert all( isinstance(entry,int) for entry in part_id)
             return [ Part(self, entry) for entry in part_id ]
         else:
-            assert isinstance(entry, int)
+            assert isinstance(part_id, int)
             return Part(self, part_id)
     
 
