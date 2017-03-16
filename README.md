@@ -34,9 +34,9 @@ Version 0.4.3
 
 # Descriptions
 
-Current Module List:
+Current Module List (CLICK ON MODULES FOR DOCUMENTATION!):
 
-1. [qd.cae.dyna](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md)
+1. [qd.cae.dyna ](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md)
   - Read D3plot (DONE)
   - Read Binouts (DONE)
   - Read Input Files (partially done)
@@ -49,7 +49,7 @@ For more details, look into the helper files.
 
 # Installation
 
-For **Windows** (x64 python 2.7 or 3.5 and higher) use:
+If possible, use the pre-compiled python-wheels in the dist folder and install with pip. The wheel is always compiled with FEMZIP support. For **Windows** (x64 python 2.7 or 3.5 and higher) use:
 
 ```
 pip install qd
@@ -58,6 +58,8 @@ or
 ```
 python -m pip install qd
 ```
+
+Note though that the precompiled .whl might not work for all distributions.  **If your distribution is missing please open a request**
 
 For **Linux** I have also compiled some wheels in the ```dist``` folder, though they might not work for any distribution. If you need to compile it for yourself, run:
 
@@ -72,18 +74,27 @@ pip install diversipy
 python setup.py install
 ```
 
-**If your distribution is missing please open a request**
-
-If possible, use the pre-compiled python-wheels in the dist folder and install with pip.
-The wheel is always compiled with FEMZIP support (not). For compiling the code yourself,
-the library needs Boost.
-
+ For compiling the code yourself on windows or linux, see further below.
 
 # Compilation
 
-If one wants to compile the code himself, register your boost directory in the top of the setup script. If one want's to compile with femzip support, the link libraries need to be downloaded from the official website from SIDACT.
+For compilation on ANY platform first download [BOOST for c++](https://github.com/boostorg/boost) (we only need headers, do not compile it). On Linux (here Ubuntu) one can just use the package manager:
 
-In case one wants to use it for another C++ application, the source code may also be compiled without the python wrapper. CMake is recommended in that case.
+```
+sudo apt-get install libboost-dev
+```
+
+For compilation on WINDOWS download either [Visual C++ Python Compiler for Python 2.7)[https://www.microsoft.com/en-us/download/details.aspx?id=44266] or [Visual Studio 15 for Python 3.5 and 3.6](https://www.microsoft.com/de-DE/download/details.aspx?id=48146) (dunno if Visual Studio 17 also works). Then clone the repository into a folder:
+```
+git clone https://github.com/qd-cae/qd-eng.git
+```
+Now register the boost directory in the header of the file: setup.py . Thereafter run the setup script, the code will automatically compile and install.
+
+```
+python setup.py install
+```
+
+On LINUX either install boost as described above manually or by package manager. In case of the package manager, the setup script should automatically find boost on your system and you do not need to register it manually. Just follow the commands in the installation section. 
 
 # License
 
