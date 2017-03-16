@@ -84,7 +84,7 @@ def _parse_element_result(arg, iTimestep=-1):
         raise ValueError("Unknown result type: %s, Try plastic_strain, energy or disp." % arg )
 
 
-def _extract_elem_coords(parts, iTimestep=0):
+def _extract_elem_coords(parts, element_result=None, iTimestep=0):
     '''Extract the coordinates of the elements
 
     Parameters
@@ -98,14 +98,33 @@ def _extract_elem_coords(parts, iTimestep=0):
         coordinates of the elements
     '''
 
+    # checks
     assert all( isinstance(entry, QD_Part) for entry in parts )
+    
+    # handle possible results
+    if element_result:
+        var, eval_function = _parse_element_result(element_result, iTimestep=iTimestep)
+        def eval_elem(_elem):
+            coords.append(_elem.get_coords())
+            elem_results.append(eval_function(_elem))
+    else:
+        def eval_elem(_elem):
+            coords.append(_elem.get_coords())
 
-    def _elem_iterator(parts):
-        for _part in parts:
+    # extract
+    coords = []
+    elem_results = []
+    for _part in parts:
             for _elem in _part.get_elements():
-                yield _elem.get_coords(iTimestep)
-
-    return np.vstack( _elem_iterator(parts) )
+                eval_elem(_elem)
+    coords = np.array(coords)
+    elem_results = np.array(elem_results)
+    
+    # return
+    if element_result:
+        return coords, elem_results
+    else:
+        return coords
 
 
 def _extract_elem_data(element, iTimestep=0, element_result=None):

@@ -390,8 +390,10 @@ void D3plot::info(){
 void D3plot::read_matsection(){
 
   // Nothing to do
-  if( this->dyna_mattyp==0 )
+  if( this->dyna_mattyp==0 ){
+    dyna_numrbe = 0;
     return;
+  }
 
   this->dyna_numrbe = this->buffer->read_int(wordPosition); // rigid shells
   int tmp_nummat = this->buffer->read_int(wordPosition + 1);
