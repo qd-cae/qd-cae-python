@@ -59,7 +59,7 @@ or
 python -m pip install qd
 ```
 
-Note though that the precompiled .whl might not work for all distributions.  **If your distribution is missing please open a request**
+Note though that the precompiled .whl might not work for all distributions (I use Anaconda Python x64).  **If your distribution is missing please open a request**
 
 For **Linux** I have also compiled some wheels in the ```dist``` folder, though they might not work for any distribution. If you need to compile it for yourself, run:
 
