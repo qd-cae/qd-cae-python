@@ -84,7 +84,7 @@ For compilation on ANY platform first download [BOOST for c++](https://github.co
 sudo apt-get install libboost-dev
 ```
 
-For compilation on WINDOWS download either [Visual C++ Python Compiler for Python 2.7)[https://www.microsoft.com/en-us/download/details.aspx?id=44266] or [Visual Studio 15 for Python 3.5 and 3.6](https://www.microsoft.com/de-DE/download/details.aspx?id=48146) (dunno if Visual Studio 17 also works). Then clone the repository into a folder:
+For compilation on WINDOWS download either [Visual C++ Python Compiler for Python 2.7](https://www.microsoft.com/en-us/download/details.aspx?id=44266) or [Visual Studio 15 for Python 3.5 and 3.6](https://www.microsoft.com/de-DE/download/details.aspx?id=48146) (dunno if Visual Studio 17 also works). Then clone the repository into a folder:
 ```
 git clone https://github.com/qd-cae/qd-eng.git
 ```
