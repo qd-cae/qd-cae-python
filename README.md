@@ -34,7 +34,7 @@ Version 0.4.3
 
 # Descriptions
 
-Current Module List (CLICK ON MODULES FOR DOCUMENTATION!):
+Current Module List (**CLICK on MODULES for full DOCUMENTATION!**):
 
 1. [qd.cae.dyna ](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md)
   - Read D3plot (DONE)
