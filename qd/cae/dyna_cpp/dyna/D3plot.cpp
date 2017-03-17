@@ -457,7 +457,7 @@ void D3plot::read_geometry(){
 
   if(!isFileEnding(wordPosition)){
     //cout << this->buffer->read_float(wordPosition) << endl;
-    throw(string("Anticipated file ending wrong in geometry section."));
+    throw(string("Anticipated file ending wrong in part section."));
   }
 
   this->buffer->free_partBuffer();

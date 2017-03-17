@@ -71,7 +71,7 @@ DB_Elements::~DB_Elements(){
  * Add an element to the db by it's ID  and it's nodeIndexes. Throws an exception
  * if one nodeIndex is invalid or if the elementID is already existing.
  */
-Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, vector<int> _elementData){
+Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, const vector<int>& _elementData){
 
   if(_elementID < 0){
     throw(string("Element-ID may not be negative!"));
@@ -96,7 +96,7 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, v
   }
 
   // Create element
-  Element* element = new Element(_elementID,_eType,nodes,this);
+  Element* element = new Element(_elementID, _eType, nodes, this);
 
   if(_eType == BEAM){
 
@@ -131,6 +131,10 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, v
     this->id2index_elements8.insert(pair<int,size_t>(_elementID,this->elements8.size()));
     this->elements8.push_back(element);
 
+  } else {
+
+    delete element;
+    throw(string("Element with unknown element type was tried to get inserted into the database."));
   }
 
   // Register Elements

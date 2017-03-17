@@ -34,7 +34,7 @@ private:
 
   /* PUBLIC */
 public:
-  Element(int,ElementType,vector<Node*>,DB_Elements* db_elements);
+  Element(const int _id, const ElementType _etype, const vector<Node*>& _nodes, DB_Elements* db_elements);
   ~Element();
   bool operator<(const Element &other) const;
   void check();

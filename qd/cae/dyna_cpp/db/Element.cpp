@@ -14,7 +14,7 @@
 /*
  * Constructor.
  */
-Element::Element(int _elementID, ElementType _elementType, vector<Node*> _nodes,DB_Elements* _db_elements) 
+Element::Element(const int _elementID, const ElementType _elementType, const vector<Node*>& _nodes, DB_Elements* _db_elements) 
               : is_rigid( false ),
                 elementID( _elementID ),
                 elemType( _elementType ),
@@ -24,20 +24,12 @@ Element::Element(int _elementID, ElementType _elementType, vector<Node*> _nodes,
   if (_db_elements == NULL)
     throw("DB_Elements of an element may not be NULL in constructor.");
 
-  // Assignment
-  //this->db_elements = _db_elements;
-  //this->elementID = _elementID;
-  //this->elemType = _elementType;
-
-  for(vector<Node*>::iterator it=_nodes.begin(); it != _nodes.end(); ++it){
+  for(vector<Node*>::const_iterator it=_nodes.begin(); it != _nodes.end(); ++it){
     this->nodes.push_back(((Node*) *it)->get_nodeID());
   }
 
   this->check();
-  /*
-  for (auto _node : _nodes)
-    this->nodes.insert(_node->get_nodeID());
-  */
+
 }
 
 
