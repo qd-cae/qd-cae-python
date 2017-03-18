@@ -2,16 +2,17 @@
 #include "Part.hpp"
 #include "Node.hpp"
 #include "Element.hpp"
+#include "DB_Nodes.hpp"
+#include "FEMFile.hpp"
 
 
 /**
  * Constructor
  */
-Part::Part(int _partID,string _partName){
-
-  this->partName = _partName;
-  this->partID = _partID;
-
+Part::Part(int _partID, string _partName, FEMFile *_femfile)
+  : partName(_partName),
+    partID( _partID ),
+    femfile( _femfile ) {
 }
 
 
@@ -71,13 +72,24 @@ void Part::add_element(Element* _element){
 vector<Node*> Part::get_nodes(){
 
   vector<Node*> nodes;
-  vector<Node*> elem_nodes;
+  set<size_t> unique_node_indexes;
 
+  // extract unique indexes
   for(vector<Element*>::iterator it=this->elements.begin(); it != this->elements.end(); ++it){
-    elem_nodes = ((Element*) *it)->get_nodes();
-    for(vector<Node*>::iterator it2=elem_nodes.begin(); it2 != elem_nodes.end(); ++it2){
-	   nodes.push_back((Node*) *it2);
-    }
+    vector<size_t> elem_node_indexes = ((Element*) *it)->get_node_indexes();
+    std::copy( elem_node_indexes.begin(), 
+               elem_node_indexes.end(), 
+               std::inserter( unique_node_indexes, unique_node_indexes.end() ) );
+
+  }
+
+  // fetch nodes
+  DB_Nodes* db_nodes = this->femfile->get_db_nodes();
+  for( set<size_t>::const_iterator it=unique_node_indexes.begin();
+       it != unique_node_indexes.end();
+       ++it){
+
+    nodes.push_back( db_nodes->get_nodeByIndex(*it) );
   }
 
   return nodes;

@@ -1,11 +1,13 @@
 
 #include "DB_Parts.hpp"
+#include "FEMFile.hpp"
 #include "Part.hpp"
 
 /**
  * Constructor
  */
-DB_Parts::DB_Parts(){
+DB_Parts::DB_Parts(FEMFile* _femfile)
+  : femfile( _femfile ){
 
 }
 
@@ -28,7 +30,7 @@ DB_Parts::~DB_Parts(){
  */
 Part* DB_Parts::add_part(int _partIndex, int _partID){
 
-  Part* part = new Part(_partID,"");
+  Part* part = new Part(_partID, "", this->femfile);
   this->parts.insert(pair<int,Part*>(_partID,part));
   this->partsByIndex.insert(pair<int,Part*>(_partIndex,part));
   return part;
@@ -39,7 +41,7 @@ Part* DB_Parts::add_part(int _partIndex, int _partID){
  */
 Part* DB_Parts::add_part_byID(int _partID){
 
-  Part* part = new Part(_partID,"");
+  Part* part = new Part(_partID, "", this->femfile);
   int partIndex = static_cast<int>(this->parts.size())+1;
   this->parts.insert(pair<int,Part*>(_partID,part));
   this->partsByIndex.insert(pair<int,Part*>(partIndex,part));

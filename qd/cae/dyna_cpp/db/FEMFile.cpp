@@ -27,15 +27,12 @@ FEMFile::FEMFile(string _filepath){
 FEMFile::~FEMFile(){
    if(this->db_nodes != NULL){
       delete this->db_nodes;
-      this->db_nodes = NULL;
    }
    if(this->db_parts != NULL){
       delete this->db_parts;
-      this->db_parts = NULL;
    }
    if(this->db_elements != NULL){
       delete this->db_elements;
-      this->db_elements = NULL;
    }
 }
 
@@ -44,7 +41,7 @@ FEMFile::~FEMFile(){
  */
 void FEMFile::init_vars(){
    this->db_nodes = new DB_Nodes(this);
-   this->db_parts = new DB_Parts();
+   this->db_parts = new DB_Parts(this);
    this->db_elements = new DB_Elements(this);
    this->db_nodes->set_db_elements(this->db_elements);
 }

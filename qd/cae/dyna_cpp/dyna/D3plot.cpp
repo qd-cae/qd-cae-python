@@ -77,7 +77,6 @@ D3plot::~D3plot(){
 
   if (this->buffer != NULL) {
     delete this->buffer;
-    this->buffer = NULL;
   }
 
 }
@@ -189,8 +188,8 @@ void D3plot::read_header(){
     filetype -= 1000;
     own_external_numbers_I8 = true;
   }
-  if(filetype != 1){
-    throw("Wrong filetype "+to_string(this->buffer->read_int(11))+" != 1 in header of d3plot. Your file might be in Double Precision or the endian of the file is not the endian of the machine.");
+  if( (filetype != 1) && (filetype != 5) ){
+    throw("Wrong filetype "+to_string(this->buffer->read_int(11))+" != 1 (or 5) in header of d3plot. Your file might be in Double Precision or the endian of the file is not the endian of the machine.");
   }
 
   this->dyna_title = this->buffer->read_str(0,10);

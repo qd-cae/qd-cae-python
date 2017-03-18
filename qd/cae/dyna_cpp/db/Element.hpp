@@ -23,7 +23,7 @@ private:
 
   int elementID;
   bool is_rigid;
-  vector<int> nodes;
+  vector<size_t> nodes; // indexes
   vector<float> energy;
   vector<float> plastic_strain;
   vector< vector<float> > strain;
@@ -34,7 +34,7 @@ private:
 
   /* PUBLIC */
 public:
-  Element(const int _id, const ElementType _etype, const vector<Node*>& _nodes, DB_Elements* db_elements);
+  Element(const int _id, const ElementType _etype, const vector<size_t>& _nodes, DB_Elements* db_elements);
   ~Element();
   bool operator<(const Element &other) const;
   void check();
@@ -44,8 +44,9 @@ public:
   int           get_elementID();
   bool          get_is_rigid() const;
   float         get_estimated_element_size(); // fast
-  vector<Node*>    get_nodes();
-  vector<int>      get_node_ids();
+  vector<Node*>    get_nodes() const;
+  vector<int>      get_node_ids() const;
+  vector<size_t>   get_node_indexes() const;
   vector<float> get_coords(int iTimestep = 0);
   vector<float> get_energy();
   vector<float> get_plastic_strain();

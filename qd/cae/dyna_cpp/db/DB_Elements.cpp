@@ -47,17 +47,12 @@ DB_Elements::~DB_Elements(){
   for(vector<Element*>::iterator it = elements2.begin(); it != elements2.end(); ++it){
      delete (*it);
   }
-  elements2.clear();
-
   for(vector<Element*>::iterator it = elements4.begin(); it != elements4.end(); ++it){
      delete (*it);
   }
-  elements4.clear();
-
   for(vector<Element*>::iterator it = elements8.begin(); it != elements8.end(); ++it){
      delete (*it);
   }
-  elements8.clear();
 
 }
 
@@ -71,7 +66,7 @@ DB_Elements::~DB_Elements(){
  * Add an element to the db by it's ID  and it's nodeIndexes. Throws an exception
  * if one nodeIndex is invalid or if the elementID is already existing.
  */
-Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, const vector<int>& _elementData){
+Element* DB_Elements::add_element_byD3plot(const ElementType _eType, const int _elementID, const vector<int>& _elementData){
 
   if(_elementID < 0){
     throw(string("Element-ID may not be negative!"));
@@ -85,6 +80,7 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, c
 
   // Find nodes
   vector<Node*> nodes;
+  vector<size_t> node_indexes;
   for(size_t iNode = 0; iNode < _elementData.size()-1; iNode++){ // last is mat
     Node* _node = this->db_nodes->get_nodeByIndex(_elementData[iNode]-1); // dyna starts at index 1, this program at 0 of course
     if(_node == NULL)
@@ -92,11 +88,12 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, c
     if(iNode > 0 && (_elementData[iNode] == _elementData[iNode-1]) )
       break; // repeating an id means that there are just dummy ids
 
-    nodes.push_back(_node);
+    nodes.push_back( _node );
+    node_indexes.push_back( _elementData[iNode]-1 );
   }
 
   // Create element
-  Element* element = new Element(_elementID, _eType, nodes, this);
+  Element* element = new Element(_elementID, _eType, node_indexes, this);
 
   if(_eType == BEAM){
 
@@ -172,18 +169,20 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
 
   // Find nodes
   vector<Node*> nodes;
+  vector<size_t> node_indexes;
   for(size_t iNode = 0; iNode < _node_ids.size(); ++iNode){
     Node* _node = this->db_nodes->get_nodeByID(_node_ids[iNode]);
     if(_node == NULL)
-      _node = this->db_nodes->add_node(_node_ids[iNode],vector<float>(3,0.0f));
+      _node = this->db_nodes->add_node(_node_ids[iNode], vector<float>(3,0.0f));
     if(iNode > 0)
       if(_node_ids[iNode] == _node_ids[iNode-1])
         break; // dummy ids start
     nodes.push_back(_node);
+    node_indexes.push_back( this->db_nodes->get_index_from_id( _node_ids[iNode]) );
   }
 
   // Create element
-  Element* element = new Element(_elementID,_eType,nodes,this);
+  Element* element = new Element(_elementID, _eType, node_indexes, this);
 
   if(_eType == BEAM){
 

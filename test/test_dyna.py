@@ -95,36 +95,16 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual( d3plot.get_timesteps()[0]  ,0.)
         self.assertEqual( len(d3plot.get_timesteps()) ,1)
         self.assertEqual( len(d3plot.get_parts())     ,1)
-
-        # plotting
-        export_path = os.path.join( os.path.dirname(__file__), "test_export.html" )
-        for element_result in element_result_list:
-            
-            # test d3plot.plot directly
-            d3plot.plot(iTimestep=-1, element_result=element_result, export_filepath=export_path)
-            self.assertTrue( os.path.isfile(export_path) )
-            os.remove(export_path)
-            
-            # test plotting by parts
-            D3plot.plot_parts(d3plot.get_parts(), iTimestep=-1, element_result=element_result, export_filepath=export_path)
-            self.assertTrue( os.path.isfile(export_path) )
-            os.remove(export_path)
-
-            for part in d3plot.get_parts():
-                part.plot(iTimestep=-1, element_result=element_result, export_filepath=export_path)
-                self.assertTrue( os.path.isfile(export_path) )
-                os.remove(export_path)
-
-            for part_id in part_ids:
-                d3plot.get_partByID(part_id).plot(iTimestep=-1, element_result=None, export_filepath=export_path)
-                self.assertTrue( os.path.isfile(export_path) )
-                os.remove(export_path)
         
         ## D3plot error handling
         # ... TODO
 
         ## Part
         part1 = d3plot.get_parts()[0]
+        self.assertTrue( part1.get_name() == "Zugprobe" )
+        self.assertTrue( part1.get_id() == 1 )
+        self.assertTrue( len(part1.get_elements()) == 4696 )
+        self.assertTrue( len(part1.get_nodes()) == 4915  )
         part2 = d3plot.get_parts()[0]
         self.assertTrue( part1 == part2 )
         self.assertFalse( part1 > part2 )
@@ -178,6 +158,31 @@ class TestDynaModule(unittest.TestCase):
             pass
         # .. TODO Error stoff
         
+
+        # plotting)
+        export_path = os.path.join( os.path.dirname(__file__), "test_export.html" )
+        for element_result in element_result_list:
+            
+            # test d3plot.plot directly
+            d3plot.plot(iTimestep=-1, element_result=element_result, export_filepath=export_path)
+            self.assertTrue( os.path.isfile(export_path) )
+            os.remove(export_path)
+            
+            # test plotting by parts
+            D3plot.plot_parts(d3plot.get_parts(), iTimestep=-1, element_result=element_result, export_filepath=export_path)
+            self.assertTrue( os.path.isfile(export_path) )
+            os.remove(export_path)
+
+            for part in d3plot.get_parts():
+                part.plot(iTimestep=-1, element_result=element_result, export_filepath=export_path)
+                self.assertTrue( os.path.isfile(export_path) )
+                os.remove(export_path)
+
+            for part_id in part_ids:
+                d3plot.get_partByID(part_id).plot(iTimestep=-1, element_result=None, export_filepath=export_path)
+                self.assertTrue( os.path.isfile(export_path) )
+                os.remove(export_path)
+
 
 
     def test_binout(self):

@@ -14,19 +14,16 @@
 /*
  * Constructor.
  */
-Element::Element(const int _elementID, const ElementType _elementType, const vector<Node*>& _nodes, DB_Elements* _db_elements) 
+Element::Element(const int _elementID, const ElementType _elementType, const vector<size_t>& _node_indexes, DB_Elements* _db_elements) 
               : is_rigid( false ),
                 elementID( _elementID ),
                 elemType( _elementType ),
-                db_elements( _db_elements ){
+                db_elements( _db_elements ),
+                nodes( _node_indexes ){
 
   // Checks
   if (_db_elements == NULL)
-    throw("DB_Elements of an element may not be NULL in constructor.");
-
-  for(vector<Node*>::const_iterator it=_nodes.begin(); it != _nodes.end(); ++it){
-    this->nodes.push_back(((Node*) *it)->get_nodeID());
-  }
+    throw(string("DB_Elements of an element may not be NULL in constructor."));
 
   this->check();
 
@@ -92,14 +89,14 @@ int Element::get_elementID(){
 /** Get the nodes of the element in a set.
  *
  */
-vector<Node*> Element::get_nodes(){
+vector<Node*> Element::get_nodes() const {
 
   DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
   vector<Node*> node_vec;
 
-  for(vector<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); it++){
+  for(vector<size_t>::const_iterator it=this->nodes.begin(); it != this->nodes.end(); it++){
 
-    Node* _node = db_nodes->get_nodeByID(*it);
+    Node* _node = db_nodes->get_nodeByIndex(*it);
     if(_node != NULL){
       node_vec.push_back(_node);
     } else{
@@ -114,8 +111,25 @@ vector<Node*> Element::get_nodes(){
 
 /** Return the ids of the elements nodes
  *
+ * @return vector<int> node_ids
  */
-vector<int> Element::get_node_ids(){
+vector<int> Element::get_node_ids() const {
+   
+  vector<int> node_ids;
+  DB_Nodes* db_nodes = db_elements->get_db_nodes();
+  for( size_t iNode=0; iNode<this->nodes.size(); ++iNode ){
+    node_ids.push_back( db_nodes->get_id_from_index<int>(nodes[iNode]) );
+  }
+  return node_ids;
+
+}
+
+
+/** Return the ids of the elements nodes
+ *
+ * @return vector<size_t> node_indexes
+ */
+vector<size_t> Element::get_node_indexes() const {
    return this->nodes;
 }
 
@@ -238,7 +252,7 @@ vector<float> Element::get_coords(int iTimestep){
    vector<float> coords_node;
    vector< vector<float> > disp_node;
 
-   for(vector<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
+   for(vector<size_t>::const_iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
 
       current_node = db_nodes->get_nodeByID(*it);
       coords_node = current_node->get_coords();
@@ -284,7 +298,7 @@ float Element::get_estimated_element_size(){
    float maxdist = -1.;
    vector<float> ncoords;
    vector<float> basis_coords;
-   for(vector<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
+   for(vector<size_t>::const_iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
       ncoords = db_nodes->get_nodeByID(*it)->get_coords();
       if(it != this->nodes.begin()){
          ncoords = MathUtility::v_subtr(ncoords,basis_coords);
