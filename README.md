@@ -55,14 +55,14 @@ For more details, look into the helper files.
 
 # Installation
 
-For **Windows** (x64 python 2.7 or 3.5 and higher) use:
+For **Windows (x64 3.5 and higher)** use:
 
 ```
 pip install qd
 ```
 or
 ```
-python -m pip install qd
+python3 -m pip install qd
 ```
 
 For **Linux** I have also compiled some wheels in the ```dist``` folder, though they might not work for any distribution. If you need to compile it for yourself, run:
@@ -70,12 +70,12 @@ For **Linux** I have also compiled some wheels in the ```dist``` folder, though 
 ```
 git clone https://github.com/qd-cae/qd-eng.git
 cd qd-eng
-sudo apt-get install python-numpy
+sudo apt-get install python3-numpy
 sudo apt-get install libboost-dev
-pip install --upgrade pip setuptools wheel
-pip install --only-binary=numpy numpy
-pip install diversipy
-python setup.py install
+python3 -m pip install --upgrade pip setuptools wheel
+python3 -m pip install --only-binary=numpy numpy
+python3 -m pip install diversipy
+python3 setup.py install
 ```
 
 **If your distribution is missing please open a request**
