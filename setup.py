@@ -11,14 +11,15 @@ from setuptools import setup, Extension
 # ======= S E T T I N G S ======= #
 boost_path = "libs/boost_1_61_0"
 femzip_path = "libs/femzip" # optional
+femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64"
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
 _version = "0.4.5"
 # =============================== #
 
-if sys.version_info[0] >= 3 and not "linux" in platform.system().lower():
-    femzip_path = "#python3_no_femzip"
+#if sys.version_info[0] >= 3 and not "linux" in platform.system().lower():
+#    femzip_path = "#python3_no_femzip"
 
 # (0) Compiler Stuff
 # Check for MinGW usage
@@ -69,12 +70,12 @@ srcs_dyna = ["qd/cae/dyna_cpp/python_api/wrapper.cpp",
 # You need to download the femzip libraries yourself from SIDACT GmbH
 # If you have questions, write a mail.
 if os.path.isdir(femzip_path):
-    if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path,"Windows_VS2010_MT","x64")):
+    if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path,"x64")):
         srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
-        lib_dirs_dyna.append(os.path.join(femzip_path,"Windows_VS2010_MT","x64"))
-        libs_dyna = ['femunziplib_standard_dyna','ipp_zlib','ippcoremt',
-            'ippdcmt','ippsmt','ifwin','ifconsol','ippvmmt','libmmt',
-            'libirc','svml_dispmt','msvcrt']
+        lib_dirs_dyna.append(os.path.join(femzip_path,"x64"))
+        libs_dyna = ['femunziplib_standard_dyna','ipp_zlibd','ippcoremt',
+            'ippdcmt','ippsmt','ifwin','ifconsol','ippvmmt','libmmd',
+            'libirc','svml_dispmd','msvcrt']
         compiler_args_dyna.append("/DQD_USE_FEMZIP")
     elif (platform.system() == "Linux") and os.path.isdir(os.path.join(femzip_path,"Linux","64Bit")):
         srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")

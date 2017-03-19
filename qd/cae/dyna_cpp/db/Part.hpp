@@ -10,6 +10,7 @@ class FEMFile;
 #include <set>
 #include <vector>
 #include <iostream>
+#include <iterator>
 #include "Element.hpp"
 using namespace std;
 
