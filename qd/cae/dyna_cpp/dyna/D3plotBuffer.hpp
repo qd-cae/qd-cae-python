@@ -3,6 +3,7 @@
 #define D3PLOTBUFFER_HPP
 
 #include <string>
+#include <future>
 #include "AbstractBuffer.hpp"
 
 using namespace std;
@@ -11,14 +12,15 @@ class D3plotBuffer : public AbstractBuffer {
 
   private:
   unsigned int iStateFile;
-  char* current_buffer;
+  vector<char> current_buffer;
+  vector< future< vector<char> > > state_buffers; // preloaded states (REVERSED!!!)
   int wordSize;
   long bufferSize;
   vector<string> d3plots;
-  void get_bufferFromFile(string);
+  static vector<char> get_bufferFromFile(string); // helper function
 
   public:
-  D3plotBuffer(string,int);
+  D3plotBuffer(string _d3plot_path, int _wordSize);
   ~D3plotBuffer();
   void read_geometryBuffer();
   void free_geometryBuffer();

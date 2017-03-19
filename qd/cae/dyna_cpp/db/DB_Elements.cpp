@@ -28,37 +28,6 @@ DB_Elements::DB_Elements(FEMFile* _femfile){
  * Destructor.
  */
 DB_Elements::~DB_Elements(){
-
-  // Delete
-  /*
-  for (std::map<int,Element*>::iterator it=elements2.begin(); it!=elements2.end(); ++it){
-    delete it->second;
-    it->second= NULL;
-  }
-  for (std::map<int,Element*>::iterator it=elements4.begin(); it!=elements4.end(); ++it){
-    delete it->second;
-    it->second= NULL;
-  }
-  for (std::map<int,Element*>::iterator it=elements8.begin(); it!=elements8.end(); ++it){
-    delete it->second;
-    it->second= NULL;
-  }
-  */
-  for(vector<Element*>::iterator it = elements2.begin(); it != elements2.end(); ++it){
-     delete (*it);
-  }
-  elements2.clear();
-
-  for(vector<Element*>::iterator it = elements4.begin(); it != elements4.end(); ++it){
-     delete (*it);
-  }
-  elements4.clear();
-
-  for(vector<Element*>::iterator it = elements8.begin(); it != elements8.end(); ++it){
-     delete (*it);
-  }
-  elements8.clear();
-
 }
 
 /** Add an element coming from a D3plot file
@@ -71,76 +40,81 @@ DB_Elements::~DB_Elements(){
  * Add an element to the db by it's ID  and it's nodeIndexes. Throws an exception
  * if one nodeIndex is invalid or if the elementID is already existing.
  */
-Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, vector<int> _elementData){
+Element* DB_Elements::add_element_byD3plot(const ElementType _eType, const int _elementID, const vector<int>& _elementData){
 
   if(_elementID < 0){
     throw(string("Element-ID may not be negative!"));
   }
 
   // Find part
-  Part* part = this->db_parts->get_part_byIndex(_elementData[_elementData.size()-1]);
+  Part* part = this->db_parts->get_part_byIndex( _elementData.back() );
   if(part == NULL){
-    throw(string("Could not find part with index:")+to_string(_elementData[_elementData.size()-1])+string(" in db."));
+    throw(string("Could not find part with index:")+to_string(_elementData.back())+string(" in db."));
   }
 
   // Find nodes
   vector<Node*> nodes;
+  vector<size_t> node_indexes;
   for(size_t iNode = 0; iNode < _elementData.size()-1; iNode++){ // last is mat
     Node* _node = this->db_nodes->get_nodeByIndex(_elementData[iNode]-1); // dyna starts at index 1, this program at 0 of course
     if(_node == NULL)
       throw(string("A node with index:")+to_string(_elementData[iNode])+string(" does not exist and can not be added to an element."));
-    if(iNode > 0)
-      if(_elementData[iNode] == _elementData[iNode-1])
-        break; // repeating an id means that there are just dummy ids
+    if(iNode > 0 && (_elementData[iNode] == _elementData[iNode-1]) )
+      break; // repeating an id means that there are just dummy ids
 
-    nodes.push_back(_node);
+    nodes.push_back( _node );
+    node_indexes.push_back( _elementData[iNode]-1 );
   }
 
   // Create element
-  Element* element = new Element(_elementID,_eType,nodes,this);
+  Element* element_raw_ptr;
+  unique_ptr<Element> element( new Element(_elementID, _eType, node_indexes, this) );
 
   if(_eType == BEAM){
 
-    map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
     if(it != this->id2index_elements2.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements2.insert(pair<int,size_t>(_elementID,this->elements2.size()));
-    this->elements2.push_back(element);
+    this->elements2.push_back(std::move(element));
+    element_raw_ptr = this->elements2.back().get();
 
   } else if(_eType == SHELL){
 
-    map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
     if(it != this->id2index_elements4.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements4.insert(pair<int,size_t>(_elementID,this->elements4.size()));
-    this->elements4.push_back(element);
+    this->elements4.push_back(std::move(element));
+    element_raw_ptr = this->elements4.back().get();
 
   } else if(_eType == SOLID){
 
-    map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
     if(it != this->id2index_elements8.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements8.insert(pair<int,size_t>(_elementID,this->elements8.size()));
-    this->elements8.push_back(element);
+    this->elements8.push_back(std::move(element));
+    element_raw_ptr = this->elements8.back().get();
 
+  } else {
+
+    throw(string("Element with unknown element type was tried to get inserted into the database."));
   }
 
   // Register Elements
   for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); ++it){
-    ((Node*) *it)->add_element(element);
+    ((Node*) *it)->add_element( element_raw_ptr );
   }
-  part->add_element(element);
+  part->add_element( element_raw_ptr );
 
-  return element;
+  return element_raw_ptr;
 }
 
 /** Add an element coming from a KeyFile/Dyna Input File
@@ -155,7 +129,7 @@ Element* DB_Elements::add_element_byD3plot(ElementType _eType, int _elementID, v
  * if one nodeID is invalid or if the elementID is already existing. Since a
  * KeyFile may have some weird order, missing parts and nodes are created.
  */
-Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, int _partid, vector<int> _node_ids)
+Element* DB_Elements::add_element_byKeyFile(ElementType _eType, int _elementID, int _partid, vector<int> _node_ids)
 {
   if(_elementID < 0){
     throw(string("Element-ID may not be negative!"));
@@ -169,62 +143,68 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
 
   // Find nodes
   vector<Node*> nodes;
+  vector<size_t> node_indexes;
   for(size_t iNode = 0; iNode < _node_ids.size(); ++iNode){
     Node* _node = this->db_nodes->get_nodeByID(_node_ids[iNode]);
     if(_node == NULL)
-      _node = this->db_nodes->add_node(_node_ids[iNode],vector<float>(3,0.0f));
+      _node = this->db_nodes->add_node(_node_ids[iNode], vector<float>(3,0.0f));
     if(iNode > 0)
       if(_node_ids[iNode] == _node_ids[iNode-1])
         break; // dummy ids start
     nodes.push_back(_node);
+    node_indexes.push_back( this->db_nodes->get_index_from_id( _node_ids[iNode]) );
   }
 
   // Create element
-  Element* element = new Element(_elementID,_eType,nodes,this);
+  Element* element_raw_ptr;
+  unique_ptr<Element> element( new Element(_elementID, _eType, node_indexes, this) );
 
   if(_eType == BEAM){
 
-    map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
     if(it != this->id2index_elements2.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements2.insert(pair<int,size_t>(_elementID,this->elements2.size()));
-    this->elements2.push_back(element);
+    this->elements2.push_back(std::move(element));
+    element_raw_ptr = this->elements2.back().get();
 
   } else if(_eType == SHELL){
 
-    map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
     if(it != this->id2index_elements4.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements4.insert(pair<int,size_t>(_elementID,this->elements4.size()));
-    this->elements4.push_back(element);
+    this->elements4.push_back(std::move(element));
+    element_raw_ptr = this->elements4.back().get();
 
   } else if(_eType == SOLID){
 
-    map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
     if(it != this->id2index_elements8.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements8.insert(pair<int,size_t>(_elementID,this->elements8.size()));
-    this->elements8.push_back(element);
+    this->elements8.push_back(std::move(element));
+    element_raw_ptr = this->elements8.back().get();
 
+  } else {
+
+    throw(string("Element with unknown element type was tried to get inserted into the database."));
   }
 
   // Register Elements
   //for(auto node : nodes) {
   for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
-    ((Node*) *it)->add_element(element);
+    ((Node*) *it)->add_element( element_raw_ptr );
   }
-  part->add_element(element);
+  part->add_element( element_raw_ptr );
 
-  return element;
+  return element_raw_ptr;
 }
 
 
@@ -242,6 +222,24 @@ DB_Nodes* DB_Elements::get_db_nodes(){
   return this->db_nodes;
 }
 
+
+/** Reserve memory for future elements
+ * @param _type element type to apply reserve on
+ * @param _size size to reserve internally
+ *
+ * Does nothing if _type is NONE.
+ */
+void DB_Elements::reserve(const ElementType _type, const size_t _size){
+
+   if(_type == BEAM){
+     elements2.reserve(_size);
+   } else if (_type == SHELL){
+     elements4.reserve(_size);
+   } else if (_type == SOLID){
+     elements8.reserve(_size);
+   }
+
+}
 
 /** Get the number of  in the db.
  * @return unsigned int nElements : returns the total number of elements in the db

@@ -14,26 +14,19 @@
 /*
  * Constructor.
  */
-Element::Element(int _elementID, ElementType _elementType, vector<Node*> _nodes,DB_Elements* _db_elements){
+Element::Element(const int _elementID, const ElementType _elementType, const vector<size_t>& _node_indexes, DB_Elements* _db_elements) 
+              : is_rigid( false ),
+                elementID( _elementID ),
+                elemType( _elementType ),
+                db_elements( _db_elements ),
+                nodes( _node_indexes ){
 
   // Checks
   if (_db_elements == NULL)
-    throw("DB_Elements of an element may not be NULL in constructor.");
-
-  // Assignment
-  this->db_elements = _db_elements;
-  this->elementID = _elementID;
-  this->elemType = _elementType;
-
-  for(vector<Node*>::iterator it=_nodes.begin(); it != _nodes.end(); ++it){
-    this->nodes.push_back(((Node*) *it)->get_nodeID());
-  }
+    throw(string("DB_Elements of an element may not be NULL in constructor."));
 
   this->check();
-  /*
-  for (auto _node : _nodes)
-    this->nodes.insert(_node->get_nodeID());
-  */
+
 }
 
 
@@ -51,6 +44,23 @@ Element::~Element(){
 bool Element::operator<(const Element &other) const
 {
   return(this->elementID < other.elementID);
+}
+
+
+/** Set whether the element is rigid
+ * 
+ * @param _is_rigid rigid status of the element
+ */
+void Element::set_is_rigid(bool _is_rigid){
+  this->is_rigid = _is_rigid;
+}
+
+/** Get whether the element is rigid or not
+ *
+ * @return is_rigid rigid status of the element
+ */
+bool Element::get_is_rigid() const {
+  return this->is_rigid;
 }
 
 
@@ -79,14 +89,14 @@ int Element::get_elementID(){
 /** Get the nodes of the element in a set.
  *
  */
-vector<Node*> Element::get_nodes(){
+vector<Node*> Element::get_nodes() const {
 
   DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
   vector<Node*> node_vec;
 
-  for(vector<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); it++){
+  for(vector<size_t>::const_iterator it=this->nodes.begin(); it != this->nodes.end(); it++){
 
-    Node* _node = db_nodes->get_nodeByID(*it);
+    Node* _node = db_nodes->get_nodeByIndex(*it);
     if(_node != NULL){
       node_vec.push_back(_node);
     } else{
@@ -101,8 +111,25 @@ vector<Node*> Element::get_nodes(){
 
 /** Return the ids of the elements nodes
  *
+ * @return vector<int> node_ids
  */
-vector<int> Element::get_node_ids(){
+vector<int> Element::get_node_ids() const {
+   
+  vector<int> node_ids;
+  DB_Nodes* db_nodes = db_elements->get_db_nodes();
+  for( size_t iNode=0; iNode<this->nodes.size(); ++iNode ){
+    node_ids.push_back( db_nodes->get_id_from_index<int>(nodes[iNode]) );
+  }
+  return node_ids;
+
+}
+
+
+/** Return the ids of the elements nodes
+ *
+ * @return vector<size_t> node_indexes
+ */
+vector<size_t> Element::get_node_indexes() const {
    return this->nodes;
 }
 
@@ -126,8 +153,8 @@ void Element::add_plastic_strain(float _platic_strain){
  */
 void Element::add_energy(float _energy){
 
-  if(_energy < 0)
-    throw("Element:"+to_string(this->elementID)+" tries to add a negative energy:"+to_string(_energy));
+//  if(_energy < 0)
+//    throw("Element:"+to_string(this->elementID)+" tries to add a negative energy:"+to_string(_energy));
 
   this->energy.push_back(_energy);
 }
@@ -213,7 +240,7 @@ vector<float> Element::get_coords(int iTimestep){
    }
 
    if( iTimestep < 0 )
-      iTimestep = this->db_elements->get_femfile()->get_d3plot()->get_timesteps().size() + iTimestep; // Python array style
+      iTimestep = static_cast<int>(this->db_elements->get_femfile()->get_d3plot()->get_timesteps().size()) + iTimestep; // Python array style
 
    if( (iTimestep < 0) )
       throw(string("Specified timestep exceeds real time step size."));
@@ -225,7 +252,7 @@ vector<float> Element::get_coords(int iTimestep){
    vector<float> coords_node;
    vector< vector<float> > disp_node;
 
-   for(vector<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
+   for(vector<size_t>::const_iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
 
       current_node = db_nodes->get_nodeByID(*it);
       coords_node = current_node->get_coords();
@@ -271,7 +298,7 @@ float Element::get_estimated_element_size(){
    float maxdist = -1.;
    vector<float> ncoords;
    vector<float> basis_coords;
-   for(vector<int>::iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
+   for(vector<size_t>::const_iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
       ncoords = db_nodes->get_nodeByID(*it)->get_coords();
       if(it != this->nodes.begin()){
          ncoords = MathUtility::v_subtr(ncoords,basis_coords);
@@ -368,4 +395,39 @@ void Element::check(){
          throw("A beam element must have exactly 2 nodes. You have "+to_string(this->nodes.size()));
    }
 
+}
+
+
+/** Clear the elements energy data
+ */
+void Element::clear_energy(){
+  this->energy.clear();
+}
+
+
+/** Clear the elements plastic strain
+ */
+void Element::clear_plastic_strain(){
+  this->plastic_strain.clear();
+}
+
+
+/** Clear the elements stress
+ */
+void Element::clear_stress(){
+  this->stress.clear();
+}
+
+
+/** Clear the elements strain
+ */
+void Element::clear_strain(){
+  this->strain.clear();
+}
+
+
+/** Clear the elements history data
+ */
+void Element::clear_history_vars(){
+  this->history_vars.clear();
 }

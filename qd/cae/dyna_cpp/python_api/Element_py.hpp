@@ -29,6 +29,9 @@ extern "C" {
   QD_Element_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 
   static PyObject *
+  QD_Element_richcompare(QD_Element *self, PyObject *other, int op);
+
+  static PyObject *
   QD_Element_get_elementID(QD_Element* self);
 
   static PyObject *
@@ -57,6 +60,9 @@ extern "C" {
 
   static PyObject *
   QD_Element_get_type(QD_Element* self);
+  
+  static PyObject *
+  QD_Element_get_is_rigid(QD_Element* self);
 
   static PyMethodDef QD_Element_methods[] = {
     {"get_id", (PyCFunction) QD_Element_get_elementID, METH_NOARGS, "Get the element id."},
@@ -66,10 +72,11 @@ extern "C" {
     {"get_stress", (PyCFunction) QD_Element_get_stress, METH_NOARGS, "Get the stress time series of the element."},
     {"get_nodes", (PyCFunction) QD_Element_get_nodes, METH_NOARGS, "Get the nodes of the element."},
     {"get_coords", (PyCFunction) QD_Element_get_coords, METH_VARARGS, "Get the coords of the element at a given timestep."},
-	 {"get_history", (PyCFunction) QD_Element_get_history, METH_NOARGS, "Get the history vars of the element."},
+    {"get_history", (PyCFunction) QD_Element_get_history, METH_NOARGS, "Get the history vars of the element."},
     {"get_estimated_size", (PyCFunction) QD_Element_get_estimated_size, METH_NOARGS, "Get the rough element edge size."},
     {"get_type", (PyCFunction) QD_Element_get_type, METH_NOARGS, "Get the element type."},
-   {NULL}  /* Sentinel */
+    {"is_rigid", (PyCFunction) QD_Element_get_is_rigid, METH_NOARGS, "Get the info if the element is rigid."},
+    {NULL}  /* Sentinel */
   };
 
   /* QD_Element_Type TYPE */
@@ -94,11 +101,11 @@ extern "C" {
     0,                         /* tp_setattro */
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT |
-        Py_TPFLAGS_BASETYPE,   /* tp_flags */
+    Py_TPFLAGS_BASETYPE,       /* tp_flags */
     "QD_Element",                 /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    (richcmpfunc)& QD_Element_richcompare, /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */

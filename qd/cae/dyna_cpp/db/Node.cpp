@@ -120,7 +120,7 @@ vector<float> Node::get_coords(int iTimestep){
          if(d3plot->displacement_is_read()){
 
             if( iTimestep < 0 )
-               iTimestep = d3plot->get_timesteps().size() + iTimestep; // Python array style
+               iTimestep = static_cast<int>(d3plot->get_timesteps().size()) + iTimestep; // Python array style
 
             if( (iTimestep < 0) )
                throw(string("Specified timestep exceeds real time step size."));
@@ -183,4 +183,26 @@ vector< vector<float> > Node::get_vel(){
  */
 vector< vector<float> > Node::get_accel(){
   return this->accel;
+}
+
+
+/** Clear a node of it's displacement field
+ *
+ */
+void Node::clear_disp(){
+  this->disp.clear();
+}
+
+/** Clear a node of it's velocity field
+ *
+ */
+void Node::clear_vel(){
+  this->vel.clear();
+}
+
+/** Clear a node of it's acceleration field
+ *
+ */
+void Node::clear_accel(){
+  this->accel.clear();
 }

@@ -7,6 +7,7 @@
 #include <map>
 
 class Part;
+class FEMFile;
 
 using namespace std;
 
@@ -15,9 +16,10 @@ class DB_Parts {
 private:
   map<int,Part*> parts;
   map<int,Part*> partsByIndex;
+  FEMFile* femfile;
 
 public:
-  DB_Parts();
+  DB_Parts(FEMFile* _femfile);
   ~DB_Parts();
 
   size_t size();

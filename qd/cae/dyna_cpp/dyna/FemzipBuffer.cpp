@@ -175,7 +175,7 @@ void FemzipBuffer::init_nextState(){
       delete[] this->timese;
       this->timese = NULL;
     }
-    throw("Femzip Buffer Error: size for the states buffer is to small.");
+    throw(string("Femzip Buffer Error: size for the states buffer is to small."));
 	}
 
   if(this->timese != NULL){
@@ -185,6 +185,23 @@ void FemzipBuffer::init_nextState(){
 	check_ier("Femzip Error during ctimes_read.");
 
   this->timese = NULL;
+
+  // preload timestep
+  this->next_state_buffer = std::async(
+    [](int _iTimestep, int _size_state){
+      int _ier = 0;
+      int _pos = 0;
+      char* state_buffer = new char[sizeof(int)*_size_state];
+      states_read(&_ier, &_pos, &_iTimestep,(int*) state_buffer, &_size_state);
+      if(_ier != 0){
+        if(state_buffer != NULL){
+          delete[] state_buffer;
+          state_buffer = NULL;
+        }
+      }
+
+      return state_buffer;
+    },this->iTimeStep, this->size_state);
 }
 
 
@@ -203,11 +220,29 @@ void FemzipBuffer::read_nextState(){
   cout << "Loading state: " << this->iTimeStep << "/" << this->nTimeStep << endl;
   #endif
 
-  this->current_buffer = new char[sizeof(int)*this->size_state];
-  this->pos = 0;
-  states_read(&this->ier, &this->pos, &this->iTimeStep,(int*) this->current_buffer, &this->size_state);
-  check_ier("Femzip Error during states_read.");
+  this->current_buffer = this->next_state_buffer.get();
+  if(this->current_buffer == NULL){
+    throw(string("FEMZIP Error during state reading."));
+  }
+
   this->iTimeStep++;
+
+  // preload timestep
+  this->next_state_buffer = std::async(
+    [](int _iTimestep, int _size_state){
+      int _ier = 0;
+      int _pos = 0;
+      char* state_buffer = new char[sizeof(int)*_size_state];
+      states_read(&_ier, &_pos, &_iTimestep,(int*) state_buffer, &_size_state);
+      if(_ier != 0){
+        if(state_buffer != NULL){
+          delete[] state_buffer;
+          state_buffer = NULL;
+        }
+      }
+
+      return state_buffer;
+    },this->iTimeStep, this->size_state);
 
 }
 

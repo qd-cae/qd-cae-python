@@ -69,7 +69,7 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
         // Check
         if(!qd::isPyStr(item)){
           string message = "Item in list is not of type string.";
-          PyErr_SetString(PyExc_SyntaxError,message.c_str() );
+          PyErr_SetString(PyExc_ValueError,message.c_str() );
           return -1;
         }
 
@@ -107,7 +107,7 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
 
     //self->d3plot = new D3plot(string(filepath_c));
   } else {
-    PyErr_SetString(PyExc_SyntaxError,"Filepath is NULL");
+    PyErr_SetString(PyExc_ValueError,"Filepath is NULL");
     return -1;
   }
 
@@ -144,7 +144,42 @@ QD_D3plot_info(QD_D3plot* self){
 }
 
 
-/* QD_D3plot FUNCTION read_states */
+/* FUNCTION clear */
+static PyObject *
+QD_D3plot_clear(QD_D3plot* self, PyObject* args){
+
+  if (self->d3plot == NULL) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer NULL.");
+      return NULL;
+  }
+
+  // parse args
+  PyObject *var_list_py = NULL;
+  if (!PyArg_ParseTuple(args, "|O", &var_list_py))
+    return NULL;  
+
+  try {
+
+    // pylist -> vector<string>
+    vector<string> vars_to_delete;
+    if(var_list_py){
+      vars_to_delete = convert_list_to_str_vector(var_list_py);
+    } 
+
+    // perform deletion
+    self->d3plot->clear(vars_to_delete);
+
+  } catch (const string& err) {
+    PyErr_SetString(PyExc_RuntimeError, err.c_str() );
+    return NULL;
+  }
+
+  return Py_None;
+
+}
+
+
+/* FUNCTION read_states */
 static PyObject *
 QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
 
@@ -187,7 +222,7 @@ QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
         // Check
         if(!qd::isPyStr(item)){
           string message = "Item in list is not of type string.";
-          PyErr_SetString(PyExc_SyntaxError,message.c_str() );
+          PyErr_SetString(PyExc_ValueError,message.c_str() );
           return NULL;
         }
 
@@ -210,7 +245,7 @@ QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
 
   }
 
-  PyErr_SetString(PyExc_SyntaxError, "Error, argument is neither int nor list of int.");
+  PyErr_SetString(PyExc_ValueError, "Error, argument is neither int nor list of int.");
   return NULL;
 
 }

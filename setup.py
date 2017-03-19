@@ -10,24 +10,12 @@ from setuptools import setup, Extension
 
 # ======= S E T T I N G S ======= #
 boost_path = "libs/boost_1_61_0"
-femzip_path = "libs/femzip" # optional
+femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64" # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-_version = "0.4.4"
+_version = "0.5.0"
 # =============================== #
-
-if sys.version_info[0] >= 3 and not "linux" in platform.system().lower():
-    femzip_path = "#python3_no_femzip"
-
-# (0) Compiler Stuff
-# Check for MinGW usage
-use_mingw = False
-for ii in range(len(sys.argv)):
-    if (sys.argv[ii] == "-c") and (sys.argv[ii+1] == "mingw32"):
-        use_mingw=True
-    if (sys.argv[ii] == "--compiler=mingw32"):
-        use_mingw=True
 
 
 # (1) Native Code Stuff
@@ -67,14 +55,15 @@ srcs_dyna = ["qd/cae/dyna_cpp/python_api/wrapper.cpp",
      
 # FEMZIP usage? Libraries present?
 # You need to download the femzip libraries yourself from SIDACT GmbH
+# www.sidact.de
 # If you have questions, write a mail.
 if os.path.isdir(femzip_path):
-    if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path,"Windows_VS2010_MT","x64")):
+    if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path,"x64")):
         srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
-        lib_dirs_dyna.append(os.path.join(femzip_path,"Windows_VS2010_MT","x64"))
-        libs_dyna = ['femunziplib_standard_dyna','ipp_zlib','ippcoremt',
-            'ippdcmt','ippsmt','ifwin','ifconsol','ippvmmt','libmmt',
-            'libirc','svml_dispmt','msvcrt']
+        lib_dirs_dyna.append(os.path.join(femzip_path,"x64"))
+        libs_dyna = ['femunziplib_standard_dyna','ipp_zlibd','ippcoremt',
+            'ippdcmt','ippsmt','ifwin','ifconsol','ippvmmt','libmmd',
+            'libirc','svml_dispmd','msvcrt']
         compiler_args_dyna.append("/DQD_USE_FEMZIP")
     elif (platform.system() == "Linux") and os.path.isdir(os.path.join(femzip_path,"Linux","64Bit")):
         srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
@@ -87,11 +76,10 @@ else:
     print("FEMZIP library %s not found. Compiling without femzip support." % femzip_path)
 
 # CFLAGS linux
-if (platform.system().lower() == "linux") or (platform.system().lower() == "linux2") or use_mingw:
-    #compiler_args_dyna.append("-std=c++11") # I really wish so ...
+if (platform.system().lower() == "linux") or (platform.system().lower() == "linux2"):
+    compiler_args_dyna.append("-std=c++11")
     compiler_args_dyna.append("-O3")
-    if not use_mingw:
-        compiler_args_dyna.append("-fPIC")
+    compiler_args_dyna.append("-fPIC")
     if debugging_mode:
         compiler_args_dyna.append("-DQD_DEBUG")
     if measure_time:
@@ -156,7 +144,6 @@ setup(name = 'qd',
                      'Topic :: Utilities',
                      'Operating System :: Microsoft :: Windows',
                      'Operating System :: POSIX :: Linux',
-                     'Programming Language :: Python :: 2.7',
                      'Programming Language :: Python :: 3.5',
                      'Programming Language :: Python :: 3.6'],
         test_suite = 'setup.my_test_suite',)

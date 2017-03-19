@@ -306,15 +306,22 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
          }
 
          PyObject *argList2 = Py_BuildValue("OiO",self ,nodeID, Py_False);
-         PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
-         Py_DECREF(argList2);
+         try{
 
-         if(ret == NULL){
+           PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
+           
+           if(ret == NULL)
+             throw(string("Could somehow not create Python Node."))  ;
+
+           check += PyList_SetItem(node_list, ii, ret);
+
+         } catch (const string& message) {
+           PyErr_SetString(PyExc_RuntimeError, message.c_str());
+           Py_DECREF(argList2);
            Py_DECREF(node_list);
            return NULL;
          }
-
-         check += PyList_SetItem(node_list, ii, ret);
+         Py_DECREF(argList2);
 
        }
 

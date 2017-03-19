@@ -20,12 +20,6 @@ DB_Nodes::DB_Nodes(FEMFile* _femfile){
  */
 DB_Nodes::~DB_Nodes(){
 
-  // Delete Nodes
-  for(vector<Node*>::iterator it = this->nodes.begin(); it != this->nodes.end(); ++it){
-     delete (*it);
-  }
-  this->nodes.clear();
-
 }
 
 
@@ -51,11 +45,12 @@ Node* DB_Nodes::add_node(int _nodeID, vector<float> coords){
     throw(string("Trying to insert a node with same id twice:")+to_string(_nodeID));
 
   // Create and add new node
-  Node* node = new Node(_nodeID,coords,this);
+  //Node* node = new Node(_nodeID,coords,this);
+  unique_ptr<Node> node(new Node(_nodeID,coords,this));
   id2index.insert(pair<int,size_t>(_nodeID,this->nodes.size()));
-  this->nodes.push_back(node);
+  this->nodes.push_back(std::move(node));
 
-  return node;
+  return this->nodes.back().get();
 
 }
 
@@ -91,4 +86,12 @@ size_t DB_Nodes::size(){
   if(this->id2index.size() != this->nodes.size())
     throw(string("Node database encountered error: id2index.size() != nodes.size()"));
   return this->nodes.size();
+}
+
+/** Reserve memory for incoming nodes
+ *
+ * @param _size size to reserve for new nodes
+ */
+void DB_Nodes::reserve(const size_t _size){
+  this->nodes.reserve(_size);
 }

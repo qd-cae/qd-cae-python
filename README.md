@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/qd-cae/qd-eng.svg?branch=master)](https://travis-ci.org/qd-cae/qd-eng)
 
-This python2 library is an open source software package with utility functions regarding
+This **Python3** library is an open source software package with utility functions regarding
 engineering, especially Simulation and Computer Aided Engineering (CAE).
 The library is still young, so features drop in over time depending on the
 persons who contribute. Visit our website at http://www.qd-eng.de/
@@ -19,18 +19,24 @@ a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
 
+*Changelog 19.03.2017*
+Version 0.5.0
+
+General:
+ - switched to **PYTHON3 ONLY** (much faster now).
+
+qd.cae.dyna
+ - Added D3plot.clear for removing already read data
+ - D3plot can now handle rigid shell elements (mattyp != 0)
+ - Element, Node and Part equals operator is now correct
+ - many many performance improvements
+
 *Changelog 03.03.2017*
 Version 0.4.4
 
  qd.cae.beta
   - added new module (for Beta CAE Systems)
   - added class MetaCommunicator
-
-*Changelog 11.2.2017*
-Version 0.4.3
-
- qd.cae.dyna
-  - fixed elout in Binout (was wrong)
 
 # Descriptions
 

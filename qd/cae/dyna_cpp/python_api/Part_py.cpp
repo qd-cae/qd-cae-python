@@ -63,6 +63,70 @@ QD_Part_init(QD_Part *self, PyObject *args, PyObject *kwds){
 }
 
 
+/* FUNCTION richcompare */
+static PyObject * 
+QD_Part_richcompare(QD_Part *self, PyObject *other, int op){
+
+  PyObject *result = NULL;
+
+  if( !PyObject_TypeCheck(other, &QD_Part_Type) ){
+    PyErr_SetString(PyExc_ValueError, "Comparison of parts work only with other parts.");
+    return NULL;
+  }
+
+  QD_Part *other_cpp = (QD_Part*) other;
+
+  switch(op){
+      case Py_LT:
+          if( self->part->get_partID() < other_cpp->part->get_partID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_LE:
+          if( self->part->get_partID() <= other_cpp->part->get_partID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_EQ:
+          if( self->part->get_partID() == other_cpp->part->get_partID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_NE:
+          if( self->part->get_partID() != other_cpp->part->get_partID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_GT:
+          if( self->part->get_partID() > other_cpp->part->get_partID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+      case Py_GE:
+          if( self->part->get_partID() >= other_cpp->part->get_partID() ) { 
+            result = Py_True; 
+          } else {
+            result = Py_False;
+          }
+          break;
+  }
+  
+  Py_XINCREF(result);
+  return result;
+
+}
+
+
 static PyObject*
 QD_Part_get_id(QD_Part *self){
 

@@ -71,6 +71,9 @@ private:
   int dyna_extra; // double header length indicator
   int dyna_numprop; // number of properties dude!!!
 
+  int dyna_numrbe; // number of rigid body shell elems
+  vector<int> dyna_irbtyp; // rigid body material type numbers (internal)
+
   // just for checks ... can not be handled.
   int dyna_nmsph; // #nodes of sph
   int dyna_ngpsph; // #mats of sph
@@ -122,6 +125,7 @@ private:
   // Functions
   void init_vars();
   void read_header();
+  void read_matsection();
   void read_geometry();
   vector< vector<float> > read_geometry_nodes();
   vector< vector<int> >   read_geometry_elem8();
@@ -131,7 +135,7 @@ private:
   void                  read_geometry_parts();
   void read_states_init();
   void read_states_parse(vector<string>);
-  unsigned int read_states_parse_readMode(string _variable);
+  unsigned int read_states_parse_readMode(const string& _variable) const;
   void read_states_displacement();
   void read_states_velocity();
   void read_states_acceleration();
@@ -140,11 +144,12 @@ private:
   bool isFileEnding(int);
 
   // === P U B L I C === //
-  public:
+public:
   D3plot(string filepath, vector<string> _variables = vector<string>(),bool _use_femzip = false);
   ~D3plot();
   void info();
   void read_states(vector<string> _variables);
+  void clear( const vector<string>& _variables = vector<string>() );
   vector<float> get_timesteps();
   bool displacement_is_read();
   bool is_d3plot(){return true;};

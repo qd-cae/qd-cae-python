@@ -10,7 +10,7 @@ class Part;
 
 extern "C" {
 
-  /* QD_Part OBJECT */
+  /* OBJECT */
   typedef struct {
       PyObject_HEAD //;
       /* Type-specific fields go here. */
@@ -19,35 +19,39 @@ extern "C" {
   } QD_Part;
 
 
-  /* QD_Part DEALLOC */
+  /* DEALLOC */
   static void
   QD_Part_dealloc(QD_Part* self);
 
-  /* QD_Part NEW */
+  /* NEW */
   static PyObject *
   QD_Part_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
 
-  /* QD_Part INIT */
+  /* INIT */
   static int
   QD_Part_init(QD_Part *self, PyObject *args, PyObject *kwds);
 
-  /* QD_Part FUNCTION get_id */
+  /* FUNCTION get_id */
+  static PyObject * 
+  QD_Part_richcompare(QD_Part *self, PyObject *other, int op);
+
+  /* FUNCTION get_id */
   static PyObject*
   QD_Part_get_id(QD_Part *self);
 
-  /* QD_Part FUNCTION get_name */
+  /* FUNCTION get_name */
   static PyObject*
   QD_Part_get_name(QD_Part *self);
 
-  /* QD_Part FUNCTION get_nodes */
+  /* FUNCTION get_nodes */
   static PyObject*
   QD_Part_get_nodes(QD_Part *self);
 
-  /* QD_Part FUNCTION get_elements */
+  /* FUNCTION get_elements */
   static PyObject*
   QD_Part_get_elements(QD_Part *self, PyObject *args);
 
-  /* QD_Part METHOD TABLE */
+  /* METHOD TABLE */
   static PyMethodDef QD_Part_methods[] = {
     {"get_id", (PyCFunction) QD_Part_get_id, METH_NOARGS, "Get the id of the part."},
     {"get_name", (PyCFunction) QD_Part_get_name, METH_NOARGS, "Get the name of the part."},
@@ -83,7 +87,7 @@ extern "C" {
     "QD_Part",                    /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    (richcmpfunc)& QD_Part_richcompare, /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
