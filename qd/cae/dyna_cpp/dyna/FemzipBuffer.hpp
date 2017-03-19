@@ -3,6 +3,7 @@
 #define FEMZIPBUFFER_HPP
 
 #include <string>
+#include <future>
 #include "AbstractBuffer.hpp"
 
 using namespace std;
@@ -14,6 +15,7 @@ class FemzipBuffer : public AbstractBuffer {
   string filepath;
   int wordSize; // byte
 
+  std::future<char*> next_state_buffer;
   char* current_buffer;
 
   // general

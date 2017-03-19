@@ -14,7 +14,6 @@ D3plotBuffer::D3plotBuffer(string _d3plot_path, int _wordSize){
 
   // Init vars
   iStateFile = 0;
-  current_buffer = NULL;
 
   // Check File
   if(!FileUtility::check_ExistanceAndAccess(_d3plot_path)){
@@ -43,11 +42,11 @@ D3plotBuffer::D3plotBuffer(string _d3plot_path, int _wordSize){
  */
 D3plotBuffer::~D3plotBuffer(){
 
-  if(this->current_buffer != NULL){
-    delete[] current_buffer;
-    this->current_buffer = NULL;
+  while( state_buffers.size() != 0 ){
+    state_buffers.back().get();
+    state_buffers.pop_back();
   }
-
+  
 }
 
 
@@ -55,23 +54,22 @@ D3plotBuffer::~D3plotBuffer(){
  * Get a char* byte buffer from the given file.
  *
  */
-void D3plotBuffer::get_bufferFromFile(string filepath){
+vector<char> D3plotBuffer::get_bufferFromFile(string filepath){
 
-  if(this->current_buffer != NULL){
-    delete[] this->current_buffer;
-    this->current_buffer = NULL;
-  }
+  vector<char> state_buffer;
 
   // Read data into buffer
   ifstream fStream;
   fStream.open(filepath.c_str(), ios::binary | ios::in);
   fStream.seekg(0,ios::end);
-  this->bufferSize = fStream.tellg();
-  fStream.seekg (0, ios::beg);
+  long _bufferSize = fStream.tellg();
+  fStream.seekg(0, ios::beg);
   //cout << "Filesize: " << *bufferSize << endl; // DEBUG
-  this->current_buffer = new char [this->bufferSize];
-  fStream.read (this->current_buffer, this->bufferSize);
+  state_buffer.reserve(_bufferSize);
+  fStream.read(&state_buffer[0], _bufferSize);
   fStream.close();
+
+  return state_buffer;
 }
 
 
@@ -80,7 +78,8 @@ void D3plotBuffer::get_bufferFromFile(string filepath){
  *
  */
 void D3plotBuffer::read_geometryBuffer(){
-  this->get_bufferFromFile(d3plots[0]);
+  
+  this->current_buffer = D3plotBuffer::get_bufferFromFile(d3plots[0]);
 };
 
 
@@ -111,8 +110,23 @@ void D3plotBuffer::free_partBuffer(){};
  */
 void D3plotBuffer::init_nextState(){
 
-  if(this->current_buffer == NULL){
-    this->get_bufferFromFile(d3plots[0]);
+  if(this->current_buffer.size() == 0){
+    this->current_buffer = D3plotBuffer::get_bufferFromFile(d3plots[0]);
+  }
+
+  // empty remaining data (prevents memory leak)
+  #ifdef QD_DEBUG
+  cout << "Emptying previous IO-Buffers" << endl;
+  #endif
+  while( state_buffers.size() != 0 ){
+    state_buffers.back().get();
+    state_buffers.pop_back();
+  }
+
+  // preload buffers
+  for(size_t iFile=d3plots.size()-1; iFile>0; --iFile){
+    state_buffers.push_back( std::async(D3plotBuffer::get_bufferFromFile,
+                                         d3plots[iFile]) );
   }
 
 }
@@ -126,21 +140,25 @@ void D3plotBuffer::read_nextState(){
 
   // Do not load next buffer in case of first file
   // It will be read if the end marker is hit anyways.
+  // Dont ask me why LS-DYNA is so complex ... 
   if(iStateFile == 0){
     iStateFile++;
     return;
   }
 
-  if(iStateFile < d3plots.size()){
-    #ifdef QD_DEBUG
-    cout << "Loading state-file:" << d3plots[iStateFile] << endl;
-    #endif
-    this->get_bufferFromFile(d3plots[iStateFile]);
-    iStateFile++;
-    return;
+  if(iStateFile >= d3plots.size()){
+    throw(string("There are no more state-files to be read."));
   }
 
-  throw(string("There are no more state-files to be read."));
+  #ifdef QD_DEBUG
+  cout << "Loading state-file:" << d3plots[iStateFile] << endl;
+  #endif
+
+  this->current_buffer = state_buffers.back().get();
+  state_buffers.pop_back();
+  iStateFile++;
+  return;
+  
 }
 
 
@@ -151,7 +169,7 @@ void D3plotBuffer::read_nextState(){
 void D3plotBuffer::rewind_nextState(){
 
   iStateFile = 0;
-  this->get_bufferFromFile(d3plots[0]);
+  this->current_buffer = D3plotBuffer::get_bufferFromFile(d3plots[0]);
 
 }
 
@@ -161,7 +179,11 @@ void D3plotBuffer::rewind_nextState(){
  *
  */
 bool D3plotBuffer::has_nextState(){
+  /*
   if(iStateFile < d3plots.size())
+    return true;
+  */
+  if(state_buffers.size() > 0)
     return true;
   return false;
 }
@@ -173,10 +195,7 @@ bool D3plotBuffer::has_nextState(){
  */
 void D3plotBuffer::end_nextState(){
 
-  if(this->current_buffer != NULL){
-    delete[] current_buffer;
-    this->current_buffer = NULL;
-  }
+  this->current_buffer.clear();
 }
 
 /*
@@ -184,11 +203,7 @@ void D3plotBuffer::end_nextState(){
  */
 void D3plotBuffer::finish_reading(){
 
-  if(this->current_buffer != NULL){
-    delete[] current_buffer;
-    this->current_buffer = NULL;
-  }
-
+  this->current_buffer.clear();
 }
 
 /*

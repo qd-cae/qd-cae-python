@@ -8,7 +8,8 @@ class FEMFile;
 class DB_Elements;
 
 // includes
-#include <map>
+#include <unordered_map>
+#include <memory>
 #include <vector>
 
 // namespaces
@@ -18,8 +19,8 @@ class DB_Nodes {
 
 private:
   FEMFile* femfile;
-  map<int,size_t> id2index;
-  vector<Node*> nodes;
+  unordered_map<int,size_t> id2index;
+  vector< unique_ptr<Node> > nodes;
   DB_Elements* db_elements;
 
 public:
@@ -54,6 +55,8 @@ public:
 template<typename T>
 T DB_Nodes::get_id_from_index(size_t _index){
 
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
   if(_index > nodes.size()-1)
     throw( string("Node with index ")+to_string(_index)+string(" does not exist in the db.") );
   return _index;
@@ -69,7 +72,9 @@ T DB_Nodes::get_id_from_index(size_t _index){
 template<typename T>
 size_t DB_Nodes::get_index_from_id(T _id){
 
-  map<int,size_t>::iterator it = this->id2index.find(_id);
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  unordered_map<int,size_t>::iterator it = this->id2index.find(_id);
   if(it == this->id2index.end())
     throw( string("Node with id ")+to_string(_id)+string(" does not exist in the db.") );
   return it->second;
@@ -85,10 +90,12 @@ size_t DB_Nodes::get_index_from_id(T _id){
 template <typename T>
 Node* DB_Nodes::get_nodeByID(T _id){
 
-  map<int,size_t>::iterator it = this->id2index.find(_id);
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  unordered_map<int,size_t>::iterator it = this->id2index.find(_id);
   if(it == this->id2index.end())
     return NULL;
-  return this->nodes[ it->second ];
+  return this->nodes[ it->second ].get();
 
 }
 
@@ -101,9 +108,11 @@ Node* DB_Nodes::get_nodeByID(T _id){
 template <typename T>
 Node* DB_Nodes::get_nodeByIndex(T _nodeIndex){
 
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
   if(_nodeIndex >= this->nodes.size())
      return NULL;
-  return this->nodes[_nodeIndex];
+  return this->nodes[_nodeIndex].get();
 
 }
 

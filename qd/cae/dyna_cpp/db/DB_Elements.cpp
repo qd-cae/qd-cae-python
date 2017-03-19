@@ -28,32 +28,6 @@ DB_Elements::DB_Elements(FEMFile* _femfile){
  * Destructor.
  */
 DB_Elements::~DB_Elements(){
-
-  // Delete
-  /*
-  for (std::map<int,Element*>::iterator it=elements2.begin(); it!=elements2.end(); ++it){
-    delete it->second;
-    it->second= NULL;
-  }
-  for (std::map<int,Element*>::iterator it=elements4.begin(); it!=elements4.end(); ++it){
-    delete it->second;
-    it->second= NULL;
-  }
-  for (std::map<int,Element*>::iterator it=elements8.begin(); it!=elements8.end(); ++it){
-    delete it->second;
-    it->second= NULL;
-  }
-  */
-  for(vector<Element*>::iterator it = elements2.begin(); it != elements2.end(); ++it){
-     delete (*it);
-  }
-  for(vector<Element*>::iterator it = elements4.begin(); it != elements4.end(); ++it){
-     delete (*it);
-  }
-  for(vector<Element*>::iterator it = elements8.begin(); it != elements8.end(); ++it){
-     delete (*it);
-  }
-
 }
 
 /** Add an element coming from a D3plot file
@@ -93,54 +67,54 @@ Element* DB_Elements::add_element_byD3plot(const ElementType _eType, const int _
   }
 
   // Create element
-  Element* element = new Element(_elementID, _eType, node_indexes, this);
+  Element* element_raw_ptr;
+  unique_ptr<Element> element( new Element(_elementID, _eType, node_indexes, this) );
 
   if(_eType == BEAM){
 
-    map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
     if(it != this->id2index_elements2.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements2.insert(pair<int,size_t>(_elementID,this->elements2.size()));
-    this->elements2.push_back(element);
+    this->elements2.push_back(std::move(element));
+    element_raw_ptr = this->elements2.back().get();
 
   } else if(_eType == SHELL){
 
-    map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
     if(it != this->id2index_elements4.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements4.insert(pair<int,size_t>(_elementID,this->elements4.size()));
-    this->elements4.push_back(element);
+    this->elements4.push_back(std::move(element));
+    element_raw_ptr = this->elements4.back().get();
 
   } else if(_eType == SOLID){
 
-    map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
     if(it != this->id2index_elements8.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements8.insert(pair<int,size_t>(_elementID,this->elements8.size()));
-    this->elements8.push_back(element);
+    this->elements8.push_back(std::move(element));
+    element_raw_ptr = this->elements8.back().get();
 
   } else {
 
-    delete element;
     throw(string("Element with unknown element type was tried to get inserted into the database."));
   }
 
   // Register Elements
   for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); ++it){
-    ((Node*) *it)->add_element(element);
+    ((Node*) *it)->add_element( element_raw_ptr );
   }
-  part->add_element(element);
+  part->add_element( element_raw_ptr );
 
-  return element;
+  return element_raw_ptr;
 }
 
 /** Add an element coming from a KeyFile/Dyna Input File
@@ -155,7 +129,7 @@ Element* DB_Elements::add_element_byD3plot(const ElementType _eType, const int _
  * if one nodeID is invalid or if the elementID is already existing. Since a
  * KeyFile may have some weird order, missing parts and nodes are created.
  */
-Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, int _partid, vector<int> _node_ids)
+Element* DB_Elements::add_element_byKeyFile(ElementType _eType, int _elementID, int _partid, vector<int> _node_ids)
 {
   if(_elementID < 0){
     throw(string("Element-ID may not be negative!"));
@@ -182,51 +156,55 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType,int _elementID, i
   }
 
   // Create element
-  Element* element = new Element(_elementID, _eType, node_indexes, this);
+  Element* element_raw_ptr;
+  unique_ptr<Element> element( new Element(_elementID, _eType, node_indexes, this) );
 
   if(_eType == BEAM){
 
-    map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements2.find(_elementID);
     if(it != this->id2index_elements2.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements2.insert(pair<int,size_t>(_elementID,this->elements2.size()));
-    this->elements2.push_back(element);
+    this->elements2.push_back(std::move(element));
+    element_raw_ptr = this->elements2.back().get();
 
   } else if(_eType == SHELL){
 
-    map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements4.find(_elementID);
     if(it != this->id2index_elements4.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements4.insert(pair<int,size_t>(_elementID,this->elements4.size()));
-    this->elements4.push_back(element);
+    this->elements4.push_back(std::move(element));
+    element_raw_ptr = this->elements4.back().get();
 
   } else if(_eType == SOLID){
 
-    map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
+    unordered_map<int,size_t>::iterator it = this->id2index_elements8.find(_elementID);
     if(it != this->id2index_elements8.end()){
-      delete element;
       throw(string("Trying to insert an element with same id twice:")+to_string(_elementID));
     }
 
     this->id2index_elements8.insert(pair<int,size_t>(_elementID,this->elements8.size()));
-    this->elements8.push_back(element);
+    this->elements8.push_back(std::move(element));
+    element_raw_ptr = this->elements8.back().get();
 
+  } else {
+
+    throw(string("Element with unknown element type was tried to get inserted into the database."));
   }
 
   // Register Elements
   //for(auto node : nodes) {
   for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
-    ((Node*) *it)->add_element(element);
+    ((Node*) *it)->add_element( element_raw_ptr );
   }
-  part->add_element(element);
+  part->add_element( element_raw_ptr );
 
-  return element;
+  return element_raw_ptr;
 }
 
 
