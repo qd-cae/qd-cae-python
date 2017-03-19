@@ -5,10 +5,12 @@ import struct
 import numpy as np
 
 import sys
-if sys.version_info[0] < 3:
-    from .lsda_py2 import Lsda
-else:
-    from .lsda_py3 import Lsda
+#if sys.version_info[0] < 3:
+#    from .lsda_py2 import Lsda
+#else:
+#    from .lsda_py3 import Lsda
+    
+from .lsda_py3 import Lsda
 
 
 '''
