@@ -1433,7 +1433,7 @@ void D3plot::read_states_elem8(size_t iState){
     Element* element = this->get_db_elements()->get_elementByIndex(SOLID,iElement);
 
     // stress tensor
-    if(this->stress_read && this->dyna_ioshl1){
+    if(this->stress_read){
       vector<float> sigma(6);
       sigma[0] = this->buffer->read_float(ii);
       sigma[1] = this->buffer->read_float(ii+1);
@@ -1514,12 +1514,14 @@ void D3plot::read_states_elem4(size_t iState){
   int iLayerSize         = dyna_neips + iHistoryOffset;
 
   size_t iElement = 0;
-  for(int ii = start; ii < start+wordsToRead; ii+=dyna_nv2d, ++iElement){
+  for(int ii = start; ii < start+wordsToRead; ++iElement){
 
     // get element (and check for rigidity)
     Element *element = this->get_db_elements()->get_elementByIndex(SHELL, iElement);
-    if( element->get_is_rigid() )
+    if( element->get_is_rigid() ){
+      // does not increment ii, but iElement!!!!!
       continue;
+    }
 
     // preallocate layer vars
     vector<float> stress(6);
@@ -1731,6 +1733,7 @@ void D3plot::read_states_elem4(size_t iState){
       }
     }
 
+    ii+=dyna_nv2d;
   }
 
 }

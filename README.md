@@ -18,6 +18,12 @@ We want to tackle this issue with this free library, in order to give engineerin
 a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
+*Changelog 20.03.2017*
+Version 0.5.1
+
+qd.cae.dyna
+ - fixed: reading of state results for mattyp!=0
+ - fixed: solids stresses were not read, if no shell stresses were present
 
 *Changelog 19.03.2017*
 Version 0.5.0

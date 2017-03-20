@@ -14,7 +14,7 @@ femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64" # 
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-_version = "0.5.0"
+_version = "0.5.1"
 # =============================== #
 
 
