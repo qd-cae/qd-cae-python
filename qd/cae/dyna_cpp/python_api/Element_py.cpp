@@ -215,6 +215,20 @@ QD_Element_get_stress(QD_Element* self){
 
 }
 
+
+/* FUNCTION get_stress_mises */
+static PyObject *
+QD_Element_get_stress_mises(QD_Element* self){
+
+  if(self->element == NULL){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
+    return NULL;
+  }
+
+  return (PyObject*) vector_to_nparray(self->element->get_stress_mises());
+
+}
+
 /* FUNCTION get_nodes */
 static PyObject *
 QD_Element_get_nodes(QD_Element* self){

@@ -3,6 +3,7 @@
 #define MATHUTILITY_HPP
 
 #include <vector>
+#include <cmath>
 #include <algorithm> // sort
 
 using namespace std;
@@ -29,6 +30,10 @@ class MathUtility {
    // matrix vector
    template <typename T>
    static vector<T> mv_mult(vector< vector<T> > a,vector<T> b);
+
+   // functions
+   template <typename T>
+   static T mises_stress(const vector<T>& _stress_vector);
 
 };
 
@@ -171,5 +176,25 @@ vector<T> MathUtility::mv_mult(vector< vector<T> > a,vector<T> b){
 
 	return res;
 }
+
+
+/** Mises stress from a stress vector (xx,yy,zz,xy,yz,xz)
+ *
+ */
+template <typename T>
+inline T MathUtility::mises_stress(const vector<T>& _stress_vector){
+
+	return sqrt(_stress_vector[0]*_stress_vector[0]
+	            +_stress_vector[1]*_stress_vector[1]
+				+_stress_vector[2]*_stress_vector[2]
+                -_stress_vector[0]*_stress_vector[1]
+				-_stress_vector[0]*_stress_vector[2]
+				-_stress_vector[1]*_stress_vector[2]
+                +3*(_stress_vector[3]*_stress_vector[3]
+				    +_stress_vector[4]*_stress_vector[4]
+					+_stress_vector[5]*_stress_vector[5]));
+
+}
+
 
 #endif

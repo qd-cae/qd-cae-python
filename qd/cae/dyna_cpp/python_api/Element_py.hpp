@@ -47,6 +47,9 @@ extern "C" {
   QD_Element_get_stress(QD_Element* self);
 
   static PyObject *
+  QD_Element_get_stress_mises(QD_Element* self);
+
+  static PyObject *
   QD_Element_get_nodes(QD_Element* self);
 
   static PyObject *
@@ -70,6 +73,7 @@ extern "C" {
     {"get_energy", (PyCFunction) QD_Element_get_energy, METH_NOARGS, "Get the energy time series of the element."},
     {"get_strain", (PyCFunction) QD_Element_get_strain, METH_NOARGS, "Get the strain time series of the element."},
     {"get_stress", (PyCFunction) QD_Element_get_stress, METH_NOARGS, "Get the stress time series of the element."},
+    {"get_stress_mises", (PyCFunction) QD_Element_get_stress_mises, METH_NOARGS, "Get the mises stress time series of the element."},
     {"get_nodes", (PyCFunction) QD_Element_get_nodes, METH_NOARGS, "Get the nodes of the element."},
     {"get_coords", (PyCFunction) QD_Element_get_coords, METH_VARARGS, "Get the coords of the element at a given timestep."},
     {"get_history", (PyCFunction) QD_Element_get_history, METH_NOARGS, "Get the history vars of the element."},

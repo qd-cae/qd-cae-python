@@ -102,6 +102,8 @@ private:
   unsigned int strain_read;
   bool stress_is_read;
   unsigned int stress_read;
+  bool stress_mises_is_read;
+  unsigned int stress_mises_read;
   bool disp_is_read;
   unsigned int disp_read;
   bool acc_is_read;

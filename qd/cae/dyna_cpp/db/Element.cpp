@@ -73,7 +73,7 @@ bool Element::get_is_rigid() const {
  * SHELL = 2
  * SOLID = 3
  */
-ElementType Element::get_elementType(){
+ElementType Element::get_elementType() const {
   return this->elemType;
 }
 
@@ -81,7 +81,7 @@ ElementType Element::get_elementType(){
 /** Get the elementID.
  * @return int elementID
  */
-int Element::get_elementID(){
+int Element::get_elementID() const {
   return this->elementID;
 }
 
@@ -172,16 +172,25 @@ void Element::add_strain(vector<float> _strain){
 }
 
 
-/*
- * Append a value to the series of stress.
+/** Append a value to the series of stress.
+ * 
  */
 void Element::add_stress(vector<float> _stress){
 
-  if(_stress.size() < 1)
+  if(_stress.size() != 6)
     throw("Element:"+to_string(this->elementID)+" tries to add stress vector of length:"+to_string(_stress.size())+"!=6");
 
   this->stress.push_back(_stress);
 }
+
+
+/** Append a value to the series of mises stress
+ *
+ */
+void Element::add_stress_mises(float _stress_mises){
+  this->stress_mises.push_back(_stress_mises);
+}
+
 
 /*
  * Append history vars to the time seris.
@@ -205,7 +214,7 @@ void Element::add_history_vars(vector<float> vars,size_t iTimestep){
  * efficient plastic strain and thus a
  * single value, not a tensor.
  */
-vector<float> Element::get_plastic_strain(){
+vector<float> Element::get_plastic_strain() const {
 
   return this->plastic_strain;
 }
@@ -214,7 +223,7 @@ vector<float> Element::get_plastic_strain(){
 /*
  * Get the series of the internal energy.
  */
-vector<float> Element::get_energy(){
+vector<float> Element::get_energy() const {
 
   return this->energy;
 }
@@ -224,7 +233,7 @@ vector<float> Element::get_energy(){
  * Get the coordinates of the element, which is
  * the average of all nodes.
  */
-vector<float> Element::get_coords(int iTimestep){
+vector<float> Element::get_coords(int iTimestep) const {
 
    if(this->nodes.size() < 1)
       throw(string("Element with id ")+to_string(this->elementID)+string(" has no nodes and thus no coords."));
@@ -288,7 +297,7 @@ vector<float> Element::get_coords(int iTimestep){
  * maximum distance (diagonal) from the first node and multiplies
  * it with a volume factor (beam=1,shell=sqrt(2),solid=sqrt(3))
  */
-float Element::get_estimated_element_size(){
+float Element::get_estimated_element_size() const {
 
    if(this->nodes.size() < 1)
       throw("Element with id "+to_string(this->elementID)+" has no nodes and thus no size.");
@@ -349,7 +358,7 @@ float Element::get_estimated_element_size(){
  * tensor data.
  * e = [e_xx,e_yy,e_zz,e_xy,e_yz,e_xz]
  */
-vector< vector<float> > Element::get_strain(){
+vector< vector<float> > Element::get_strain() const {
 
   return this->strain;
 }
@@ -361,15 +370,22 @@ vector< vector<float> > Element::get_strain(){
  * tensor data.
  * s = [s_xx,s_yy,s_zz,s_xy,s_yz,s_xz]
  */
-vector< vector<float> > Element::get_stress(){
+vector< vector<float> > Element::get_stress() const {
 
   return this->stress;
+}
+
+/** Get the mises stress over time
+ *
+ */
+vector<float> Element::get_stress_mises() const {
+  return this->stress_mises;
 }
 
 /*
  * Get the series of history variables.
  */
-vector< vector<float> > Element::get_history_vars(){
+vector< vector<float> > Element::get_history_vars() const{
 
   return this->history_vars;
 }
@@ -377,7 +393,7 @@ vector< vector<float> > Element::get_history_vars(){
 /*
  * Check of the element type is correct regarding the node size.
  */
-void Element::check(){
+void Element::check() const{
 
    if(this->elemType == SHELL){
       if( (this->nodes.size() < 3) | (this->nodes.size() > 4))
@@ -416,6 +432,13 @@ void Element::clear_plastic_strain(){
  */
 void Element::clear_stress(){
   this->stress.clear();
+}
+
+
+/** Clear the elements mises stress
+ */
+void Element::clear_stress_mises(){
+  this->stress_mises.clear();
 }
 
 

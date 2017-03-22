@@ -179,7 +179,11 @@ By adding a filepath for export the model will not be plotted but saved to the g
 d3plot.plot(iTimestep=25, element_result="plastic_strain", fringe_bounds=[0,0.05])
 
 # export with user defined result function
-eval_function = lambda elem : elem.get_plastic_strain()[-1]
+def eval_function(elem):
+  results = elem.get_plastic_strain()
+  if len(results): # rigid shells have no plastic strain saved
+    return results[-1] # last timestep
+
 d3plot.plot(iTimestep=25, element_result=eval_function, fringe_bounds=[0,0.05], export_filepath="Path/To/export.html")
 ```
 
@@ -207,6 +211,7 @@ Read a variable from the state files. If this is not done, the nodes and element
 - accel = acceleration
 - strain [(optional) mode]
 - stress [(optional) mode]
+- stress_mises [(optional) mode]
 - plastic_strain [(optional) mode]
 - history [id1] [id2] ... [shell or solid] [(optional) mode]
 
@@ -238,17 +243,22 @@ D3plot("path/to/d3plot", read_states=["disp","vel","plastic_strain max"])
  This function may be used if one wants to clear certain state data from the memory. Argument may be a string or a list of string nominating the variables which shall be cleared.
 
 ```python
-d3plot = D3plot("path/to/d3plot", read_states="disp")
-node = d3plot.get_nodeByIndex(1)
-len(node.get_disp())
+d3plot = D3plot("path/to/d3plot", read_states="strain inner")
+elem = d3plot.get_elementByID("shell",1)
+len(elem.get_strain())
 # >>> 34
-d3plot.clear("disp") # clear specific field
-len(node.get_disp())
+
+# empty and test
+d3plot.clear("strain") # clear specific field
+len(elem.get_strain())
 # >>> 0
-d3plot.read_states("disp")
+
+# read different strain (outer shell)
+d3plot.read_states("strain outer") 
+len(elem.get_strain())
+# >>> 34
+
 d3plot.clear() # clear all
-len(node.get_disp())
-# >>> 0
 ```
 
 ----------
@@ -548,6 +558,17 @@ This function returns a time series of the stress vector. The vector contains th
 ```python
 element.get_stress().shape
 # >>> (34L, 6L)
+```
+
+**element.get_stress_mises()**
+
+*return: (np.array) time series of the mises stress vector*
+
+This function returns a time series of the mises stress. Note that this data does not refer to the internal stress tensor! This is for the reason that, if one uses the read mode max for shells on the full stress tensor and then calculates the von Mises stress, it is not the same as if one would compute the Mises stress for every integration layer and then draw the max afterwards. After all this is the correct way.
+
+```python
+element.get_stress_mises().shape
+# >>> (34L,)
 ```
 
 **element.get_nodes()**
