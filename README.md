@@ -18,6 +18,12 @@ We want to tackle this issue with this free library, in order to give engineerin
 a boost. Use it, build more awesome applications with it, share your projects
 too and if possible contribute.
 
+*Changelog 22.03.2017*
+Version 0.5.2
+
+qd.cae.dyna
+ - added mises stress as element result
+
 *Changelog 20.03.2017*
 Version 0.5.1
 
@@ -37,12 +43,6 @@ qd.cae.dyna
  - D3plot can now handle rigid shell elements (mattyp != 0)
  - Element, Node and Part equals operator is now correct
 
-*Changelog 03.03.2017*
-Version 0.4.4
-
- qd.cae.beta
-  - added new module (for Beta CAE Systems)
-  - added class MetaCommunicator
 
 # Descriptions
 

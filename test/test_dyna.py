@@ -29,7 +29,7 @@ class TestDynaModule(unittest.TestCase):
         d3plot_filepath = "test/d3plot"
         d3plot_modes = ["inner","mid","outer","max","min","mean"]
         d3plot_vars = ["disp","vel","accel",
-                       "stress","strain","plastic_strain",
+                       "stress","strain","plastic_strain","stress"
                        "history 1 shell","history 1 solid"]
         element_result_list = [None,
                                "plastic_strain",
@@ -69,6 +69,9 @@ class TestDynaModule(unittest.TestCase):
         d3plot.read_states("history shell 1")
         d3plot.clear("history")
         self.assertEqual( len(d3plot.get_elementByID("shell",1).get_history()), 0)
+        d3plot.read_states("stress_mises")
+        d3plot.clear("stress_mises")
+        self.assertEqual( len(d3plot.get_elementByID("shell",1).get_stress_mises()), 0 )
         d3plot = D3plot(d3plot_filepath,read_states=d3plot_vars) # default mode (mode=mean)
         d3plot.clear()
         self.assertEqual( len(d3plot.get_nodeByIndex(1).get_disp()), 0)
