@@ -1,4 +1,5 @@
 
+#include <cmath>
 #include <string>
 #include "D3plot.hpp"
 #include "D3plotBuffer.hpp"
@@ -10,6 +11,7 @@
 #include "../db/DB_Elements.hpp"
 #include "../utility/TextUtility.hpp"
 #include "../utility/FileUtility.hpp"
+#include "../utility/MathUtility.hpp"
 
 #include <set>
 
@@ -163,6 +165,8 @@ void D3plot::init_vars(){
   this->strain_read = 0;
   this->stress_is_read = false;
   this->stress_read = 0;
+  this->stress_mises_is_read = false;
+  this->stress_mises_read = 0;
   this->disp_is_read = false;
   this->disp_read = 0;
   this->acc_is_read = false;
@@ -928,6 +932,7 @@ void D3plot::read_states_parse(vector<string> _variables){
   this->vel_read = 0;
   this->acc_read = 0;
   this->stress_read = 0;
+  this->stress_mises_read = 0;
   this->strain_read = 0;
   this->energy_read = 0;
   this->plastic_strain_read = 0;
@@ -975,10 +980,27 @@ void D3plot::read_states_parse(vector<string> _variables){
         #endif
         this->acc_read = 0;
       }
-    // Stress
-    } else if(_variables[ii].find("stress") != string::npos){
+    // Mises Stress ( must be before stress! )
+    } else if(_variables[ii].find("stress_mises") != string::npos){
+      #ifdef QD_DEBUG
       if( dyna_ioshl1 == 0)
         cout << "Warning: There are no shell-stresses in the file." << endl;
+      #endif
+      this->stress_mises_read = read_states_parse_readMode(_variables[ii]);
+
+      if(this->stress_mises_is_read){
+        #ifdef QD_DEBUG
+        cout << "stress_mises already loaded." << endl;
+        #endif
+        this->stress_mises_read = 0;
+      }
+
+    // Stress
+    } else if(_variables[ii].find("stress") != string::npos){
+      #ifdef QD_DEBUG
+      if( dyna_ioshl1 == 0)
+        cout << "Warning: There are no shell-stresses in the file." << endl;
+      #endif
       this->stress_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->stress_is_read){
@@ -990,8 +1012,10 @@ void D3plot::read_states_parse(vector<string> _variables){
     // Plastic Strain
     // must be before strain !!!!
     } else if(_variables[ii].find("plastic_strain") != string::npos){
+      #ifdef QD_DEBUG
       if( dyna_ioshl2 == 0)
         cout << "Warning: There are no shell-plastic-strains in the file." << endl;
+      #endif
       this->plastic_strain_read = read_states_parse_readMode(_variables[ii]);
 
       if(this->plastic_strain_is_read){
@@ -1178,6 +1202,7 @@ void D3plot::read_states(vector<string> _variables){
      +this->energy_read
      +this->strain_read
      +this->stress_read
+     +this->stress_mises_read
      +this->history_shell_read.size()
      +this->history_solid_read.size() == 0) && (this->timesteps.size() != 0))
       return;
@@ -1266,12 +1291,13 @@ void D3plot::read_states(vector<string> _variables){
       }
 
       // ELEMENT - STRESS, STRAIN, ENERGY, PLASTIC STRAIN
-      if( (this->stress_read != 0)
-         || (this->strain_read != 0)
-         || (this->energy_read != 0)
-         || (this->plastic_strain_read != 0)
-         || (this->history_shell_read.size() != 0)
-         || (this->history_solid_read.size() != 0)){
+      if( this->stress_read
+         || this->stress_mises_read
+         || this->strain_read 
+         || this->energy_read
+         || this->plastic_strain_read
+         || this->history_shell_read.size()
+         || this->history_solid_read.size()){
 
         // Element 4
         read_states_elem4(iState);
@@ -1309,6 +1335,9 @@ void D3plot::read_states(vector<string> _variables){
   }
   if( this->stress_read != 0 ){
     this->stress_is_read = true;
+  }
+  if( this->stress_mises_read != 0 ){
+    this->stress_mises_is_read = true;
   }
   for(size_t ii=0; ii<this->history_shell_read.size(); ++ii){
      this->history_shell_is_read.push_back(this->history_shell_read[ii]);
@@ -1432,8 +1461,8 @@ void D3plot::read_states_elem8(size_t iState){
 
     Element* element = this->get_db_elements()->get_elementByIndex(SOLID,iElement);
 
-    // stress tensor
-    if(this->stress_read){
+    // stress tensor and data
+    if(this->stress_read || this->stress_mises_read){
       vector<float> sigma(6);
       sigma[0] = this->buffer->read_float(ii);
       sigma[1] = this->buffer->read_float(ii+1);
@@ -1441,7 +1470,11 @@ void D3plot::read_states_elem8(size_t iState){
       sigma[3] = this->buffer->read_float(ii+3);
       sigma[4] = this->buffer->read_float(ii+4);
       sigma[5] = this->buffer->read_float(ii+5);
-      element->add_stress(sigma);
+
+      if(this->stress_read)
+        element->add_stress(sigma);
+      if(this->stress_mises_read)
+        element->add_stress_mises(MathUtility::mises_stress(sigma));
     }
 
     // plastic strain
@@ -1513,6 +1546,8 @@ void D3plot::read_states_elem4(size_t iState){
   int iHistoryOffset     = iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
   int iLayerSize         = dyna_neips + iHistoryOffset;
 
+  float dyna_maxint_float = (float) dyna_maxint;
+
   size_t iElement = 0;
   for(int ii = start; ii < start+wordsToRead; ++iElement){
 
@@ -1524,10 +1559,10 @@ void D3plot::read_states_elem4(size_t iState){
     }
 
     // preallocate layer vars
-    vector<float> stress(6);
+    vector<float> stress;
     vector<float> history_vars;
-    float plastic_strain = 0;
-    
+    float stress_mises = 0.f;
+    float plastic_strain = 0.f;
     if(this->history_shell_read.size()){
       history_vars.assign(this->history_shell_read.size(),0.f);
     }
@@ -1560,58 +1595,92 @@ void D3plot::read_states_elem4(size_t iState){
         else if((this->plastic_strain_read == 6)){
           plastic_strain += _tmp;
           if( iLayer == dyna_maxint -1 )
-            plastic_strain /= (float) dyna_maxint;
+            plastic_strain /= dyna_maxint_float;
         }
       }
 
       // layers: stress tensor (in/mid/out,mean,min/max)
-      if( (this->stress_read) && (dyna_ioshl1) ){
-        // max
-        if(this->stress_read == 1) {
-          float _tmp;
-          for(int jj=0; jj<6; jj++){
-            _tmp = this->buffer->read_float(layerStart+jj);
-            if(iLayer == 0){
-               stress[jj] = _tmp;
-            } else {
-               stress[jj] = (_tmp > stress[jj]) ? _tmp : stress[jj];
-            }
-          }
-        // min
-        } else if(this->stress_read == 2) {
-          float _tmp;
-          for(int jj=0; jj<6; jj++){
-            _tmp = this->buffer->read_float(layerStart+jj);
-            if(iLayer == 0){
-               stress[jj] = _tmp;
-            } else {
-               stress[jj] = (_tmp < stress[jj]) ? _tmp : stress[jj];
-            }
-          }
-        // out
-        } else if((this->stress_read == 3) && (iLayer == dyna_maxint - 1) ) {
-          for(int jj=0; jj<6; jj++)
-            stress[jj] = this->buffer->read_float(layerStart+jj);
-        // mid
-        } else if((this->stress_read == 4) && (iLayer == dyna_maxint / 2) ) {
-          for(int jj=0; jj<6; jj++)
-            stress[jj] = this->buffer->read_float(layerStart+jj);
-        // in
-        } else if((this->stress_read == 5) && (iLayer == 1) ) {
-          for(int jj=0; jj<6; jj++)
-            stress[jj] = this->buffer->read_float(layerStart+jj);
-        // mean
-        } else if((this->stress_read == 6)) {
+      if( (this->stress_read || this->stress_mises_read) && (dyna_ioshl1) ){
 
-          for(int jj=0; jj<6; jj++)
-            stress[jj] += this->buffer->read_float(layerStart+jj);
+        vector<float> _tmp(6);
+        _tmp[0] = this->buffer->read_float(layerStart);
+        _tmp[1] = this->buffer->read_float(layerStart+1);
+        _tmp[2] = this->buffer->read_float(layerStart+2);
+        _tmp[3] = this->buffer->read_float(layerStart+3);
+        _tmp[4] = this->buffer->read_float(layerStart+4);
+        _tmp[5] = this->buffer->read_float(layerStart+5);
 
-          if((iLayer == dyna_maxint -1)){
-            float _tmp = (float) dyna_maxint;
-            for(int jj=0; jj<6; jj++)
-              stress[jj] /= _tmp;
-          }
-        }
+        if(iLayer == 0){
+          stress = _tmp;
+          stress_mises = MathUtility::mises_stress(_tmp);
+        } else {
+
+          // stress tensor
+          switch( this->stress_read ){
+            case 1 : // max
+              for(int jj=0; jj<6; jj++)
+                stress[jj] = _tmp[jj] > stress[jj] ? _tmp[jj] : stress[jj];
+              break;
+            case 2: // min
+              for(int jj=0; jj<6; jj++)
+                stress[jj] = _tmp[jj] < stress[jj] ? _tmp[jj] : stress[jj];
+              break;
+            case 3: // outer
+              if(iLayer == dyna_maxint - 1)
+                stress = _tmp;
+              break;
+            case 4: // mid
+              if(iLayer == (int) ( dyna_maxint_float / 2.f) )   
+                stress = _tmp;
+              break;
+            case 5: // inner
+              // nothing
+              break;
+            case 6: // mean
+              for(int jj=0; jj<6; jj++)
+                stress[jj] += _tmp[jj];
+              
+              if(iLayer == dyna_maxint-1)
+                for(int jj=0; jj<6; jj++)
+                  stress[jj] /= dyna_maxint_float;
+              
+              break;
+            default: // none
+              break;
+          } // end:switch(stress_read)
+
+          // stress mises calculation
+          switch( this->stress_mises_read ){
+            case 1 : {// max
+              float _tmp2 = MathUtility::mises_stress(_tmp);
+              stress_mises = _tmp2 > stress_mises ? _tmp2 : stress_mises;
+              break;
+              }
+            case 2: {// min
+              float _tmp2 = MathUtility::mises_stress(_tmp);
+              stress_mises = _tmp2 < stress_mises ? _tmp2 : stress_mises;
+              break;
+              }
+            case 3: // outer
+              if(iLayer == dyna_maxint - 1)
+                stress_mises =  MathUtility::mises_stress(_tmp);
+              break;
+            case 4: // mid
+              if(iLayer == (int) ( dyna_maxint_float / 2.f) )
+                stress_mises =  MathUtility::mises_stress(_tmp);
+              break;
+            case 5: // inner
+              // nothing
+              break;
+            case 6: // mean
+              stress_mises += MathUtility::mises_stress(_tmp);
+              if(iLayer == dyna_maxint-1)
+                stress_mises /= dyna_maxint_float;
+              break;
+            default: // none
+              break;
+          } // end:switch(stress_mises_read)
+        } // end:iLayer!=0
       } // end:stress
 
       // layers: history vars (in/mid/out,mean,min/max)
@@ -1640,13 +1709,13 @@ void D3plot::read_states_elem4(size_t iState){
             history_vars[jj] = (_tmp < history_vars[jj]) ? _tmp : history_vars[jj];
           }
         // out
-     } else if((this->history_shell_mode[jj] == 3) && (iLayer == dyna_maxint - 1) ) {
+        } else if((this->history_shell_mode[jj] == 3) && (iLayer == dyna_maxint - 1) ) {
           history_vars[jj] = this->buffer->read_float(layerStart+6+history_shell_read[jj]);
         // mid
-     } else if((this->history_shell_mode[jj] == 4) && (iLayer == dyna_maxint / 2) ) {
+        } else if((this->history_shell_mode[jj] == 4) && (iLayer == dyna_maxint / 2) ) {
           history_vars[jj] = this->buffer->read_float(layerStart+6+history_shell_read[jj]);
         // in
-     } else if((this->history_shell_mode[jj] == 5) && (iLayer == 1) ) {
+        } else if((this->history_shell_mode[jj] == 5) && (iLayer == 1) ) {
           history_vars[jj] = this->buffer->read_float(layerStart+6+history_shell_read[jj]);
         // mean
         } else if((this->history_shell_mode[jj] == 6)) {
@@ -1661,10 +1730,13 @@ void D3plot::read_states_elem4(size_t iState){
       } // loop:history
     } // loop:layers
 
+    // add layer vars (if requested)
     if(dyna_istrn && this->plastic_strain_read)
       element->add_plastic_strain(plastic_strain);
     if( this->stress_read )
       element->add_stress(stress);
+    if( this->stress_mises_read )
+      element->add_stress_mises(stress_mises);
     if(this->history_shell_read.size())
       element->add_history_vars(history_vars,iState);
 
@@ -1778,6 +1850,7 @@ void D3plot::clear( const vector<string>& _variables ){
     _tmp.push_back("plastic_strain");
     _tmp.push_back("strain");
     _tmp.push_back("stress");
+    _tmp.push_back("stress_mises");
     _tmp.push_back("history shell");
     _tmp.push_back("history solid");
     this->clear( _tmp );
@@ -1792,6 +1865,7 @@ void D3plot::clear( const vector<string>& _variables ){
     bool delete_plastic_strain = false;
     bool delete_strain = false;
     bool delete_stress = false;
+    bool delete_stress_mises = false;
     bool delete_history_shell = false;
     bool delete_history_solid = false;
     for(size_t iVar=0; iVar<_variables.size(); ++iVar){
@@ -1808,6 +1882,8 @@ void D3plot::clear( const vector<string>& _variables ){
         delete_plastic_strain = true;
       } else if ( _variables[iVar].find("strain") != string::npos ) {
         delete_strain = true;
+      } else if ( _variables[iVar].find("stress_mises") != string::npos ) {
+        delete_stress_mises = true;
       } else if ( _variables[iVar].find("stress") != string::npos ) {
         delete_stress = true;
       } else if ( _variables[iVar].find("history") != string::npos ) {
@@ -1864,6 +1940,7 @@ void D3plot::clear( const vector<string>& _variables ){
         delete_plastic_strain ||
         delete_strain ||
         delete_stress ||
+        delete_stress_mises ||
         delete_history_shell ||
         delete_history_solid ){
 
@@ -1883,6 +1960,8 @@ void D3plot::clear( const vector<string>& _variables ){
             _elem->clear_strain();
           if(delete_stress)
             _elem->clear_stress();
+          if(delete_stress_mises)
+            _elem->clear_stress_mises();
           if(delete_history_shell)
             _elem->clear_history_vars();
         }
@@ -1900,6 +1979,8 @@ void D3plot::clear( const vector<string>& _variables ){
             _elem->clear_strain();
           if(delete_stress)
             _elem->clear_stress();
+          if(delete_stress_mises)
+            _elem->clear_stress_mises();
           if(delete_history_solid)
             _elem->clear_history_vars();
         }
@@ -1914,13 +1995,13 @@ void D3plot::clear( const vector<string>& _variables ){
         this->strain_is_read = false;
       if(delete_stress)
         this->stress_is_read = false;
+      if(delete_stress_mises)
+        this->stress_mises_is_read = false;
       if(delete_history_shell)
         this->history_shell_is_read.clear();
       if(delete_history_solid)
         this->history_solid_is_read.clear();
 
     } // end:if Elements
-
   } // end:else for deletion
-
 } // end:function clear
