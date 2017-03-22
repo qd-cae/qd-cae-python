@@ -5,6 +5,8 @@
 #include "Node.hpp"
 #include "../utility/TextUtility.hpp"
 
+using namespace std;
+
 /*
  * Constructor.
  */

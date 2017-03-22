@@ -4,6 +4,7 @@
 #include "../utility/TextUtility.hpp"
 #include <boost/algorithm/string/trim.hpp>
 
+using namespace std;
 using namespace boost::algorithm;
 
 /** Constructor for a dyna keyword

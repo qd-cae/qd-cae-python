@@ -4,9 +4,9 @@
 static void
 QD_FEMFile_dealloc(QD_FEMFile* self)
 {
-   if(self->instance != NULL){
+   if(self->instance != nullptr){
       delete self->instance;
-      self->instance = NULL;
+      self->instance = nullptr;
    }
 
    #ifdef QD_DEBUG
@@ -23,8 +23,8 @@ QD_FEMFile_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
   self = (QD_FEMFile *)type->tp_alloc(type, 0);
 
   // Init vars if any ...
-  if (self != NULL){
-    self->instance = NULL;
+  if (self != nullptr){
+    self->instance = nullptr;
   }
 
   return (PyObject*) self;
@@ -42,9 +42,9 @@ QD_FEMFile_init(QD_FEMFile *self, PyObject *args, PyObject *kwds)
 static PyObject *
 QD_FEMFile_get_filepath(QD_FEMFile* self){
 
-  if (self->instance == NULL) {
-      PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
-      return NULL;
+  if (self->instance == nullptr) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is nullptr.");
+      return nullptr;
   }
 
   return Py_BuildValue("s",self->instance->get_filepath().c_str());
@@ -56,9 +56,9 @@ QD_FEMFile_get_filepath(QD_FEMFile* self){
 static PyObject *
 QD_FEMFile_get_nNodes(QD_FEMFile* self){
 
-  if (self->instance == NULL) {
-      PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
-      return NULL;
+  if (self->instance == nullptr) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is nullptr.");
+      return nullptr;
   }
 
   return Py_BuildValue("i",self->instance->get_db_nodes()->size());
@@ -70,16 +70,16 @@ QD_FEMFile_get_nNodes(QD_FEMFile* self){
 static PyObject *
 QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
 
-  if (self->instance == NULL) {
-      PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
-      return NULL;
+  if (self->instance == nullptr) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is nullptr.");
+      return nullptr;
   }
 
   // Parse args
   PyObject* arg = Py_None;
   string element_type = "";
   if (!PyArg_ParseTuple(args, "|O", &arg))
-    return NULL;
+    return nullptr;
 
   if(arg == Py_None){
      //Nothing
@@ -87,7 +87,7 @@ QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
      element_type = qd::PyStr2char(arg);
   } else {
      PyErr_SetString(PyExc_AttributeError,"Argument is not a string.");
-     return NULL;
+     return nullptr;
   }
 
   if( !element_type.empty() ){
@@ -99,7 +99,7 @@ QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
        return Py_BuildValue("i",self->instance->get_db_elements()->size(BEAM));
      } else {
        PyErr_SetString(PyExc_SyntaxError, "Unknown element type, please try beam, shell or solid.");
-       return NULL;
+       return nullptr;
      }
   }
 
@@ -112,9 +112,9 @@ QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
 static PyObject*
 QD_FEMFile_get_nodes(QD_FEMFile *self){
 
-  if(self->instance == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ object is NULL.");
-    return NULL;
+  if(self->instance == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ object is nullptr.");
+    return nullptr;
   }
 
   DB_Nodes* db_nodes = self->instance->get_db_nodes();
@@ -136,7 +136,7 @@ QD_FEMFile_get_nodes(QD_FEMFile *self){
   if(check != 0){
     PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of node instance list.");
     Py_DECREF(node_list);
-    return NULL;
+    return nullptr;
   }
 
   return node_list;
@@ -147,16 +147,16 @@ QD_FEMFile_get_nodes(QD_FEMFile *self){
 static PyObject*
 QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
 
-  if(self->instance == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ object is NULL.");
-    return NULL;
+  if(self->instance == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ object is nullptr.");
+    return nullptr;
   }
 
   // Parse args
   PyObject* arg = Py_None;
   string element_type = "";
   if (!PyArg_ParseTuple(args, "|O", &arg))
-    return NULL;
+    return nullptr;
 
   if(arg == Py_None){
      //Nothing
@@ -164,7 +164,7 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
      element_type = qd::PyStr2char(arg);
   } else {
      PyErr_SetString(PyExc_AttributeError,"Argument is not a string.");
-     return NULL;
+     return nullptr;
   }
 
 
@@ -179,7 +179,7 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
      eType = NONE;
   } else {
      PyErr_SetString(PyExc_AttributeError,"Unknown element type. Use beam, shell or solid.");
-     return NULL;
+     return nullptr;
   }
 
   DB_Elements* db_elements = self->instance->get_db_elements();
@@ -240,7 +240,7 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
   if(check != 0){
     PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of element instance list.");
     Py_DECREF(element_list);
-    return NULL;
+    return nullptr;
   }
 
   return element_list;
@@ -252,26 +252,26 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
 static PyObject *
 QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
 
-     if (self->instance == NULL) {
-       PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
-       return NULL;
+     if (self->instance == nullptr) {
+       PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is nullptr.");
+       return nullptr;
      }
 
      PyObject* argument;
      if (!PyArg_ParseTuple(args, "O", &argument))
-       return NULL;
+       return nullptr;
 
      // argument is only one id
      if(PyObject_isIntegral(argument)){
 
        int nodeID;
        if (!PyArg_ParseTuple(args, "i", &nodeID))
-         return NULL;
+         return nullptr;
 
 
        if(nodeID < 0){
          PyErr_SetString(PyExc_SyntaxError, "Error, nodeID may not be negative.");
-         return NULL;
+         return nullptr;
        }
 
        PyObject *argList2 = Py_BuildValue("OiO", self ,nodeID, Py_False);
@@ -296,13 +296,13 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
          } catch(string& e) {
            PyErr_SetString(PyExc_AttributeError,e.c_str());
            Py_DECREF(node_list);
-           return NULL;
+           return nullptr;
          }
 
          if(nodeID < 0){
            Py_DECREF(node_list);
            PyErr_SetString(PyExc_AttributeError, "Error, nodeID may not be negative.");
-           return NULL;
+           return nullptr;
          }
 
          PyObject *argList2 = Py_BuildValue("OiO",self ,nodeID, Py_False);
@@ -310,7 +310,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
 
            PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
            
-           if(ret == NULL)
+           if(ret == nullptr)
              throw(string("Could somehow not create Python Node."))  ;
 
            check += PyList_SetItem(node_list, ii, ret);
@@ -319,7 +319,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
            PyErr_SetString(PyExc_RuntimeError, message.c_str());
            Py_DECREF(argList2);
            Py_DECREF(node_list);
-           return NULL;
+           return nullptr;
          }
          Py_DECREF(argList2);
 
@@ -328,7 +328,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
        if(check != 0){
          PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of node list.");
          Py_DECREF(node_list);
-         return NULL;
+         return nullptr;
        }
 
        return node_list;
@@ -336,7 +336,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
      }
 
      PyErr_SetString(PyExc_SyntaxError, "Error, argument is neither int nor list of int.");
-     return NULL;
+     return nullptr;
 
 
 }
@@ -346,26 +346,26 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
 static PyObject *
 QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
 
-     if (self->instance == NULL) {
-       PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
-       return NULL;
+     if (self->instance == nullptr) {
+       PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is nullptr.");
+       return nullptr;
      }
 
      PyObject* argument;
      if (!PyArg_ParseTuple(args, "O", &argument))
-       return NULL;
+       return nullptr;
 
      // argument is only one id
      if(PyObject_isIntegral(argument)){
 
        int nodeIndex;
        if (!PyArg_ParseTuple(args, "i", &nodeIndex))
-         return NULL;
+         return nullptr;
 
 
        if(nodeIndex < 0){
          PyErr_SetString(PyExc_SyntaxError, "Error, nodeIndex may not be negative.");
-         return NULL;
+         return nullptr;
        }
 
        PyObject *argList2 = Py_BuildValue("OiO", self, nodeIndex, Py_True);
@@ -390,22 +390,22 @@ QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
          } catch(string& e) {
            PyErr_SetString(PyExc_AttributeError,e.c_str());
            Py_DECREF(node_list);
-           return NULL;
+           return nullptr;
          }
 
          if(nodeID < 0){
            Py_DECREF(node_list);
            PyErr_SetString(PyExc_AttributeError, "Error, nodeID may not be negative.");
-           return NULL;
+           return nullptr;
          }
 
          PyObject *argList2 = Py_BuildValue("OiO",self ,nodeID, Py_True);
          PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
          Py_DECREF(argList2);
 
-         if(ret == NULL){
+         if(ret == nullptr){
            Py_DECREF(node_list);
-           return NULL;
+           return nullptr;
          }
 
          check += PyList_SetItem(node_list, ii, ret);
@@ -415,7 +415,7 @@ QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
        if(check != 0){
          PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of node list.");
          Py_DECREF(node_list);
-         return NULL;
+         return nullptr;
        }
 
        return node_list;
@@ -423,7 +423,7 @@ QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
      }
 
      PyErr_SetString(PyExc_SyntaxError, "Error, argument is neither int nor list of int.");
-     return NULL;
+     return nullptr;
 
 
 }
@@ -433,15 +433,15 @@ QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
 static PyObject *
 QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
 
-     if (self->instance == NULL) {
-       PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
-       return NULL;
+     if (self->instance == nullptr) {
+       PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is nullptr.");
+       return nullptr;
      }
 
      PyObject* argument;
      PyObject* elementType_pyobj;
      if (!PyArg_ParseTuple(args, "OO", &elementType_pyobj, &argument))
-       return NULL;
+       return nullptr;
 
      // argument is only one id
      if(PyObject_isIntegral(argument)){
@@ -451,12 +451,12 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
          elementID = convert_obj_to_int(argument);
        } catch(string& e) {
          PyErr_SetString(PyExc_AttributeError,e.c_str());
-         return NULL;
+         return nullptr;
        }
 
        if(elementID < 0){
          PyErr_SetString(PyExc_SyntaxError, "Error, elementID may not be negative.");
-         return NULL;
+         return nullptr;
        }
 
        PyObject *argList2 = Py_BuildValue("OOi",self , elementType_pyobj, elementID);
@@ -480,22 +480,22 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
          } catch(string& e) {
            PyErr_SetString(PyExc_AttributeError,e.c_str());
            Py_DECREF(elem_list);
-           return NULL;
+           return nullptr;
          }
 
          if(elementID < 0){
            Py_DECREF(elem_list);
            PyErr_SetString(PyExc_SyntaxError, "Error, elementID may not be negative.");
-           return NULL;
+           return nullptr;
          }
 
          PyObject *argList2 = Py_BuildValue("OOi", self, elementType_pyobj, elementID);
          PyObject* ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
          Py_DECREF(argList2);
 
-         if(ret == NULL){
+         if(ret == nullptr){
            Py_DECREF(elem_list);
-           return NULL;
+           return nullptr;
          }
 
          check += PyList_SetItem(elem_list, ii, ret);
@@ -505,7 +505,7 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
        if(check != 0){
          PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of node list.");
          Py_DECREF(elem_list);
-         return NULL;
+         return nullptr;
        }
 
        return elem_list;
@@ -513,7 +513,7 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
      }
 
      PyErr_SetString(PyExc_SyntaxError, "Error, argument two is neither int nor list of int.");
-     return NULL;
+     return nullptr;
 
 }
 
@@ -522,14 +522,14 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
 static PyObject *
 QD_FEMFile_get_partByID(QD_FEMFile* self, PyObject* args){
 
-   if (self->instance == NULL) {
-     PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
-     return NULL;
+   if (self->instance == nullptr) {
+     PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is nullptr.");
+     return nullptr;
    }
 
    int partID;
    if (!PyArg_ParseTuple(args, "i", &partID))
-     return NULL;
+     return nullptr;
 
    PyObject *argList2 = Py_BuildValue("Oi",self , partID);
    PyObject* ret = PyObject_CallObject((PyObject *) &QD_Part_Type, argList2);
@@ -544,15 +544,15 @@ QD_FEMFile_get_partByID(QD_FEMFile* self, PyObject* args){
 static PyObject *
 QD_FEMFile_get_mesh(QD_FEMFile* self, PyObject* args){
 
-   if (self->instance == NULL) {
-     PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
-     return NULL;
+   if (self->instance == nullptr) {
+     PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is nullptr.");
+     return nullptr;
    }
 
    /*
    int iTimestep = 0;
    if (!PyArg_ParseTuple(args, "|i", &iTimestep))
-     return NULL;
+     return nullptr;
 
    // Databases
    DB_Nodes* db_nodes = self->instance->get_db_nodes();
@@ -567,7 +567,7 @@ QD_FEMFile_get_mesh(QD_FEMFile* self, PyObject* args){
    map<int,int> node_ids2index;
    if(nNodes != 0){
 
-      Node* current_node = NULL;
+      Node* current_node = nullptr;
       vector< vector<float> > node_coords(nNodes);
       for(size_t iNode=0; iNode < nNodes; ++iNode){
          current_node = db_nodes->get_nodeByIndex(iNode);
@@ -627,29 +627,32 @@ static PyObject *
 QD_FEMFile_get_parts(QD_FEMFile* self){
 
 
-     if (self->instance == NULL) {
-       PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is NULL.");
-       return NULL;
+     if (self->instance == nullptr) {
+       PyErr_SetString(PyExc_RuntimeError, "Developer Error: pointer to C++ Object is nullptr.");
+       return nullptr;
      }
 
      // Create list
      PyObject* part_list = PyList_New(self->instance->get_db_parts()->size());
 
      // fill list
-     Part* _part=NULL;
+     Part* _part=nullptr;
      int check=0;
      for(size_t ii=0; ii < self->instance->get_db_parts()->size(); ++ii){
 
-       _part = self->instance->get_db_parts()->get_part_byIndex(ii+1); // index start at 1
+       _part = self->instance->get_db_parts()->get_part_byIndex(ii);
+       if(_part == nullptr){
+         PyErr_SetString(PyExc_RuntimeError, "Developer error, an nullptr was returned instead of a part.");
+       }
 
        PyObject *argList2 = Py_BuildValue("Oi",self ,_part->get_partID());
        PyObject* ret = PyObject_CallObject((PyObject *) &QD_Part_Type, argList2);
        Py_DECREF(argList2);
 
-       if(ret == NULL){
+       if(ret == nullptr){
          Py_DECREF(part_list);
          PyErr_SetString(PyExc_RuntimeError, "Developer Error during part construction.");
-         return NULL;
+         return nullptr;
        }
 
        check += PyList_SetItem(part_list, ii, ret);
@@ -658,7 +661,7 @@ QD_FEMFile_get_parts(QD_FEMFile* self){
      if(check != 0){
        Py_DECREF(part_list);
        PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of part list.");
-       return NULL;
+       return nullptr;
      }
 
      return part_list;

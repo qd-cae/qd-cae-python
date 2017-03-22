@@ -10,6 +10,7 @@
 #include "Part.hpp"
 #include "FEMFile.hpp"
 
+using namespace std;
 
 /** Constructor
  *
@@ -47,8 +48,9 @@ Element* DB_Elements::add_element_byD3plot(const ElementType _eType, const int _
   }
 
   // Find part
-  Part* part = this->db_parts->get_part_byIndex( _elementData.back() );
-  if(part == NULL){
+  // index is decremented once, since ls-dyna starts at 1 (fortran array style)
+  Part* part = this->db_parts->get_part_byIndex( _elementData.back()-1 );
+  if(part == nullptr){
     throw(string("Could not find part with index:")+to_string(_elementData.back())+string(" in db."));
   }
 
@@ -57,7 +59,7 @@ Element* DB_Elements::add_element_byD3plot(const ElementType _eType, const int _
   vector<size_t> node_indexes;
   for(size_t iNode = 0; iNode < _elementData.size()-1; iNode++){ // last is mat
     Node* _node = this->db_nodes->get_nodeByIndex(_elementData[iNode]-1); // dyna starts at index 1, this program at 0 of course
-    if(_node == NULL)
+    if(_node == nullptr)
       throw(string("A node with index:")+to_string(_elementData[iNode])+string(" does not exist and can not be added to an element."));
     if(iNode > 0 && (_elementData[iNode] == _elementData[iNode-1]) )
       break; // repeating an id means that there are just dummy ids
@@ -137,7 +139,7 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType, int _elementID, 
 
   // Find part
   Part* part = this->db_parts->get_part_byID(_partid);
-  if(part == NULL){
+  if(part == nullptr){
      part = this->db_parts->add_part_byID(_partid);
   }
 
@@ -146,7 +148,7 @@ Element* DB_Elements::add_element_byKeyFile(ElementType _eType, int _elementID, 
   vector<size_t> node_indexes;
   for(size_t iNode = 0; iNode < _node_ids.size(); ++iNode){
     Node* _node = this->db_nodes->get_nodeByID(_node_ids[iNode]);
-    if(_node == NULL)
+    if(_node == nullptr)
       _node = this->db_nodes->add_node(_node_ids[iNode], vector<float>(3,0.0f));
     if(iNode > 0)
       if(_node_ids[iNode] == _node_ids[iNode-1])

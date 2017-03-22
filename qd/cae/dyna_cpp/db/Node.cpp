@@ -1,5 +1,7 @@
 
 #include <string>
+#include <iostream>
+
 #include "Node.hpp"
 #include "Element.hpp"
 #include "DB_Nodes.hpp"
@@ -8,15 +10,16 @@
 #include "../dyna/D3plot.hpp"
 #include "../utility/TextUtility.hpp"
 
+using namespace std;
+
 /*
  * Constructor.
  */
-Node::Node(int _nodeID, vector<float> _coords, DB_Nodes* _db_nodes){
+Node::Node(int _nodeID, vector<float> _coords, DB_Nodes* _db_nodes)
+  : nodeID(_nodeID),
+    coords(_coords),
+    db_nodes(_db_nodes) {
 
-  this->nodeID = _nodeID;
-  this->coords = vector<float>(_coords); //copy
-  this->elements = set<Element*>();
-  this->db_nodes = _db_nodes;
 }
 
 
@@ -31,8 +34,7 @@ Node::~Node(){
 /*
  * Comparator.
  */
-bool Node::operator<(const Node &other) const
-{
+bool Node::operator<(const Node &other) const {
   return(this->nodeID < other.nodeID);
 }
 
@@ -40,9 +42,12 @@ bool Node::operator<(const Node &other) const
  * Add an element to the node.
  */
 Element* Node::add_element(Element* _element){
-  if(_element == NULL)
-    throw("Trying to insert NULL element to node:"+to_string(this->nodeID));
-  this->elements.insert(_element);
+  #ifdef QD_DEBUG
+  if(_element == nullptr)
+    throw("Trying to insert nullptr element to node:"+to_string(this->nodeID));
+  #endif
+
+  this->elements.push_back(_element);
   return _element;
 }
 
@@ -55,8 +60,9 @@ void Node::add_disp(vector<float> new_disp){
   if(new_disp.size() != 3)
     throw("Wrong length of displacement vector:"+to_string(new_disp.size())+" in node:"+to_string(this->nodeID));
 
-  for(int ii=0;ii<3;ii++)
-    new_disp[ii] -= coords[ii];
+  new_disp[0] -= coords[0];
+  new_disp[1] -= coords[1];
+  new_disp[2] -= coords[2];
 
   this->disp.push_back(new_disp);
 }
@@ -67,8 +73,10 @@ void Node::add_disp(vector<float> new_disp){
  */
 void Node::add_vel(vector<float> new_vel){
 
+  #ifdef QD_DEBUG
   if(new_vel.size() != 3)
     throw("Wrong length of velocity vector:"+to_string(new_vel.size())+" in node:"+to_string(this->nodeID));
+  #endif
 
   this->vel.push_back(new_vel);
 }
@@ -79,30 +87,13 @@ void Node::add_vel(vector<float> new_vel){
  */
 void Node::add_accel(vector<float> new_accel){
 
+  #ifdef QD_DEBUG
   if(new_accel.size() != 3)
     throw("Wrong length of velocity vector:"+to_string(new_accel.size())+" in node:"+to_string(this->nodeID));
+  #endif
 
   this->accel.push_back(new_accel);
 }
-
-
-
-/*
- * Get the node id. The node id is the id
- * given by the user in the input deck.
- */
-int Node::get_nodeID(){
-  return this->nodeID;
-}
-
-
-/*
- * Get the elements of the node.
- */
-set<Element*> Node::get_elements(){
-  return this->elements;
-}
-
 
 
 /*
@@ -158,51 +149,3 @@ vector<float> Node::get_coords(int iTimestep){
 
 }
 
-
-/*
- * Get the coordinates of the node as an array
- * of length 3.
- */
-vector< vector<float> > Node::get_disp(){
-  return this->disp;
-}
-
-
-/*
- * Get the coordinates of the node as an array
- * of length 3.
- */
-vector< vector<float> > Node::get_vel(){
-  return this->vel;
-}
-
-
-/*
- * Get the coordinates of the node as an array
- * of length 3.
- */
-vector< vector<float> > Node::get_accel(){
-  return this->accel;
-}
-
-
-/** Clear a node of it's displacement field
- *
- */
-void Node::clear_disp(){
-  this->disp.clear();
-}
-
-/** Clear a node of it's velocity field
- *
- */
-void Node::clear_vel(){
-  this->vel.clear();
-}
-
-/** Clear a node of it's acceleration field
- *
- */
-void Node::clear_accel(){
-  this->accel.clear();
-}

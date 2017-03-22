@@ -11,6 +11,8 @@
 #include "../utility/TextUtility.hpp"
 #include "../utility/MathUtility.hpp"
 
+using namespace std;
+
 /*
  * Constructor.
  */
@@ -22,8 +24,8 @@ Element::Element(const int _elementID, const ElementType _elementType, const vec
                 nodes( _node_indexes ){
 
   // Checks
-  if (_db_elements == NULL)
-    throw(string("DB_Elements of an element may not be NULL in constructor."));
+  if (_db_elements == nullptr)
+    throw(string("DB_Elements of an element may not be nullptr in constructor."));
 
   this->check();
 
@@ -97,7 +99,7 @@ vector<Node*> Element::get_nodes() const {
   for(vector<size_t>::const_iterator it=this->nodes.begin(); it != this->nodes.end(); it++){
 
     Node* _node = db_nodes->get_nodeByIndex(*it);
-    if(_node != NULL){
+    if(_node != nullptr){
       node_vec.push_back(_node);
     } else{
       throw(string("Node with index:")+to_string(*it)+string(" in Element:")+to_string(this->elementID)+string(" was not found in DB."));
@@ -256,7 +258,7 @@ vector<float> Element::get_coords(int iTimestep) const {
 
    DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
 
-   Node* current_node = NULL;
+   Node* current_node = nullptr;
    vector<float> coords_elem(3);
    vector<float> coords_node;
    vector< vector<float> > disp_node;

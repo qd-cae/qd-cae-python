@@ -6,13 +6,11 @@
 #include <future>
 #include "AbstractBuffer.hpp"
 
-using namespace std;
-
 class FemzipBuffer : public AbstractBuffer {
 
   /* PRIVATE */
   private:
-  string filepath;
+  std::string filepath;
   int wordSize; // byte
 
   std::future<char*> next_state_buffer;
@@ -37,12 +35,12 @@ class FemzipBuffer : public AbstractBuffer {
   // config
   int adjust;
 
-  void check_ier(string);
+  void check_ier(std::string);
   void init_vars();
 
   /* PUBLIC */
   public:
-  FemzipBuffer(string);
+  FemzipBuffer(std::string);
   ~FemzipBuffer();
   void read_geometryBuffer();
   void free_geometryBuffer();
@@ -61,7 +59,7 @@ class FemzipBuffer : public AbstractBuffer {
   // var reading
   int read_int(int);
   float read_float(int);
-  string read_str(int,int);
+  std::string read_str(int,int);
 
 };
 

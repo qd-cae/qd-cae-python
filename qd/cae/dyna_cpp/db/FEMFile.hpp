@@ -12,15 +12,12 @@ class DB_Nodes;
 class DB_Parts;
 class DB_Elements;
 
-// namespaces
-using namespace std;
-
 /** Superclass for all FEM-Files
  */
 class FEMFile {
 
 private:
-   string filepath;
+   std::string filepath;
    DB_Nodes* db_nodes;
    DB_Parts* db_parts;
    DB_Elements* db_elements;
@@ -28,13 +25,13 @@ private:
 
 public:
    FEMFile();
-   FEMFile(string filepath);
+   FEMFile(const std::string& filepath);
    virtual ~FEMFile();
-   void set_filepath(string filepath);
-   string get_filepath();
-   DB_Nodes* get_db_nodes();
-   DB_Parts* get_db_parts();
-   DB_Elements* get_db_elements();
+   void set_filepath(const std::string& filepath);
+   std::string get_filepath();
+   inline DB_Nodes* get_db_nodes(){return this->db_nodes;}
+   inline DB_Parts* get_db_parts(){return this->db_parts;}
+   inline DB_Elements* get_db_elements(){return this->db_elements;}
    virtual bool is_d3plot() = 0;
    virtual bool is_keyFile() = 0;
    virtual D3plot* get_d3plot() = 0;

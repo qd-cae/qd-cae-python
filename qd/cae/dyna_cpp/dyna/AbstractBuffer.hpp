@@ -4,8 +4,6 @@
 
 #include <string.h>
 
-using namespace std;
-
 class AbstractBuffer{
 
   public:
@@ -30,7 +28,7 @@ class AbstractBuffer{
   // Vars
   virtual int read_int(int)=0;
   virtual float read_float(int)=0;
-  virtual string read_str(int,int)=0;
+  virtual std::string read_str(int,int)=0;
 
 };
 

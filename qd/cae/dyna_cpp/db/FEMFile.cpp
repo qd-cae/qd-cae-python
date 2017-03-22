@@ -4,6 +4,8 @@
 #include "../db/DB_Parts.hpp"
 #include "../db/DB_Elements.hpp"
 
+using namespace std;
+
 /** Constructor for a new FEMFile
  */
 FEMFile::FEMFile(){
@@ -15,7 +17,7 @@ FEMFile::FEMFile(){
 /** Constructor for a new FEMFile from a filepath
  * @param string _filepath
  */
-FEMFile::FEMFile(string _filepath){
+FEMFile::FEMFile(const string& _filepath){
    // assign vars
    this->init_vars();
    this->filepath = _filepath;
@@ -25,13 +27,13 @@ FEMFile::FEMFile(string _filepath){
 /** Destructor for a new FEMFile
  */
 FEMFile::~FEMFile(){
-   if(this->db_nodes != NULL){
+   if(this->db_nodes != nullptr){
       delete this->db_nodes;
    }
-   if(this->db_parts != NULL){
+   if(this->db_parts != nullptr){
       delete this->db_parts;
    }
-   if(this->db_elements != NULL){
+   if(this->db_elements != nullptr){
       delete this->db_elements;
    }
 }
@@ -50,7 +52,7 @@ void FEMFile::init_vars(){
 /** Reset the currents file filepath
  * @param string _filepath : new filepath
  */
-void FEMFile::set_filepath(string _filepath){
+void FEMFile::set_filepath(const string& _filepath){
    this->filepath = _filepath;
 }
 
@@ -61,23 +63,3 @@ string FEMFile::get_filepath(){
    return this->filepath;
 }
 
-/** Return the pointer to the node db.
- * @return DB_Nodes* db_nodes
- */
-DB_Nodes* FEMFile::get_db_nodes(){
-   return this->db_nodes;
-}
-
-/** Return the pointer to the part db.
- * @return DB_Parts* db_parts
- */
-DB_Parts* FEMFile::get_db_parts(){
-   return this->db_parts;
-}
-
-/** Return the pointer to the element db.
- * @return DB_Elements* db_elements
- */
-DB_Elements* FEMFile::get_db_elements(){
-   return this->db_elements;
-}

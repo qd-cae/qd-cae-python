@@ -18,8 +18,8 @@ QD_Node_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
   self = (QD_Node *)type->tp_alloc(type, 0);
 
   // Init vars if any ...
-  if (self != NULL){
-    self->node = NULL;
+  if (self != nullptr){
+    self->node = nullptr;
   }
 
   return (PyObject*) self;
@@ -39,7 +39,7 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
   bool use_index = false;
   static char *kwlist[] = {const_cast<char*>("femfile"),
                            const_cast<char*>("nodeID"),
-                           const_cast<char*>("use_index"), NULL}; // TODO Deprecated!
+                           const_cast<char*>("use_index"), nullptr}; // TODO Deprecated!
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi|O", kwlist, &femFile_obj_py, &iNode, &use_index_py)){
       return -1;
@@ -53,8 +53,8 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
 
   femFile_py = (QD_FEMFile*) femFile_obj_py;
 
-  if(femFile_py->instance == NULL){
-    string message("Pointer to C++ File-Object is NULL.");
+  if(femFile_py->instance == nullptr){
+    string message("Pointer to C++ File-Object is nullptr.");
     PyErr_SetString(PyExc_RuntimeError, message.c_str());
     return -1;
   }
@@ -68,7 +68,7 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
     self->node = femFile_py->instance->get_db_nodes()->get_nodeByID(iNode);
   }
 
-  if(self->node == NULL){
+  if(self->node == nullptr){
     string message("Could not find any node with ID/Index "+to_string(iNode)+".");
     PyErr_SetString(PyExc_RuntimeError,message.c_str());
     Py_DECREF(self->femFile_py);
@@ -82,11 +82,11 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
 static PyObject* 
 QD_Node_richcompare(QD_Node *self, PyObject *other, int op){
 
-  PyObject *result = NULL;
+  PyObject *result = nullptr;
 
   if( !PyObject_TypeCheck(other, &QD_Node_Type) ){
     PyErr_SetString(PyExc_ValueError, "Comparison of nodes work only with other nodes.");
-    return NULL;
+    return nullptr;
   }
 
   QD_Node *other_node = (QD_Node*) other;
@@ -146,9 +146,9 @@ QD_Node_richcompare(QD_Node *self, PyObject *other, int op){
 static PyObject *
 QD_Node_get_NodeID(QD_Node* self){
 
-  if(self->node == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is NULL.");
-    return NULL;
+  if(self->node == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    return nullptr;
   }
 
   int nodeID = self->node->get_nodeID();
@@ -162,23 +162,23 @@ QD_Node_get_NodeID(QD_Node* self){
 static PyObject *
 QD_Node_get_coords(QD_Node* self, PyObject *args, PyObject *kwds){
 
-  if(self->node == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is NULL.");
-    return NULL;
+  if(self->node == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    return nullptr;
   }
 
   int iTimestep = 0;
-  static char *kwlist[] = {const_cast<char*>("iTimestep"),NULL}; // TODO Deprecated!
+  static char *kwlist[] = {const_cast<char*>("iTimestep"),nullptr}; // TODO Deprecated!
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &iTimestep)){
-      return NULL;
+      return nullptr;
   }
 
   try{
     return (PyObject*) vector_to_nparray(self->node->get_coords(iTimestep)); // numpy ... yay
   } catch (string e){
     PyErr_SetString(PyExc_RuntimeError, e.c_str());
-    return NULL;
+    return nullptr;
   }
 
 }
@@ -187,9 +187,9 @@ QD_Node_get_coords(QD_Node* self, PyObject *args, PyObject *kwds){
 static PyObject *
 QD_Node_get_disp(QD_Node* self){
 
-  if(self->node == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is NULL.");
-    return NULL;
+  if(self->node == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    return nullptr;
   }
 
   // return numpy array
@@ -202,9 +202,9 @@ QD_Node_get_disp(QD_Node* self){
 static PyObject *
 QD_Node_get_vel(QD_Node* self){
 
-  if(self->node == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is NULL.");
-    return NULL;
+  if(self->node == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    return nullptr;
   }
 
   return  (PyObject*) vector_to_nparray(self->node->get_vel());
@@ -216,33 +216,32 @@ QD_Node_get_vel(QD_Node* self){
 static PyObject *
 QD_Node_get_accel(QD_Node* self){
 
-  if(self->node == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is NULL.");
-    return NULL;
+  if(self->node == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    return nullptr;
   }
 
   return (PyObject*) vector_to_nparray(self->node->get_accel());
 
 }
 
+
 /* FUNCTION get_elements */
 static PyObject *
 QD_Node_get_elements(QD_Node* self){
 
-  if(self->node == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->node == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
-  set<Element*> elements = self->node->get_elements();
+  vector<Element*> elements = self->node->get_elements();
 
   int check=0;
   PyObject* element_list = PyList_New(elements.size());
   unsigned int ii=0;
 
-  for(set<Element*>::iterator it=elements.begin(); it != elements.end(); ++it){
-//    for(auto element : elements){ // -std=c++11 rulez
-    Element* element = *it;
+  for(const auto& element : elements){ 
 
     PyObject* elementType_py;
     if(element->get_elementType() == 1){
@@ -253,7 +252,7 @@ QD_Node_get_elements(QD_Node* self){
       elementType_py = Py_BuildValue("s","solid");
     } else {
       PyErr_SetString(PyExc_SyntaxError, "Developer Error, unknown element-type.");
-      return NULL;
+      return nullptr;
     }
 
     PyObject *argList2 = Py_BuildValue("OOi",self->femFile_py, elementType_py, element->get_elementID());
@@ -269,7 +268,7 @@ QD_Node_get_elements(QD_Node* self){
   if(check != 0){
     PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of element instance list.");
     Py_DECREF(element_list);
-    return NULL;
+    return nullptr;
   }
 
   return element_list;

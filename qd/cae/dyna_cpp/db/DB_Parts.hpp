@@ -4,34 +4,33 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <memory>
+#include <unordered_map>
 
+// forward declarations
 class Part;
 class FEMFile;
-
-using namespace std;
 
 class DB_Parts {
 
 private:
-  map<int,Part*> parts;
-  map<int,Part*> partsByIndex;
   FEMFile* femfile;
+  std::vector< std::unique_ptr<Part> > parts;
+  std::unordered_map<int,size_t> id2index;
 
 public:
   DB_Parts(FEMFile* _femfile);
   ~DB_Parts();
 
-  size_t size();
-  void print_parts();
-  vector<Part*> get_parts();
-  Part* get_part_byName(string);
+  size_t size() const;
+  void print_parts() const;
+  std::vector<Part*> get_parts();
+  Part* get_part_byName(const std::string&);
   template<typename T>
   Part* get_part_byID(T _id);
   template<typename T>
   Part* get_part_byIndex(T _index);
-  Part* add_part(int _partIndex, int _partID);
-  Part* add_part_byID(int _partID);
+  Part* add_part_byID(int _partID, const std::string& name="");
 
 };
 
@@ -39,14 +38,14 @@ public:
 template<typename T>
 Part* DB_Parts::get_part_byID(T _id){
 
-  map<int,Part*>::iterator it = this->parts.find(_id);
+  static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  // Part existing
-  if(it != parts.end()){
-    return it->second;
+  const auto& it = this->id2index.find(_id);
+  if(it != id2index.end()){
+    return parts[it->second].get();
   } else {
     // :(
-    return NULL;
+    return nullptr;
   }
 
 }
@@ -55,14 +54,14 @@ Part* DB_Parts::get_part_byID(T _id){
 template<typename T>
 Part* DB_Parts::get_part_byIndex(T _index){
 
-  map<int,Part*>::iterator it = this->partsByIndex.find(_index);
+  static_assert(std::is_integral<T>::value, "Integer number required.");
 
   // Part existing
-  if(it != this->partsByIndex.end()){
-    return it->second;
+  if( _index < parts.size() ){
+    return parts[_index].get();
   } else {
     // :(
-    return NULL;
+    return nullptr;
   }
 
 }

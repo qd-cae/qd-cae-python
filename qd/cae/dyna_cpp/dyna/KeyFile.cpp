@@ -14,6 +14,7 @@
 #include "../db/Part.hpp"
 #include "KeyFile.hpp"
 
+using namespace std;
 using namespace boost::algorithm;
 
 // Enumeration

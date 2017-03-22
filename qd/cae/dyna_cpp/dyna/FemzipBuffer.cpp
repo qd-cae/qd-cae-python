@@ -10,6 +10,8 @@ extern "C"
 #include <bitset>
 #include <sstream>
 
+using namespace std;
+
 /*
  * Constructor
  */

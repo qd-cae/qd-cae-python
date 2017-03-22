@@ -7,6 +7,8 @@
 #include "../utility/FileUtility.hpp"
 #include "D3plotBuffer.hpp"
 
+using namespace std;
+
 /*
  * Constructor
  */

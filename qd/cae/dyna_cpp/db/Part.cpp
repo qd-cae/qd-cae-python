@@ -1,10 +1,14 @@
 
 #include "Part.hpp"
 #include "Node.hpp"
-#include "Element.hpp"
 #include "DB_Nodes.hpp"
 #include "FEMFile.hpp"
 
+#include <set>
+#include <iostream>
+#include <iterator>
+
+using namespace std;
 
 /**
  * Constructor
@@ -92,7 +96,7 @@ vector<Node*> Part::get_nodes(){
     nodes.push_back( db_nodes->get_nodeByIndex(*it) );
   }
 
-  return nodes;
+  return std::move(nodes);
 }
 
 
@@ -106,7 +110,7 @@ vector<Element*> Part::get_elements(ElementType _etype){
 
   } else {
     
-    Element* tmp_elem = NULL;
+    Element* tmp_elem = nullptr;
     vector<Element*> _elems;
 
     for(vector<Element*>::iterator it=this->elements.begin(); it != this->elements.end(); ++it ){
