@@ -560,7 +560,7 @@ element.get_stress().shape
 
 *return: (np.array) time series of the mises stress vector*
 
-This function returns a time series of the mises stress.
+This function returns a time series of the mises stress. Note that this data does not refer to the internal stress tensor! This is for the reason that, if one uses the read mode max for shells on the full stress tensor and then calculates the von Mises stress, it is not the same as if one would compute the Mises stress for every integration layer and then draw the max afterwards. After all this is the correct way.
 
 ```python
 element.get_stress_mises().shape
