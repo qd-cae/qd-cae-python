@@ -179,7 +179,11 @@ By adding a filepath for export the model will not be plotted but saved to the g
 d3plot.plot(iTimestep=25, element_result="plastic_strain", fringe_bounds=[0,0.05])
 
 # export with user defined result function
-eval_function = lambda elem : elem.get_plastic_strain()[-1]
+def eval_function(elem):
+  results = elem.get_plastic_strain()
+  if len(results): # rigid shells have no plastic strain saved
+    return results[-1] # last timestep
+
 d3plot.plot(iTimestep=25, element_result=eval_function, fringe_bounds=[0,0.05], export_filepath="Path/To/export.html")
 ```
 
