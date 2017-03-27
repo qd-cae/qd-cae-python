@@ -1,7 +1,7 @@
 
-#include "DynaKeyword.hpp"
-#include "../utility/BoostException.hpp"
-#include "../utility/TextUtility.hpp"
+#include "dyna_cpp/dyna/DynaKeyword.hpp"
+#include "dyna_cpp/utility/BoostException.hpp"
+#include "dyna_cpp/utility/TextUtility.hpp"
 #include <boost/algorithm/string/trim.hpp>
 
 using namespace std;

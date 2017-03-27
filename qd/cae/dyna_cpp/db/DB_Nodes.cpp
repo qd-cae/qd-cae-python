@@ -3,7 +3,6 @@
 #include "DB_Elements.hpp"
 #include "DB_Nodes.hpp"
 #include "Node.hpp"
-#include "../utility/TextUtility.hpp"
 
 using namespace std;
 

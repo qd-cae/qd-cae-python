@@ -1,18 +1,18 @@
 
-#include <sstream>
+
 #include <string.h>
 #include <iostream>
-#include <bitset>
 #include <fstream>
-#include "../utility/FileUtility.hpp"
-#include "D3plotBuffer.hpp"
+#include "dyna_cpp/utility/FileUtility.hpp"
+#include "dyna_cpp/dyna/D3plotBuffer.hpp"
 
 using namespace std;
 
 /*
  * Constructor
  */
-D3plotBuffer::D3plotBuffer(string _d3plot_path, int _wordSize){
+D3plotBuffer::D3plotBuffer(string _d3plot_path, int _wordSize)
+  : AbstractBuffer(_wordSize) {
 
   // Init vars
   iStateFile = 0;
@@ -206,50 +206,4 @@ void D3plotBuffer::end_nextState(){
 void D3plotBuffer::finish_reading(){
 
   this->current_buffer.clear();
-}
-
-/*
- * read an int from the current buffer
- */
-int D3plotBuffer::read_int(int iWord){
-  //if(this->bufferSize <= iWord*this->wordSize){
-  //  throw("read_int tries to read beyond the buffer size.");
-  //}
-
-  // BIG ENDIAN ?
-  // SMALL ENDIAN ?
-  int start=iWord*this->wordSize;
-  return (((current_buffer[start + 3] & 0xff) << 24)
-          | ((current_buffer[ start+ 2] & 0xff) << 16)
-          | ((current_buffer[start + 1] & 0xff) << 8)
-          | ((current_buffer[start + 0] & 0xff)));
-}
-
-
-/*
- * read a float from the current buffer
- */
-float D3plotBuffer::read_float(int iWord){
-  //if(this->bufferSize <= iWord*this->wordSize){
-  //  throw("read_float tries to read beyond the buffer size.");
-  //}
-  float ret;
-  memcpy(&ret, &current_buffer[iWord*this->wordSize], sizeof(ret));
-  return ret;
-  //return (float) this->buffer[iWord*this->wordSize];
-}
-
-
-/*
- * read a string from the current buffer
- */
-string D3plotBuffer::read_str(int iWord,int wordLength){
-  //if(this->bufferSize <= (iWord+wordLength)*this->wordSize){
-  //  throw("read_str tries to read beyond the buffer size.");
-  stringstream res;
-  for(int ii=iWord*this->wordSize;ii<(iWord+wordLength)*this->wordSize;ii++){
-    res << char(bitset<8>(this->current_buffer[ii]).to_ulong());
-  }
-
-  return res.str();
 }

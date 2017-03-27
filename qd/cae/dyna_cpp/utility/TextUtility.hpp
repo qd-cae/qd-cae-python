@@ -17,7 +17,7 @@
  * @return string result
  */
 template <typename T>
-std::string to_string(T const & value)
+std::string to_string(T const &value)
 {
 	std::ostringstream os ;
 	os << value ;
@@ -29,7 +29,7 @@ std::string to_string(T const & value)
 * @return string result
 */
 template <typename T>
-T string_to_type(std::string const & str){
+T string_to_type(std::string const &str){
    T value;
    std::stringstream ss(str);
    ss >> value;
@@ -41,7 +41,7 @@ T string_to_type(std::string const & str){
  * @param std::string _text
  */
 template <typename T>
-std::vector<T> extract_integers(const std::string& text){
+std::vector<T> extract_integers(const std::string &text){
 
    std::vector<T> numbers;
 
@@ -69,7 +69,7 @@ std::vector<T> extract_integers(const std::string& text){
  *
  * Also returns true if the string is empty.
  */
- static bool string_has_only_numbers(const std::string& _text, size_t start_pos){
+ static bool string_has_only_numbers(const std::string &_text, size_t start_pos){
 
     // Check
     if(_text.size() == start_pos){

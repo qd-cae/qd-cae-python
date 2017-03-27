@@ -14,7 +14,7 @@ class FEMFile;
 #include <memory>
 #include <unordered_map>
 #include "Element.hpp"
-#include "../utility/TextUtility.hpp"
+#include "dyna_cpp/utility/TextUtility.hpp"
 
 class DB_Elements {
 

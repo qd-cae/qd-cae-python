@@ -2,13 +2,13 @@
 #include <string>
 #include <vector>
 
-#include "DB_Elements.hpp"
-#include "DB_Nodes.hpp"
-#include "DB_Parts.hpp"
-#include "Element.hpp"
-#include "Node.hpp"
-#include "Part.hpp"
-#include "FEMFile.hpp"
+#include "dyna_cpp/db/DB_Elements.hpp"
+#include "dyna_cpp/db/DB_Nodes.hpp"
+#include "dyna_cpp/db/DB_Parts.hpp"
+#include "dyna_cpp/db/Element.hpp"
+#include "dyna_cpp/db/Node.hpp"
+#include "dyna_cpp/db/Part.hpp"
+#include "dyna_cpp/db/FEMFile.hpp"
 
 using namespace std;
 

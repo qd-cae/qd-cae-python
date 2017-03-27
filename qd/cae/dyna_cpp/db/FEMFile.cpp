@@ -1,8 +1,8 @@
 
-#include "FEMFile.hpp"
-#include "../db/DB_Nodes.hpp"
-#include "../db/DB_Parts.hpp"
-#include "../db/DB_Elements.hpp"
+#include "dyna_cpp/db/FEMFile.hpp"
+#include "dyna_cpp/db/DB_Nodes.hpp"
+#include "dyna_cpp/db/DB_Parts.hpp"
+#include "dyna_cpp/db/DB_Elements.hpp"
 
 using namespace std;
 

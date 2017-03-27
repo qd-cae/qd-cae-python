@@ -1,6 +1,6 @@
 
-#include "FileUtility.hpp"
-#include "TextUtility.hpp"
+#include "dyna_cpp/utility/FileUtility.hpp"
+#include "dyna_cpp/utility/TextUtility.hpp"
 #include <iostream>
 #include <stdlib.h>
 #include <string>
@@ -15,6 +15,7 @@
 	#include "glob.h"
 #endif
 
+using namespace std;
 
 /** Read the lines of a text file into a vector
  * @param string filepath : path of the text file

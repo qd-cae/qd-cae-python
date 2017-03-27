@@ -18,8 +18,8 @@ QD_Element_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
   self = (QD_Element *)type->tp_alloc(type, 0);
 
   // Init vars if any ...
-  if (self != NULL){
-    self->element = NULL;
+  if (self != nullptr){
+    self->element = nullptr;
   }
 
   return (PyObject*) self;
@@ -37,7 +37,7 @@ QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
   int elementID;
   static char *kwlist[] = {const_cast<char*>("femfile"),
                            const_cast<char*>("elementType"),
-                           const_cast<char*>("elementID"), NULL}; // TODO Deprecated!
+                           const_cast<char*>("elementID"), nullptr}; // TODO Deprecated!
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "Osi", kwlist, &femfile_obj_py, &elementType_c, &elementID)){
      return -1;
@@ -63,8 +63,8 @@ QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
 
   QD_FEMFile* femFile_py = (QD_FEMFile*) femfile_obj_py;
 
-  if(femFile_py->instance == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ File-Object is NULL.");
+  if(femFile_py->instance == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ File-Object is nullptr.");
     return -1;
   }
 
@@ -72,7 +72,7 @@ QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
   Py_INCREF(self->femFile_py);
   self->element = femFile_py->instance->get_db_elements()->get_elementByID(elementType,elementID);
 
-  if(self->element == NULL){
+  if(self->element == nullptr){
     PyErr_SetString(PyExc_RuntimeError,string("Could not find any element with ID: "+to_string(elementID)+".").c_str());
     return -1;
   }
@@ -84,11 +84,11 @@ QD_Element_init(QD_Element *self, PyObject *args, PyObject *kwds)
 static PyObject* 
 QD_Element_richcompare(QD_Element *self, PyObject *other, int op){
 
-  PyObject *result = NULL;
+  PyObject *result = nullptr;
 
   if( !PyObject_TypeCheck(other, &QD_Element_Type) ){
     PyErr_SetString(PyExc_ValueError, "Comparison of elements work only with other elements.");
-    return NULL;
+    return nullptr;
   }
 
   QD_Element *other_elem = (QD_Element*) other;
@@ -149,9 +149,9 @@ QD_Element_richcompare(QD_Element *self, PyObject *other, int op){
 static PyObject *
 QD_Element_get_elementID(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   int elementID = self->element->get_elementID();
@@ -164,9 +164,9 @@ QD_Element_get_elementID(QD_Element* self){
 static PyObject *
 QD_Element_get_plastic_strain(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   return (PyObject*) vector_to_nparray(self->element->get_plastic_strain());
@@ -178,9 +178,9 @@ QD_Element_get_plastic_strain(QD_Element* self){
 static PyObject *
 QD_Element_get_energy(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   return (PyObject*) vector_to_nparray(self->element->get_energy());
@@ -192,9 +192,9 @@ QD_Element_get_energy(QD_Element* self){
 static PyObject *
 QD_Element_get_strain(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   return (PyObject*) vector_to_nparray(self->element->get_strain());
@@ -206,9 +206,9 @@ QD_Element_get_strain(QD_Element* self){
 static PyObject *
 QD_Element_get_stress(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   return (PyObject*) vector_to_nparray(self->element->get_stress());
@@ -220,9 +220,9 @@ QD_Element_get_stress(QD_Element* self){
 static PyObject *
 QD_Element_get_stress_mises(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   return (PyObject*) vector_to_nparray(self->element->get_stress_mises());
@@ -233,9 +233,9 @@ QD_Element_get_stress_mises(QD_Element* self){
 static PyObject *
 QD_Element_get_nodes(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   vector<Node*> nodes = self->element->get_nodes();
@@ -245,7 +245,7 @@ QD_Element_get_nodes(QD_Element* self){
   PyObject* node_list = PyList_New(nodes.size());
 
   unsigned int ii=0;
-  Node* node = NULL;
+  Node* node = nullptr;
   for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); ++it){
     node = *it;
 
@@ -261,7 +261,7 @@ QD_Element_get_nodes(QD_Element* self){
   if(check != 0){
     Py_DECREF(node_list);
     PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of node instance list.");
-    return NULL;
+    return nullptr;
   }
 
   return node_list;
@@ -272,26 +272,26 @@ QD_Element_get_nodes(QD_Element* self){
 static PyObject *
 QD_Element_get_coords(QD_Element* self, PyObject *args, PyObject *kwds){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   int iTimestep = 0;
-  static char *kwlist[] = {const_cast<char*>("iTimestep"),NULL}; // TODO Deprecated!
+  static char *kwlist[] = {const_cast<char*>("iTimestep"),nullptr}; // TODO Deprecated!
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &iTimestep)){
-     return NULL;
+     return nullptr;
   }
     /*
   if (!PyArg_ParseTuple(args, "|i", &iTimestep))
-    return NULL;*/
+    return nullptr;*/
 
   try{
     return (PyObject*) vector_to_nparray(self->element->get_coords(iTimestep));
   } catch (string e){
     PyErr_SetString(PyExc_RuntimeError, e.c_str());
-    return NULL;
+    return nullptr;
   }
 
 }
@@ -300,9 +300,9 @@ QD_Element_get_coords(QD_Element* self, PyObject *args, PyObject *kwds){
 static PyObject *
 QD_Element_get_history(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   return (PyObject*) vector_to_nparray(self->element->get_history_vars());
@@ -313,9 +313,9 @@ QD_Element_get_history(QD_Element* self){
 static PyObject *
 QD_Element_get_estimated_size(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   return Py_BuildValue("f",self->element->get_estimated_element_size());
@@ -327,9 +327,9 @@ QD_Element_get_estimated_size(QD_Element* self){
 static PyObject *
 QD_Element_get_type(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   ElementType type = self->element->get_elementType();
@@ -341,7 +341,7 @@ QD_Element_get_type(QD_Element* self){
     return Py_BuildValue("s","beam");
   } else {
     PyErr_SetString(PyExc_AttributeError,"Unknown element type detected.");
-    return NULL;
+    return nullptr;
   }
 
 }
@@ -350,9 +350,9 @@ QD_Element_get_type(QD_Element* self){
 static PyObject *
 QD_Element_get_is_rigid(QD_Element* self){
 
-  if(self->element == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is NULL.");
-    return NULL;
+  if(self->element == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    return nullptr;
   }
 
   if( self->element->get_is_rigid() ){

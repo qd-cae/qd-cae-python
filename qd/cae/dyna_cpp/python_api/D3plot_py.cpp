@@ -4,10 +4,10 @@ static void
 QD_D3plot_dealloc(QD_D3plot* self)
 {
 
-  if(self->d3plot != NULL){
+  if(self->d3plot != nullptr){
     delete self->d3plot;
-    self->d3plot = NULL;
-    self->femfile.instance = NULL; // = self->d3plot
+    self->d3plot = nullptr;
+    self->femfile.instance = nullptr; // = self->d3plot
   }
 
  #ifdef QD_DEBUG
@@ -25,9 +25,9 @@ QD_D3plot_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
   self = (QD_D3plot *)type->tp_alloc(type, 0);
 
   // Init vars if any ...
-  if (self != NULL){
-    self->d3plot = NULL;
-    self->femfile.instance = NULL;
+  if (self != nullptr){
+    self->d3plot = nullptr;
+    self->femfile.instance = nullptr;
   }
 
   return (PyObject*) self;
@@ -44,7 +44,7 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
   char* filepath_c;
   static char *kwlist[] = {const_cast<char*>("filepath"),
                            const_cast<char*>("use_femzip"),
-                           const_cast<char*>("read_states"),NULL}; // TODO Deprecated!
+                           const_cast<char*>("read_states"),nullptr}; // TODO Deprecated!
 
 
   PyObject* read_states_py = Py_None;
@@ -107,7 +107,7 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
 
     //self->d3plot = new D3plot(string(filepath_c));
   } else {
-    PyErr_SetString(PyExc_ValueError,"Filepath is NULL");
+    PyErr_SetString(PyExc_ValueError,"Filepath is nullptr");
     return -1;
   }
 
@@ -119,9 +119,9 @@ QD_D3plot_init(QD_D3plot *self, PyObject *args, PyObject *kwds)
 static PyObject *
 QD_D3plot_get_timesteps(QD_D3plot* self){
 
-  if (self->d3plot == NULL) {
-      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer NULL.");
-      return NULL;
+  if (self->d3plot == nullptr) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer nullptr.");
+      return nullptr;
   }
 
   return (PyObject*) vector_to_nparray(self->d3plot->get_timesteps());
@@ -132,9 +132,9 @@ QD_D3plot_get_timesteps(QD_D3plot* self){
 static PyObject *
 QD_D3plot_info(QD_D3plot* self){
 
-  if (self->d3plot == NULL) {
-      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer NULL.");
-      return NULL;
+  if (self->d3plot == nullptr) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer nullptr.");
+      return nullptr;
   }
 
   self->d3plot->info();
@@ -148,15 +148,15 @@ QD_D3plot_info(QD_D3plot* self){
 static PyObject *
 QD_D3plot_clear(QD_D3plot* self, PyObject* args){
 
-  if (self->d3plot == NULL) {
-      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer NULL.");
-      return NULL;
+  if (self->d3plot == nullptr) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer nullptr.");
+      return nullptr;
   }
 
   // parse args
-  PyObject *var_list_py = NULL;
+  PyObject *var_list_py = nullptr;
   if (!PyArg_ParseTuple(args, "|O", &var_list_py))
-    return NULL;  
+    return nullptr;  
 
   try {
 
@@ -171,7 +171,7 @@ QD_D3plot_clear(QD_D3plot* self, PyObject* args){
 
   } catch (const string& err) {
     PyErr_SetString(PyExc_RuntimeError, err.c_str() );
-    return NULL;
+    return nullptr;
   }
 
   return Py_None;
@@ -183,14 +183,14 @@ QD_D3plot_clear(QD_D3plot* self, PyObject* args){
 static PyObject *
 QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
 
-  if (self->d3plot == NULL) {
-      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer NULL.");
-      return NULL;
+  if (self->d3plot == nullptr) {
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error d3plot pointer nullptr.");
+      return nullptr;
   }
 
   PyObject* argument;
   if (!PyArg_ParseTuple(args, "O", &argument))
-    return NULL;
+    return nullptr;
 
   if(qd::isPyStr(argument)){
 
@@ -204,10 +204,10 @@ QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
       self->d3plot->read_states(variables);
     } catch (const char* e){
       PyErr_SetString(PyExc_RuntimeError, e);
-      return NULL;
+      return nullptr;
     } catch (string e){
       PyErr_SetString(PyExc_RuntimeError, e.c_str());
-      return NULL;
+      return nullptr;
     }
 
     return Py_None;
@@ -223,7 +223,7 @@ QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
         if(!qd::isPyStr(item)){
           string message = "Item in list is not of type string.";
           PyErr_SetString(PyExc_ValueError,message.c_str() );
-          return NULL;
+          return nullptr;
         }
 
         // here we go
@@ -235,10 +235,10 @@ QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
         self->d3plot->read_states(variables);
       } catch (const char* e){
         PyErr_SetString(PyExc_RuntimeError, e);
-        return NULL;
+        return nullptr;
       } catch (string e){
         PyErr_SetString(PyExc_RuntimeError, e.c_str());
-        return NULL;
+        return nullptr;
       }
 
       return Py_None;
@@ -246,6 +246,6 @@ QD_D3plot_read_states(QD_D3plot* self, PyObject* args){
   }
 
   PyErr_SetString(PyExc_ValueError, "Error, argument is neither int nor list of int.");
-  return NULL;
+  return nullptr;
 
 }

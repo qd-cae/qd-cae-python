@@ -3,16 +3,15 @@
 #define D3PLOTBUFFER_HPP
 
 #include <string>
+#include <vector>
 #include <future>
-#include "AbstractBuffer.hpp"
+#include "dyna_cpp/dyna/AbstractBuffer.hpp"
 
 class D3plotBuffer : public AbstractBuffer {
 
   private:
   unsigned int iStateFile;
-  std::vector<char> current_buffer;
   std::vector< std::future< std::vector<char> > > state_buffers; // preloaded states (REVERSED!!!)
-  int wordSize;
   long bufferSize;
   std::vector<std::string> d3plots;
   static std::vector<char> get_bufferFromFile(std::string); // helper function
@@ -34,11 +33,7 @@ class D3plotBuffer : public AbstractBuffer {
   // Close
   void finish_reading();
 
-  // var reading
-  int read_int(int);
-  float read_float(int);
-  std::string read_str(int,int);
-
 };
+
 
 #endif

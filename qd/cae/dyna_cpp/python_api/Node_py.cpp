@@ -39,7 +39,7 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
   bool use_index = false;
   static char *kwlist[] = {const_cast<char*>("femfile"),
                            const_cast<char*>("nodeID"),
-                           const_cast<char*>("use_index"), nullptr}; // TODO Deprecated!
+                           const_cast<char*>("use_index"), nullptr};
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi|O", kwlist, &femFile_obj_py, &iNode, &use_index_py)){
       return -1;

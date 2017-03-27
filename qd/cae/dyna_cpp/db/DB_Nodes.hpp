@@ -12,6 +12,7 @@ class DB_Elements;
 #include <memory>
 #include <vector>
 #include <string>
+#include "dyna_cpp/utility/TextUtility.hpp"
 
 class DB_Nodes {
 

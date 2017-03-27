@@ -2,17 +2,17 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>      // std::invalid_argument
-#include "../utility/BoostException.hpp"
+#include "dyna_cpp/utility/BoostException.hpp"
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include "../utility/FileUtility.hpp"
-#include "../utility/TextUtility.hpp"
-#include "../db/DB_Nodes.hpp"
-#include "../db/DB_Elements.hpp"
-#include "../db/DB_Parts.hpp"
-#include "../db/Element.hpp"
-#include "../db/Part.hpp"
-#include "KeyFile.hpp"
+#include "dyna_cpp/utility/FileUtility.hpp"
+#include "dyna_cpp/utility/TextUtility.hpp"
+#include "dyna_cpp/db/DB_Nodes.hpp"
+#include "dyna_cpp/db/DB_Elements.hpp"
+#include "dyna_cpp/db/DB_Parts.hpp"
+#include "dyna_cpp/db/Element.hpp"
+#include "dyna_cpp/db/Part.hpp"
+#include "dyna_cpp/dyna/KeyFile.hpp"
 
 using namespace std;
 using namespace boost::algorithm;

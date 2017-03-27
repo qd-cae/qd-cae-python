@@ -34,7 +34,7 @@ if not os.path.isdir(boost_path) and (platform.system() == "Windows"):
     #b2 --toolset=msvc-10.0 --build-type=complete architecture=x86 address-model=64 stage
     
 compiler_args_dyna = []
-include_dirs_dyna = [boost_path,np.get_include()]
+include_dirs_dyna = [boost_path, np.get_include(), "qd/cae"]
 lib_dirs_dyna = [] # ["libs/boost_1_61_0/lib64-msvc-9.0"]
 libs_dyna  = [] # ["boost_python"]
 srcs_dyna = ["qd/cae/dyna_cpp/python_api/wrapper.cpp",

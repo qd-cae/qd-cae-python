@@ -7,10 +7,9 @@
 #include <string>
 #include <typeinfo>
 #include <boost/python.hpp>
-#include "../utility/TextUtility.hpp"
+#include "dyna_cpp/utility/TextUtility.hpp"
 
 // namespaces
-using namespace std;
 namespace py = boost::python;
 
 /** Convert a python object to a cpp type.
@@ -37,9 +36,9 @@ T pyType_to_cppType(py::object _obj){
  * @return vector<T> vec : converted python list
  */
 template<typename T>
-vector<T> list_to_vector(py::list& _list){
+std::vector<T> list_to_vector(py::list& _list){
 
-   vector<T> vec;
+   std::vector<T> vec;
    for(size_t ii=0; ii < len(_list); ++ii){
          vec.push_back(py::extract<T>(_list[ii]));
    }

@@ -1,7 +1,7 @@
 
-#include "DB_Parts.hpp"
-#include "FEMFile.hpp"
-#include "Part.hpp"
+#include "dyna_cpp/db/DB_Parts.hpp"
+#include "dyna_cpp/db/FEMFile.hpp"
+#include "dyna_cpp/db/Part.hpp"
 
 using namespace std;
 

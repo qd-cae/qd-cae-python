@@ -2,11 +2,11 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 //#include "FEMFile_py.cpp"
-#include "D3plot_py.hpp"
-#include "Node_py.hpp"
-#include "Element_py.hpp"
-#include "Part_py.hpp"
-#include "KeyFile_py.hpp"
+#include "dyna_cpp/python_api/D3plot_py.hpp"
+#include "dyna_cpp/python_api/Node_py.hpp"
+#include "dyna_cpp/python_api/Element_py.hpp"
+#include "dyna_cpp/python_api/Part_py.hpp"
+#include "dyna_cpp/python_api/KeyFile_py.hpp"
 #include <limits>
 #include <string.h>
 #include <stdlib.h>
@@ -14,16 +14,16 @@
 #include <vector>
 #include <algorithm>
 #include <set>
-#include "../utility/TextUtility.hpp"
-#include "../utility/QD_Time.hpp"
-#include "../dyna/KeyFile.hpp"
-#include "../dyna/D3plot.hpp"
-#include "../db/DB_Elements.hpp"
-#include "../db/DB_Nodes.hpp"
-#include "../db/DB_Parts.hpp"
-#include "../db/Node.hpp"
-#include "../db/Part.hpp"
-#include "../db/Element.hpp"
+#include "dyna_cpp/utility/TextUtility.hpp"
+#include "dyna_cpp/utility/QD_Time.hpp"
+#include "dyna_cpp/dyna/KeyFile.hpp"
+#include "dyna_cpp/dyna/D3plot.hpp"
+#include "dyna_cpp/db/DB_Elements.hpp"
+#include "dyna_cpp/db/DB_Nodes.hpp"
+#include "dyna_cpp/db/DB_Parts.hpp"
+#include "dyna_cpp/db/Node.hpp"
+#include "dyna_cpp/db/Part.hpp"
+#include "dyna_cpp/db/Element.hpp"
 
 using namespace std;
 
@@ -34,7 +34,7 @@ using namespace std;
 
 // function termination for error stuff
 #ifdef ISPY3
-#define RETURN_INIT_ERROR return NULL
+#define RETURN_INIT_ERROR return nullptr
 #define PyInt_Check(arg) PyLong_Check(arg)
 #else
 #define RETURN_INIT_ERROR return
@@ -243,7 +243,7 @@ static vector<string> convert_list_to_str_vector(PyObject* obj){
   if(!PyList_Check(obj))
     throw(string("Argument is not a python list for conversion."));
 
-  PyObject *item = NULL;
+  PyObject *item = nullptr;
   vector<string> vec;
   for(size_t ii=0; ii<PySequence_Size(obj); ++ii){
 
@@ -293,14 +293,14 @@ extern "C" {
   error_out(PyObject *m) {
     struct module_state *st = GETSTATE(m);
     PyErr_SetString(st->error, "something bad happened");
-    return NULL;
+    return nullptr;
   }
 
-  /* MODULE codie function table */
+  /* MODULE function table */
   static PyMethodDef QDMethods[] = {
-    {"error_out", (PyCFunction)error_out, METH_NOARGS, NULL},
+    {"error_out", (PyCFunction)error_out, METH_NOARGS, nullptr},
     {"test_codie",  test_codie, METH_VARARGS,"Used for debugging sometimes."},
-    {NULL, NULL, 0, NULL}        /* Sentinel */
+    {nullptr, nullptr, 0, nullptr}        /* Sentinel */
   };
 
 
@@ -319,14 +319,14 @@ extern "C" {
 
   static PyModuleDef dyna_cpp_module = {
     PyModuleDef_HEAD_INIT,
-    "dyna_cpp",
-    "qd cae routines for LS-DYNA.",
-    sizeof(struct module_state),
-	  QDMethods,
-    NULL,
-    dyna_cpp_traverse,
-    dyna_cpp_clear,
-    NULL
+    "dyna_cpp",                       /* m_name */
+    "qd cae routines for LS-DYNA.",   /* m_doc */
+    sizeof(struct module_state),      /* m_size */
+	  QDMethods,                        /* m_methods */
+    nullptr,                          /* m_reload */
+    dyna_cpp_traverse,                /* m_traverse */
+    dyna_cpp_clear,                   /* m_clear */
+    nullptr                           /* m_free */
   };
   #endif
 
@@ -344,7 +344,7 @@ extern "C" {
     // Constructor
     if (PyType_Ready(&QD_D3plot_Type) < 0)
       RETURN_INIT_ERROR;
-      // PY3 return NULL;
+      // PY3 return nullptr;
       //return;
 
     if (PyType_Ready(&QD_Node_Type) < 0)
@@ -369,7 +369,7 @@ extern "C" {
 
     import_array();
 
-    if (m == NULL) 
+    if (m == nullptr) 
       RETURN_INIT_ERROR;
 
     Py_INCREF(&QD_D3plot_Type);

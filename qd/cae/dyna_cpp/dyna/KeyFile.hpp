@@ -4,7 +4,7 @@
 
 // includes
 #include <string>
-#include "../db/FEMFile.hpp"
+#include "dyna_cpp/db/FEMFile.hpp"
 
 // forward declarations
 class D3plot;

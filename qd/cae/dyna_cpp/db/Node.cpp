@@ -2,13 +2,13 @@
 #include <string>
 #include <iostream>
 
-#include "Node.hpp"
-#include "Element.hpp"
-#include "DB_Nodes.hpp"
-#include "DB_Elements.hpp"
-#include "FEMFile.hpp"
-#include "../dyna/D3plot.hpp"
-#include "../utility/TextUtility.hpp"
+#include "dyna_cpp/db/Node.hpp"
+#include "dyna_cpp/db/Element.hpp"
+#include "dyna_cpp/db/DB_Nodes.hpp"
+#include "dyna_cpp/db/DB_Elements.hpp"
+#include "dyna_cpp/db/FEMFile.hpp"
+#include "dyna_cpp/dyna/D3plot.hpp"
+#include "dyna_cpp/utility/TextUtility.hpp"
 
 using namespace std;
 

@@ -6,34 +6,34 @@
 #include <cmath>
 #include <algorithm> // sort
 
-using namespace std;
-
 class MathUtility {
 
    public:
    // vector
    template <typename T>
-   static T v_median(vector<T> vec);
+   static T v_median(std::vector<T> vec);
    template <typename T>
-   static vector<T> v_add(vector<T> a,vector<T> b);
+   static std::vector<T> v_add(std::vector<T> a, std::vector<T> b);
    template <typename T>
-   static vector<T> v_subtr(vector<T> a,vector<T> b);
+   static std::vector<T> v_subtr(std::vector<T> a, std::vector<T> b);
    template <typename T>
-   static vector<T> v_dot(vector<T> a,vector<T> b);
+   static std::vector<T> v_dot(std::vector<T> a, std::vector<T> b);
 
    // matrix
    template <typename T>
-   static vector< vector<T> > m_zeros(unsigned int n1, unsigned int n2);
+   static std::vector< std::vector<T> > m_zeros(unsigned int n1, unsigned int n2);
    template <typename T>
-   static vector< vector<T> > m_mult(vector< vector<T> > a,vector< vector<T> > b);
+   static std::vector< std::vector<T> > m_mult(std::vector< std::vector<T> > a, 
+                                               std::vector< std::vector<T> > b);
 
    // matrix vector
    template <typename T>
-   static vector<T> mv_mult(vector< vector<T> > a,vector<T> b);
+   static std::vector<T> mv_mult(std::vector< std::vector<T> > a,
+                                 std::vector<T> b);
 
    // functions
    template <typename T>
-   static T mises_stress(const vector<T>& _stress_vector);
+   static T mises_stress(const std::vector<T>& _stress_vector);
 
 };
 
@@ -45,12 +45,12 @@ class MathUtility {
  * Add two vectors.
  */
 template < typename T >
-vector<T> MathUtility::v_add(vector<T> a,vector<T> b){
+std::vector<T> MathUtility::v_add(std::vector<T> a, std::vector<T> b){
 
 	if(a.size() != b.size())
 		throw("Can not subtract to vectors with unequal sizes.");
 
-	for(unsigned int ii=0; ii<a.size(); ++ii){
+	for(size_t ii=0; ii<a.size(); ++ii){
 		a[ii] += b[ii];
 	}
 
@@ -61,12 +61,12 @@ vector<T> MathUtility::v_add(vector<T> a,vector<T> b){
  * Subtract two vectors.
  */
 template < typename T >
-vector<T> MathUtility::v_subtr(vector<T> a,vector<T> b){
+std::vector<T> MathUtility::v_subtr(std::vector<T> a, std::vector<T> b){
 
 	if(a.size() != b.size())
 		throw("Can not subtract to vectors with unequal sizes.");
 
-	for(unsigned int ii=0; ii<a.size(); ++ii){
+	for(size_t ii=0; ii<a.size(); ++ii){
 		a[ii] -= b[ii];
 	}
 
@@ -77,7 +77,7 @@ vector<T> MathUtility::v_subtr(vector<T> a,vector<T> b){
  * Median of a vector.
  */
 template < typename T >
-T MathUtility::v_median(vector<T> vec){
+T MathUtility::v_median(std::vector<T> vec){
 
 	if(vec.empty())
 		return 0.;
@@ -95,12 +95,12 @@ T MathUtility::v_median(vector<T> vec){
  * Dot product of two vectors.
  */
 template < typename T >
-vector<T> MathUtility::v_dot(vector<T> a,vector<T> b){
+std::vector<T> MathUtility::v_dot(std::vector<T> a, std::vector<T> b){
 
 	if(a.size() != b.size())
 		throw("Can not dot multiply vectors with unequal sizes.");
 
-	for(unsigned int ii=0; ii<a.size(); ++ii){
+	for(size_t ii=0; ii<a.size(); ++ii){
 		a[ii] *= b[ii];
 	}
 
@@ -112,16 +112,17 @@ vector<T> MathUtility::v_dot(vector<T> a,vector<T> b){
  * Initialize a matrix with zeros.
  */
 template < typename T >
-vector< vector<T> > MathUtility::m_zeros(unsigned int n1,unsigned int n2){
+std::vector< std::vector<T> > MathUtility::m_zeros(unsigned int n1,
+                                                   unsigned int n2){
 
 	if(n1 == 0)
 		throw("matrix_zeros dimension 1 must be at least 1.");
 	if(n2 == 0)
 		throw("matrix_zeros dimension 2 must be at least 1.");
 
-	vector< vector<T> > matrix(n1);
-	for(unsigned int ii=0; ii<n1; ii++){
-		vector<T> matrix2(n2);
+	std::vector< std::vector<T> > matrix(n1);
+	for(size_t ii=0; ii<n1; ii++){
+		std::vector<T> matrix2(n2);
 		matrix[ii] = matrix2;
 		//matrix[ii].reserve(n2);
 	}
@@ -135,18 +136,19 @@ vector< vector<T> > MathUtility::m_zeros(unsigned int n1,unsigned int n2){
  * Product of two matrices.
  */
 template < typename T >
-vector< vector<T> > MathUtility::m_mult(vector< vector<T> > a,vector< vector<T> > b){
+std::vector< std::vector<T> > MathUtility::m_mult(std::vector< std::vector<T> > a,
+                                                  std::vector< std::vector<T> > b){
 
 	if((a.size() < 1) | (b.size() < 1))
 		throw("Can not dot multiply empty containers.");
 
-	vector< vector<T> > res = MathUtility::m_zeros(a.size(),b[0].size());
+	std::vector< std::vector<T> > res = MathUtility::m_zeros(a.size(),b[0].size());
 
-	for(unsigned int ii=0; ii<res.size(); ++ii){
+	for(size_t ii=0; ii<res.size(); ++ii){
 		if(a[ii].size() != b.size())
 			throw("Matrix a and b do not meet dimensions.");
-		for(unsigned int jj=0; jj<res[ii].size(); ++jj){
-			for(unsigned int kk=0; kk < b.size(); ++kk)
+		for(size_t jj=0; jj<res[ii].size(); ++jj){
+			for(size_t kk=0; kk < b.size(); ++kk)
 				res[ii][jj] += a[ii][kk]*b[kk][jj];
 		}
 	}
@@ -159,17 +161,18 @@ vector< vector<T> > MathUtility::m_mult(vector< vector<T> > a,vector< vector<T> 
  * Product of a matrix with a vector.
  */
 template < typename T >
-vector<T> MathUtility::mv_mult(vector< vector<T> > a,vector<T> b){
+std::vector<T> MathUtility::mv_mult(std::vector< std::vector<T> > a,
+                                    std::vector<T> b){
 
 	if((a.size() < 1) | (b.size() < 1))
 		throw("Can not dot multiply empty containers.");
 
-	vector<T> res(b.size());
+	std::vector<T> res(b.size());
 
-	for(unsigned int ii=0; ii<b.size(); ++ii){
+	for(size_t ii=0; ii<b.size(); ++ii){
 		if(a[ii].size() != b.size())
 			throw("Matrix a and vector b do not meet dimensions.");
-		for(unsigned int jj=0; jj<b.size(); ++jj){
+		for(size_t jj=0; jj<b.size(); ++jj){
 			res[ii] += a[ii][jj]*b[jj];
 		}
 	}
@@ -182,7 +185,7 @@ vector<T> MathUtility::mv_mult(vector< vector<T> > a,vector<T> b){
  *
  */
 template <typename T>
-inline T MathUtility::mises_stress(const vector<T>& _stress_vector){
+inline T MathUtility::mises_stress(const std::vector<T>& _stress_vector){
 
 	return sqrt(_stress_vector[0]*_stress_vector[0]
 	            +_stress_vector[1]*_stress_vector[1]

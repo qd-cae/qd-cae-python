@@ -4,17 +4,15 @@
 
 #include <string>
 #include <future>
-#include "AbstractBuffer.hpp"
+#include "dyna_cpp/dyna/AbstractBuffer.hpp"
 
 class FemzipBuffer : public AbstractBuffer {
 
   /* PRIVATE */
   private:
   std::string filepath;
-  int wordSize; // byte
 
-  std::future<char*> next_state_buffer;
-  char* current_buffer;
+  std::future< std::vector<char> > next_state_buffer;
 
   // general
   int filetype;// = 1;
@@ -55,11 +53,6 @@ class FemzipBuffer : public AbstractBuffer {
   void end_nextState();
   // Close
   void finish_reading();
-
-  // var reading
-  int read_int(int);
-  float read_float(int);
-  std::string read_str(int,int);
 
 };
 

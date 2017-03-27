@@ -15,7 +15,7 @@ class AbstractBuffer;
 #include <time.h>
 #include <vector>
 #include <algorithm> // trim
-#include "../db/FEMFile.hpp"
+#include "dyna_cpp/db/FEMFile.hpp"
 
 
 class D3plot : public FEMFile {

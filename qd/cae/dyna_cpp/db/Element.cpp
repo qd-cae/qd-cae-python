@@ -3,13 +3,13 @@
 #include <algorithm> // std::max
 #include <cmath>        // std::abs
 #include <string>
-#include "../dyna/D3plot.hpp"
-#include "Element.hpp"
-#include "Node.hpp"
-#include "DB_Nodes.hpp"
-#include "DB_Elements.hpp"
-#include "../utility/TextUtility.hpp"
-#include "../utility/MathUtility.hpp"
+#include "dyna_cpp/dyna/D3plot.hpp"
+#include "dyna_cpp/db/Element.hpp"
+#include "dyna_cpp/db/Node.hpp"
+#include "dyna_cpp/db/DB_Nodes.hpp"
+#include "dyna_cpp/db/DB_Elements.hpp"
+#include "dyna_cpp/utility/TextUtility.hpp"
+#include "dyna_cpp/utility/MathUtility.hpp"
 
 using namespace std;
 

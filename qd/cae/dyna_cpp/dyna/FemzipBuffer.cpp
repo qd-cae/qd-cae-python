@@ -1,11 +1,11 @@
 
 extern "C"
 {
-#include "femzip.h"
+#include "dyna_cpp/dyna/femzip.h"
 #include <stdio.h>
 }
-#include "FemzipBuffer.hpp"
-#include "../utility/FileUtility.hpp"
+#include "dyna_cpp/dyna/FemzipBuffer.hpp"
+#include "dyna_cpp/utility/FileUtility.hpp"
 #include <iostream>
 #include <bitset>
 #include <sstream>
@@ -15,7 +15,8 @@ using namespace std;
 /*
  * Constructor
  */
-FemzipBuffer::FemzipBuffer(string _filepath){
+FemzipBuffer::FemzipBuffer(string _filepath)
+   : AbstractBuffer(4) {
 
   // Init vars
   this->filepath = _filepath;
@@ -50,10 +51,6 @@ FemzipBuffer::FemzipBuffer(string _filepath){
  */
 FemzipBuffer::~FemzipBuffer(){
 
-  if(this->current_buffer != NULL){
-    delete[] this->current_buffer;
-    this->current_buffer = NULL;
-  }
 }
 
 /*
@@ -61,8 +58,7 @@ FemzipBuffer::~FemzipBuffer(){
  */
 void FemzipBuffer::init_vars(){
 
-  this->wordSize = 4; // byte
-  this->current_buffer = NULL;
+  //this->wordSize = 4; // byte
 
   // general
   this->filetype = 1;
@@ -98,13 +94,8 @@ void FemzipBuffer::read_geometryBuffer(){
   int l2 = 0;
   wrapinput(2, argv, p1, p2, &l1, &l2);
 
-  if(this->current_buffer != NULL){
-    delete[] this->current_buffer;
-    this->current_buffer = NULL;
-  }
-
-  this->current_buffer = new char[sizeof(int)*this->size_geo];
-  geometry_read(p1, p2, &l1, &l2, &this->ier, &this->pos, (int*) this->current_buffer, &this->size_geo);
+  this->current_buffer.reserve(sizeof(int)*this->size_geo);
+  geometry_read(p1, p2, &l1, &l2, &this->ier, &this->pos, (int*) &this->current_buffer[0], &this->size_geo);
   this->check_ier("Femzip Error while reading geometry.");
 
 }
@@ -115,11 +106,6 @@ void FemzipBuffer::read_geometryBuffer(){
  */
 void FemzipBuffer::free_geometryBuffer(){
 
-  if(this->current_buffer != NULL){
-    delete[] this->current_buffer;
-    this->current_buffer = NULL;
-  }
-
 }
 
 
@@ -128,16 +114,11 @@ void FemzipBuffer::free_geometryBuffer(){
  */
 void FemzipBuffer::read_partBuffer(){
 
-  if(this->current_buffer != NULL){
-    delete[] this->current_buffer;
-    this->current_buffer = NULL;
-  }
-
   this->pos = 0;
-  part_titles_read(&this->ier, &this->pos, (int*) this->current_buffer, &this->size_titles);
-  this->current_buffer = new char[sizeof(int)*this->size_titles];
+  part_titles_read(&this->ier, &this->pos, (int*) &this->current_buffer[0], &this->size_titles);
+  this->current_buffer.reserve(sizeof(int)*this->size_geo);
   this->pos = 0;
-  part_titles_read(&this->ier, &this->pos, (int*) this->current_buffer, &this->size_titles);
+  part_titles_read(&this->ier, &this->pos, (int*) &this->current_buffer[0], &this->size_titles);
 	check_ier("Femzip Error during part_titles_read.");
 
 }
@@ -147,11 +128,6 @@ void FemzipBuffer::read_partBuffer(){
  * Free the part buffer.
  */
 void FemzipBuffer::free_partBuffer(){
-
-  if(this->current_buffer != NULL){
-    delete[] this->current_buffer;
-    this->current_buffer = NULL;
-  }
 
 }
 
@@ -193,16 +169,15 @@ void FemzipBuffer::init_nextState(){
     [](int _iTimestep, int _size_state){
       int _ier = 0;
       int _pos = 0;
-      char* state_buffer = new char[sizeof(int)*_size_state];
-      states_read(&_ier, &_pos, &_iTimestep,(int*) state_buffer, &_size_state);
+      vector<char> state_buffer(sizeof(int)*_size_state);
+      states_read(&_ier, &_pos, &_iTimestep,(int*) &state_buffer[0], &_size_state);
       if(_ier != 0){
-        if(state_buffer != NULL){
-          delete[] state_buffer;
-          state_buffer = NULL;
+        if(state_buffer.size() != 0){
+          state_buffer = vector<char>();
         }
       }
 
-      return state_buffer;
+      return std::move(state_buffer);
     },this->iTimeStep, this->size_state);
 }
 
@@ -212,18 +187,12 @@ void FemzipBuffer::init_nextState(){
  */
 void FemzipBuffer::read_nextState(){
 
-  // Discard previous one
-  if(this->current_buffer != NULL){
-    delete[] this->current_buffer;
-    this->current_buffer = NULL;
-  }
-
   #ifdef QD_DEBUG
   cout << "Loading state: " << this->iTimeStep << "/" << this->nTimeStep << endl;
   #endif
 
   this->current_buffer = this->next_state_buffer.get();
-  if(this->current_buffer == NULL){
+  if(this->current_buffer.size() == 0){
     throw(string("FEMZIP Error during state reading."));
   }
 
@@ -234,16 +203,15 @@ void FemzipBuffer::read_nextState(){
     [](int _iTimestep, int _size_state){
       int _ier = 0;
       int _pos = 0;
-      char* state_buffer = new char[sizeof(int)*_size_state];
-      states_read(&_ier, &_pos, &_iTimestep,(int*) state_buffer, &_size_state);
+      vector<char> state_buffer(sizeof(int)*_size_state);
+      states_read(&_ier, &_pos, &_iTimestep,(int*) &state_buffer[0], &_size_state);
       if(_ier != 0){
-        if(state_buffer != NULL){
-          delete[] state_buffer;
-          state_buffer = NULL;
+        if(state_buffer.size() != 0){
+          state_buffer = vector<char>();
         }
       }
 
-      return state_buffer;
+      return std::move(state_buffer);
     },this->iTimeStep, this->size_state);
 
 }
@@ -263,10 +231,6 @@ bool FemzipBuffer::has_nextState(){
 void FemzipBuffer::rewind_nextState(){
 
   this->iTimeStep = 1;
-  if(this->current_buffer != NULL){
-    delete[] this->current_buffer;
-    this->current_buffer = NULL;
-  }
 
   // Size
   this->pos =0;
@@ -290,14 +254,11 @@ void FemzipBuffer::rewind_nextState(){
  */
 void FemzipBuffer::end_nextState(){
 
-  states_close(&this->ier, &this->pos, (int*) this->current_buffer, &this->size_geo);
-  if(this->current_buffer != NULL){
-    delete[] this->current_buffer;
-    this->current_buffer = NULL;
-  }
+  states_close(&this->ier, &this->pos, (int*) &this->current_buffer[0], &this->size_geo);
+  current_buffer.clear();
 
   close_read(&this->ier);
-  this->check_ier("Femzip Error during closing of file.");
+  this->check_ier("Femzip Error during state of file.");
 
 }
 
@@ -316,59 +277,8 @@ void FemzipBuffer::finish_reading(){
  */
 void FemzipBuffer::check_ier(string message){
   if(this->ier != 0){
-    if(this->current_buffer != NULL){
-      delete[] this->current_buffer;
-      this->current_buffer = NULL;
-    }
     throw(message);
   }
 }
 
 
-
-/*
- * read an int from the current buffer
- */
-int FemzipBuffer::read_int(int iWord){
-  //if(this->bufferSize <= iWord*this->wordSize){
-  //  throw("read_int tries to read beyond the buffer size.");
-  //}
-
-  // BIG ENDIAN ?
-  // SMALL ENDIAN ?
-  int start=iWord*this->wordSize;
-  return (((current_buffer[start + 3] & 0xff) << 24)
-          | ((current_buffer[start+ 2] & 0xff) << 16)
-          | ((current_buffer[start + 1] & 0xff) << 8)
-          | ((current_buffer[start + 0] & 0xff)));
-
-}
-
-
-/*
- * read a float from the current buffer
- */
-float FemzipBuffer::read_float(int iWord){
-  //if(this->bufferSize <= iWord*this->wordSize){
-  //  throw("read_float tries to read beyond the buffer size.");
-  //}
-  float ret;
-  memcpy(&ret, &current_buffer[iWord*this->wordSize], sizeof(ret));
-  return ret;
-  //return (float) this->buffer[iWord*this->wordSize];
-}
-
-
-/*
- * read a string from the current buffer
- */
-string FemzipBuffer::read_str(int iWord,int wordLength){
-  //if(this->bufferSize <= (iWord+wordLength)*this->wordSize){
-  //  throw("read_str tries to read beyond the buffer size.");
-  stringstream res;
-  for(int ii=iWord*this->wordSize;ii<(iWord+wordLength)*this->wordSize;ii++){
-    res << char(bitset<8>(this->current_buffer[ii]).to_ulong());
-  }
-
-  return res.str();
-}

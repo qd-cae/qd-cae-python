@@ -15,8 +15,8 @@ QD_Part_new(PyTypeObject *type, PyObject *args, PyObject *kwds){
   self = (QD_Part *)type->tp_alloc(type, 0);
 
   // Init vars if any ...
-  if (self != NULL){
-    self->part = NULL;
+  if (self != nullptr){
+    self->part = nullptr;
   }
 
 
@@ -31,7 +31,7 @@ QD_Part_init(QD_Part *self, PyObject *args, PyObject *kwds){
   PyObject* femFile_obj_py;
   int partID;
   static char *kwlist[] = {const_cast<char*>("femfile"),
-                           const_cast<char*>("partID"), NULL}; // TODO Deprecated!
+                           const_cast<char*>("partID"), nullptr}; // TODO Deprecated!
 
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi", kwlist, &femFile_obj_py, &partID)){
@@ -44,8 +44,8 @@ QD_Part_init(QD_Part *self, PyObject *args, PyObject *kwds){
   }
   QD_FEMFile* femFile_py = (QD_FEMFile*) femFile_obj_py;
 
-  if(femFile_py->instance == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ File-Object is NULL.");
+  if(femFile_py->instance == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ File-Object is nullptr.");
     return -1;
   }
 
@@ -53,7 +53,7 @@ QD_Part_init(QD_Part *self, PyObject *args, PyObject *kwds){
   Py_INCREF(self->femFile_py);
   self->part = femFile_py->instance->get_db_parts()->get_part_byID(partID);
 
-  if(self->part == NULL){
+  if(self->part == nullptr){
     PyErr_SetString(PyExc_RuntimeError,string("Could not find any part with ID: "+to_string(partID)+".").c_str());
     return -1;
   }
@@ -67,11 +67,11 @@ QD_Part_init(QD_Part *self, PyObject *args, PyObject *kwds){
 static PyObject * 
 QD_Part_richcompare(QD_Part *self, PyObject *other, int op){
 
-  PyObject *result = NULL;
+  PyObject *result = nullptr;
 
   if( !PyObject_TypeCheck(other, &QD_Part_Type) ){
     PyErr_SetString(PyExc_ValueError, "Comparison of parts work only with other parts.");
-    return NULL;
+    return nullptr;
   }
 
   QD_Part *other_cpp = (QD_Part*) other;
@@ -130,9 +130,9 @@ QD_Part_richcompare(QD_Part *self, PyObject *other, int op){
 static PyObject*
 QD_Part_get_id(QD_Part *self){
 
-  if(self->part == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to part is NULL.");
-    return NULL;
+  if(self->part == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to part is nullptr.");
+    return nullptr;
   }
 
   return Py_BuildValue("i",self->part->get_partID());
@@ -144,9 +144,9 @@ QD_Part_get_id(QD_Part *self){
 static PyObject*
 QD_Part_get_name(QD_Part *self){
 
-  if(self->part == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to part is NULL.");
-    return NULL;
+  if(self->part == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to part is nullptr.");
+    return nullptr;
   }
 
   string partName = self->part->get_name();
@@ -160,9 +160,9 @@ QD_Part_get_name(QD_Part *self){
 static PyObject*
 QD_Part_get_nodes(QD_Part *self){
 
-  if(self->part == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to part is NULL.");
-    return NULL;
+  if(self->part == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to part is nullptr.");
+    return nullptr;
   }
 
   vector<Node*> nodes = self->part->get_nodes();
@@ -172,7 +172,7 @@ QD_Part_get_nodes(QD_Part *self){
 
   size_t ii=0;
 //   for(auto node : nodes){ // -std=c++11 rulez
-  Node* node = NULL;
+  Node* node = nullptr;
   for(vector<Node*>::iterator it=nodes.begin(); it != nodes.end(); it++){
     node = *it;
 
@@ -188,7 +188,7 @@ QD_Part_get_nodes(QD_Part *self){
   if(check != 0){
     PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of node instance list.");
     Py_DECREF(node_list);
-    return NULL;
+    return nullptr;
   }
 
   return node_list;
@@ -200,19 +200,19 @@ QD_Part_get_nodes(QD_Part *self){
 static PyObject*
 QD_Part_get_elements(QD_Part *self, PyObject *args){
 
-  if(self->part == NULL){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to part is NULL.");
-    return NULL;
+  if(self->part == nullptr){
+    PyErr_SetString(PyExc_AttributeError,"Pointer to part is nullptr.");
+    return nullptr;
   }
 
   // Parse args
-  char* _filter_etype_cstr = NULL;
+  char* _filter_etype_cstr = nullptr;
   if (!PyArg_ParseTuple(args, "|s", &_filter_etype_cstr))
-    return NULL;  
+    return nullptr;  
 
   // user defined filter
   ElementType _filter_etype = NONE;
-  if( _filter_etype_cstr != NULL ){
+  if( _filter_etype_cstr != nullptr ){
 
     string _filter_etype_str = string(_filter_etype_cstr);
     if( _filter_etype_str == "shell" ){
@@ -226,7 +226,7 @@ QD_Part_get_elements(QD_Part *self, PyObject *args){
                       + _filter_etype_str
                       + "\", use beam, shell or solid.";
       PyErr_SetString(PyExc_ValueError, err_msg.c_str() );
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -237,7 +237,7 @@ QD_Part_get_elements(QD_Part *self, PyObject *args){
   PyObject* element_list = PyList_New(elements.size());
 
   size_t ii=0;
-  Element* element = NULL;
+  Element* element = nullptr;
   for(vector<Element*>::iterator it=elements.begin(); it != elements.end(); it++){
     element = *it;
 
@@ -251,7 +251,7 @@ QD_Part_get_elements(QD_Part *self, PyObject *args){
       elementType_py = Py_BuildValue("s","solid");
     } else {
       PyErr_SetString(PyExc_SyntaxError, "Developer Error, unknown element-type.");
-      return NULL;
+      return nullptr;
     }
 
     // create python object
@@ -268,7 +268,7 @@ QD_Part_get_elements(QD_Part *self, PyObject *args){
   if(check != 0){
     PyErr_SetString(PyExc_RuntimeError, "Developer Error during assembly of element instance list.");
     Py_DECREF(element_list);
-    return NULL;
+    return nullptr;
   }
 
   return element_list;

@@ -63,7 +63,7 @@ For more details, look into the helper files.
 
 ## Windows
 
-If possible, use the pre-compiled python-wheels in the dist folder and install with pip. The wheel is always compiled with FEMZIP support. For **Windows** (x64 python 2.7 or 3.5 and higher) use:
+If possible, use the pre-compiled python-wheels in the dist folder and install with pip. The wheel is always compiled with FEMZIP support. For **Windows** (x64 Python 3.5 and higher) use:
 
 ```
 pip install qd
@@ -89,7 +89,7 @@ In the [dist folder](https://github.com/qd-cae/qd-eng/tree/master/dist) usually 
 
 Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++11.
 
-First download [BOOST for C++](https://github.com/boostorg/boost) (we only need headers, do not compile it). 
+First download [BOOST for C++](http://www.boost.org/) (we only need headers, do not compile it). 
 
 For compilation of python version 3.5 or 3.6 on Windows download [Visual Studio 15](https://www.microsoft.com/de-DE/download/details.aspx?id=48146) (dunno if Visual Studio 17 also works). Then clone the repository into a folder:
 

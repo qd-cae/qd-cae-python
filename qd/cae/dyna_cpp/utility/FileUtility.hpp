@@ -5,18 +5,15 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 /** Utility class for file related things.
  */
 class FileUtility {
 
 public:
-  static bool check_ExistanceAndAccess(string);
-  static vector<string> globVector(string);
-  static vector<string> read_textFile(string _filepath);
-  static vector<string> findDynaResultFiles(string _base_file);
-  
+  static bool check_ExistanceAndAccess(std::string);
+  static std::vector<std::string> globVector(std::string);
+  static std::vector<std::string> read_textFile(std::string _filepath);
+  static std::vector<std::string> findDynaResultFiles(std::string _base_file);
 
 };
 

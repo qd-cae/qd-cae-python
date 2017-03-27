@@ -1,6 +1,2 @@
 
-#include "TextUtility.hpp"
-#include <algorithm>
-#include <functional>
-#include <cctype>
-#include <locale>
+#include "dyna_cpp/utility/TextUtility.hpp"

@@ -1,8 +1,8 @@
 
-#include "Part.hpp"
-#include "Node.hpp"
-#include "DB_Nodes.hpp"
-#include "FEMFile.hpp"
+#include "dyna_cpp/db/Part.hpp"
+#include "dyna_cpp/db/Node.hpp"
+#include "dyna_cpp/db/DB_Nodes.hpp"
+#include "dyna_cpp/db/FEMFile.hpp"
 
 #include <set>
 #include <iostream>
