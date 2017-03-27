@@ -4,6 +4,9 @@ language: python
 
 notifications:
   email: false
+
+git:
+  submodules: false
   
 before_install:
   - sudo apt-get install python3-numpy
