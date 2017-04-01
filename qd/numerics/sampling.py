@@ -10,7 +10,7 @@ def uniform_lhs(nSamples, variables, **kwargs):
     ----------
     nSamples : int
         number of samples to draw
-    variables : dict(str, tuple(mean,delta) )
+    variables : dict(str, tuple(lower, upper) )
         variable dictionary, the key must be the name whereas the value
         must be a tuple. The first value of the tuple is the lower bound
         for the variable and the second one is the upper bound
@@ -19,10 +19,25 @@ def uniform_lhs(nSamples, variables, **kwargs):
 
     Returns
     -------
-    column_names, samples : list(str), np.ndarray
-        returns as first entry a list with the column names for the LHS
-        and as second argument a numpy array with latin hypercube samples 
-        ( shape is nSamples x len(variables) ) 
+    column_names : list(str)
+        list with the column names for the LHS
+    samples : np.ndarray
+        numpy array with latin hypercube samples. Shape is nSamples x len(variables).
+
+    Examples
+    --------
+        >>> from qd.numerics.sampling import uniform_lhs
+        >>> 
+        >>> variables = {'length':[0,10], 'angle':[-3,3]}
+        >>> labels, data = uniform_lhs(nSamples=100, variables=variables)
+        >>> labels
+        ['angle', 'length']
+        >>> data.shape
+        (100, 2)
+        >>> data.min(axis=0)
+        array([-2.98394928,  0.00782609])
+        >>> data.max(axis=0)
+        array([ 2.8683843 ,  9.80865352])
     '''
 
     assert isinstance(nSamples, int)

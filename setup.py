@@ -129,7 +129,7 @@ setup(name = 'qd',
         },
         ext_package='qd.cae', # where to place c extensions
         ext_modules=[dyna_extension],
-        install_requires=['numpy','diversipy'],
+        install_requires=['numpy>=1.11','diversipy'],
         keywords=['cae',
                   'simulation',
                   'engineering',

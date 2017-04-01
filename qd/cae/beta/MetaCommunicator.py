@@ -7,24 +7,39 @@ import platform
 import subprocess
 
 class MetaCommunicator:
-    '''A class in order to communicate with an META from Beta-CAE Systems
+    '''A class in order to communicate with META from Beta-CAE Systems
     '''
 
     def __init__(self, meta_path=None, ip_address="127.0.0.1", meta_listen_port=4342):
-        '''Construct a MetaCommunicator
+        '''Constructor for a MetaCommunicator
 
         Parameters
         ----------
         meta_filepath : str
-            path to Meta
+            optional path or command for the META executable
         ip_address : str
             ip-adress to connect to. Localhost by default.
         meta_listen_port : int
             port on which meta is listening (or in case of startup will listen)
 
-        The constructor checks for a running and listening instance of META and 
-        connects to it. If there is no running instance it will start one and will 
-        wait for it to be ready to operate.
+        Notes
+        -----
+            The constructor checks for a running and listening instance of META and 
+            connects to it. I   there is no running instance it will start one and will 
+            wait for it to be ready to operate.
+            If META has to be started, either provide a filepath or simply set the 
+            environment variable META_PATH to the executable.
+
+        Examples
+        --------
+            >>> mc = MetaCommunicator() # starts META , if not listening
+            >>> mc.is_runnning()
+            True
+            >>> # Send arbitrary Meta commands ... hihihi
+            >>> mc.send_command("read geom auto path/to/file")
+            >>> mc.show_pids( [11,12,13] ) # show only 3 pids
+            >>> mc.hide_pids() # hide all
+            >>> mc.show_pids() # show all
         '''
 
         assert meta_listen_port >= 0
@@ -79,6 +94,15 @@ class MetaCommunicator:
         -------
         is_running : bool
             True if META is running. False otherwise
+
+        Examples
+        --------
+            >>> mc = MetaCommunicator()
+            >>> mc.is_running()
+            True
+            >>> # Pretty unfunny here, but I actually closed META now
+            >>> mc.is_running()
+            False
         '''
 
         # no timeout, just check
@@ -101,7 +125,7 @@ class MetaCommunicator:
 
         
     def send_command(self, command, timeout=20):
-        '''Send a command to META
+        '''Send a command to a remote META
 
         Parameters
         ----------
@@ -109,6 +133,17 @@ class MetaCommunicator:
             command to send to META
         timeout : int
             timeout to wait until the command finishes
+        
+        Notes
+        -----
+            The commands send over to META are identical as if they would be
+            typed into the command line window.
+
+        Examples
+        --------
+            >>> mc = MetaCommunicator()
+            >>> mc.send_command("read geom auto path/to/file")
+            >>> mc.send_command("add pid 4,5,3")
         '''
 
         # check
@@ -132,9 +167,20 @@ class MetaCommunicator:
         show_only : bool
             whether to show only these parts (removes all others)
 
-        Shows all pids by default. If partlist is given, META performs
-        a show command for these pids. If show_only is used, all other
-        parts will be removed from vision.
+        Notes
+        -----
+            Shows all pids by default. If partlist is given, META performs
+            a show command for these pids. If show_only is used, all other
+            parts will be removed from vision.
+
+        Examples
+        --------
+            >>> # show all pids
+            >>> mc.show_pids()
+            >>> # make two pids visible
+            >>> mc.show_pids( [13,111] ) 
+            >>> # let's show only two pids
+            >>> mc.show_pids( [13,111], show_only=True)
         '''
 
         # filter parts
@@ -158,8 +204,17 @@ class MetaCommunicator:
         partlist : list(int)
             list of pids
 
-        Hides all pids by default. If partlist is given, META performs
-        a show command for these pids. 
+        Notes
+        -----
+            Hides all pids by default. If partlist is given, META performs
+            a hide command for these pids. 
+
+        Examples
+        --------
+            >>> # hide two pids
+            >>> mc.hide_pids( [13,111] ) 
+            >>> # hide all pids
+            >>> mc.hide_pids()
         '''
 
         # filter parts
@@ -182,6 +237,11 @@ class MetaCommunicator:
         ----------
         filepath : str
             path to the result file
+
+        Examples
+        --------
+            >>> mc.read_geometry("path/to/result/file")
+            >>> # yay we see in meta some geometry ... but not here
         '''
 
         # remove model focus, otherwise active will be deleted
@@ -190,12 +250,16 @@ class MetaCommunicator:
 
 
     def read_d3plot(self,filepath):
-        '''Open a d3plot in META and read geometry, displacement and plastic-strain
+        '''Open a d3plot in META and read geometry, displacement and plastic-strain.
 
         Parameters
         ----------
         filepath : str
             path to d3plot result file
+
+        Examples
+        --------
+            >>> mc.read_d3plot("path/to/d3plot")
         '''
 
         # remove model focus, otherwise active will be deleted

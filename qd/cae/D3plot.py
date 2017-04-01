@@ -40,6 +40,16 @@ class D3plot(QD_D3plot):
         -------
             D3plot d3plot : instance
 
+        Examples
+        --------
+            Read the plain geometry data
+            >>> d3plot = D3plot("path/to/d3plot")
+
+            Read a compressed d3plot
+            >>> d3plot = D3plot("path/to/d3plot.fz", use_femzip=True)
+            
+            Read d3plot with state data at once.
+            >>> d3plot = D3plot("path/to/d3plot", read_states=["mises_stress max"])
         '''
         super(D3plot, self).__init__(*args, **kwargs)
 
@@ -98,8 +108,8 @@ class D3plot(QD_D3plot):
             return Part(self, part_id)
     
 
-    @staticmethod
-    def _compare_scatter(base_filepath, 
+    def _compare_scatter(self,
+                         base_filepath, 
                          filepath_list, 
                          element_result,
                          pid_filter_list = None,
@@ -196,7 +206,7 @@ class D3plot(QD_D3plot):
         element_result_max = element_result_max-element_result_min
 
         # plot scatter
-        np.save("element_scatter.npy",element_result_max)
+        #np.save("element_scatter.npy",element_result_max)
             
 
     def plot(self, iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None):
@@ -217,6 +227,29 @@ class D3plot(QD_D3plot):
             optional filepath for saving. If none, the model
             is exported to a temporary file and shown in the
             browser.
+            
+        Examples
+        --------
+            Load a d3plot and plot it's geometry
+
+            >>> d3plot = D3plot("path/to/d3plot")
+            >>> d3plot.plot() # just geometry
+            
+            Read the state data and plot in deformed state
+
+            >>> # read state data
+            >>> d3plot.read_states(["disp","plastic_strain max"])
+            >>> d3plot.plot(iTimestep=-1) # last state
+            
+            Use a user-defined element evaluation function for fringe colors.
+
+            >>> # User defined evaluation function
+            >>> def eval_fun(element):
+            >>>     res = element.get_plastic_strain()
+            >>>     if len(res): # some elements may miss plastic strain
+            >>>         return res[-1] # last timestep
+            >>> 
+            >>> d3plot.plot(iTimestep=-1, element_result=eval_fun, fringe_bounds=[0, 0.05])
         '''
 
         plot_parts(self.get_parts(), 
@@ -228,10 +261,10 @@ class D3plot(QD_D3plot):
 
     @staticmethod
     def plot_parts(parts, iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None):
-        '''Plot a selected group of parts
+        '''Plot a selected group of parts. 
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         parts : Part or list(Part)
             parts to plot. Must not be of the same file!
         iTimestep : int
@@ -247,6 +280,26 @@ class D3plot(QD_D3plot):
             optional filepath for saving. If none, the model
             is exported to a temporary file and shown in the
             browser.
+
+        Notes
+        -----
+            Can be applied to parts, coming from different files.
+
+        Examples
+        --------
+            For a full description of plotting functionality, see `d3plot.plot`.
+            Load a d3plot and plot a part from it:
+
+            >>> d3plot_1 = D3plot("path/to/d3plot_1")
+            >>> part_1 = d3plot_1.get_partByID(1)
+            >>> D3plot.plot_parts( [part_1] ) # static function!
+            
+            Read a second d3plot and plot both parts at once
+
+            >>> d3plot_2 = D3plot("path/to/d3plot_2") # different file!
+            >>> part_2 = d3plot_2.get_partByID(14)
+            >>> D3plot.plot_parts( [part_1, part_2] )
+            
         '''
 
         if not isinstance(parts, (tuple,list)):

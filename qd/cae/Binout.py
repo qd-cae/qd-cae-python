@@ -189,9 +189,11 @@ class Binout:
             ['title', 'failure', 'ids', 'failure_time', ...]
             >>> binout.read("swforc","shear").shape
             (321L, 26L)
+            >>> binout.read("swforc","ids").shape
+            (26L,)
             >>> binout.read("swforc","ids")
             array([52890, 52891, 52892, ...])
-            >>> # stings are just numbers, see binout.to_string
+            >>> # strings are just numbers, see Binout.to_string
             >>> binout.read("swforc","typenames")
             array([99, 111, 110, ...]) 
         '''
