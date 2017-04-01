@@ -47,7 +47,7 @@ QD_Node_init(QD_Node *self, PyObject *args, PyObject *kwds)
   use_index = PyObject_IsTrue(use_index_py) != 0;
 
   if (! PyObject_TypeCheck(femFile_obj_py, &QD_FEMFile_Type)) {
-    PyErr_SetString(PyExc_SyntaxError, "arg #1 not a D3plot or KeyFile in node constructor");
+    PyErr_SetString(PyExc_ValueError, "arg #1 not a D3plot or KeyFile in node constructor");
     return -1;
   }
 
@@ -147,7 +147,7 @@ static PyObject *
 QD_Node_get_NodeID(QD_Node* self){
 
   if(self->node == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to node is nullptr.");
     return nullptr;
   }
 
@@ -163,7 +163,7 @@ static PyObject *
 QD_Node_get_coords(QD_Node* self, PyObject *args, PyObject *kwds){
 
   if(self->node == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to node is nullptr.");
     return nullptr;
   }
 
@@ -188,7 +188,7 @@ static PyObject *
 QD_Node_get_disp(QD_Node* self){
 
   if(self->node == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to node is nullptr.");
     return nullptr;
   }
 
@@ -203,7 +203,7 @@ static PyObject *
 QD_Node_get_vel(QD_Node* self){
 
   if(self->node == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to node is nullptr.");
     return nullptr;
   }
 
@@ -217,7 +217,7 @@ static PyObject *
 QD_Node_get_accel(QD_Node* self){
 
   if(self->node == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to node is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to node is nullptr.");
     return nullptr;
   }
 
@@ -231,7 +231,7 @@ static PyObject *
 QD_Node_get_elements(QD_Node* self){
 
   if(self->node == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to element is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to element is nullptr.");
     return nullptr;
   }
 
@@ -251,14 +251,14 @@ QD_Node_get_elements(QD_Node* self){
     } else if(element->get_elementType() == 3) {
       elementType_py = Py_BuildValue("s","solid");
     } else {
-      PyErr_SetString(PyExc_SyntaxError, "Developer Error, unknown element-type.");
+      PyErr_SetString(PyExc_ValueError, "Developer Error, unknown element-type.");
       return nullptr;
     }
 
     PyObject *argList2 = Py_BuildValue("OOi",self->femFile_py, elementType_py, element->get_elementID());
     PyObject* ret = PyObject_CallObject((PyObject *) &QD_Element_Type, argList2);
     Py_DECREF(argList2);
-   Py_DECREF(elementType_py);
+    Py_DECREF(elementType_py);
 
     check += PyList_SetItem(element_list, ii, ret);
 

@@ -31,7 +31,7 @@ QD_Part_init(QD_Part *self, PyObject *args, PyObject *kwds){
   PyObject* femFile_obj_py;
   int partID;
   static char *kwlist[] = {const_cast<char*>("femfile"),
-                           const_cast<char*>("partID"), nullptr}; // TODO Deprecated!
+                           const_cast<char*>("part_id"), nullptr};
 
 
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "Oi", kwlist, &femFile_obj_py, &partID)){
@@ -39,13 +39,13 @@ QD_Part_init(QD_Part *self, PyObject *args, PyObject *kwds){
   }
 
   if (! PyObject_TypeCheck(femFile_obj_py, &QD_FEMFile_Type)) {
-    PyErr_SetString(PyExc_TypeError, "arg #1 not a D3plot or KeyFile in part constructor");
+    PyErr_SetString(PyExc_ValueError, "arg #1 not a D3plot or KeyFile in part constructor");
     return -1;
   }
   QD_FEMFile* femFile_py = (QD_FEMFile*) femFile_obj_py;
 
   if(femFile_py->instance == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ File-Object is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to C++ File-Object is nullptr.");
     return -1;
   }
 
@@ -131,7 +131,7 @@ static PyObject*
 QD_Part_get_id(QD_Part *self){
 
   if(self->part == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to part is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to part is nullptr.");
     return nullptr;
   }
 
@@ -145,7 +145,7 @@ static PyObject*
 QD_Part_get_name(QD_Part *self){
 
   if(self->part == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to part is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to part is nullptr.");
     return nullptr;
   }
 
@@ -161,7 +161,7 @@ static PyObject*
 QD_Part_get_nodes(QD_Part *self){
 
   if(self->part == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to part is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to part is nullptr.");
     return nullptr;
   }
 
@@ -201,7 +201,7 @@ static PyObject*
 QD_Part_get_elements(QD_Part *self, PyObject *args){
 
   if(self->part == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to part is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to part is nullptr.");
     return nullptr;
   }
 
@@ -250,7 +250,7 @@ QD_Part_get_elements(QD_Part *self, PyObject *args){
     } else if(element->get_elementType() == SOLID) {
       elementType_py = Py_BuildValue("s","solid");
     } else {
-      PyErr_SetString(PyExc_SyntaxError, "Developer Error, unknown element-type.");
+      PyErr_SetString(PyExc_RuntimeError, "Developer Error, unknown element-type.");
       return nullptr;
     }
 

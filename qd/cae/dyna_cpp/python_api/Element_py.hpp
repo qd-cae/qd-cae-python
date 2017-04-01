@@ -34,59 +34,278 @@ extern "C" {
   static PyObject *
   QD_Element_get_elementID(QD_Element* self);
 
+  const char* get_elementID_docs = "\
+get_id()\n\
+\n\
+Get the id of the element.\n\
+\n\
+Returns\n\
+-------\n\
+id : int\n\
+    id of the element\n\
+\n\
+Examples\n\
+--------\n\
+    >>> d3plot.get_elementByID(\"shell\",1).get_id()\n\
+    1\n\
+";
+
   static PyObject *
   QD_Element_get_plastic_strain(QD_Element* self);
+
+  const char* get_plastic_strain_docs = "\
+get_plastic_strain()\n\
+\n\
+Get the plastic strain of the element, if it was read with `read_states`.\n\
+\n\
+Returns\n\
+-------\n\
+plastic_strain : np.ndarray\n\
+    time series of plastic strain\n\
+\n\
+Examples\n\
+--------\n\
+    >>> element.get_plastic_strain().shape\n\
+    (34L,)\n\
+";
 
   static PyObject *
   QD_Element_get_energy(QD_Element* self);
 
+  const char* get_energy_docs = "\
+get_energy()\n\
+\n\
+Get the energy of the element, if it was read with `read_states`.\n\
+\n\
+Returns\n\
+-------\n\
+energy : np.ndarray\n\
+    time series of element energy\n\
+\n\
+Examples\n\
+--------\n\
+    >>> element.get_energy().shape\n\
+    (34L,)\n\
+";
+
   static PyObject *
   QD_Element_get_strain(QD_Element* self);
+
+  const char* get_strain_docs = "\
+get_strain()\n\
+\n\
+Get the strain tensor of the element, if it was read with `read_states`.\n\
+The strain vector contains the matrix components: [e_xx, e_yy, e_zz, e_xy, e_yz, e_xz]\n\
+\n\
+Returns\n\
+-------\n\
+strain : np.ndarray\n\
+    time series of the strain tensor data\n\
+\n\
+Examples\n\
+--------\n\
+    >>> element.get_strain().shape\n\
+    (34L, 6L)\n\
+";
 
   static PyObject *
   QD_Element_get_stress(QD_Element* self);
 
+  const char* get_stress_docs = "\
+get_strain()\n\
+\n\
+Get the stress tensor of the element, if it was read with `read_states`.\n\
+The stress vector contains the matrix components: [s_xx, s_yy, s_zz, s_xy, s_yz, s_xz]\n\
+\n\
+Returns\n\
+-------\n\
+stress : np.ndarray\n\
+    time series of the stress tensor data\n\
+\n\
+Examples\n\
+--------\n\
+    >>> element.get_stress().shape\n\
+    (34L, 6L)\n\
+";
+
   static PyObject *
   QD_Element_get_stress_mises(QD_Element* self);
+
+  const char* get_stress_mises_docs = "\
+get_stress_mises()\n\
+\n\
+Get the mises stress of the element, if it was read with `read_states`.\n\
+\n\
+Returns\n\
+-------\n\
+stress : np.ndarray\n\
+    time series of the mises stress\n\
+\n\
+Examples\n\
+--------\n\
+    >>> element.get_stress_mises().shape\n\
+    (34L,)\n\
+";
 
   static PyObject *
   QD_Element_get_nodes(QD_Element* self);
 
+  const char* get_element_nodes_docs = "\
+get_nodes()\n\
+\n\
+Get the nodes of the element.\n\
+\n\
+Returns\n\
+-------\n\
+nodes : list(Node)\n\
+    nodes of the element\n\
+\n\
+Examples\n\
+--------\n\
+    >>> elem_nodes = element.get_nodes()\n\
+";
+
   static PyObject *
   QD_Element_get_coords(QD_Element* self, PyObject *args, PyObject *kwds);
+
+  const char* get_element_coords_docs = "\
+get_coords(iTimestep=0)\n\
+\n\
+Get the elements coordinates (mean of nodes).\n\
+\n\
+Parameters\n\
+----------\n\
+iTimestep : int\n\
+    timestep at which to take the coordinates\n\
+\n\
+Returns\n\
+-------\n\
+coords : np.ndarray\n\
+    coordinate vector (x,z,y)\n\
+\n\
+Examples\n\
+--------\n\
+    >>> element.get_coords().shape\n\
+    (3L,)\n\
+    >>> some_coords = element.get_coords(iTimestep=10) # disps must be loaded\n\
+";
 
   static PyObject *
   QD_Element_get_history(QD_Element* self);
 
+  const char* get_history_docs = "\
+get_history()\n\
+\n\
+Get the loaded history variables of the element.\n\
+\n\
+Returns\n\
+-------\n\
+history_vars : np.ndarray\n\
+    time series of the loaded history variables\n\
+\n\
+Examples\n\
+--------\n\
+    >>> d3plot = D3plot(\"path/to/d3plot\",read_states=\"history 1 shell max\")\n\
+    >>> d3plot.get_elementByID(\"shell\",1).get_history().shape\n\
+    (34L, 1L)\n\
+\n\
+Notes\n\
+-----\n\
+    The history variable column index corresponds to the order in which\n\
+    the variables were loaded\n\
+";
+
   static PyObject *
   QD_Element_get_estimated_size(QD_Element* self);
 
+  const char* get_estimated_size_docs = "\
+get_estimated_size()\n\
+\n\
+Get the average element edge size of the element.\n\
+\n\
+Returns\n\
+-------\n\
+size : float\n\
+    average element edge size\n\
+\n\
+Examples\n\
+--------\n\
+    >>> element.get_estimated_size()\n\
+    2.542\n\
+";
+
   static PyObject *
   QD_Element_get_type(QD_Element* self);
-  
+
+  const char* get_type_docs = "\
+get_type()\n\
+\n\
+Get the type of the element.\n\
+\n\
+Returns\n\
+-------\n\
+element_type : str\n\
+    beam, shell or solid\n\
+\n\
+Examples\n\
+--------\n\
+    >>> d3plot.get_elementByID(\"beam\",1).get_type()\n\
+    'beam'\n\
+    >>> d3plot.get_elementByID(\"shell\",1).get_type()\n\
+    'shell'\n\
+    >>> d3plot.get_elementByID(\"solid\",1).get_type()\n\
+    'solid'\n\
+";
+
   static PyObject *
   QD_Element_get_is_rigid(QD_Element* self);
 
+  const char* get_is_rigid_docs = "\
+is_rigid()\n\
+\n\
+Get the status, whether the element is a rigid (flag for shells only).\n\
+Rigid shells have no state data.\n\
+\n\
+Returns\n\
+-------\n\
+is_rigid : bool\n\
+    rigid status of the element\n\
+\n\
+Examples\n\
+--------\n\
+    >>> d3plot = D3plot(\"path/to/d3plot\", read_states=\"stress_mises max\")\n\
+    >>> elem1 = d3plot.get_elementByID(\"shell\", 451)\n\
+    >>> elem1.is_rigid()\n\
+    False\n\
+    >>> elem1.get_stress_mises().shape\n\
+    (34L,)\n\
+    >>> elem2 = d3plot.get_elementByID(\"shell\", 9654)\n\
+    >>> elem2.is_rigid()\n\
+    True\n\
+    >>> elem2.get_stress_mises().shape\n\
+    (0L,)\n\
+";
+
   static PyMethodDef QD_Element_methods[] = {
-    {"get_id", (PyCFunction) QD_Element_get_elementID, METH_NOARGS, "Get the element id."},
-    {"get_plastic_strain", (PyCFunction) QD_Element_get_plastic_strain, METH_NOARGS, "Get the plastic strain time series of the element."},
-    {"get_energy", (PyCFunction) QD_Element_get_energy, METH_NOARGS, "Get the energy time series of the element."},
-    {"get_strain", (PyCFunction) QD_Element_get_strain, METH_NOARGS, "Get the strain time series of the element."},
-    {"get_stress", (PyCFunction) QD_Element_get_stress, METH_NOARGS, "Get the stress time series of the element."},
-    {"get_stress_mises", (PyCFunction) QD_Element_get_stress_mises, METH_NOARGS, "Get the mises stress time series of the element."},
-    {"get_nodes", (PyCFunction) QD_Element_get_nodes, METH_NOARGS, "Get the nodes of the element."},
-    {"get_coords", (PyCFunction) QD_Element_get_coords, METH_VARARGS, "Get the coords of the element at a given timestep."},
-    {"get_history", (PyCFunction) QD_Element_get_history, METH_NOARGS, "Get the history vars of the element."},
-    {"get_estimated_size", (PyCFunction) QD_Element_get_estimated_size, METH_NOARGS, "Get the rough element edge size."},
-    {"get_type", (PyCFunction) QD_Element_get_type, METH_NOARGS, "Get the element type."},
-    {"is_rigid", (PyCFunction) QD_Element_get_is_rigid, METH_NOARGS, "Get the info if the element is rigid."},
+    {"get_id", (PyCFunction) QD_Element_get_elementID, METH_NOARGS, get_elementID_docs},
+    {"get_plastic_strain", (PyCFunction) QD_Element_get_plastic_strain, METH_NOARGS, get_plastic_strain_docs},
+    {"get_energy", (PyCFunction) QD_Element_get_energy, METH_NOARGS, get_energy_docs},
+    {"get_strain", (PyCFunction) QD_Element_get_strain, METH_NOARGS, get_strain_docs},
+    {"get_stress", (PyCFunction) QD_Element_get_stress, METH_NOARGS, get_stress_docs},
+    {"get_stress_mises", (PyCFunction) QD_Element_get_stress_mises, METH_NOARGS, get_stress_mises_docs},
+    {"get_nodes", (PyCFunction) QD_Element_get_nodes, METH_NOARGS, get_element_nodes_docs},
+    {"get_coords", (PyCFunction) QD_Element_get_coords, METH_VARARGS, get_element_coords_docs},
+    {"get_history", (PyCFunction) QD_Element_get_history, METH_NOARGS, get_history_docs},
+    {"get_estimated_size", (PyCFunction) QD_Element_get_estimated_size, METH_NOARGS, get_estimated_size_docs},
+    {"get_type", (PyCFunction) QD_Element_get_type, METH_NOARGS, get_type_docs},
+    {"is_rigid", (PyCFunction) QD_Element_get_is_rigid, METH_NOARGS, get_is_rigid_docs},
     {NULL}  /* Sentinel */
   };
 
   /* QD_Element_Type TYPE */
   static PyTypeObject QD_Element_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    "QD_Element",             /* tp_name */
+    "Element",             /* tp_name */
     sizeof(QD_Element),           /* tp_basicsize */
     0,                         /* tp_itemsize */
     (destructor) QD_Element_dealloc, /* tp_dealloc */

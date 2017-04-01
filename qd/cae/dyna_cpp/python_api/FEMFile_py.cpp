@@ -86,7 +86,7 @@ QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
   } else if( qd::isPyStr(arg) ){
      element_type = qd::PyStr2char(arg);
   } else {
-     PyErr_SetString(PyExc_AttributeError,"Argument is not a string.");
+     PyErr_SetString(PyExc_ValueError,"Argument is not a string.");
      return nullptr;
   }
 
@@ -98,7 +98,7 @@ QD_FEMFile_get_nElements(QD_FEMFile* self, PyObject* args){
      } else if ( element_type == "beam" ){
        return Py_BuildValue("i",self->instance->get_db_elements()->size(BEAM));
      } else {
-       PyErr_SetString(PyExc_SyntaxError, "Unknown element type, please try beam, shell or solid.");
+       PyErr_SetString(PyExc_ValueError, "Unknown element type, please try beam, shell or solid.");
        return nullptr;
      }
   }
@@ -113,7 +113,7 @@ static PyObject*
 QD_FEMFile_get_nodes(QD_FEMFile *self){
 
   if(self->instance == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ object is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to C++ object is nullptr.");
     return nullptr;
   }
 
@@ -148,7 +148,7 @@ static PyObject*
 QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
 
   if(self->instance == nullptr){
-    PyErr_SetString(PyExc_AttributeError,"Pointer to C++ object is nullptr.");
+    PyErr_SetString(PyExc_RuntimeError,"Pointer to C++ object is nullptr.");
     return nullptr;
   }
 
@@ -163,7 +163,7 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
   } else if( qd::isPyStr(arg) ){
      element_type = qd::PyStr2char(arg);
   } else {
-     PyErr_SetString(PyExc_AttributeError,"Argument is not a string.");
+     PyErr_SetString(PyExc_ValueError,"Argument is not a string.");
      return nullptr;
   }
 
@@ -178,7 +178,7 @@ QD_FEMFile_get_elements(QD_FEMFile *self, PyObject* args){
   } else if ( element_type.empty() ) {
      eType = NONE;
   } else {
-     PyErr_SetString(PyExc_AttributeError,"Unknown element type. Use beam, shell or solid.");
+     PyErr_SetString(PyExc_ValueError,"Unknown element type. Use beam, shell or solid.");
      return nullptr;
   }
 
@@ -270,7 +270,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
 
 
        if(nodeID < 0){
-         PyErr_SetString(PyExc_SyntaxError, "Error, nodeID may not be negative.");
+         PyErr_SetString(PyExc_ValueError, "Error, nodeID may not be negative.");
          return nullptr;
        }
 
@@ -294,14 +294,14 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
          try {
            nodeID = convert_obj_to_int(item);
          } catch(string& e) {
-           PyErr_SetString(PyExc_AttributeError,e.c_str());
+           PyErr_SetString(PyExc_ValueError,e.c_str());
            Py_DECREF(node_list);
            return nullptr;
          }
 
          if(nodeID < 0){
            Py_DECREF(node_list);
-           PyErr_SetString(PyExc_AttributeError, "Error, nodeID may not be negative.");
+           PyErr_SetString(PyExc_ValueError, "Error, nodeID may not be negative.");
            return nullptr;
          }
 
@@ -311,7 +311,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
            PyObject* ret = PyObject_CallObject((PyObject *) &QD_Node_Type, argList2);
            
            if(ret == nullptr)
-             throw(string("Could somehow not create Python Node."))  ;
+             throw(string("Could somehow not create Python Node."));
 
            check += PyList_SetItem(node_list, ii, ret);
 
@@ -335,7 +335,7 @@ QD_FEMFile_get_nodeByID(QD_FEMFile* self, PyObject* args){
 
      }
 
-     PyErr_SetString(PyExc_SyntaxError, "Error, argument is neither int nor list of int.");
+     PyErr_SetString(PyExc_ValueError, "Error, argument is neither int nor list of int.");
      return nullptr;
 
 
@@ -364,7 +364,7 @@ QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
 
 
        if(nodeIndex < 0){
-         PyErr_SetString(PyExc_SyntaxError, "Error, nodeIndex may not be negative.");
+         PyErr_SetString(PyExc_ValueError, "Error, nodeIndex may not be negative.");
          return nullptr;
        }
 
@@ -388,14 +388,14 @@ QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
          try {
            nodeID = convert_obj_to_int(item);
          } catch(string& e) {
-           PyErr_SetString(PyExc_AttributeError,e.c_str());
+           PyErr_SetString(PyExc_ValueError,e.c_str());
            Py_DECREF(node_list);
            return nullptr;
          }
 
          if(nodeID < 0){
            Py_DECREF(node_list);
-           PyErr_SetString(PyExc_AttributeError, "Error, nodeID may not be negative.");
+           PyErr_SetString(PyExc_ValueError, "Error, nodeID may not be negative.");
            return nullptr;
          }
 
@@ -422,7 +422,7 @@ QD_FEMFile_get_nodeByIndex(QD_FEMFile* self, PyObject* args){
 
      }
 
-     PyErr_SetString(PyExc_SyntaxError, "Error, argument is neither int nor list of int.");
+     PyErr_SetString(PyExc_ValueError, "Error, argument is neither int nor list of int.");
      return nullptr;
 
 
@@ -450,12 +450,12 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
        try {
          elementID = convert_obj_to_int(argument);
        } catch(string& e) {
-         PyErr_SetString(PyExc_AttributeError,e.c_str());
+         PyErr_SetString(PyExc_ValueError,e.c_str());
          return nullptr;
        }
 
        if(elementID < 0){
-         PyErr_SetString(PyExc_SyntaxError, "Error, elementID may not be negative.");
+         PyErr_SetString(PyExc_ValueError, "Error, elementID may not be negative.");
          return nullptr;
        }
 
@@ -478,14 +478,14 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
          try {
            elementID = convert_obj_to_int(item);
          } catch(string& e) {
-           PyErr_SetString(PyExc_AttributeError,e.c_str());
+           PyErr_SetString(PyExc_ValueError,e.c_str());
            Py_DECREF(elem_list);
            return nullptr;
          }
 
          if(elementID < 0){
            Py_DECREF(elem_list);
-           PyErr_SetString(PyExc_SyntaxError, "Error, elementID may not be negative.");
+           PyErr_SetString(PyExc_ValueError, "Error, elementID may not be negative.");
            return nullptr;
          }
 
@@ -512,7 +512,7 @@ QD_FEMFile_get_elementByID(QD_FEMFile* self, PyObject* args){
 
      }
 
-     PyErr_SetString(PyExc_SyntaxError, "Error, argument two is neither int nor list of int.");
+     PyErr_SetString(PyExc_ValueError, "Error, argument two is neither int nor list of int.");
      return nullptr;
 
 }

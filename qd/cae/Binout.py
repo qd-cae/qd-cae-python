@@ -103,17 +103,26 @@ class Diskfile:
     # UNFINISHED
 '''
 
-
-## This class is meant to read binouts from LS-Dyna
-#
-# This class is only a utility wrapper for Lsda from LSTC.
 class Binout:
+    '''This class is meant to read binouts from LS-Dyna
+    
+    Notes
+    -----
+        This class is only a utility wrapper for Lsda from LSTC.
+    '''
 
-
-    ## Constructor for a binout
-    #
-    # @param str filepath
     def __init__(self,filepath):
+        '''Constructor for a binout
+        
+        Parameters
+        ----------
+        filepath : str
+            path to the binout
+            
+        Examples
+        --------
+            >>> binout = Binout("path/to/binout")
+        '''
 
         # check
         if not os.path.isfile(filepath):
@@ -129,7 +138,7 @@ class Binout:
         self.lsda_root = self.lsda.root
         
 
-    ## Read all data from Binout (top to low level)
+    ## 
     # 
     # @param str/list(str) *path : path to read within binout. Leave empty fir top level.
     # @return see description
@@ -142,6 +151,50 @@ class Binout:
     #   - path/to/variable : np.array(float) vars
     #
     def read(self, *path):
+        '''read(path)
+        Read all data from Binout (top to low level)
+        
+        Parameters
+        ----------
+        path : list(str) or str
+            internal path in the folder structure of the binout
+            
+        Returns
+        -------
+        ret : list(str) or np.ndarray
+            list of subdata within the folder or data itself
+            
+        Notes
+        -----
+            This function is used to read any data from the binout. It has been used
+            to make the access to the data more comfortable. The return type depends 
+            on the given path:
+            
+             - `binout.read()` : list(str) names of directories (in binout)
+             - `binout.read(dir)` : list(str) names of variables or subdirs
+             - `binout.read(dir1, ..., variable)` : np.array(float/int) data
+        
+            If you have multiple outputs with different ids (e.g. in nodout for 
+            multiple nodes) then don't forget to read the ids array for 
+            identification or id-labels.
+        
+        Examples
+        --------
+            >>> from qd.cae.dyna import Binout
+            >>> binout = Binout("test/binout")
+            >>> # get top dirs
+            >>> binout.read()
+            ['swforc']
+            >>> binout.read("swforc")
+            ['title', 'failure', 'ids', 'failure_time', ...]
+            >>> binout.read("swforc","shear").shape
+            (321L, 26L)
+            >>> binout.read("swforc","ids")
+            array([52890, 52891, 52892, ...])
+            >>> # stings are just numbers, see binout.to_string
+            >>> binout.read("swforc","typenames")
+            array([99, 111, 110, ...]) 
+        '''
         
         iLevel = len(path)
 
@@ -155,12 +208,18 @@ class Binout:
             return self._decode_two_levels(path)
 
 
-
-    ## Decode a path, which has depth 2 (default)
-    #
-    # @param list(str) : path list
-    # @return list(str)/np.array(int)/np.array(float) ret : either path children or data
     def _decode_two_levels(self, path):
+        '''Decode a path, which has depth 2 (default)
+        
+        Parameters
+        ----------
+        path : list(str)
+        
+        Returns
+        -------
+        ret : list(str)/np.array(int)/np.array(float)
+            either path children or data
+        '''
 
         iLevel = len(path)
 
@@ -186,15 +245,24 @@ class Binout:
             raise ValueError("Invalid path depth of %d > 2" % iLevel)
 
 
-    ## Decode a path, which has depth 3 instread of 2 like default.
-    #
-    # @param list(str) : path list
-    # @return list(str)/np.array(int)/np.array(float) ret : either path children or data
-    #
-    # Level 3 Files are:
-    #   - rwforc
-    #   - jntforc
     def _decode_three_levels(self, path):
+        '''Decode a path, which has depth 3 (default)
+        
+        Parameters
+        ----------
+        path : list(str)
+        
+        Returns
+        -------
+        ret : list(str)/np.array(int)/np.array(float)
+            either path children or data
+            
+        Notes
+        -----
+            Level 3 Files are:
+             - rwforc
+             - jntforc
+        '''
 
         iLevel = len(path)
 
@@ -229,12 +297,19 @@ class Binout:
             raise ValueError("Invalid path depth \"%d > 3\"." % len(iLevel))
 
 
-    
-    ## Get a symbol from a path via lsda
-    #
-    # @param Symbol symbol : current directory which is a Lsda.Symbol 
-    # @return Symbol : final symbol after recursive search of path
     def _get_symbol(self, symbol, path):
+        '''Get a symbol from a path via lsda
+        
+        Parameters
+        ----------
+        symbol : Symbol
+            current directory which is a Lsda.Symbol
+        
+        Returns
+        -------
+        symbol : Symbol
+            final symbol after recursive search of path
+        '''
 
         # check
         if symbol == None:
@@ -256,11 +331,18 @@ class Binout:
             return self._get_symbol(next_symbol, sub_path)
         
 
-    ## Read a variable from a given path
-    #
-    # @param list(str) path : path to the variable
-    # @return np.array(int/float) data
     def _get_variable(self, path):
+        '''Read a variable from a given path
+        
+        Parameters
+        ----------
+        path : list(str)
+            path to the variable
+        
+        Returns
+        -------
+        data : np.ndarray of int or float
+        '''
 
         dir_symbol = self._get_symbol(self.lsda_root, path[:-1])
         variable_name = self._str_to_bstr(path[-1]) # variables are somehow binary strings ... dirs not   
@@ -295,13 +377,21 @@ class Binout:
         raise ValueError("Could not find and read: %s" % str(path))
 
 
-    ## Collect all variables from a symbol
-    #
-    # @param Lsda.Symbol symbol
-    # @return list(str) variable_names
-    #
-    # This function collect all variables from the state dirs and metadata
     def _collect_variables(self,symbol):
+        '''Collect all variables from a symbol
+        
+        Parameters
+        ----------
+        symbol : Symbol
+        
+        Returns
+        -------
+        variable_names : list(str)
+        
+        Notes
+        -----
+            This function collect all variables from the state dirs and metadata.
+        '''
 
         var_names = set()
         for subdir_name, subdir_symbol in symbol.children.items():
@@ -310,31 +400,49 @@ class Binout:
         return self._bstr_to_str( list(var_names) ) 
 
     
-    ## Convert a data series of numbers (usually ints) to a string
-    #
-    # @param np.array(int) data : binary data
-    # @return str string
     @staticmethod
     def to_string(data_array):
+        '''Convert a data series of numbers (usually ints) to a string
+        
+        Parameters
+        ----------
+        data : np.array of int
+            some data array
+        
+        Returns
+        -------
+        string : str
+            data array converted to characters
+            
+        Notes
+        -----
+            This is needed for the reason that sometimes the binary data
+            within the files are strings. 
+            
+        Examples
+        --------
+            >>> # strings also are just plain numbers
+            >>> binout.read("swforc","typenames")
+            array([99, 111, 110, ...]) 
+            >>> Binout.to_string( binout.read("swforc","typenames") )
+            'constraint,weld,beam,solid,non nodal, ,solid assembly'
+        '''
+        
         return "".join([chr(entry) for entry in data_array])
 
-    ## Get the labels of the file
-    #
-    # @param str folder_name = None : subdirectory to investigate. None is root
-    #
-    # Get the labels of either the top directories in the file (folder_name=None)
-    # or the labels of data in the subdirectories, e.g  folder_name="matsum".
-    # This routine is meant for looking into the file.
-    def get_labels(self,folder_name=None):
-        raise DeprecationWarning("\"binout.get_labels\" is deprecated. Use \"binout.read\".")
-
-
-    ## Encodes or decodes a string correctly regarding python version
-    #
-    # @param str/unicode/bytes string
-    # @return str string : converted to python version
-    #
+        
     def _bstr_to_str(self, arg):
+        '''Encodes or decodes a string correctly regarding python version
+        
+        Parameters
+        ----------
+        string : str/unicode/bytes
+        
+        Returns
+        -------
+        string : str
+            converted to python version
+        '''
 
         # in case of a list call this function with its atomic strings
         if isinstance(arg, (list,tuple) ):
@@ -347,35 +455,20 @@ class Binout:
             return arg
 
 
-    ## Convert a string to a binary string python version independent
-    #
-    # @param str string
-    # @param bstr string
     def _str_to_bstr(self,string):
+        '''Convert a string to a binary string python version independent
+        
+        Parameters
+        ----------
+        string : str
+        
+        Returns
+        -------
+        string : binary str
+        '''
 
         if not isinstance(string, bytes):
             return string.encode("utf-8")
         else:
             return string
 
-
-    ## Developers only: Scan the file subdirs.
-    #
-    # @param int nMaxChildren = 10 : limit of children to abort (e.g. we hit data)
-    def _scan_file(self,nMaxChildren=10):
-        self._print_tree_item(self.lsda_root,0,nMaxChildren=nMaxChildren)
-
-
-    ## Developers only: print a lsda symbol item recursively
-    #
-    # @param Symbol item : symbol instance
-    # @param int level : current depth level
-    # @param int nMaxChildren = 10 : limit of children to abort (e.g. we hit data)
-    # @param bool stop_level : level at which we stop looking deeper
-    def _print_tree_item(self,item,level,nMaxChildren=10,stop_level=None):
-
-        if item.type == 0: # dir
-            print("%s> %s" % ("-"*level,item.name))
-            if len(item.children) < nMaxChildren and level < stop_level:
-                for child_name in item.children:
-                    self._print_tree_item(item.children[child_name],level+1,nMaxChildren,stop_level=stop_level)

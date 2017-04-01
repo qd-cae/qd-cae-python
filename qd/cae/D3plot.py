@@ -9,9 +9,11 @@ import numpy as np
 
 class D3plot(QD_D3plot):
     '''
-    Class for reading a D3plot. A D3plot is a binary result file 
-    written from LS-Dyna and contains the simulation mesh, as well
-    as the time step data.
+    Notes
+    -----
+        Class for reading a D3plot. A D3plot is a binary result file 
+        written from LS-Dyna and contains the simulation mesh, as well
+        as the time step data.
     '''
 
     def __init__(self, *args, **kwargs):
@@ -43,16 +45,22 @@ class D3plot(QD_D3plot):
 
 
     def get_parts(self):
-        '''Get parts of the D3plot
+        '''
+        Notes
+        -----
+            Get the parts of the D3plot
         
         Returns
         -------
         parts : list(Part)
             parts within the D3plot
 
-        Overwritten function.
+        Examples
+        --------
+            >>> list_of_all_parts = femfile.get_parts()
         '''
 
+        # TODO rewrite as c functions
         part_ids = [_part.get_id() for _part in super(D3plot, self).get_parts() ]
         return [ Part(self, part_id) for part_id in part_ids ]
 
@@ -60,12 +68,28 @@ class D3plot(QD_D3plot):
     def get_partByID(self, part_id):
         '''Get the part by its id
         
+        Parameters
+        ----------
+        part_id : int or list(int)
+            id or list of ids of parts
+
         Returns
         -------
         part_id : int or list(int)
             id of the part or list of ids
+        
+        Raises
+        ------
+        ValueError
+            if `part_id` does not exist.
+
+        Examples
+        --------
+            >>> part = femfile.get_partByID(1)
+            >>> list_of_parts = femfile.get_partByID( [1,45,33] )
         '''
 
+        # TODO rewrite as c functions
         if isinstance(part_id, (list,tuple,np.ndarray)):
             assert all( isinstance(entry,int) for entry in part_id)
             return [ Part(self, entry) for entry in part_id ]
@@ -106,9 +130,11 @@ class D3plot(QD_D3plot):
         **kwargs : further arguments 
             additional arguments passed on to d3plot constructor
 
-        The file calling the function will be the basis for the comparison. 
-        The other files results will be mapped onto this mesh. The scatter is 
-        computed between all runs as maximum difference. 
+        Notes
+        -----
+            The file calling the function will be the basis for the comparison. 
+            The other files results will be mapped onto this mesh. The scatter is 
+            computed between all runs as maximum difference. 
         '''
 
         from sklearn.neighbors import KDTree

@@ -39,24 +39,104 @@ extern "C" {
   static PyObject*
   QD_Part_get_id(QD_Part *self);
 
+  const char* get_part_id_docs = "\
+get_id()\n\
+\n\
+Get the id of the part.\n\
+\n\
+Returns\n\
+-------\n\
+id : int\n\
+    id of the part\n\
+\n\
+Examples\n\
+--------\n\
+    >>> d3plot = D3plot(\"path/to/d3plot\")\n\
+    >>> part = d3plot.get_partByID(1)\n\
+    >>> part.get_id()\n\
+    1\n\
+";
+
   /* FUNCTION get_name */
   static PyObject*
   QD_Part_get_name(QD_Part *self);
+
+  const char* get_part_name_docs = "\
+get_name()\n\
+\n\
+Get the name of the part. It's the same name as in the input deck.\n\
+\n\
+Returns\n\
+-------\n\
+name : str\n\
+    name of the part\n\
+\n\
+Examples\n\
+--------\n\
+    >>> d3plot = D3plot(\"path/to/d3plot\")\n\
+    >>> part = d3plot.get_partByID(1)\n\
+    >>> part.get_name()\n\
+    'PLATE_C'\n\
+";
 
   /* FUNCTION get_nodes */
   static PyObject*
   QD_Part_get_nodes(QD_Part *self);
 
+  const char* get_part_nodes_docs = "\
+get_nodes()\n\
+\n\
+Get the nodes of the part. Note that a node may belong to two parts,\n\
+since only the elements are uniquely assignable.\n\
+\n\
+Returns\n\
+-------\n\
+nodes : list(Node)\n\
+    nodes belonging to the elements of the part\n\
+\n\
+Examples\n\
+--------\n\
+    >>> d3plot = D3plot(\"path/to/d3plot\")\n\
+    >>> part = d3plot.get_partByID(1)\n\
+    >>> len( part.get_nodes() )\n\
+    52341\n\
+";
+
   /* FUNCTION get_elements */
   static PyObject*
   QD_Part_get_elements(QD_Part *self, PyObject *args);
 
+  const char* get_part_elements_docs = "\
+get_elements(element_type=None)\n\
+\n\
+Get the elements of the part.\n\
+\n\
+Parameters\n\
+----------\n\
+element_type : str\n\
+    Optional element type filter. May be beam, shell or solid.\n\
+\n\
+Returns\n\
+-------\n\
+elements : list(Element)\n\
+    list of Elements\n\
+\n\
+Examples\n\
+--------\n\
+    >>> d3plot = D3plot(\"path/to/d3plot\")\n\
+    >>> part = d3plot.get_partByID(1)\n\
+    >>> len( part.get_elements() )\n\
+    49123\n\
+    >>> len( part.get_elements(\"shell\") )\n\
+    45123\n\
+";
+
   /* METHOD TABLE */
   static PyMethodDef QD_Part_methods[] = {
-    {"get_id", (PyCFunction) QD_Part_get_id, METH_NOARGS, "Get the id of the part."},
-    {"get_name", (PyCFunction) QD_Part_get_name, METH_NOARGS, "Get the name of the part."},
-    {"get_nodes", (PyCFunction) QD_Part_get_nodes, METH_NOARGS, "Get the nodes of the part."},
-    {"get_elements", (PyCFunction) QD_Part_get_elements, METH_VARARGS, "Get the elements of the part."},
+    {"get_id", (PyCFunction) QD_Part_get_id, METH_NOARGS, get_part_id_docs},
+    {"get_name", (PyCFunction) QD_Part_get_name, METH_NOARGS, get_part_name_docs},
+    {"get_nodes", (PyCFunction) QD_Part_get_nodes, METH_NOARGS, get_part_nodes_docs},
+    {"get_elements", (PyCFunction) QD_Part_get_elements, METH_VARARGS, get_part_elements_docs},
     {NULL}  /* Sentinel */
   };
 

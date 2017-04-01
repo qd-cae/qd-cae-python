@@ -4,22 +4,34 @@ from .dyna_cpp import QD_Part
 from .D3plot import plot_parts
 
 class Part(QD_Part):
-    '''Part of a D3plot
+    '''Part of a D3plot. 
 
-    It is recommended to get parts by:
-    d3plot.get_parts()
-    d3plot.get_partByID(...)
+    Notes
+    -----
+        The part specific mesh data may be accessed by this container.
+        It is recommended to get parts by:
+        >>> part = d3plot.get_parts()
+        >>> part_id = 13
+        >>> part = d3plot.get_partByID(part_id)
+
+        In case one needs it, the constructor has the signature:
+        __init__(femfile, part_id)
     '''
 
     def __init__(self, *args, **kwargs):
         '''Constructor
 
-        Parameters:
-        -----------
-        D3plot : d3plot
-            d3plot of which to get the part from
-        partID : int
-            id of the part in the D3plot
+        Parameters
+        ----------
+        femfile : FEMFile
+            femfile of which to get the part from
+        part_id : int
+            id of the part
+
+        Examples
+        --------
+            >>> femfile = KeyFile('path/to/keyfile') # or D3plot
+            >>> part = Part(femfile, part_id=1)
         '''
         super(Part, self).__init__(*args, **kwargs)
 
