@@ -1,0 +1,860 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>D3plot &mdash; qd 0.5.3 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="qd 0.5.3 documentation" href="index.html"/>
+        <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> qd
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Binout.html">Binout</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">D3plot</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_KeyFile.html">KeyFile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_FEMFile.html">FEMFile (D3plot and KeyFile)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Element.html">Element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Node.html">Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Part.html">Part</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_beta.html">qd.cae.beta</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qd_numerics.html">qd.numerics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">qd</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="qd_cae_dyna.html">qd.cae.dyna</a> &raquo;</li>
+        
+      <li>D3plot</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/qd_cae_dyna_D3plot.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="d3plot">
+<h1>D3plot<a class="headerlink" href="#d3plot" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="qd.cae.dyna.D3plot">
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">D3plot</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Notes</p>
+<p>Class for reading a D3plot. A D3plot is a binary result file 
+written from LS-Dyna and contains the simulation mesh, as well
+as the time step data.</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByID</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_mesh</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_timesteps</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_parts</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">read_states</span></code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_parts">
+<code class="descname">get_parts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_parts" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>parts</strong> : list(Part)</p>
+<blockquote class="last">
+<div><p>parts within the D3plot</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Get the parts of the D3plot</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_all_parts</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_parts</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_partByID">
+<code class="descname">get_partByID</code><span class="sig-paren">(</span><em>part_id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_partByID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the part by its id</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>part_id</strong> : int or list(int)</p>
+<blockquote>
+<div><p>id or list of ids of parts</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>part_id</strong> : int or list(int)</p>
+<blockquote>
+<div><p>id of the part or list of ids</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>if <cite>part_id</cite> does not exist.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_parts</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">45</span><span class="p">,</span><span class="mi">33</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the D3plot, currently shells only!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>iTimestep</strong> : int</p>
+<blockquote>
+<div><p>timestep at which to plot the D3plot</p>
+</div></blockquote>
+<p><strong>element_result</strong> : str or function</p>
+<blockquote>
+<div><p>which type of results to use as fringe
+None means no fringe is used.
+When using string as arg you may use plastic_strain or energy.
+Function shall take elem as input and return a float value (for fringe)</p>
+</div></blockquote>
+<p><strong>fringe_bounds</strong> : list(float,float) or tuple(float,float)</p>
+<blockquote>
+<div><p>bounds for the fringe, default will use min and max value</p>
+</div></blockquote>
+<p><strong>export_filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>optional filepath for saving. If none, the model
+is exported to a temporary file and shown in the
+browser.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load a d3plot and plot it&#8217;s geometry</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="c1"># just geometry</span>
+</pre></div>
+</div>
+<p>Read the state data and plot in deformed state</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># read state data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">([</span><span class="s2">&quot;disp&quot;</span><span class="p">,</span><span class="s2">&quot;plastic_strain max&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># last state</span>
+</pre></div>
+</div>
+<p>Use a user-defined element evaluation function for fringe colors.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># User defined evaluation function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">eval_fun</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">res</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_plastic_strain</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">):</span> <span class="c1"># some elements may miss plastic strain</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># last timestep</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">element_result</span><span class="o">=</span><span class="n">eval_fun</span><span class="p">,</span> <span class="n">fringe_bounds</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="qd.cae.dyna.D3plot.plot_parts">
+<em class="property">static </em><code class="descname">plot_parts</code><span class="sig-paren">(</span><em>parts, iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot_parts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a selected group of parts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part or list(Part)</p>
+<blockquote>
+<div><p>parts to plot. Must not be of the same file!</p>
+</div></blockquote>
+<p><strong>iTimestep</strong> : int</p>
+<blockquote>
+<div><p>timestep at which to plot the D3plot</p>
+</div></blockquote>
+<p><strong>element_result</strong> : str or function</p>
+<blockquote>
+<div><p>which type of results to use as fringe
+None means no fringe is used
+When using string as arg you may use plastic_strain or energy.
+Function shall take elem as input and return a float value (for fringe)</p>
+</div></blockquote>
+<p><strong>fringe_bounds</strong> : list(float,float) or tuple(float,float)</p>
+<blockquote>
+<div><p>bounds for the fringe, default will use min and max value</p>
+</div></blockquote>
+<p><strong>export_filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>optional filepath for saving. If none, the model
+is exported to a temporary file and shown in the
+browser.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Can be applied to parts, coming from different files.</p>
+<p class="rubric">Examples</p>
+<p>For a full description of plotting functionality, see <cite>d3plot.plot</cite>.
+Load a d3plot and plot a part from it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_1</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_1</span> <span class="o">=</span> <span class="n">d3plot_1</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="o">.</span><span class="n">plot_parts</span><span class="p">(</span> <span class="p">[</span><span class="n">part_1</span><span class="p">]</span> <span class="p">)</span> <span class="c1"># static function!</span>
+</pre></div>
+</div>
+<p>Read a second d3plot and plot both parts at once</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_2</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_2&quot;</span><span class="p">)</span> <span class="c1"># different file!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_2</span> <span class="o">=</span> <span class="n">d3plot_2</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="o">.</span><span class="n">plot_parts</span><span class="p">(</span> <span class="p">[</span><span class="n">part_1</span><span class="p">,</span> <span class="n">part_2</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><em>vars</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.clear" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vars</strong> : str or list(str)</p>
+<blockquote class="last">
+<div><p>variable or list of variables to delete</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This function may be used if one wants to clear certain state data
+from the memory. Valid variable names are:</p>
+<ul class="simple">
+<li>disp</li>
+<li>vel</li>
+<li>accel</li>
+<li>strain</li>
+<li>stress</li>
+<li>stress_mises</li>
+<li>plastic_strain</li>
+<li>history [(optional) shell or solid]</li>
+</ul>
+<p>The specification of shell or solid for history is optional. Deletes
+all history variables if none given.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;strain inner&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">())</span>
+<span class="go">34</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># clear specific field</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">())</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># reread some data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span><span class="s2">&quot;strain outer&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">())</span>
+<span class="go">34</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span> <span class="c1"># clear all</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_elementByID">
+<code class="descname">get_elementByID</code><span class="sig-paren">(</span><em>element_type</em>, <em>element_id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_elementByID" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : str</p>
+<blockquote>
+<div><p>type of the element. Must be beam, shell or solid.</p>
+</div></blockquote>
+<p><strong>element_id</strong> : int</p>
+<blockquote>
+<div><p>id of the part in the file</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>part</strong> : Part</p>
+<blockquote class="last">
+<div><p>Part object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Since ids in the dyna file are non unique for
+different element types, one has to specify the
+type too.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_shells</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># whoever had the great id of non unique ids ...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;beam&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+<span class="go">&quot;beam&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+<span class="go">&quot;solid&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_elements">
+<code class="descname">get_elements</code><span class="sig-paren">(</span><em>element_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_elements" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : str</p>
+<blockquote>
+<div><p>Optional element type filter. May be beam, shell or solid.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>elements</strong> : list(Element)</p>
+<blockquote class="last">
+<div><p>list of Elements</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Get the elements of the femfile. One may use a filter by type.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_elements</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell_elements</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="s1">&#39;shell&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_filepath">
+<code class="descname">get_filepath</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_filepath" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>Filepath of the femfile.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_filepath</span><span class="p">()</span>
+<span class="go">&quot;path/to/femfile&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_mesh">
+<code class="descname">get_mesh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>unfinished.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_nElements">
+<code class="descname">get_nElements</code><span class="sig-paren">(</span><em>element_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nElements" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : str</p>
+<blockquote>
+<div><p>Optional element type filter. May be beam, shell or solid.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nElements</strong> : int</p>
+<blockquote class="last">
+<div><p>number of elements</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">()</span>
+<span class="go">43156</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_nNodes">
+<code class="descname">get_nNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nNodes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nNodes</strong> : int</p>
+<blockquote class="last">
+<div><p>number of nodes in the file</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_nNodes</span><span class="p">()</span>
+<span class="go">43145</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_nodeByID">
+<code class="descname">get_nodeByID</code><span class="sig-paren">(</span><em>node_id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nodeByID" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>node_id</strong> : int</p>
+<blockquote>
+<div><p>id of the node</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node</p>
+<blockquote class="last">
+<div><p>Node object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># get by single id</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get a list of nodes at once</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_nodes</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_nodeByIndex">
+<code class="descname">get_nodeByIndex</code><span class="sig-paren">(</span><em>node_index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nodeByIndex" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>node_index</strong> : int</p>
+<blockquote>
+<div><p>internal index of the node</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node</p>
+<blockquote class="last">
+<div><p>Node object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The internal index starts at 0 and ends at
+<cite>femfile.get_nNodes()</cite>.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># single index</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get a list of nodes at once</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_nodes</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_nodes">
+<code class="descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nodes</strong> : list(Node)</p>
+<blockquote class="last">
+<div><p>list of node objects</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_nodes</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.get_timesteps">
+<code class="descname">get_timesteps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_timesteps" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>timesteps</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>state timesteps of the D3plot</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_timesteps</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.info">
+<code class="descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.info" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Notes</p>
+<p>Get information about the header data of the D3plot.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.read_states">
+<code class="descname">read_states</code><span class="sig-paren">(</span><em>vars</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.read_states" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vars</strong> : str or list(str)</p>
+<blockquote>
+<div><p>variable or list of variables to read</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>timesteps</strong> : np.ndarray</p>
+<blockquote>
+<div><p>state timesteps of the D3plot</p>
+</div></blockquote>
+<p>Notes</p>
+<blockquote class="last">
+<div><p>Read a variable from the state files. If this is not done, the nodes
+and elements return empty vectors when requesting a result. The
+variables available are:</p>
+<ul class="simple">
+<li>disp (displacement)</li>
+<li>vel (velocity)</li>
+<li>accel (acceleration)</li>
+<li>strain [(optional) mode]</li>
+<li>stress [(optional) mode]</li>
+<li>stress_mises [(optional) mode]</li>
+<li>plastic_strain [(optional) mode]</li>
+<li>history [id1] [id2] [shell or solid] [(optional) mode]</li>
+</ul>
+<p>There is an optional mode for the element results. Since shell elements
+have multiple layers of results, the optional mode determines the
+treatment of these layers:</p>
+<ul class="simple">
+<li>inner</li>
+<li>mid (middle)</li>
+<li>outer</li>
+<li>mean</li>
+<li>max</li>
+<li>min</li>
+</ul>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span> <span class="c1"># just geometry</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">get_disp</span><span class="p">()</span> <span class="p">)</span> <span class="c1"># no disps loaded</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Read displacements</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span><span class="s2">&quot;disp&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">get_disp</span><span class="p">()</span> <span class="p">)</span> <span class="c1"># here they are</span>
+<span class="go">31</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># multi-loading, already loaded will be skipped</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">([</span><span class="s2">&quot;disp&quot;</span><span class="p">,</span><span class="s2">&quot;vel&quot;</span><span class="p">,</span><span class="s2">&quot;stress_mises max&quot;</span><span class="p">,</span><span class="s2">&quot;shell history 1 mean&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># most efficient way, load the results directly when opening</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;disp&quot;</span><span class="p">,</span><span class="s2">&quot;vel&quot;</span><span class="p">,</span><span class="s2">&quot;plastic_strain max&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, C. Diez, D. Toewe.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.5.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>qd.cae.D3plot &#8212; qd 0.5.3 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.5.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">qd 0.5.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for qd.cae.D3plot</h1><div class="highlight"><pre>
+<span></span>
+
+<span class="kn">from</span> <span class="nn">._dyna_utils</span> <span class="k">import</span> <span class="n">plot_parts</span><span class="p">,</span> <span class="n">_parse_element_result</span><span class="p">,</span> <span class="n">_extract_elem_coords</span>
+<span class="kn">from</span> <span class="nn">.dyna_cpp</span> <span class="k">import</span> <span class="n">QD_D3plot</span><span class="p">,</span> <span class="n">QD_Part</span>
+<span class="kn">from</span> <span class="nn">.Part</span> <span class="k">import</span> <span class="n">Part</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="D3plot"><a class="viewcode-back" href="../../../qd_cae_dyna_D3plot.html#qd.cae.dyna.D3plot">[docs]</a><span class="k">class</span> <span class="nc">D3plot</span><span class="p">(</span><span class="n">QD_D3plot</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">        Class for reading a D3plot. A D3plot is a binary result file </span>
+<span class="sd">        written from LS-Dyna and contains the simulation mesh, as well</span>
+<span class="sd">        as the time step data.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Constructor for a D3plot.</span>
+
+<span class="sd">        If LS-Dyna writes multiple files (one for each timestep),</span>
+<span class="sd">        give the filepath to the first file. The library finds all</span>
+<span class="sd">        other files.</span>
+<span class="sd">        Please read state information with the read_states flag </span>
+<span class="sd">        in the constructor or with the member function.</span>
+<span class="sd">            </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filepath : str</span>
+<span class="sd">            path to the d3plot</span>
+<span class="sd">        use_femzip : bool</span>
+<span class="sd">            whether to use femzip for decompression</span>
+<span class="sd">        read_states : str/list(str)</span>
+<span class="sd">            read state information directly (saves time), </span>
+<span class="sd">            see the function read_states</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            D3plot d3plot : instance</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">            Read the plain geometry data</span>
+<span class="sd">            &gt;&gt;&gt; d3plot = D3plot(&quot;path/to/d3plot&quot;)</span>
+
+<span class="sd">            Read a compressed d3plot</span>
+<span class="sd">            &gt;&gt;&gt; d3plot = D3plot(&quot;path/to/d3plot.fz&quot;, use_femzip=True)</span>
+<span class="sd">            </span>
+<span class="sd">            Read d3plot with state data at once.</span>
+<span class="sd">            &gt;&gt;&gt; d3plot = D3plot(&quot;path/to/d3plot&quot;, read_states=[&quot;mises_stress max&quot;])</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">D3plot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="D3plot.get_parts"><a class="viewcode-back" href="../../../qd_cae_dyna_D3plot.html#qd.cae.dyna.D3plot.get_parts">[docs]</a>    <span class="k">def</span> <span class="nf">get_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">            Get the parts of the D3plot</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        parts : list(Part)</span>
+<span class="sd">            parts within the D3plot</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">            &gt;&gt;&gt; list_of_all_parts = femfile.get_parts()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># TODO rewrite as c functions</span>
+        <span class="n">part_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">_part</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span> <span class="k">for</span> <span class="n">_part</span> <span class="ow">in</span> <span class="nb">super</span><span class="p">(</span><span class="n">D3plot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_parts</span><span class="p">()</span> <span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span> <span class="n">Part</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">part_id</span> <span class="ow">in</span> <span class="n">part_ids</span> <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="D3plot.get_partByID"><a class="viewcode-back" href="../../../qd_cae_dyna_D3plot.html#qd.cae.dyna.D3plot.get_partByID">[docs]</a>    <span class="k">def</span> <span class="nf">get_partByID</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part_id</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the part by its id</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        part_id : int or list(int)</span>
+<span class="sd">            id or list of ids of parts</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        part_id : int or list(int)</span>
+<span class="sd">            id of the part or list of ids</span>
+<span class="sd">        </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            if `part_id` does not exist.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">            &gt;&gt;&gt; part = femfile.get_partByID(1)</span>
+<span class="sd">            &gt;&gt;&gt; list_of_parts = femfile.get_partByID( [1,45,33] )</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># TODO rewrite as c functions</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part_id</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span><span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">part_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span> <span class="n">Part</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">part_id</span> <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Part</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">part_id</span><span class="p">)</span></div>
+    
+
+    <span class="k">def</span> <span class="nf">_compare_scatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">base_filepath</span><span class="p">,</span> 
+                         <span class="n">filepath_list</span><span class="p">,</span> 
+                         <span class="n">element_result</span><span class="p">,</span>
+                         <span class="n">pid_filter_list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">kMappingNeighbors</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+                         <span class="n">export_filepath</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Compare the scatter between mutliple d3plot</span>
+<span class="sd">        ! UNFINISHED !</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        base_filepath : str</span>
+<span class="sd">            filepath to the base D3plot, which will also be the base mesh</span>
+<span class="sd">        filepath_list : list(str)</span>
+<span class="sd">            list of filepaths of d3plot for comparison</span>
+<span class="sd">        element_result : str or function(element)</span>
+<span class="sd">            element results to compare. Either specify a user defined</span>
+<span class="sd">            function or use predefined results. Available are</span>
+<span class="sd">            disp, plastic_strain or energy.</span>
+<span class="sd">        pid_filter_list : list(int)</span>
+<span class="sd">            list of pids to filter for optionally</span>
+<span class="sd">        kMappingNeighbors : int</span>
+<span class="sd">            number of neighbors used for nearest neighbor mapping</span>
+<span class="sd">        export_filepath : str</span>
+<span class="sd">            optional filepath for saving. If none, the model</span>
+<span class="sd">            is exported to a temporary file and shown in the</span>
+<span class="sd">            browser.</span>
+<span class="sd">        **kwargs : further arguments </span>
+<span class="sd">            additional arguments passed on to d3plot constructor</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">            The file calling the function will be the basis for the comparison. </span>
+<span class="sd">            The other files results will be mapped onto this mesh. The scatter is </span>
+<span class="sd">            computed between all runs as maximum difference. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">KDTree</span>
+
+        <span class="k">if</span> <span class="n">pid_filter_list</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pid_filter_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># yay checks :)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_filepath</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">base_filepath</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filepath_list</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">filepath_list</span> <span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="n">filepath_list</span> <span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element_result</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">callable</span><span class="p">(</span><span class="n">element_result</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">pid_filter_list</span> <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">kMappingNeighbors</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+        <span class="c1"># prepare evaluation</span>
+        <span class="n">read_vars_str</span><span class="p">,</span> <span class="n">eval_function</span> <span class="o">=</span>  <span class="n">_parse_element_result</span><span class="p">(</span><span class="n">element_result</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">read_vars_str</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;read_states&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_vars_str</span>
+
+        <span class="c1"># base run element coords</span>
+        <span class="n">base_d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="n">base_filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pid_filter_list</span><span class="p">:</span>
+            <span class="n">pid_filter_list</span> <span class="o">=</span> <span class="p">[</span> <span class="n">part</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">base_d3plot</span><span class="o">.</span><span class="n">get_parts</span><span class="p">()</span> <span class="p">]</span>
+        <span class="n">base_mesh_coords</span><span class="p">,</span> <span class="n">base_mesh_results</span> <span class="o">=</span> <span class="n">_extract_elem_coords</span><span class="p">(</span> <span class="n">base_d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="n">pid_filter_list</span><span class="p">),</span> <span class="n">element_result</span><span class="o">=</span><span class="n">eval_function</span> <span class="p">)</span>
+        <span class="k">del</span> <span class="n">base_d3plot</span>
+        <span class="k">del</span> <span class="n">part</span>
+
+        <span class="c1"># init vars for comparison</span>
+        <span class="n">element_result_max</span> <span class="o">=</span> <span class="n">base_mesh_results</span>
+        <span class="n">element_result_min</span> <span class="o">=</span> <span class="n">base_mesh_results</span>
+
+        <span class="c1"># loop other files</span>
+        <span class="k">for</span> <span class="n">_filepath</span> <span class="ow">in</span> <span class="n">filepath_list</span><span class="p">:</span>
+
+            <span class="c1"># new mesh with results</span>
+            <span class="n">_d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="n">_filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> 
+            <span class="n">_d3plot_elem_coords</span><span class="p">,</span> <span class="n">_d3plot_elem_results</span> <span class="o">=</span> <span class="n">_extract_elem_coords</span><span class="p">(</span> <span class="n">_d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="n">pid_filter_list</span><span class="p">),</span> <span class="n">element_result</span><span class="o">=</span><span class="n">eval_function</span><span class="p">,</span> <span class="n">iTimestep</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">_d3plot</span>
+            
+            <span class="c1"># compute mapping</span>
+            <span class="n">_tree</span> <span class="o">=</span> <span class="n">KDTree</span><span class="p">(</span><span class="n">_d3plot_elem_coords</span><span class="p">)</span>
+            <span class="n">distances</span><span class="p">,</span> <span class="n">mapping_indexes</span> <span class="o">=</span> <span class="n">_tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">base_mesh_coords</span><span class="p">,</span> 
+                                                     <span class="n">return_distance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                     <span class="n">sort_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                     <span class="n">k</span><span class="o">=</span><span class="n">kMappingNeighbors</span><span class="p">)</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">distances</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span> <span class="c1"># softmax weights</span>
+
+            <span class="c1"># map results </span>
+            <span class="n">_d3plot_elem_results</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">distances</span><span class="o">*</span><span class="n">_d3plot_elem_results</span><span class="p">[</span><span class="n">mapping_indexes</span><span class="p">]</span> <span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># update min and max</span>
+            <span class="n">element_result_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">_d3plot_elem_results</span><span class="p">,</span> <span class="n">element_result_max</span><span class="p">)</span>
+            <span class="n">element_result_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">_d3plot_elem_results</span><span class="p">,</span> <span class="n">element_result_min</span><span class="p">)</span>
+
+        <span class="c1"># compute scatter</span>
+        <span class="n">element_result_max</span> <span class="o">=</span> <span class="n">element_result_max</span><span class="o">-</span><span class="n">element_result_min</span>
+
+        <span class="c1"># plot scatter</span>
+        <span class="c1">#np.save(&quot;element_scatter.npy&quot;,element_result_max)</span>
+            
+
+<div class="viewcode-block" id="D3plot.plot"><a class="viewcode-back" href="../../../qd_cae_dyna_D3plot.html#qd.cae.dyna.D3plot.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iTimestep</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">element_result</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fringe_bounds</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">],</span> <span class="n">export_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Plot the D3plot, currently shells only!</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iTimestep : int</span>
+<span class="sd">            timestep at which to plot the D3plot</span>
+<span class="sd">        element_result : str or function</span>
+<span class="sd">            which type of results to use as fringe</span>
+<span class="sd">            None means no fringe is used.</span>
+<span class="sd">            When using string as arg you may use plastic_strain or energy.</span>
+<span class="sd">            Function shall take elem as input and return a float value (for fringe)</span>
+<span class="sd">        fringe_bounds : list(float,float) or tuple(float,float)</span>
+<span class="sd">            bounds for the fringe, default will use min and max value</span>
+<span class="sd">        export_filepath : str</span>
+<span class="sd">            optional filepath for saving. If none, the model</span>
+<span class="sd">            is exported to a temporary file and shown in the</span>
+<span class="sd">            browser.</span>
+<span class="sd">            </span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">            Load a d3plot and plot it&#39;s geometry</span>
+
+<span class="sd">            &gt;&gt;&gt; d3plot = D3plot(&quot;path/to/d3plot&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; d3plot.plot() # just geometry</span>
+<span class="sd">            </span>
+<span class="sd">            Read the state data and plot in deformed state</span>
+
+<span class="sd">            &gt;&gt;&gt; # read state data</span>
+<span class="sd">            &gt;&gt;&gt; d3plot.read_states([&quot;disp&quot;,&quot;plastic_strain max&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; d3plot.plot(iTimestep=-1) # last state</span>
+<span class="sd">            </span>
+<span class="sd">            Use a user-defined element evaluation function for fringe colors.</span>
+
+<span class="sd">            &gt;&gt;&gt; # User defined evaluation function</span>
+<span class="sd">            &gt;&gt;&gt; def eval_fun(element):</span>
+<span class="sd">            &gt;&gt;&gt;     res = element.get_plastic_strain()</span>
+<span class="sd">            &gt;&gt;&gt;     if len(res): # some elements may miss plastic strain</span>
+<span class="sd">            &gt;&gt;&gt;         return res[-1] # last timestep</span>
+<span class="sd">            &gt;&gt;&gt; </span>
+<span class="sd">            &gt;&gt;&gt; d3plot.plot(iTimestep=-1, element_result=eval_fun, fringe_bounds=[0, 0.05])</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">plot_parts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_parts</span><span class="p">(),</span> 
+                   <span class="n">iTimestep</span><span class="o">=</span><span class="n">iTimestep</span><span class="p">,</span> 
+                   <span class="n">element_result</span><span class="o">=</span><span class="n">element_result</span><span class="p">,</span> 
+                   <span class="n">fringe_bounds</span><span class="o">=</span><span class="n">fringe_bounds</span><span class="p">,</span> 
+                   <span class="n">export_filepath</span><span class="o">=</span><span class="n">export_filepath</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="D3plot.plot_parts"><a class="viewcode-back" href="../../../qd_cae_dyna_D3plot.html#qd.cae.dyna.D3plot.plot_parts">[docs]</a>    <span class="k">def</span> <span class="nf">plot_parts</span><span class="p">(</span><span class="n">parts</span><span class="p">,</span> <span class="n">iTimestep</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">element_result</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fringe_bounds</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">],</span> <span class="n">export_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Plot a selected group of parts. </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parts : Part or list(Part)</span>
+<span class="sd">            parts to plot. Must not be of the same file!</span>
+<span class="sd">        iTimestep : int</span>
+<span class="sd">            timestep at which to plot the D3plot</span>
+<span class="sd">        element_result : str or function</span>
+<span class="sd">            which type of results to use as fringe</span>
+<span class="sd">            None means no fringe is used</span>
+<span class="sd">            When using string as arg you may use plastic_strain or energy.</span>
+<span class="sd">            Function shall take elem as input and return a float value (for fringe)</span>
+<span class="sd">        fringe_bounds : list(float,float) or tuple(float,float)</span>
+<span class="sd">            bounds for the fringe, default will use min and max value</span>
+<span class="sd">        export_filepath : str</span>
+<span class="sd">            optional filepath for saving. If none, the model</span>
+<span class="sd">            is exported to a temporary file and shown in the</span>
+<span class="sd">            browser.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">            Can be applied to parts, coming from different files.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">            For a full description of plotting functionality, see `d3plot.plot`.</span>
+<span class="sd">            Load a d3plot and plot a part from it:</span>
+
+<span class="sd">            &gt;&gt;&gt; d3plot_1 = D3plot(&quot;path/to/d3plot_1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; part_1 = d3plot_1.get_partByID(1)</span>
+<span class="sd">            &gt;&gt;&gt; D3plot.plot_parts( [part_1] ) # static function!</span>
+<span class="sd">            </span>
+<span class="sd">            Read a second d3plot and plot both parts at once</span>
+
+<span class="sd">            &gt;&gt;&gt; d3plot_2 = D3plot(&quot;path/to/d3plot_2&quot;) # different file!</span>
+<span class="sd">            &gt;&gt;&gt; part_2 = d3plot_2.get_partByID(14)</span>
+<span class="sd">            &gt;&gt;&gt; D3plot.plot_parts( [part_1, part_2] )</span>
+<span class="sd">            </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parts</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span><span class="nb">list</span><span class="p">)):</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">]</span>
+
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part</span><span class="p">,</span><span class="n">QD_Part</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span> <span class="p">),</span> <span class="s2">&quot;At least one list entry is not a part&quot;</span>
+
+        <span class="n">plot_parts</span><span class="p">(</span><span class="n">parts</span><span class="p">,</span> 
+                   <span class="n">iTimestep</span><span class="o">=</span><span class="n">iTimestep</span><span class="p">,</span> 
+                   <span class="n">element_result</span><span class="o">=</span><span class="n">element_result</span><span class="p">,</span> 
+                   <span class="n">fringe_bounds</span><span class="o">=</span><span class="n">fringe_bounds</span><span class="p">,</span> 
+                   <span class="n">export_filepath</span><span class="o">=</span><span class="n">export_filepath</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../index.html">Table Of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../qd_cae_dyna.html">qd.cae.dyna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../qd_cae_beta.html">qd.cae.beta</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../qd_numerics.html">qd.numerics</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">qd 0.5.3 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, C. Diez, D. Toewe.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

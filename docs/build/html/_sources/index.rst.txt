@@ -1,0 +1,26 @@
+.. qd documentation master file, created by
+   sphinx-quickstart on Thu Mar 30 20:23:40 2017.
+
+Welcome to qd's documentation!
+==============================
+
+qd is python3 library for Computer Aided Engineering (CAE). I've developed this library, since I was very unhappy with many expensive commercial software tools in our field of work. I believe many new scientific ideas emerge from freedom and simplicity, therefore the main focus of this project was on a good API and Speed. As a result memory took quite some, so watch you RAM when you load a full vehicle.
+
+Module Description
+==================
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Contents:
+
+   qd_cae_dyna
+   qd_cae_beta
+   qd_numerics
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
