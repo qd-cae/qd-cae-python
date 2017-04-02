@@ -177,7 +177,36 @@
 <dl class="class">
 <dt id="qd.cae.dyna.Element">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Element</code><a class="headerlink" href="#qd.cae.dyna.Element" title="Permalink to this definition">¶</a></dt>
-<dd><p>QD_Element</p>
+<dd><p>Container for handling element data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>femfile</strong> : FEMFile</p>
+<blockquote>
+<div><p>femfile from which to take the Element</p>
+</div></blockquote>
+<p><strong>element_type</strong> : str</p>
+<blockquote>
+<div><p>beam, shell or solid</p>
+</div></blockquote>
+<p><strong>id</strong> : int</p>
+<blockquote class="last">
+<div><p>id of the element in the file</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>It is recommended to get elements by</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element_list</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shells</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">id</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>

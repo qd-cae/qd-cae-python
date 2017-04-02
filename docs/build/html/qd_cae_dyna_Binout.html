@@ -177,8 +177,24 @@
 <dt id="qd.cae.dyna.Binout">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Binout</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class is meant to read binouts from LS-Dyna</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>path to the binout</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Notes</p>
 <p>This class is only a utility wrapper for Lsda from LSTC.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -240,9 +256,11 @@ identification or id-labels.</p>
 <span class="go">[&#39;title&#39;, &#39;failure&#39;, &#39;ids&#39;, &#39;failure_time&#39;, ...]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;shear&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(321L, 26L)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;ids&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(26L,)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;ids&quot;</span><span class="p">)</span>
 <span class="go">array([52890, 52891, 52892, ...])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># stings are just numbers, see binout.to_string</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># strings are just numbers, see Binout.to_string</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;typenames&quot;</span><span class="p">)</span>
 <span class="go">array([99, 111, 110, ...]) </span>
 </pre></div>

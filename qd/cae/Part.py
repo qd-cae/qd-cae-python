@@ -5,17 +5,24 @@ from .D3plot import plot_parts
 
 class Part(QD_Part):
     '''Part of a D3plot. 
+    The part specific mesh data may be accessed by this container.
 
-    Notes
-    -----
-        The part specific mesh data may be accessed by this container.
+    Parameters
+    ----------
+    femfile : FEMFile
+        femfile of which to get the part from
+    part_id : int
+        id of the part
+
+    Examples
+    --------
         It is recommended to get parts by:
-        >>> part = d3plot.get_parts()
+        
+        >>> femfile = D3plot("path/to/d3plot")
+        >>> part_list = femfile.get_parts()
         >>> part_id = 13
-        >>> part = d3plot.get_partByID(part_id)
+        >>> part = femfile.get_partByID(part_id)
 
-        In case one needs it, the constructor has the signature:
-        __init__(femfile, part_id)
     '''
 
     def __init__(self, *args, **kwargs):

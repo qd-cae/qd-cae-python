@@ -5,18 +5,37 @@ from .dyna_cpp import QD_KeyFile, QD_Part
 from .Part import Part
 
 class KeyFile(QD_KeyFile):
-    ''' Class for KeyFiles, which are input files.
+    '''  Read a .key file (solver input file)
+
+    Parameters
+    ----------
+    filepath : str
+        filepath to the keyfile
+    
+    Notes
+    -----
+        Currently only the mesh is used from the file!
+
+    Examples
+    --------
+        >>> kf = KeyFile("path/to/keyfile")
     '''
 
     def __init__(self, *args, **kwargs):
-        ''' Constructor
+        ''' Read a .key file (solver input file)
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         filepath : str
             filepath to the keyfile
         
-        Currently only the mesh is used from the file!
+        Notes
+        -----
+            Currently only the mesh is used from the file!
+
+        Examples
+        --------
+            >>> kf = KeyFile("path/to/keyfile")
         '''
         super(KeyFile, self).__init__(*args, **kwargs)
     

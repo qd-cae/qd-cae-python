@@ -8,23 +8,47 @@ import os
 import numpy as np
 
 class D3plot(QD_D3plot):
-    '''
+    '''Class for reading a D3plot.
+
+    Parameters
+    ----------
+    filepath : str
+        path to the d3plot
+    use_femzip : bool
+        whether to use femzip for decompression
+    read_states : str/list(str)
+        read state information directly (saves time), 
+        see the function `read_states`
+
+    Returns
+    -------
+        D3plot d3plot : instance
+
     Notes
     -----
-        Class for reading a D3plot. A D3plot is a binary result file 
-        written from LS-Dyna and contains the simulation mesh, as well
-        as the time step data.
-    '''
-
-    def __init__(self, *args, **kwargs):
-        '''Constructor for a D3plot.
-
         If LS-Dyna writes multiple files (one for each timestep),
         give the filepath to the first file. The library finds all
         other files.
         Please read state information with the read_states flag 
         in the constructor or with the member function.
-            
+
+    Examples
+    --------
+        Read the plain geometry data
+
+        >>> d3plot = D3plot("path/to/d3plot")
+
+        Read a compressed d3plot
+
+        >>> d3plot = D3plot("path/to/d3plot.fz", use_femzip=True)
+        
+        Read d3plot with state data at once.
+
+        >>> d3plot = D3plot("path/to/d3plot", read_states=["mises_stress max"])
+    '''
+
+    def __init__(self, *args, **kwargs):
+        '''Constructor for a D3plot.
 
         Parameters
         ----------

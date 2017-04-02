@@ -165,6 +165,29 @@ Examples\n\
     {NULL}  /* Sentinel */
   };
 
+  const char* qd_node_class_docs = "\
+\n\
+Container for handling nodal data.\n\
+\n\
+Parameters\n\
+----------\n\
+femfile : FEMFile\n\
+    femfile from which to take the Element\n\
+number : int\n\
+    id or index of the node\n\
+use_index : bool\n\
+    whether to get the node by id or index\n\
+\n\
+Examples\n\
+--------\n\
+    It is recommended to get nodes by\n\
+\n\
+    >>> femfile = D3plot(\"path/to/d3plot\")\n\
+    >>> node_list = femfile.get_nodes()\n\
+    >>> node = femfile.get_nodeByID(1)\n\
+    >>> node = femfile.get_nodeByIndex(1)\n\
+";
+
   /* QD_Node_Type TYPE */
   static PyTypeObject QD_Node_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
@@ -188,7 +211,7 @@ Examples\n\
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT |
         Py_TPFLAGS_BASETYPE,   /* tp_flags */
-    "QD_Node",                 /* tp_doc */
+    qd_node_class_docs,                 /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
     (richcmpfunc)& QD_Node_richcompare, /* tp_richcompare */

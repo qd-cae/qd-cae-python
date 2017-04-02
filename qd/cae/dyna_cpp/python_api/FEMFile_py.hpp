@@ -35,13 +35,13 @@ get_nodeByID(node_id)\n\
 \n\
 Parameters\n\
 ----------\n\
-node_id : int\n\
-    id of the node\n\
+node_id : int or list(int)\n\
+    node id or list of node ids\n\
 \n\
 Returns\n\
 -------\n\
-node : Node\n\
-    Node object\n\
+node : Node or list(Node)\n\
+    requested Node(s)\n\
 \n\
 Raises:\n\
 -------\n\
@@ -65,13 +65,13 @@ get_nodeByIndex(node_index)\n\
 \n\
 Parameters\n\
 ----------\n\
-node_index : int\n\
-    internal index of the node\n\
+node_index : int or list(int)\n\
+    internal node index or list inf indexes\n\
 \n\
 Returns\n\
 -------\n\
-node : Node\n\
-    Node object\n\
+node : Node or list(Node)\n\
+    Node(s)\n\
 \n\
 Notes\n\
 -----\n\
@@ -102,13 +102,13 @@ Parameters\n\
 ----------\n\
 element_type : str\n\
     type of the element. Must be beam, shell or solid.\n\
-element_id : int\n\
-    id of the part in the file\n\
+element_id : int or list(int)\n\
+    element id or list of ids\n\
 \n\
 Returns\n\
 -------\n\
-part : Part\n\
-    Part object\n\
+element : Element\n\
+    Element(s) depending on the arguments\n\
 \n\
 Notes\n\
 -----\n\
@@ -123,7 +123,9 @@ ValueError\n\
 \n\
 Examples\n\
 --------\n\
+    >>> # single element\n\
     >>> elem = femfile.get_elementByID(\"shell\",1)\n\
+    >>> # multiple elements\n\
     >>> list_of_shells = femfile.get_elementByID(\"shell\", [1,2,3])\n\
     >>> # whoever had the great id of non unique ids ...\n\
     >>> femfile.get_elementByID(\"beam\", 1).get_type()\n\

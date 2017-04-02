@@ -302,6 +302,30 @@ Examples\n\
     {NULL}  /* Sentinel */
   };
 
+  const char* qd_element_class_docs = "\
+\n\
+Container for handling element data.\n\
+\n\
+Parameters\n\
+----------\n\
+femfile : FEMFile\n\
+    femfile from which to take the Element\n\
+element_type : str\n\
+    beam, shell or solid\n\
+id : int\n\
+    id of the element in the file\n\
+\n\
+Examples\n\
+--------\n\
+    It is recommended to get elements by\n\
+\n\
+    >>> femfile = D3plot(\"path/to/d3plot\")\n\
+    >>> element_list = femfile.get_elements()\n\
+    >>> shells = femfile.get_elements(\"shell\")\n\
+    >>> id = 1\n\
+    >>> element = femfile.get_elementByID(\"solid\", id)\n\
+";
+
   /* QD_Element_Type TYPE */
   static PyTypeObject QD_Element_Type = {
     PyVarObject_HEAD_INIT(NULL, 0)
@@ -325,7 +349,7 @@ Examples\n\
     0,                         /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT |
     Py_TPFLAGS_BASETYPE,       /* tp_flags */
-    "QD_Element",                 /* tp_doc */
+    qd_element_class_docs,                 /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
     (richcmpfunc)& QD_Element_richcompare, /* tp_richcompare */

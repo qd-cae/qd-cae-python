@@ -4,19 +4,20 @@
 
 [![Build Status](https://travis-ci.org/qd-cae/qd-eng.svg?branch=master)](https://travis-ci.org/qd-cae/qd-eng)
 
-This **Python3** library is an open source software package with utility functions regarding
-engineering, especially Simulation and Computer Aided Engineering (CAE).
-The library is still young, so features drop in over time depending on the
-persons who contribute. Visit our website at http://www.qd-eng.de/
+This **Python3** library is an open source software package with utility functions regarding engineering, especially Simulation and Computer Aided Engineering (CAE).
+The library is still young, so features drop in over time depending on the persons who contribute. Visit our website at http://www.qd-eng.de/
 
-CAE suffers greatly from expensive tools with bad or moderate scripting access.
-Also many algorithms developed in research never get published due to licensing
-or being very specific regarding a certain software environment. Engineering is
-lacking behind here in contrast to modern informatics.
+CAE suffers greatly from expensive tools with bad or moderate scripting access. Also many algorithms developed in research never get published due to licensing or being very specific regarding a certain software environment. Engineering is lacking behind here in contrast to modern informatics.
 
-We want to tackle this issue with this free library, in order to give engineering
-a boost. Use it, build more awesome applications with it, share your projects
-too and if possible contribute.
+We want to tackle this issue with this free library, in order to give engineering a boost. Use it, build more awesome applications with it, share your projects too and if possible contribute.
+
+# What's new
+
+*Changelog 02.04.2017*
+Version 0.5.3
+
+added documentation (docs folder)
+[New Documentation Here!](https://qd-cae.github.io/qd-eng/build/html/index.html)
 
 *Changelog 22.03.2017*
 Version 0.5.2
@@ -24,40 +25,18 @@ Version 0.5.2
 qd.cae.dyna
  - added mises stress as element result
 
-*Changelog 20.03.2017*
-Version 0.5.1
-
-qd.cae.dyna
- - fixed: reading of state results for mattyp!=0
- - fixed: solids stresses were not read, if no shell stresses were present
-
-*Changelog 19.03.2017*
-Version 0.5.0
-
-General:
- - switched to **PYTHON3 ONLY** (much faster now), but windows does not support python2 anymore.
-
-qd.cae.dyna
- - many many performance improvements
- - Added D3plot.clear for removing already read data
- - D3plot can now handle rigid shell elements (mattyp != 0)
- - Element, Node and Part equals operator is now correct
-
-
 # Descriptions
 
-Current Module List (**CLICK on MODULES for full DOCUMENTATION!**, Wiki coming soon):
+You can find the [full Documentation here](https://qd-cae.github.io/qd-eng/build/html/index.html#). Brief module and feature list:
 
-1. [qd.cae.dyna ](https://github.com/qd-cae/qd/blob/master/QD_CAE_DYNA.md)
-  - Read D3plot (DONE)
-  - Read Binouts (DONE)
+1. [qd.cae.dyna ](https://qd-cae.github.io/qd-eng/build/html/qd_cae_dyna.html)
+  - Read D3plot
+  - Read Binouts
   - Read Input Files (partially done)
-2. [qd.numerics](https://github.com/qd-cae/qd/blob/master/QD_NUMERICS.md)
+2. [qd.numerics](https://qd-cae.github.io/qd-eng/build/html/qd_numerics.html)
   - Submodule: sampling
-3. [qd.cae.beta](https://github.com/qd-cae/qd/blob/master/QD_CAE_BETA.md)
+3. [qd.cae.beta](https://qd-cae.github.io/qd-eng/build/html/qd_cae_beta.html)
   - MetaCommunicator (control META remotely)
-
-For more details, look into the helper files.
 
 # Installation
 

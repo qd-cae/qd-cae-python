@@ -175,10 +175,50 @@
 <dl class="class">
 <dt id="qd.cae.dyna.D3plot">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">D3plot</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot" title="Permalink to this definition">¶</a></dt>
-<dd><p class="rubric">Notes</p>
-<p>Class for reading a D3plot. A D3plot is a binary result file 
-written from LS-Dyna and contains the simulation mesh, as well
-as the time step data.</p>
+<dd><p>Class for reading a D3plot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote>
+<div><p>path to the d3plot</p>
+</div></blockquote>
+<p><strong>use_femzip</strong> : bool</p>
+<blockquote>
+<div><p>whether to use femzip for decompression</p>
+</div></blockquote>
+<p><strong>read_states</strong> : str/list(str)</p>
+<blockquote>
+<div><p>read state information directly (saves time), 
+see the function <cite>read_states</cite></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>D3plot d3plot</strong> : instance</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>If LS-Dyna writes multiple files (one for each timestep),
+give the filepath to the first file. The library finds all
+other files.
+Please read state information with the read_states flag 
+in the constructor or with the member function.</p>
+<p class="rubric">Examples</p>
+<p>Read the plain geometry data</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read a compressed d3plot</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span> <span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read d3plot with state data at once.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mises_stress max&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -468,15 +508,15 @@ all history variables if none given.</p>
 <blockquote>
 <div><p>type of the element. Must be beam, shell or solid.</p>
 </div></blockquote>
-<p><strong>element_id</strong> : int</p>
+<p><strong>element_id</strong> : int or list(int)</p>
 <blockquote>
-<div><p>id of the part in the file</p>
+<div><p>element id or list of ids</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>part</strong> : Part</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>element</strong> : Element</p>
 <blockquote class="last">
-<div><p>Part object</p>
+<div><p>Element(s) depending on the arguments</p>
 </div></blockquote>
 </td>
 </tr>
@@ -487,7 +527,9 @@ all history variables if none given.</p>
 different element types, one has to specify the
 type too.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># single element</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># multiple elements</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_shells</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># whoever had the great id of non unique ids ...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;beam&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
@@ -613,15 +655,15 @@ type too.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>node_id</strong> : int</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>node_id</strong> : int or list(int)</p>
 <blockquote>
-<div><p>id of the node</p>
+<div><p>node id or list of node ids</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node or list(Node)</p>
 <blockquote class="last">
-<div><p>Node object</p>
+<div><p>requested Node(s)</p>
 </div></blockquote>
 </td>
 </tr>
@@ -643,15 +685,15 @@ type too.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>node_index</strong> : int</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>node_index</strong> : int or list(int)</p>
 <blockquote>
-<div><p>internal index of the node</p>
+<div><p>internal node index or list inf indexes</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node or list(Node)</p>
 <blockquote class="last">
-<div><p>Node object</p>
+<div><p>Node(s)</p>
 </div></blockquote>
 </td>
 </tr>

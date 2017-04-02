@@ -105,10 +105,19 @@ class Diskfile:
 
 class Binout:
     '''This class is meant to read binouts from LS-Dyna
-    
+
+    Parameters
+    ----------
+    filepath : str
+        path to the binout
+
     Notes
     -----
         This class is only a utility wrapper for Lsda from LSTC.
+
+    Examples
+    --------
+        >>> binout = Binout("path/to/binout")
     '''
 
     def __init__(self,filepath):

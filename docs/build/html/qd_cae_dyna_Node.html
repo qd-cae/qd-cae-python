@@ -176,7 +176,35 @@
 <dl class="class">
 <dt id="qd.cae.dyna.Node">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Node</code><a class="headerlink" href="#qd.cae.dyna.Node" title="Permalink to this definition">¶</a></dt>
-<dd><p>QD_Node</p>
+<dd><p>Container for handling nodal data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>femfile</strong> : FEMFile</p>
+<blockquote>
+<div><p>femfile from which to take the Element</p>
+</div></blockquote>
+<p><strong>number</strong> : int</p>
+<blockquote>
+<div><p>id or index of the node</p>
+</div></blockquote>
+<p><strong>use_index</strong> : bool</p>
+<blockquote class="last">
+<div><p>whether to get the node by id or index</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>It is recommended to get nodes by</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node_list</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>

@@ -7,3 +7,5 @@ This class is for handling input files for the solver, usually having the file e
 .. autoclass:: qd.cae.dyna.KeyFile
     :members:
     :inherited-members:
+
+    .. automethod:: __init__

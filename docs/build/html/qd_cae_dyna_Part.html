@@ -176,15 +176,19 @@
 <dl class="class">
 <dt id="qd.cae.dyna.Part">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Part</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part" title="Permalink to this definition">¶</a></dt>
-<dd><p>Part of a D3plot.</p>
+<dd><p>Part of a D3plot. 
+The part specific mesh data may be accessed by this container.</p>
 <p class="rubric">Notes</p>
-<p>The part specific mesh data may be accessed by this container.
-It is recommended to get parts by:
-&gt;&gt;&gt; part = d3plot.get_parts()
-&gt;&gt;&gt; part_id = 13
-&gt;&gt;&gt; part = d3plot.get_partByID(part_id)</p>
 <p>In case one needs it, the constructor has the signature:
 __init__(femfile, part_id)</p>
+<p class="rubric">Examples</p>
+<p>It is recommended to get parts by:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_list</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_parts</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_id</span> <span class="o">=</span> <span class="mi">13</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="n">part_id</span><span class="p">)</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
