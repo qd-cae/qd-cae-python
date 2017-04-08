@@ -206,40 +206,48 @@ QD_Part_get_elements(QD_Part *self, PyObject *args){
   }
 
   // Parse args
-  char* _filter_etype_cstr = nullptr;
-  if (!PyArg_ParseTuple(args, "|s", &_filter_etype_cstr))
+  PyObject* _filter_etype_py = Py_None;
+  if (!PyArg_ParseTuple(args, "|O", &_filter_etype_py))
     return nullptr;  
 
-  // user defined filter
+  // check filter type
   ElementType _filter_etype = NONE;
-  if( _filter_etype_cstr != nullptr ){
+  if( _filter_etype_py != Py_None ){
+    if( qd::isPyStr(_filter_etype_py) ){
+      
+      string _filter_etype_str = string( qd::PyStr2char(_filter_etype_py) );
+      if( _filter_etype_str == "shell" ){
+        _filter_etype = SHELL;
+      } else if ( _filter_etype_str == "solid" ){
+        _filter_etype = SOLID;
+      } else if ( _filter_etype_str == "beam" ){
+        _filter_etype = BEAM;
+      } else {
+        string err_msg =  "Error: unknown element-type \""
+                        + _filter_etype_str
+                        + "\", use beam, shell or solid.";
+        PyErr_SetString(PyExc_ValueError, err_msg.c_str() );
+        return nullptr;
+      }
 
-    string _filter_etype_str = string(_filter_etype_cstr);
-    if( _filter_etype_str == "shell" ){
-      _filter_etype = SHELL;
-    } else if ( _filter_etype_str == "solid" ){
-      _filter_etype = SOLID;
-    } else if ( _filter_etype_str == "beam" ){
-      _filter_etype = BEAM;
-    } else {
-      string err_msg =  "Error: unknown element-type \""
-                      + _filter_etype_str
-                      + "\", use beam, shell or solid.";
+    } else { // argument not str
+
+      string err_msg =  "Error: argument element_type has unknown type, use str or None";
       PyErr_SetString(PyExc_ValueError, err_msg.c_str() );
       return nullptr;
+
     }
   }
 
   vector<Element*> elements = self->part->get_elements(_filter_etype);
-  //vector<Element*>::iterator it;
 
   int check=0;
   PyObject* element_list = PyList_New(elements.size());
 
   size_t ii=0;
   Element* element = nullptr;
-  for(vector<Element*>::iterator it=elements.begin(); it != elements.end(); it++){
-    element = *it;
+  //for(vector<Element*>::const_iterator it=elements.begin(); it != elements.end(); it++){
+  for( const auto& element : elements){
 
     // create string for constructor
     PyObject* elementType_py;

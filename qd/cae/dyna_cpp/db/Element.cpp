@@ -3,6 +3,7 @@
 #include <algorithm> // std::max
 #include <cmath>        // std::abs
 #include <string>
+#include <utility> // std::move
 #include "dyna_cpp/dyna/D3plot.hpp"
 #include "dyna_cpp/db/Element.hpp"
 #include "dyna_cpp/db/Node.hpp"
@@ -259,13 +260,13 @@ vector<float> Element::get_coords(int iTimestep) const {
    DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
 
    Node* current_node = nullptr;
-   vector<float> coords_elem(3);
+   vector<float> coords_elem(3, 0.);
    vector<float> coords_node;
    vector< vector<float> > disp_node;
 
-   for(vector<size_t>::const_iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
+   for( const auto& node_index : this->nodes ){
 
-      current_node = db_nodes->get_nodeByID(*it);
+      current_node = db_nodes->get_nodeByIndex(node_index);
       coords_node = current_node->get_coords();
 
       coords_elem[0] += coords_node[0];
@@ -287,11 +288,12 @@ vector<float> Element::get_coords(int iTimestep) const {
       }
   }
 
-  coords_elem[0] /= (float) this->nodes.size();
-  coords_elem[1] /= (float) this->nodes.size();
-  coords_elem[2] /= (float) this->nodes.size();
+  float _nodes_size = (float) this->nodes.size(); 
+  coords_elem[0] /= _nodes_size;
+  coords_elem[1] /= _nodes_size;
+  coords_elem[2] /= _nodes_size;
 
-  return coords_elem;
+  return std::move(coords_elem);
 }
 
 /*

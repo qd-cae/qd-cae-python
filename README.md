@@ -13,17 +13,17 @@ We want to tackle this issue with this free library, in order to give engineerin
 
 # What's new
 
+*Changelog 07.04.2017*
+Version 0.5.4
+
+qd.cae.dyna:
+ - fixed severe bug in Element.get_coords
+
 *Changelog 02.04.2017*
 Version 0.5.3
 
 added documentation (docs folder)
 [New Documentation Here!](https://qd-cae.github.io/qd-eng/build/html/index.html)
-
-*Changelog 22.03.2017*
-Version 0.5.2
-
-qd.cae.dyna
- - added mises stress as element result
 
 # Descriptions
 

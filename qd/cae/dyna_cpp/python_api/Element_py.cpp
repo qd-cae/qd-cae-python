@@ -283,13 +283,10 @@ QD_Element_get_coords(QD_Element* self, PyObject *args, PyObject *kwds){
   if (! PyArg_ParseTupleAndKeywords(args, kwds, "|i", kwlist, &iTimestep)){
      return nullptr;
   }
-    /*
-  if (!PyArg_ParseTuple(args, "|i", &iTimestep))
-    return nullptr;*/
 
   try{
     return (PyObject*) vector_to_nparray(self->element->get_coords(iTimestep));
-  } catch (string e){
+  } catch (const string& e){
     PyErr_SetString(PyExc_RuntimeError, e.c_str());
     return nullptr;
   }

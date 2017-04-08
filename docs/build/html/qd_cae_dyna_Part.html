@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Part &mdash; qd 0.5.3 documentation</title>
+  <title>Part &mdash; qd 0.5.4 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.5.3 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.5.4 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.5.3
+                0.5.4
               </div>
             
           
@@ -178,9 +178,22 @@
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Part</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part" title="Permalink to this definition">¶</a></dt>
 <dd><p>Part of a D3plot. 
 The part specific mesh data may be accessed by this container.</p>
-<p class="rubric">Notes</p>
-<p>In case one needs it, the constructor has the signature:
-__init__(femfile, part_id)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>femfile</strong> : FEMFile</p>
+<blockquote>
+<div><p>femfile of which to get the part from</p>
+</div></blockquote>
+<p><strong>part_id</strong> : int</p>
+<blockquote class="last">
+<div><p>id of the part</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Examples</p>
 <p>It is recommended to get parts by:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
@@ -418,7 +431,7 @@ since only the elements are uniquely assignable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.3',
+            VERSION:'0.5.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

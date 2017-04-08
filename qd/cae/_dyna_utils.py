@@ -84,13 +84,19 @@ def _parse_element_result(arg, iTimestep=-1):
         raise ValueError("Unknown result type: %s, Try plastic_strain, energy or disp." % arg )
 
 
-def _extract_elem_coords(parts, element_result=None, iTimestep=0):
+def _extract_elem_coords(parts, element_result=None, iTimestep=0, element_type=None):
     '''Extract the coordinates of the elements
 
     Parameters
     ----------
     parts : list(Part)
         list of parts of which to extract the coordinates
+    element_result : function
+        element evaluation function
+    iTimestep : int
+        timestep at which to take the coordinates
+    element_type : str
+        element filter type, beam, shell or solid.
 
     Returns
     -------
@@ -100,12 +106,13 @@ def _extract_elem_coords(parts, element_result=None, iTimestep=0):
 
     # checks
     assert all( isinstance(entry, QD_Part) for entry in parts )
+    assert callable(element_result) or element_result==None
     
     # handle possible results
     if element_result:
         var, eval_function = _parse_element_result(element_result, iTimestep=iTimestep)
         def eval_elem(_elem):
-            coords.append(_elem.get_coords())
+            coords.append(_elem.get_coords(iTimestep))
             elem_results.append(eval_function(_elem))
     else:
         def eval_elem(_elem):
@@ -115,7 +122,7 @@ def _extract_elem_coords(parts, element_result=None, iTimestep=0):
     coords = []
     elem_results = []
     for _part in parts:
-            for _elem in _part.get_elements():
+            for _elem in _part.get_elements(element_type):
                 eval_elem(_elem)
     coords = np.array(coords)
     elem_results = np.array(elem_results)

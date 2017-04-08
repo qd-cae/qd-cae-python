@@ -43,8 +43,6 @@ using namespace std;
 // Wrapper functions for PY3 and PY2
 namespace qd{
 
-
-
 // PY3
 #ifdef ISPY3
 inline int isPyStr(PyObject* obj){return PyUnicode_Check(obj);}

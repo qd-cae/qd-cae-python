@@ -132,21 +132,17 @@ class D3plot(QD_D3plot):
             return Part(self, part_id)
     
 
-    def _compare_scatter(self,
-                         base_filepath, 
+    def compare_scatter(self,
                          filepath_list, 
                          element_result,
                          pid_filter_list = None,
                          kMappingNeighbors = 4,
                          export_filepath = None,
                          **kwargs):
-        '''Compare the scatter between mutliple d3plot
-        ! UNFINISHED !
+        '''Compare the scatter between mutliple d3plot files
 
         Parameters
         ----------
-        base_filepath : str
-            filepath to the base D3plot, which will also be the base mesh
         filepath_list : list(str)
             list of filepaths of d3plot for comparison
         element_result : str or function(element)
@@ -162,13 +158,32 @@ class D3plot(QD_D3plot):
             is exported to a temporary file and shown in the
             browser.
         **kwargs : further arguments 
-            additional arguments passed on to d3plot constructor
+            additional arguments passed on to d3plot constructor (e.g. read_states)
 
         Notes
         -----
             The file calling the function will be the basis for the comparison. 
             The other files results will be mapped onto this mesh. The scatter is 
             computed between all runs as maximum difference. 
+        
+        Examples
+        --------
+            >>> # Settings (don't forget to load the correct vars!)
+            >>> state_vars = ["stress_mises max"]
+            >>> other_files = ["path/to/d3plot_2", "path/to/d3plot_3"]
+            >>>
+            >>> # Element eval function (used for scatter computation)
+            >>> def elem_eval_fun(elem):
+            >>>     result = elem.get_stress_mises()
+            >>>     if len(result):
+            >>>         return result[-1]
+            >>>     return 0.
+            >>>
+            >>> # load base file
+            >>> d3plot = D3plot("path/to/d3plot", read_states=state_vars)
+            >>> 
+            >>> # compute and plot scatter
+            >>> d3plot.compare_scatter(other_files, elem_eval_fun, read_states=state_vars)
         '''
 
         from sklearn.neighbors import KDTree
@@ -177,8 +192,6 @@ class D3plot(QD_D3plot):
             pid_filter_list = []
 
         # yay checks :)
-        assert isinstance(base_filepath, str)
-        assert os.path.isfile(base_filepath)
         assert isinstance(filepath_list, (list,tuple,np.ndarray))
         assert all( isinstance(entry, str) for entry in filepath_list )
         assert all( os.path.isfile(filepath) for filepath in filepath_list )
@@ -192,24 +205,27 @@ class D3plot(QD_D3plot):
             kwargs['read_states'] = read_vars_str
 
         # base run element coords
-        base_d3plot = D3plot(base_filepath, **kwargs)
         if not pid_filter_list:
-            pid_filter_list = [ part.get_id() for part in base_d3plot.get_parts() ]
-        base_mesh_coords, base_mesh_results = _extract_elem_coords( base_d3plot.get_partByID(pid_filter_list), element_result=eval_function )
-        del base_d3plot
-        del part
+            pid_filter_list = [ part.get_id() for part in self.get_parts() ]
+        base_mesh_coords, base_mesh_results = _extract_elem_coords( self.get_partByID(pid_filter_list), 
+                                                                    element_result=eval_function, 
+                                                                    element_type="shell" )
 
         # init vars for comparison
         element_result_max = base_mesh_results
         element_result_min = base_mesh_results
+        del base_mesh_results
 
         # loop other files
         for _filepath in filepath_list:
 
             # new mesh with results
             _d3plot = D3plot(_filepath, **kwargs) 
-            _d3plot_elem_coords, _d3plot_elem_results = _extract_elem_coords( _d3plot.get_partByID(pid_filter_list), element_result=eval_function, iTimestep=0)
-            del _d3plot
+            _d3plot_elem_coords, _d3plot_elem_results = _extract_elem_coords( _d3plot.get_partByID(pid_filter_list), 
+                                                                              element_result=eval_function, 
+                                                                              iTimestep=0, 
+                                                                              element_type="shell")
+            del _d3plot # deallocate c++ stuff
             
             # compute mapping
             _tree = KDTree(_d3plot_elem_coords)
@@ -217,7 +233,8 @@ class D3plot(QD_D3plot):
                                                      return_distance=True,
                                                      sort_results=False,
                                                      k=kMappingNeighbors)
-            distances = np.exp(distances) / np.sum( distances, axis=1)[:,None] # softmax weights
+            distances = np.exp(distances) 
+            distances = distances / np.sum( distances, axis=1)[:,None] # softmax weights
 
             # map results 
             _d3plot_elem_results = np.sum( distances*_d3plot_elem_results[mapping_indexes] ,axis=1)
@@ -228,9 +245,15 @@ class D3plot(QD_D3plot):
 
         # compute scatter
         element_result_max = element_result_max-element_result_min
+        del element_result_min
 
-        # plot scatter
-        #np.save("element_scatter.npy",element_result_max)
+        # plot scatter, sometimes I like it dirty
+        data = [0] # does not work otherwise ...
+        def eval_scatter(elem):
+            data[0] = data[0] + 1 
+            return element_result_max[data[0]-1]
+        
+        self.plot( element_result=eval_scatter, export_filepath=export_filepath )
             
 
     def plot(self, iTimestep=0, element_result=None, fringe_bounds=[None,None], export_filepath=None):
@@ -290,7 +313,7 @@ class D3plot(QD_D3plot):
         Parameters
         ----------
         parts : Part or list(Part)
-            parts to plot. Must not be of the same file!
+            parts to plot. May be from different files.
         iTimestep : int
             timestep at which to plot the D3plot
         element_result : str or function

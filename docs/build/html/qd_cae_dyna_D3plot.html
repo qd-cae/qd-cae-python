@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>D3plot &mdash; qd 0.5.3 documentation</title>
+  <title>D3plot &mdash; qd 0.5.4 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.5.3 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.5.4 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.5.3
+                0.5.4
               </div>
             
           
@@ -229,52 +229,55 @@ in the constructor or with the member function.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByID</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">compare_scatter</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByID</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_mesh</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_mesh</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_timesteps</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_timesteps</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_parts</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">read_states</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_parts</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">read_states</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -333,6 +336,71 @@ in the constructor or with the member function.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_parts</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">45</span><span class="p">,</span><span class="mi">33</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.compare_scatter">
+<code class="descname">compare_scatter</code><span class="sig-paren">(</span><em>filepath_list</em>, <em>element_result</em>, <em>pid_filter_list=None</em>, <em>kMappingNeighbors=4</em>, <em>export_filepath=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.compare_scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare the scatter between mutliple d3plot files</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath_list</strong> : list(str)</p>
+<blockquote>
+<div><p>list of filepaths of d3plot for comparison</p>
+</div></blockquote>
+<p><strong>element_result</strong> : str or function(element)</p>
+<blockquote>
+<div><p>element results to compare. Either specify a user defined
+function or use predefined results. Available are
+disp, plastic_strain or energy.</p>
+</div></blockquote>
+<p><strong>pid_filter_list</strong> : list(int)</p>
+<blockquote>
+<div><p>list of pids to filter for optionally</p>
+</div></blockquote>
+<p><strong>kMappingNeighbors</strong> : int</p>
+<blockquote>
+<div><p>number of neighbors used for nearest neighbor mapping</p>
+</div></blockquote>
+<p><strong>export_filepath</strong> : str</p>
+<blockquote>
+<div><p>optional filepath for saving. If none, the model
+is exported to a temporary file and shown in the
+browser.</p>
+</div></blockquote>
+<p><strong>**kwargs</strong> : further arguments</p>
+<blockquote class="last">
+<div><p>additional arguments passed on to d3plot constructor (e.g. read_states)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The file calling the function will be the basis for the comparison. 
+The other files results will be mapped onto this mesh. The scatter is 
+computed between all runs as maximum difference.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Settings (don&#39;t forget to load the correct vars!)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">state_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;stress_mises max&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">other_files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;path/to/d3plot_2&quot;</span><span class="p">,</span> <span class="s2">&quot;path/to/d3plot_3&quot;</span><span class="p">]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Element eval function (used for scatter computation)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">elem_eval_fun</span><span class="p">(</span><span class="n">elem</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">result</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_stress_mises</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">return</span> <span class="mf">0.</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load base file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="n">state_vars</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># compute and plot scatter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">compare_scatter</span><span class="p">(</span><span class="n">other_files</span><span class="p">,</span> <span class="n">elem_eval_fun</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="n">state_vars</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -404,7 +472,7 @@ browser.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part or list(Part)</p>
 <blockquote>
-<div><p>parts to plot. Must not be of the same file!</p>
+<div><p>parts to plot. May be from different files.</p>
 </div></blockquote>
 <p><strong>iTimestep</strong> : int</p>
 <blockquote>
@@ -870,7 +938,7 @@ treatment of these layers:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.3',
+            VERSION:'0.5.4',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
