@@ -5,6 +5,8 @@
 #include <sstream>
 #include <bitset>
 #include <string>
+#include <cstring>
+#include <vector>
 
 class AbstractBuffer{
 
@@ -76,7 +78,7 @@ float AbstractBuffer::read_float(int iWord){
   #endif
 
   float ret;
-  memcpy(&ret, &current_buffer[iWord*this->wordSize], sizeof(ret));
+  std::memcpy(&ret, &current_buffer[iWord*this->wordSize], sizeof(ret));
   //return *reinterpret_cast<const float*>(&current_buffer[iWord*this->wordSize]);
   return ret;
   //return (float) this->buffer[iWord*this->wordSize];
@@ -104,7 +106,7 @@ void AbstractBuffer::read_float_array(int _iWord,
              &current_buffer[pos]+_length*sizeof(float), 
              &_buffer[0]);
    */
-   memcpy(&_buffer[0], &current_buffer[_iWord*this->wordSize], sizeof(float)*_length);
+   std::memcpy(&_buffer[0], &current_buffer[_iWord*this->wordSize], sizeof(float)*_length);
 }
 
 

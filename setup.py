@@ -11,6 +11,7 @@ from setuptools import setup, Extension
 # ======= S E T T I N G S ======= #
 boost_path = "libs/boost_1_61_0"
 femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64" # optional
+femzip_path = "libs/femzip/Linux/64Bit" # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
@@ -65,9 +66,9 @@ if os.path.isdir(femzip_path):
             'ippdcmt','ippsmt','ifwin','ifconsol','ippvmmt','libmmd',
             'libirc','svml_dispmd','msvcrt']
         compiler_args_dyna.append("/DQD_USE_FEMZIP")
-    elif (platform.system() == "Linux") and os.path.isdir(os.path.join(femzip_path,"Linux","64Bit")):
+    elif (platform.system() == "Linux") and os.path.isdir(femzip_path):
         srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
-        lib_dirs_dyna.append(os.path.join(femzip_path,"Linux","64Bit"))
+        lib_dirs_dyna.append(femzip_path)
         libs_dyna = ['femunzip_dyna_standard','ipp_z','ippcore',
             'ippdc','ipps','ifcore_pic','ifcoremt','imf',
             'ipgo','irc','svml','ippcore_l','stdc++','dl']
