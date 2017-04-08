@@ -18,6 +18,7 @@ Version 0.5.4
 
 qd.cae.dyna:
  - fixed severe bug in Element.get_coords
+ - added [d3plot.compare_scatter](https://qd-cae.github.io/qd-eng/build/html/qd_cae_dyna_D3plot.html#qd.cae.dyna.D3plot.compare_scatter)
 
 *Changelog 02.04.2017*
 Version 0.5.3
