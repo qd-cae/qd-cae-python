@@ -207,6 +207,8 @@ class Binout:
             array([99, 111, 110, ...]) 
         '''
         
+        return self._decode_path(path)
+
         iLevel = len(path)
 
         if iLevel == 0: 
@@ -218,6 +220,52 @@ class Binout:
         else:
             return self._decode_two_levels(path)
 
+
+    def _decode_path(self, path):
+        '''Decode a path and get whatever is inside.
+
+        Parameters
+        ----------
+        path : list(str)
+            path within the binout
+
+        Notes
+        -----
+            Usually returns the folder children. If there are variables in the folder
+            (usually also if a subfolder metadata exists), then the variables will
+            be printed from these directories.
+
+        Returns
+        -------
+        ret : list(str) or np.ndarray
+            either subfolder list or data array
+        '''
+
+        iLevel = len(path)
+
+        if iLevel == 0: # root subfolders
+            return self._bstr_to_str( list( self.lsda_root.children.keys() ) )
+        
+        # some subdir
+        else:
+
+            # try if path can be resolved (then it's a dir)
+            # in this case print the subfolders or subvars
+            try:
+                
+                dir_symbol = self._get_symbol(self.lsda_root, path)
+                
+                if 'metadata' in dir_symbol.children:
+                    return self._collect_variables(dir_symbol)
+                else:
+                    return self._bstr_to_str( list( dir_symbol.children.keys() ) )
+
+            # an error is risen, if the path is not resolvable
+            # this could be, because we want to read a var
+            except ValueError as err:
+                
+                return self._get_variable(path)
+                
 
     def _decode_two_levels(self, path):
         '''Decode a path, which has depth 2 (default)

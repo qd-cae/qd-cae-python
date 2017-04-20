@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>qd.numerics &mdash; qd 0.5.4 documentation</title>
+  <title>qd.numerics &mdash; qd 0.5.5 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.5.4 documentation" href="index.html"/> 
+    <link rel="top" title="qd 0.5.5 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.5.4
+                0.5.5
               </div>
             
           
@@ -165,59 +165,6 @@
 <div class="section" id="sampling">
 <h2>sampling<a class="headerlink" href="#sampling" title="Permalink to this headline">¶</a></h2>
 <p>This module contains functions related to sampling and DOEs.</p>
-<span class="target" id="module-qd.numerics.sampling"></span><dl class="function">
-<dt id="qd.numerics.sampling.uniform_lhs">
-<code class="descclassname">qd.numerics.sampling.</code><code class="descname">uniform_lhs</code><span class="sig-paren">(</span><em>nSamples</em>, <em>variables</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.numerics.sampling.uniform_lhs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Do a uniform Latin Hypercube Sampling</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>nSamples</strong> : int</p>
-<blockquote>
-<div><p>number of samples to draw</p>
-</div></blockquote>
-<p><strong>variables</strong> : dict(str, tuple(lower, upper) )</p>
-<blockquote>
-<div><p>variable dictionary, the key must be the name whereas the value
-must be a tuple. The first value of the tuple is the lower bound
-for the variable and the second one is the upper bound</p>
-</div></blockquote>
-<p><strong>**kwargs</strong></p>
-<blockquote>
-<div><p>arguments passed on to diversipy.hycusampling.maximin_reconstruction</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>column_names</strong> : list(str)</p>
-<blockquote>
-<div><p>list with the column names for the LHS</p>
-</div></blockquote>
-<p><strong>samples</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>numpy array with latin hypercube samples. Shape is nSamples x len(variables).</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.numerics.sampling</span> <span class="k">import</span> <span class="n">uniform_lhs</span>
-<span class="gp">&gt;&gt;&gt; </span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">variables</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;length&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span> <span class="s1">&#39;angle&#39;</span><span class="p">:[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">uniform_lhs</span><span class="p">(</span><span class="n">nSamples</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span>
-<span class="go">[&#39;angle&#39;, &#39;length&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(100, 2)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="go">array([-2.98394928,  0.00782609])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="go">array([ 2.8683843 ,  9.80865352])</span>
-</pre></div>
-</div>
-</dd></dl>
-
 </div>
 </div>
 
@@ -256,7 +203,7 @@ for the variable and the second one is the upper bound</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.4',
+            VERSION:'0.5.5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

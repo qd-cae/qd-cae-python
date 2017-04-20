@@ -15,7 +15,7 @@ femzip_path = "libs/femzip/Linux/64Bit" # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-_version = "0.5.4"
+_version = "0.5.5"
 # =============================== #
 
 
