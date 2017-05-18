@@ -16,14 +16,12 @@ using namespace std;
  *
  * @param FEMFile* _femfile : parent file
  */
-DB_Elements::DB_Elements(FEMFile* _femfile){
+DB_Elements::DB_Elements(FEMFile *_femfile) {
 
   this->femfile = _femfile;
   this->db_nodes = _femfile->get_db_nodes();
   this->db_parts = _femfile->get_db_parts();
-
 }
-
 
 /*
  * Destructor.

@@ -308,21 +308,36 @@ float Element::get_estimated_element_size() const {
 
    DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
 
+   #ifdef QD_DEBUG
+   Node* current_node = db_nodes->get_nodeByIndex( this->nodes[0] );
+   if (current_node == nullptr){
+      throw(string("Could not find node 0 of an element."))
+   }
+   vector<float> basis_coords = current_node->get_coords();
+   #else
+   vector<float> basis_coords = db_nodes->get_nodeByIndex( this->nodes[0] )->get_coords();
+   #endif
+
    float maxdist = -1.;
    vector<float> ncoords;
-   vector<float> basis_coords;
-   for(vector<size_t>::const_iterator it=this->nodes.begin(); it != this->nodes.end(); ++it){
-      ncoords = db_nodes->get_nodeByID(*it)->get_coords();
-      if(it != this->nodes.begin()){
-         ncoords = MathUtility::v_subtr(ncoords,basis_coords);
-         ncoords[0] *= ncoords[0];
-         ncoords[1] *= ncoords[1];
-         ncoords[2] *= ncoords[2];
-
-         maxdist = max(maxdist,ncoords[0]+ncoords[1]+ncoords[2]);
-      } else {
-         basis_coords=ncoords;
+   for(size_t iNode = 1; iNode<this->nodes.size(); ++iNode){
+      
+      #ifdef QD_DEBUG
+      current_node = db_nodes->get_nodeByIndex( this->nodes[iNode] );
+      if (current_node == nullptr){
+          throw(string("Could not find node "+to_string(iNode)+" of an element."))
       }
+      ncoords = current_node->get_coords();
+      #else
+      ncoords = db_nodes->get_nodeByIndex( this->nodes[iNode] )->get_coords();
+      #endif
+
+      ncoords = MathUtility::v_subtr(ncoords, basis_coords);
+      ncoords[0] *= ncoords[0];
+      ncoords[1] *= ncoords[1];
+      ncoords[2] *= ncoords[2];
+
+      maxdist = max(maxdist, ncoords[0]+ncoords[1]+ncoords[2]);
    }
 
    if(this->elemType == SHELL){
@@ -333,8 +348,7 @@ float Element::get_estimated_element_size() const {
       } else {
          throw("Unknown node number:"+to_string(this->nodes.size())+" of element +"+to_string(this->elementID)+"+ for shells.");
       }
-   }
-   if(this->elemType == SOLID){
+   } else if(this->elemType == SOLID){
       if(this->nodes.size() == 4){
          return sqrt(maxdist); // tria
       } else if(this->nodes.size() == 8){
@@ -346,12 +360,12 @@ float Element::get_estimated_element_size() const {
       } else {
          throw("Unknown node number:"+to_string(this->nodes.size())+" of element +"+to_string(this->elementID)+"+ for solids.");
       }
-   }
-   if(this->elemType == BEAM){
+   } else if(this->elemType == BEAM){
       if(this->nodes.size() != 2)
          throw("Unknown node number:"+to_string(this->nodes.size())+" of element +"+to_string(this->elementID)+"+ for beams.");
       return sqrt(maxdist); // beam
    }
+
    throw(string("Unknown element type, expected BEAM/SHELL/SOLID."));
 
 }

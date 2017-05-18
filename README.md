@@ -13,18 +13,17 @@ We want to tackle this issue with this free library, in order to give engineerin
 
 # What's new
 
+*Changelog 18.05.2017*
+Version 0.5.6
+
+qd.cae.dyna
+ - bugfix: get_estimated_size fixed
+
 *Changelog 20.04.2017*
 Version 0.5.5
 
 qd.cae.dyna:
  - changed binout.read internally to fix reading of bndout
-
-*Changelog 07.04.2017*
-Version 0.5.4
-
-qd.cae.dyna:
- - fixed severe bug in Element.get_coords
- - added [d3plot.compare_scatter](https://qd-cae.github.io/qd-eng/build/html/qd_cae_dyna_D3plot.html#qd.cae.dyna.D3plot.compare_scatter)
 
 # Descriptions
 
@@ -43,7 +42,7 @@ You can find the [full Documentation here](https://qd-cae.github.io/qd-eng/build
 
 ## Windows
 
-If possible, use the pre-compiled python-wheels in the dist folder and install with pip. The wheel is always compiled with FEMZIP support. For **Windows** (x64 Python 3.5 and higher) use:
+The wheel is always compiled with FEMZIP support. For **Windows** (x64 Python 3.5 and higher). If possible install by using pip. Since the package is uploaded to pipy, the following should work:
 
 ```
 pip install qd
@@ -53,7 +52,7 @@ or
 python3 -m pip install qd
 ```
 
-Note though that your python distribution might not neccessarily find an appropriate version and fail. One now has 3 options:
+The wheels which are used by pip can also be found here in the dist folder. Note though that your python distribution might not neccessarily find an appropriate version and fail. In that case one has 3 options:
 
  - Download and use [Anaconda Python x64](https://www.continuum.io/downloads#windows)
  - Open a request for compilation of a specific distribution

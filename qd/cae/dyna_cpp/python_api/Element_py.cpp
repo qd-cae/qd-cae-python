@@ -315,7 +315,18 @@ QD_Element_get_estimated_size(QD_Element* self){
     return nullptr;
   }
 
-  return Py_BuildValue("f",self->element->get_estimated_element_size());
+  try{
+    return Py_BuildValue("f", self->element->get_estimated_element_size());
+  } catch (const string& err_message) {
+    PyErr_SetString(PyExc_RuntimeError,err_message.c_str());
+    return nullptr;
+  } catch (const char* err_message_c){ 
+    PyErr_SetString(PyExc_RuntimeError, err_message_c);
+    return nullptr;
+  } catch ( ... ){
+    PyErr_SetString(PyExc_RuntimeError, "some unknown error occurred.");
+    return nullptr;
+  }
 
 }
 
