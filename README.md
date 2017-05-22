@@ -2,7 +2,7 @@
 
 # qd - a CAE Python Library
 
-[![Build Status](https://travis-ci.org/qd-cae/qd-eng.svg?branch=master)](https://travis-ci.org/qd-cae/qd-eng)
+[![Build Status](https://travis-ci.org/qd-cae/qd-cae-python.svg?branch=master)](https://travis-ci.org/qd-cae/qd-cae-python)
 
 This **Python3** library is an open source software package with utility functions regarding engineering, especially Simulation and Computer Aided Engineering (CAE).
 The library is still young, so features drop in over time depending on the persons who contribute. Visit our website at http://www.qd-eng.de/
