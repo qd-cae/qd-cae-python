@@ -27,15 +27,15 @@ qd.cae.dyna:
 
 # Descriptions
 
-You can find the [full Documentation here](https://qd-cae.github.io/qd-eng/build/html/index.html#). Brief module and feature list:
+You can find the [full Documentation here](https://qd-cae.github.io/qd-cae-python/build/html/index.html). Brief module and feature list:
 
-1. [qd.cae.dyna ](https://qd-cae.github.io/qd-eng/build/html/qd_cae_dyna.html)
+1. [qd.cae.dyna ](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna.html)
   - Read D3plot
   - Read Binouts
   - Read Input Files (partially done)
-2. [qd.numerics](https://qd-cae.github.io/qd-eng/build/html/qd_numerics.html)
+2. [qd.numerics](https://qd-cae.github.io/qd-cae-python/build/html/qd_numerics.html)
   - Submodule: sampling
-3. [qd.cae.beta](https://qd-cae.github.io/qd-eng/build/html/qd_cae_beta.html)
+3. [qd.cae.beta](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_beta.html)
   - MetaCommunicator (control META remotely)
 
 # Installation
