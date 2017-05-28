@@ -47,6 +47,7 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
     #'sphinx.ext.viewcode',
     'sphinx.ext.autosummary',
+    'sphinxcontrib.googleanalytics',
     'numpydoc']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -65,6 +66,10 @@ master_doc = 'index'
 project = 'qd'
 copyright = '2017, C. Diez, D. Toewe'
 author = 'C. Diez, D. Toewe'
+
+
+googleanalytics_id = "UA-100051229-1"
+googleanalytics_enabled = True
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
