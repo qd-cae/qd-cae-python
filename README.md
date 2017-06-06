@@ -14,6 +14,11 @@ We want to tackle this issue with this free library, in order to give engineerin
 # What's new
 
 *Changelog 18.05.2017*
+Version 0.5.7
+
+Internal stuff only
+
+*Changelog 18.05.2017*
 Version 0.5.6
 
 qd.cae.dyna
