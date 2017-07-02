@@ -6,16 +6,18 @@ import glob
 import platform
 import numpy as np
 import unittest
+import pybind11
 from setuptools import setup, Extension
 
 # ======= S E T T I N G S ======= #
 boost_path = "libs/boost_1_61_0"
 femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
+pybind11_path = pybind11.get_include()
 # femzip_path = "libs/femzip/Linux/64Bit" # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-_version = "0.5.7"
+_version = "0.6.0"
 # =============================== #
 
 
@@ -37,24 +39,25 @@ if not os.path.isdir(boost_path) and (platform.system() == "Windows"):
     # address-model=64 stage
 
 compiler_args_dyna = []
-include_dirs_dyna = [boost_path, np.get_include(), "qd/cae"]
+include_dirs_dyna = [boost_path, np.get_include(), "qd/cae", pybind11_path]
 lib_dirs_dyna = []  # ["libs/boost_1_61_0/lib64-msvc-9.0"]
 libs_dyna = []  # ["boost_python"]
-srcs_dyna = ["qd/cae/dyna_cpp/python_api/wrapper.cpp",
-             "qd/cae/dyna_cpp/db/FEMFile.cpp",
-             "qd/cae/dyna_cpp/db/DB_Elements.cpp",
-             "qd/cae/dyna_cpp/db/DB_Nodes.cpp",
-             "qd/cae/dyna_cpp/db/DB_Parts.cpp",
-             "qd/cae/dyna_cpp/db/Element.cpp",
-             "qd/cae/dyna_cpp/db/Node.cpp",
-             "qd/cae/dyna_cpp/db/Part.cpp",
-             "qd/cae/dyna_cpp/dyna/D3plotBuffer.cpp",
-             "qd/cae/dyna_cpp/dyna/D3plot.cpp",
-             "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
-             "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
-             "qd/cae/dyna_cpp/utility/FileUtility.cpp",
-             "qd/cae/dyna_cpp/utility/TextUtility.cpp",
-             "qd/cae/dyna_cpp/utility/MathUtility.cpp"]
+srcs_dyna = [  # "qd/cae/dyna_cpp/python_api/wrapper.cpp",
+    "qd/cae/dyna_cpp/python_api/pybind_wrapper.cpp",
+    "qd/cae/dyna_cpp/db/FEMFile.cpp",
+    "qd/cae/dyna_cpp/db/DB_Elements.cpp",
+    "qd/cae/dyna_cpp/db/DB_Nodes.cpp",
+    "qd/cae/dyna_cpp/db/DB_Parts.cpp",
+    "qd/cae/dyna_cpp/db/Element.cpp",
+    "qd/cae/dyna_cpp/db/Node.cpp",
+    "qd/cae/dyna_cpp/db/Part.cpp",
+    "qd/cae/dyna_cpp/dyna/D3plotBuffer.cpp",
+    "qd/cae/dyna_cpp/dyna/D3plot.cpp",
+    "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
+    "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
+    "qd/cae/dyna_cpp/utility/FileUtility.cpp",
+    "qd/cae/dyna_cpp/utility/TextUtility.cpp",
+    "qd/cae/dyna_cpp/utility/MathUtility.cpp"]
 
 # FEMZIP usage? Libraries present?
 # You need to download the femzip libraries yourself from SIDACT GmbH
@@ -80,7 +83,7 @@ else:
 
 # CFLAGS linux
 if (platform.system().lower() == "linux") or (platform.system().lower() == "linux2"):
-    compiler_args_dyna.append("-std=c++11")
+    compiler_args_dyna.append("-std=c++14")
     compiler_args_dyna.append("-O3")
     compiler_args_dyna.append("-fPIC")
     if debugging_mode:
@@ -135,7 +138,7 @@ setup(name='qd',
       },
       ext_package='qd.cae',  # where to place c extensions
       ext_modules=[dyna_extension],
-      install_requires=['numpy>=1.11', 'diversipy'],
+      install_requires=['numpy>=1.11', 'diversipy', 'pybind11>2.1.0'],
       keywords=['cae',
                   'simulation',
                   'engineering',
