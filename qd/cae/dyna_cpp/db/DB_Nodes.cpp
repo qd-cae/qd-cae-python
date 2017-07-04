@@ -27,11 +27,11 @@ DB_Nodes::~DB_Nodes() {
  *
  * @param int _nodeID : id of the node
  * @param vector<float> coords : coordinates of the node
- * @return Node* node : pointer to created instance
+ * @return std::shared_ptr<Node> node : pointer to created instance
  *
  * Returns a pointer to the new node.
  */
-Node* DB_Nodes::add_node(int _nodeID, vector<float> coords) {
+std::shared_ptr<Node> DB_Nodes::add_node(int _nodeID, vector<float> coords) {
   if (coords.size() != 3) {
     throw(std::invalid_argument(
         "The node coordinate vector must have length 3."));
@@ -51,7 +51,7 @@ Node* DB_Nodes::add_node(int _nodeID, vector<float> coords) {
   id2index_nodes.insert(pair<int, size_t>(_nodeID, this->nodes.size()));
   this->nodes.push_back(std::move(node));
 
-  return this->nodes.back().get();
+  return this->nodes.back();
 }
 
 /*

@@ -34,7 +34,7 @@ bool Node::operator<(const Node& other) const {
 /*
  * Add an element to the node.
  */
-Element* Node::add_element(Element* _element) {
+std::shared_ptr<Element> Node::add_element(std::shared_ptr<Element> _element) {
 #ifdef QD_DEBUG
   if (_element == nullptr)
     throw(std::invalid_argument("Trying to insert nullptr element to node:" +

@@ -312,9 +312,9 @@ void KeyFile::read_mesh(string _filepath) {
       } else if (iCardLine == 1) {
         try {
           id = boost::lexical_cast<int>(trim_copy(line.substr(0, 10)));
-          Part* part = db_parts->get_part_byID(id);
+          auto part = db_parts->get_partByID(id);
           if (part == NULL) {
-            part = db_parts->add_part_byID(id);
+            part = db_parts->add_partByID(id);
           }
           part->set_name(title);
           ++iCardLine;

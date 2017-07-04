@@ -1,16 +1,18 @@
 
 #include "dyna_cpp/db/Element.hpp"
-#include <math.h>     // sqrt
-#include <algorithm>  // std::max
-#include <cmath>      // std::abs
-#include <string>
-#include <utility>  // std::move
 #include "dyna_cpp/db/DB_Elements.hpp"
 #include "dyna_cpp/db/DB_Nodes.hpp"
 #include "dyna_cpp/db/Node.hpp"
 #include "dyna_cpp/dyna/D3plot.hpp"
 #include "dyna_cpp/utility/MathUtility.hpp"
 #include "dyna_cpp/utility/TextUtility.hpp"
+
+#include <math.h>     // sqrt
+#include <algorithm>  // std::max
+#include <cmath>      // std::abs
+#include <stdexcept>
+#include <string>
+#include <utility>  // std::move
 
 using namespace std;
 
@@ -26,8 +28,8 @@ Element::Element(const int _elementID, const Element::ElementType _elementType,
       nodes(_node_indexes) {
   // Checks
   if (_db_elements == nullptr)
-    throw(
-        string("DB_Elements of an element may not be nullptr in constructor."));
+    throw(std::invalid_argument(
+        "DB_Elements of an element may not be nullptr in constructor."));
 
   this->check();
 }
@@ -72,22 +74,21 @@ Element::ElementType Element::get_elementType() const { return this->elemType; }
  */
 int Element::get_elementID() const { return this->elementID; }
 
-/** Get the nodes of the element in a set.
- *
+/** Get the nodes of the elements.
+ * @return std::vector<std::shared_ptr<Node>> nodes
  */
-vector<Node *> Element::get_nodes() const {
+std::vector<std::shared_ptr<Node>> Element::get_nodes() const {
   DB_Nodes *db_nodes = this->db_elements->get_db_nodes();
-  vector<Node *> node_vec;
+  std::vector<std::shared_ptr<Node>> node_vec;
 
-  for (vector<size_t>::const_iterator it = this->nodes.begin();
-       it != this->nodes.end(); it++) {
-    Node *_node = db_nodes->get_nodeByIndex(*it);
+  for (const auto node_index : this->nodes) {
+    auto _node = db_nodes->get_nodeByIndex(node_index);
     if (_node != nullptr) {
       node_vec.push_back(_node);
     } else {
-      throw(string("Node with index:") + to_string(*it) +
-            string(" in Element:") + to_string(this->elementID) +
-            string(" was not found in DB."));
+      throw(std::invalid_argument("Node with index:" + to_string(node_index) +
+                                  " in Element:" + to_string(this->elementID) +
+                                  " was not found in DB."));
     }
   }
 
@@ -117,34 +118,22 @@ vector<size_t> Element::get_node_indexes() const { return this->nodes; }
  *
  */
 void Element::add_plastic_strain(float _platic_strain) {
-  /*
-  if(_platic_strain < 0)
-    throw("Element:"+to_string(this->elementID)+" tries to add a negative
-  plastic strain:"+to_string(_platic_strain));
-  */
-
   this->plastic_strain.push_back(_platic_strain);
 }
 
 /** Append a value to the series of internal energy.
  *
  */
-void Element::add_energy(float _energy) {
-  //  if(_energy < 0)
-  //    throw("Element:"+to_string(this->elementID)+" tries to add a negative
-  //    energy:"+to_string(_energy));
-
-  this->energy.push_back(_energy);
-}
+void Element::add_energy(float _energy) { this->energy.push_back(_energy); }
 
 /*
  * Append a value to the series of strain.
  */
 void Element::add_strain(vector<float> _strain) {
   if (_strain.size() < 1)
-    throw("Element:" + to_string(this->elementID) +
-          " tries to add strain vector of length:" + to_string(_strain.size()) +
-          "!=6");
+    throw(std::invalid_argument("Element:" + to_string(this->elementID) +
+                                " tries to add strain vector of length:" +
+                                to_string(_strain.size()) + "!=6"));
 
   this->strain.push_back(_strain);
 }
@@ -154,9 +143,9 @@ void Element::add_strain(vector<float> _strain) {
  */
 void Element::add_stress(vector<float> _stress) {
   if (_stress.size() != 6)
-    throw("Element:" + to_string(this->elementID) +
-          " tries to add stress vector of length:" + to_string(_stress.size()) +
-          "!=6");
+    throw(std::invalid_argument("Element:" + to_string(this->elementID) +
+                                " tries to add stress vector of length:" +
+                                to_string(_stress.size()) + "!=6"));
 
   this->stress.push_back(_stress);
 }
@@ -202,22 +191,23 @@ vector<float> Element::get_energy() const { return this->energy; }
  */
 vector<float> Element::get_coords(int iTimestep) const {
   if (this->nodes.size() < 1)
-    throw(string("Element with id ") + to_string(this->elementID) +
-          string(" has no nodes and thus no coords."));
+    throw(std::invalid_argument("Element with id " +
+                                to_string(this->elementID) +
+                                " has no nodes and thus no coords."));
 
   if (this->db_elements->get_femfile()->is_d3plot()) {
     if ((iTimestep != 0) && (!this->db_elements->get_femfile()
                                   ->get_d3plot()
                                   ->displacement_is_read()))
-      throw(string(
+      throw(std::invalid_argument(
           "Displacements were not read yet. Please use read_states=\"disp\"."));
   } else if (this->db_elements->get_femfile()->is_keyFile()) {
     if (iTimestep != 0)
-      throw(
-          string("Since a KeyFile has no states, you can not use the "
-                 "iTimeStep argument in element.get_coords."));
+      throw(std::invalid_argument(
+          "Since a KeyFile has no states, you can not use the "
+          "iTimeStep argument in element.get_coords."));
   } else {
-    throw(string(
+    throw(std::runtime_error(
         "FEMFile is neither a d3plot, nor a keyfile in element.get_coords"));
   }
 
@@ -229,11 +219,12 @@ vector<float> Element::get_coords(int iTimestep) const {
                 iTimestep;  // Python array style
 
   if ((iTimestep < 0))
-    throw(string("Specified timestep exceeds real time step size."));
+    throw(std::invalid_argument(
+        "Specified timestep exceeds real time step size."));
 
   DB_Nodes *db_nodes = this->db_elements->get_db_nodes();
 
-  Node *current_node = nullptr;
+  std::shared_ptr<Node> current_node = nullptr;
   vector<float> coords_elem(3, 0.);
   vector<float> coords_node;
   vector<vector<float>> disp_node;
@@ -252,7 +243,8 @@ vector<float> Element::get_coords(int iTimestep) const {
 
       // Check correctness
       if (iTimestep >= static_cast<long>(disp_node.size()))
-        throw(string("Specified timestep exceeds real time step size."));
+        throw(std::invalid_argument(
+            "Specified timestep exceeds real time step size."));
 
       coords_elem[0] += disp_node[iTimestep][0];
       coords_elem[1] += disp_node[iTimestep][1];
@@ -275,15 +267,17 @@ vector<float> Element::get_coords(int iTimestep) const {
  */
 float Element::get_estimated_element_size() const {
   if (this->nodes.size() < 1)
-    throw("Element with id " + to_string(this->elementID) +
-          " has no nodes and thus no size.");
+    throw(std::invalid_argument("Element with id " +
+                                to_string(this->elementID) +
+                                " has no nodes and thus no size."));
 
   DB_Nodes *db_nodes = this->db_elements->get_db_nodes();
 
 #ifdef QD_DEBUG
-  Node *current_node = db_nodes->get_nodeByIndex(this->nodes[0]);
+  std::shared_ptr<Node> current_node =
+      db_nodes->get_nodeByIndex(this->nodes[0]);
   if (current_node == nullptr) {
-    throw(string("Could not find node 0 of an element."));
+    throw(std::invalid_argument("Could not find node 0 of an element."));
   }
   vector<float> basis_coords = current_node->get_coords();
 #else
@@ -297,8 +291,8 @@ float Element::get_estimated_element_size() const {
 #ifdef QD_DEBUG
     current_node = db_nodes->get_nodeByIndex(this->nodes[iNode]);
     if (current_node == nullptr) {
-      throw(string("Could not find node " + to_string(iNode) +
-                   " of an element."));
+      throw(std::invalid_argument("Could not find node " + to_string(iNode) +
+                                  " of an element."));
     }
     ncoords = current_node->get_coords();
 #else
@@ -319,8 +313,9 @@ float Element::get_estimated_element_size() const {
     } else if (this->nodes.size() == 4) {
       return sqrt(maxdist) / 1.41421356237f;  // quad
     } else {
-      throw("Unknown node number:" + to_string(this->nodes.size()) +
-            " of element +" + to_string(this->elementID) + "+ for shells.");
+      throw(std::invalid_argument(
+          "Unknown node number:" + to_string(this->nodes.size()) +
+          " of element +" + to_string(this->elementID) + "+ for shells."));
     }
   } else if (this->elemType == SOLID) {
     if (this->nodes.size() == 4) {
@@ -332,17 +327,20 @@ float Element::get_estimated_element_size() const {
     } else if (this->nodes.size() == 6) {
       return sqrt(maxdist) / 1.41421356237f;  // penta
     } else {
-      throw("Unknown node number:" + to_string(this->nodes.size()) +
-            " of element +" + to_string(this->elementID) + "+ for solids.");
+      throw(std::invalid_argument(
+          "Unknown node number:" + to_string(this->nodes.size()) +
+          " of element +" + to_string(this->elementID) + "+ for solids."));
     }
   } else if (this->elemType == BEAM) {
     if (this->nodes.size() != 2)
-      throw("Unknown node number:" + to_string(this->nodes.size()) +
-            " of element +" + to_string(this->elementID) + "+ for beams.");
+      throw(std::invalid_argument(
+          "Unknown node number:" + to_string(this->nodes.size()) +
+          " of element +" + to_string(this->elementID) + "+ for beams."));
     return sqrt(maxdist);  // beam
   }
 
-  throw(string("Unknown element type, expected BEAM/SHELL/SOLID."));
+  throw(std::invalid_argument(
+      "Unknown element type, expected BEAM/SHELL/SOLID."));
 }
 
 /*
@@ -379,22 +377,25 @@ vector<vector<float>> Element::get_history_vars() const {
 void Element::check() const {
   if (this->elemType == SHELL) {
     if ((this->nodes.size() < 3) | (this->nodes.size() > 4))
-      throw("A shell element must have 3 or 4 nodes. You have " +
-            to_string(this->nodes.size()));
+      throw(std::runtime_error(
+          "A shell element must have 3 or 4 nodes. You have " +
+          to_string(this->nodes.size())));
     return;
   }
 
   if (this->elemType == SOLID) {
     if ((this->nodes.size() < 4) | (this->nodes.size() > 8) |
         (this->nodes.size() == 7))
-      throw("A solid element must have 4,5,6 or 8 nodes. You have " +
-            to_string(this->nodes.size()));
+      throw(std::runtime_error(
+          "A solid element must have 4,5,6 or 8 nodes. You have " +
+          to_string(this->nodes.size())));
     return;
   }
   if (this->elemType == BEAM) {
     if (this->nodes.size() != 2)
-      throw("A beam element must have exactly 2 nodes. You have " +
-            to_string(this->nodes.size()));
+      throw(std::runtime_error(
+          "A beam element must have exactly 2 nodes. You have " +
+          to_string(this->nodes.size())));
   }
 }
 

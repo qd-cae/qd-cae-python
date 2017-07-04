@@ -155,21 +155,24 @@ class D3plot : public FEMFile {
          std::vector<std::string> _variables = std::vector<std::string>(),
          bool _use_femzip = false);
   ~D3plot();
-  void info();
+  void info() const;
   void read_states(std::vector<std::string> _variables);
   void clear(
       const std::vector<std::string> &_variables = std::vector<std::string>());
-  std::vector<float> get_timesteps();
-  bool displacement_is_read();
-  bool is_d3plot() { return true; };
-  bool is_keyFile() { return false; };
+
+  size_t get_nStates() const;
+  std::string get_title() const;
+  std::vector<float> get_timesteps() const;
+  bool displacement_is_read() const;
+  bool is_d3plot() const { return true; };
+  bool is_keyFile() const { return false; };
   D3plot *get_d3plot() { return this; };
   KeyFile *get_keyFile() {
     throw(std::invalid_argument(
         "You can not get a keyfile handle from a d3plot ... for now."));
   };
 
-  // Python Wrapper functions
+  // Python Wrapper functions (dirty stuff)
   D3plot(std::string _filepath, pybind11::list _variables, bool _use_femzip)
       : D3plot(_filepath,
                qd::py::container_to_vector<std::string>(
@@ -180,6 +183,13 @@ class D3plot : public FEMFile {
                qd::py::container_to_vector<std::string>(
                    _variables, "An entry of read_states was not of type str"),
                _use_femzip){};
+  D3plot(std::string _filepath, std::string _variable, bool _use_femzip)
+      : D3plot(_filepath,
+               [_variable](std::string) -> std::vector<std::string> {
+                 std::vector<std::string> vec = {_variable};
+                 return vec;
+               }(_variable),
+               _use_femzip){};
   void read_states(pybind11::list _variables) {
     this->read_states(qd::py::container_to_vector<std::string>(
         _variables, "An entry of read_states was not of type str"));
@@ -187,6 +197,10 @@ class D3plot : public FEMFile {
   void read_states(pybind11::tuple _variables) {
     this->read_states(qd::py::container_to_vector<std::string>(
         _variables, "An entry of read_states was not of type str"));
+  };
+  void read_states(std::string _variable) {
+    std::vector<std::string> vec = {_variable};
+    this->read_states(vec);
   };
   void clear(pybind11::list _variables = pybind11::list()) {
     this->clear(qd::py::container_to_vector<std::string>(
@@ -210,5 +224,17 @@ class D3plot : public FEMFile {
     return qd::py::vector_to_nparray(this->get_timesteps());
   };
 };
+
+/** Tells whether displacements were loaded.
+ *
+ * @return disp_is_read : boolean whether the disp was read
+ */
+inline bool D3plot::displacement_is_read() const { return this->disp_is_read; }
+
+/** Get the number of states in the file
+ *
+ * @return nStates
+ */
+inline size_t D3plot::get_nStates() const { return this->timesteps.size(); }
 
 #endif

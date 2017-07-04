@@ -23,7 +23,8 @@ DB_Parts::~DB_Parts() {
 
 /** Create a part with it's id. The index is just size + 1.
  */
-Part* DB_Parts::add_part_byID(int _partID, const std::string& name) {
+std::shared_ptr<Part> DB_Parts::add_partByID(int _partID,
+                                             const std::string& name) {
 #ifdef QD_DEBUG
   const auto& it = id2index_parts.find(_partID);
   if (it != id2index_parts.end())
@@ -31,36 +32,29 @@ Part* DB_Parts::add_part_byID(int _partID, const std::string& name) {
         "Trying to insert a part with same ID twice into the part-db!"));
 #endif
 
-  unique_ptr<Part> part = std::make_unique<Part>(_partID, name, this->femfile);
-  this->parts.push_back(std::move(part));
+  auto part = std::make_shared<Part>(_partID, name, this->femfile);
+  this->parts.push_back(part);
   this->id2index_parts.insert(
       pair<int, size_t>(_partID, this->parts.size() - 1));
-  return this->parts.back().get();
+  return part;
 }
 
 /**
  * Get the parts in the db in a vector.
  */
-vector<Part*> DB_Parts::get_parts() {
-  vector<Part*> ret(this->parts.size());
-  for (const auto& part_ptr : parts) {
-    ret.push_back(part_ptr.get());
-  }
-
-  return std::move(ret);
-}
+std::vector<std::shared_ptr<Part>> DB_Parts::get_parts() { return this->parts; }
 
 /**
  * Get a part by it's name.
  */
-Part* DB_Parts::get_part_byName(const string& _name) {
-  for (auto& part_ptr : parts) {
+std::shared_ptr<Part> DB_Parts::get_partByName(const string& _name) {
+  for (const auto& part_ptr : parts) {
     if (part_ptr->get_name().compare(_name) == 0) {
-      return part_ptr.get();
+      return part_ptr;
     }
   }
 
-  return nullptr;
+  throw(std::invalid_argument("part with name <" + _name + "> does not exist"));
 }
 
 /**
@@ -82,6 +76,7 @@ void DB_Parts::print_parts() const {
   for (const auto& part_ptr : parts) {
     cout << "partID:" << part_ptr->get_partID()
          << " name:" << part_ptr->get_name()
-         << " nElems:" << part_ptr->get_elements().size() << endl;
+         << " nElems:" << part_ptr->get_elements().size() << "\n";
+    cout << std::flush;
   }
 }

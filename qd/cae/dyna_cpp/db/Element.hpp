@@ -11,6 +11,7 @@ class DB_Elements;
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
 #include <iostream>
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -25,9 +26,9 @@ class Element {
   std::vector<float> energy;
   std::vector<float> stress_mises;
   std::vector<float> plastic_strain;
-  std::vector<std::vector<float> > strain;
-  std::vector<std::vector<float> > stress;
-  std::vector<std::vector<float> > history_vars;
+  std::vector<std::vector<float>> strain;
+  std::vector<std::vector<float>> stress;
+  std::vector<std::vector<float>> history_vars;
   ElementType elemType;
   DB_Elements* db_elements;
 
@@ -43,16 +44,16 @@ class Element {
   int get_elementID() const;
   bool get_is_rigid() const;
   float get_estimated_element_size() const;  // fast
-  std::vector<Node*> get_nodes() const;
+  std::vector<std::shared_ptr<Node>> get_nodes() const;
   std::vector<int> get_node_ids() const;
   std::vector<size_t> get_node_indexes() const;
   std::vector<float> get_coords(int iTimestep = 0) const;
   std::vector<float> get_energy() const;
   std::vector<float> get_stress_mises() const;
   std::vector<float> get_plastic_strain() const;
-  std::vector<std::vector<float> > get_strain() const;
-  std::vector<std::vector<float> > get_stress() const;
-  std::vector<std::vector<float> > get_history_vars() const;
+  std::vector<std::vector<float>> get_strain() const;
+  std::vector<std::vector<float>> get_stress() const;
+  std::vector<std::vector<float>> get_history_vars() const;
 
   // setter
   void set_is_rigid(bool _is_rigid);
@@ -74,6 +75,24 @@ class Element {
   // Python API
   pybind11::array_t<float> get_coords_py(int iTimestep = 0) const {
     return qd::py::vector_to_nparray(this->get_coords(iTimestep));
+  };
+  pybind11::array_t<float> get_energy_py() const {
+    return qd::py::vector_to_nparray(this->get_energy());
+  };
+  pybind11::array_t<float> get_stress_mises_py() const {
+    return qd::py::vector_to_nparray(this->get_stress_mises());
+  };
+  pybind11::array_t<float> get_plastic_strain_py() const {
+    return qd::py::vector_to_nparray(this->get_plastic_strain());
+  };
+  pybind11::array_t<float> get_strain_py() const {
+    return qd::py::vector_to_nparray(this->get_strain());
+  };
+  pybind11::array_t<float> get_stress_py() const {
+    return qd::py::vector_to_nparray(this->get_stress());
+  };
+  pybind11::array_t<float> get_history_vars_py() const {
+    return qd::py::vector_to_nparray(this->get_history_vars());
   };
 };
 

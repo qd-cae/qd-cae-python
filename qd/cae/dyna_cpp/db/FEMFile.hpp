@@ -43,13 +43,10 @@ class FEMFile : public DB_Nodes, public DB_Parts, public DB_Elements {
   inline DB_Parts* get_db_parts() { return this->db_parts.get(); }
   inline DB_Elements* get_db_elements() { return this->db_elements.get(); }
   */
-  virtual bool is_d3plot() = 0;
-  virtual bool is_keyFile() = 0;
+  virtual bool is_d3plot() const = 0;
+  virtual bool is_keyFile() const = 0;
   virtual D3plot* get_d3plot() = 0;
   virtual KeyFile* get_keyFile() = 0;
-
-  // Python wrapper
-  size_t get_nNodes() { return this->get_db_nodes()->get_nNodes(); }
 };
 
 #endif

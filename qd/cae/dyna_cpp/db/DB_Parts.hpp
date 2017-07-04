@@ -14,7 +14,7 @@ class FEMFile;
 class DB_Parts {
  private:
   FEMFile* femfile;
-  std::vector<std::unique_ptr<Part> > parts;
+  std::vector<std::shared_ptr<Part>> parts;
   std::unordered_map<int, size_t> id2index_parts;
 
  public:
@@ -23,37 +23,42 @@ class DB_Parts {
 
   size_t get_nParts() const;
   void print_parts() const;
-  std::vector<Part*> get_parts();
-  Part* get_part_byName(const std::string&);
+  std::shared_ptr<Part> add_partByID(int _partID, const std::string& name = "");
+
+  std::vector<std::shared_ptr<Part>> get_parts();
+  std::shared_ptr<Part> get_partByName(const std::string&);
   template <typename T>
-  Part* get_part_byID(T _id);
+  std::shared_ptr<Part> get_partByID(T _id);
   template <typename T>
-  Part* get_part_byIndex(T _index);
-  Part* add_part_byID(int _partID, const std::string& name = "");
+  std::shared_ptr<Part> get_partByIndex(T _index);
 };
 
 template <typename T>
-Part* DB_Parts::get_part_byID(T _id) {
+std::shared_ptr<Part> DB_Parts::get_partByID(T _id) {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   const auto& it = this->id2index_parts.find(_id);
   if (it != id2index_parts.end()) {
-    return parts[it->second].get();
+    return parts[it->second];
   } else {
     // :(
+    throw(
+        std::invalid_argument("Could not find part with id " + to_string(_id)));
     return nullptr;
   }
 }
 
 template <typename T>
-Part* DB_Parts::get_part_byIndex(T _index) {
+std::shared_ptr<Part> DB_Parts::get_partByIndex(T _index) {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   // Part existing
   if (_index < parts.size()) {
-    return parts[_index].get();
+    return parts[_index];
   } else {
     // :(
+    throw(std::invalid_argument("Could not find part with index " +
+                                to_string(_index)));
     return nullptr;
   }
 }

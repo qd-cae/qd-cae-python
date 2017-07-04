@@ -361,7 +361,7 @@ void D3plot::read_header() {
 /**  Print info about the data in the d3plot to the console.
  *
  */
-void D3plot::info() {
+void D3plot::info() const {
   cout << "Title:  " << this->dyna_title << '\n';
   cout << "nNodes : " << this->dyna_numnp << '\n';
   cout << "nElem2 : " << this->dyna_nel2 << '\n';
@@ -510,7 +510,7 @@ void D3plot::read_geometry() {
   size_t nRigidShells = 0;
   db_elems->reserve(Element::SHELL, buffer_elems4.size());
   for (size_t ii = 0; ii < buffer_elems4.size(); ++ii) {
-    Element *elem = db_elems->add_element_byD3plot(
+    auto elem = db_elems->add_element_byD3plot(
         Element::SHELL, buffer_numbering[3][ii], buffer_elems4[ii]);
 
     // check if rigid material, very complicated ...
@@ -903,7 +903,7 @@ void D3plot::read_geometry_parts() {
     int partID = this->buffer->read_int(start);
     string partName = this->buffer->read_str(start + 1, 18);
 
-    this->get_db_parts()->add_part_byID(partID)->set_name(partName);
+    this->get_db_parts()->add_partByID(partID)->set_name(partName);
   }
 
 #ifdef QD_DEBUG
@@ -1373,14 +1373,9 @@ void D3plot::read_states_displacement() {
   vector<float> _disp(dyna_ndim);
 
   for (int ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
-    Node *node = db_nodes->get_nodeByIndex(iNode);
+    auto node = db_nodes->get_nodeByIndex(iNode);
 
-    //_disp.clear();
     buffer->read_float_array(ii, dyna_ndim, _disp);
-    /*for(int jj=ii; jj<ii+dyna_ndim; ++jj)
-      _disp.push_back(this->buffer->read_float(jj));
-      */
-
     node->add_disp(_disp);
 
     ++iNode;
@@ -1402,7 +1397,7 @@ void D3plot::read_states_velocity() {
   vector<float> _vel(dyna_ndim);
 
   for (int ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
-    Node *node = db_nodes->get_nodeByIndex(iNode);
+    auto node = db_nodes->get_nodeByIndex(iNode);
 
     //_vel.clear();
     buffer->read_float_array(ii, dyna_ndim, _vel);
@@ -1433,7 +1428,7 @@ void D3plot::read_states_acceleration() {
   vector<float> _accel(dyna_ndim);
 
   for (int ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
-    Node *node = db_nodes->get_nodeByIndex(iNode);
+    auto node = db_nodes->get_nodeByIndex(iNode);
 
     //_accel.clear();
     buffer->read_float_array(ii, dyna_ndim, _accel);
@@ -1471,8 +1466,7 @@ void D3plot::read_states_elem8(size_t iState) {
 
   size_t iElement = 0;
   for (int ii = start; ii < start + wordsToRead; ii += dyna_nv3d) {
-    Element *element =
-        db_elements->get_elementByIndex(Element::SOLID, iElement);
+    auto element = db_elements->get_elementByIndex(Element::SOLID, iElement);
 
     // stress tensor and data
     if (this->stress_read || this->stress_mises_read) {
@@ -1571,7 +1565,7 @@ void D3plot::read_states_elem4(size_t iState) {
   size_t iElement = 0;
   for (int ii = start; ii < start + wordsToRead; ++iElement) {
     // get element (and check for rigidity)
-    Element *element =
+    auto element =
         this->get_db_elements()->get_elementByIndex(Element::SHELL, iElement);
     if (element->get_is_rigid()) {
       // does not increment ii, but iElement!!!!!
@@ -1629,14 +1623,6 @@ void D3plot::read_states_elem4(size_t iState) {
       if ((this->stress_read || this->stress_mises_read) && (dyna_ioshl1)) {
         // tmp_vec6.clear();
         buffer->read_float_array(layerStart, 6, tmp_vec6);
-        /*
-        tmp_vec6.push_back(this->buffer->read_float(layerStart));
-        tmp_vec6.push_back(this->buffer->read_float(layerStart+1));
-        tmp_vec6.push_back(this->buffer->read_float(layerStart+2));
-        tmp_vec6.push_back(this->buffer->read_float(layerStart+3));
-        tmp_vec6.push_back(this->buffer->read_float(layerStart+4));
-        tmp_vec6.push_back(this->buffer->read_float(layerStart+5));
-        */
 
         if (iLayer == 0) {
           tmp_vec_stress = tmp_vec6;
@@ -1838,15 +1824,15 @@ void D3plot::read_states_elem4(size_t iState) {
 
 /** Get the timestamps of the timesteps.
  *
- * @return timesteps vector with the timestamp of the given state
+ * @return timesteps : vector with the timestamp of the given state
  */
-vector<float> D3plot::get_timesteps() { return this->timesteps; }
+vector<float> D3plot::get_timesteps() const { return this->timesteps; }
 
-/** Tells whether displacements were loaded.
+/** Get the title of the file in the header
  *
- * @return disp_is_read boolean whether the disp was read
+ * @return title
  */
-bool D3plot::displacement_is_read() { return this->disp_is_read; }
+std::string D3plot::get_title() const { return this->dyna_title; }
 
 /** Clears loaded result data loaded from the file
  *
@@ -1922,7 +1908,7 @@ void D3plot::clear(const vector<string> &_variables) {
     // NODES: data deletion
     if (delete_disp || delete_vel || delete_accel) {
       DB_Nodes *db_nodes = this->get_db_nodes();
-      Node *_node = nullptr;
+      std::shared_ptr<Node> _node = nullptr;
       for (size_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
         _node = db_nodes->get_nodeByIndex(iNode);
         if (_node) {
@@ -1944,7 +1930,7 @@ void D3plot::clear(const vector<string> &_variables) {
         delete_stress || delete_stress_mises || delete_history_shell ||
         delete_history_solid) {
       DB_Elements *db_elems = this->get_db_elements();
-      Element *_elem = nullptr;
+      std::shared_ptr<Element> _elem = nullptr;
 
       // shells
       for (size_t iElement = 0;

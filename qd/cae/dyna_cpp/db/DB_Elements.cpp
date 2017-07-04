@@ -36,35 +36,35 @@ DB_Elements::~DB_Elements() {
  * @param int _elementID : id of the element to add
  * @param vector<int> _elementData : element data from d3plot, node ids and part
  * id
- * @return Element* element : pointer to created instance
+ * @return std::shared_ptr<Element> element : pointer to created instance
  *
  * Add an element to the db by it's ID  and it's nodeIndexes. Throws an
  * exception
  * if one nodeIndex is invalid or if the elementID is already existing.
  */
-Element *DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
-                                           const int _elementID,
-                                           const vector<int> &_elementData) {
+std::shared_ptr<Element> DB_Elements::add_element_byD3plot(
+    const Element::ElementType _eType, const int _elementID,
+    const vector<int> &_elementData) {
   if (_elementID < 0) {
     throw(std::invalid_argument("Element-ID may not be negative!"));
   }
 
   // Find part
   // index is decremented once, since ls-dyna starts at 1 (fortran array style)
-  Part *part = this->db_parts->get_part_byIndex(_elementData.back() - 1);
+  auto part = this->db_parts->get_partByIndex(_elementData.back() - 1);
   if (part == nullptr) {
     throw(std::invalid_argument("Could not find part with index:" +
                                 to_string(_elementData.back()) + " in db."));
   }
 
   // Find nodes
-  vector<Node *> nodes;
+  vector<std::shared_ptr<Node>> nodes;
   vector<size_t> node_indexes;
   for (size_t iNode = 0; iNode < _elementData.size() - 1;
        iNode++) {  // last is mat
-    Node *_node = this->db_nodes->get_nodeByIndex(
+    auto _node = this->db_nodes->get_nodeByIndex(
         _elementData[iNode] -
-        1);  // dyna starts at index 1, this program at 0 of course
+        1);  // dyna starts at index 1 (fortran), this program at 0 of course
     if (_node == nullptr)
       throw(invalid_argument(
           "A node with index:" + to_string(_elementData[iNode]) +
@@ -77,7 +77,7 @@ Element *DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
   }
 
   // Create element
-  Element *element_raw_ptr;
+  std::shared_ptr<Element> element_ptr;
   unique_ptr<Element> element =
       std::make_unique<Element>(_elementID, _eType, node_indexes, this);
 
@@ -93,7 +93,7 @@ Element *DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
     this->id2index_elements2.insert(
         pair<int, size_t>(_elementID, this->elements2.size()));
     this->elements2.push_back(std::move(element));
-    element_raw_ptr = this->elements2.back().get();
+    element_ptr = this->elements2.back();
 
   } else if (_eType == Element::SHELL) {
     unordered_map<int, size_t>::iterator it =
@@ -107,7 +107,7 @@ Element *DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
     this->id2index_elements4.insert(
         pair<int, size_t>(_elementID, this->elements4.size()));
     this->elements4.push_back(std::move(element));
-    element_raw_ptr = this->elements4.back().get();
+    element_ptr = this->elements4.back();
 
   } else if (_eType == Element::SOLID) {
     unordered_map<int, size_t>::iterator it =
@@ -121,7 +121,7 @@ Element *DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
     this->id2index_elements8.insert(
         pair<int, size_t>(_elementID, this->elements8.size()));
     this->elements8.push_back(std::move(element));
-    element_raw_ptr = this->elements8.back().get();
+    element_ptr = this->elements8.back();
 
   } else {
     throw(std::invalid_argument(
@@ -130,12 +130,12 @@ Element *DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
   }
 
   // Register Elements
-  for (vector<Node *>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
-    ((Node *)*it)->add_element(element_raw_ptr);
+  for (auto &node : nodes) {
+    node->add_element(element_ptr);
   }
-  part->add_element(element_raw_ptr);
+  part->add_element(element_ptr);
 
-  return element_raw_ptr;
+  return element_ptr;
 }
 
 /** Add an element coming from a KeyFile/Dyna Input File
@@ -145,30 +145,30 @@ Element *DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
  * @param int _elementID : id of the element to add
  * @param int part_id : id of the part, the element belongs to
  * @param vector<int> _node_ids : node ids of the used nodes
- * @return Element* element : pointer to created instance
+ * @return std::shared_ptr<Element> element : pointer to created instance
  *
  * Add an element to the db by it's ID  and it's nodeIDs. Throws an exception
  * if one nodeID is invalid or if the elementID is already existing. Since a
  * KeyFile may have some weird order, missing parts and nodes are created.
  */
-Element *DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
-                                            int _elementID, int _partid,
-                                            vector<int> _node_ids) {
+std::shared_ptr<Element> DB_Elements::add_element_byKeyFile(
+    Element::ElementType _eType, int _elementID, int _partid,
+    vector<int> _node_ids) {
   if (_elementID < 0) {
     throw(std::invalid_argument("Element-ID may not be negative!"));
   }
 
   // Find part
-  Part *part = this->db_parts->get_part_byID(_partid);
+  auto part = this->db_parts->get_partByID(_partid);
   if (part == nullptr) {
-    part = this->db_parts->add_part_byID(_partid);
+    part = this->db_parts->add_partByID(_partid);
   }
 
   // Find nodes
-  vector<Node *> nodes;
+  vector<std::shared_ptr<Node>> nodes;
   vector<size_t> node_indexes;
   for (size_t iNode = 0; iNode < _node_ids.size(); ++iNode) {
-    Node *_node = this->db_nodes->get_nodeByID(_node_ids[iNode]);
+    auto _node = this->db_nodes->get_nodeByID(_node_ids[iNode]);
     if (_node == nullptr)
       _node =
           this->db_nodes->add_node(_node_ids[iNode], vector<float>(3, 0.0f));
@@ -179,7 +179,7 @@ Element *DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   }
 
   // Create element
-  Element *element_raw_ptr;
+  std::shared_ptr<Element> element_ptr;
   unique_ptr<Element> element(
       new Element(_elementID, _eType, node_indexes, this));
 
@@ -195,7 +195,7 @@ Element *DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
     this->id2index_elements2.insert(
         pair<int, size_t>(_elementID, this->elements2.size()));
     this->elements2.push_back(std::move(element));
-    element_raw_ptr = this->elements2.back().get();
+    element_ptr = this->elements2.back();
 
   } else if (_eType == Element::SHELL) {
     unordered_map<int, size_t>::iterator it =
@@ -209,7 +209,7 @@ Element *DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
     this->id2index_elements4.insert(
         pair<int, size_t>(_elementID, this->elements4.size()));
     this->elements4.push_back(std::move(element));
-    element_raw_ptr = this->elements4.back().get();
+    element_ptr = this->elements4.back();
 
   } else if (_eType == Element::SOLID) {
     unordered_map<int, size_t>::iterator it =
@@ -223,7 +223,7 @@ Element *DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
     this->id2index_elements8.insert(
         pair<int, size_t>(_elementID, this->elements8.size()));
     this->elements8.push_back(std::move(element));
-    element_raw_ptr = this->elements8.back().get();
+    element_ptr = this->elements8.back();
 
   } else {
     throw(std::invalid_argument(
@@ -232,13 +232,12 @@ Element *DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   }
 
   // Register Elements
-  // for(auto node : nodes) {
-  for (vector<Node *>::iterator it = nodes.begin(); it != nodes.end(); it++) {
-    ((Node *)*it)->add_element(element_raw_ptr);
+  for (auto &node : nodes) {
+    node->add_element(element_ptr);
   }
-  part->add_element(element_raw_ptr);
+  part->add_element(element_ptr);
 
-  return element_raw_ptr;
+  return element_ptr;
 }
 
 /** Get the DynaInputFile pointer

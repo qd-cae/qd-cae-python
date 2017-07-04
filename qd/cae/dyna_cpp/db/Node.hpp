@@ -9,23 +9,24 @@ class DB_Nodes;
 // includes
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
+#include <memory>
 #include <vector>
 
 class Node {
  private:
   int nodeID;
-  std::vector<Element*> elements;
+  std::vector<std::shared_ptr<Element>> elements;
   std::vector<float> coords;
-  std::vector<std::vector<float> > disp;
-  std::vector<std::vector<float> > vel;
-  std::vector<std::vector<float> > accel;
+  std::vector<std::vector<float>> disp;
+  std::vector<std::vector<float>> vel;
+  std::vector<std::vector<float>> accel;
   DB_Nodes* db_nodes;
 
  public:
   Node(int _nodeID, std::vector<float> _coords, DB_Nodes* db_nodes);
   ~Node();
   bool operator<(const Node& other) const;
-  Element* add_element(Element*);
+  std::shared_ptr<Element> add_element(std::shared_ptr<Element>);
   void add_disp(std::vector<float>);
   void add_vel(std::vector<float>);
   void add_accel(std::vector<float>);
@@ -35,11 +36,13 @@ class Node {
 
   // Getter
   inline int get_nodeID() { return this->nodeID; }
-  inline std::vector<Element*> get_elements() { return this->elements; }
+  inline std::vector<std::shared_ptr<Element>> get_elements() {
+    return this->elements;
+  }
   std::vector<float> get_coords(int iTimestep = 0);
-  inline std::vector<std::vector<float> > get_disp() { return this->disp; }
-  inline std::vector<std::vector<float> > get_vel() { return this->vel; }
-  inline std::vector<std::vector<float> > get_accel() { return this->accel; }
+  inline std::vector<std::vector<float>> get_disp() { return this->disp; }
+  inline std::vector<std::vector<float>> get_vel() { return this->vel; }
+  inline std::vector<std::vector<float>> get_accel() { return this->accel; }
 
   // Python API
   inline pybind11::array_t<float> get_coords_py(int iTimestep) {

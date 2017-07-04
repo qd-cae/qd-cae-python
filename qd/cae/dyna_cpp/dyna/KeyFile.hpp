@@ -3,8 +3,10 @@
 #define KEYFILE_HPP
 
 // includes
+#include <dyna_cpp/db/FEMFile.hpp>
+
+#include <stdexcept>
 #include <string>
-#include "dyna_cpp/db/FEMFile.hpp"
 
 // forward declarations
 class D3plot;
@@ -14,18 +16,18 @@ class D3plot;
  * it's properties, currently only in a limited way.
  */
 class KeyFile : public FEMFile {
+ private:
+  void read_mesh(std::string _filepath);
 
-private:
-   void read_mesh(std::string _filepath);
-
-public:
-   KeyFile();
-   KeyFile(std::string _filepath);
-   bool is_d3plot(){return false;};
-   bool is_keyFile(){return true;};
-   D3plot* get_d3plot(){throw(std::string("A KeyFile can not be cast to a D3plot."));};
-   KeyFile* get_keyFile(){return this;};
-
+ public:
+  KeyFile();
+  KeyFile(std::string _filepath);
+  bool is_d3plot() const { return false; };
+  bool is_keyFile() const { return true; };
+  D3plot* get_d3plot() {
+    throw(std::invalid_argument("A KeyFile can not be cast to a D3plot."));
+  };
+  KeyFile* get_keyFile() { return this; };
 };
 
 #endif
