@@ -11,12 +11,12 @@ git:
 before_install:
   - sudo apt-get install python3-numpy
   - sudo apt-get install libboost-dev
-  - sudo apt-get install pybind11
   
 install:
   - python3 -m pip install --upgrade pip setuptools wheel
   - python3 -m pip install --only-binary=numpy numpy
   - python3 -m pip install diversipy
+  - python3 -m pip install pybind11
   - python3 setup.py install
 
 script: 
