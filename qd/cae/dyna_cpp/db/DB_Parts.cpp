@@ -42,7 +42,9 @@ std::shared_ptr<Part> DB_Parts::add_partByID(int _partID,
 /**
  * Get the parts in the db in a vector.
  */
-std::vector<std::shared_ptr<Part>> DB_Parts::get_parts() { return this->parts; }
+std::vector<std::shared_ptr<Part> > DB_Parts::get_parts() {
+  return this->parts;
+}
 
 /**
  * Get a part by it's name.

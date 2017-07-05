@@ -1,10 +1,5 @@
 
 #include "dyna_cpp/dyna/KeyFile.hpp"
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/lexical_cast.hpp>
-#include <fstream>
-#include <iostream>
-#include <stdexcept>  // std::invalid_argument
 #include "dyna_cpp/db/DB_Elements.hpp"
 #include "dyna_cpp/db/DB_Nodes.hpp"
 #include "dyna_cpp/db/DB_Parts.hpp"
@@ -13,13 +8,19 @@
 #include "dyna_cpp/utility/BoostException.hpp"
 #include "dyna_cpp/utility/FileUtility.hpp"
 #include "dyna_cpp/utility/TextUtility.hpp"
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/lexical_cast.hpp>
+#include <fstream>
+#include <iostream>
+#include <stdexcept> // std::invalid_argument
 
 using namespace std;
 using namespace boost::algorithm;
 
 // Enumeration
 namespace Keyword {
-enum Keyword {
+enum Keyword
+{
   NONE,
   NODE,
   ELEMENT_BEAM,
@@ -33,13 +34,17 @@ enum Keyword {
 /**
  * Constructor for a LS-Dyna input file.
  */
-KeyFile::KeyFile() {}
+KeyFile::KeyFile()
+{
+}
 
 /** Constructor for reading a LS-Dyna input file.
  *
  * @param string filepath : filepath of a key file to read
  */
-KeyFile::KeyFile(string _filepath) : FEMFile(_filepath) {
+KeyFile::KeyFile(string _filepath)
+  : FEMFile(_filepath)
+{
   // Read the mesh
   this->read_mesh(this->get_filepath());
 }
@@ -47,7 +52,9 @@ KeyFile::KeyFile(string _filepath) : FEMFile(_filepath) {
 /** Read the mesh from the file given in the filepath
  *
  */
-void KeyFile::read_mesh(string _filepath) {
+void
+KeyFile::read_mesh(string _filepath)
+{
 #ifdef QD_DEBUG
   cout << " === Parsing File: " << _filepath << endl;
 #endif
@@ -55,7 +62,8 @@ void KeyFile::read_mesh(string _filepath) {
   // File directory for Includes
   string directory = "";
   size_t pos = _filepath.find_last_of("/\\");
-  if (pos != string::npos) directory = _filepath.substr(0, pos) + "/";
+  if (pos != string::npos)
+    directory = _filepath.substr(0, pos) + "/";
 #ifdef QD_DEBUG
   cout << "Basic directory for *INCLUDE: " << directory << endl;
 #endif
@@ -94,7 +102,8 @@ void KeyFile::read_mesh(string _filepath) {
     line = lines[iLine];
 
     // Skip empty lines
-    if (line[0] == '$') continue;
+    if (line[0] == '$')
+      continue;
 
     line_trimmed = trim_copy(line);
     line_has_keyword = (line_trimmed.find('*') != string::npos);
@@ -107,7 +116,7 @@ void KeyFile::read_mesh(string _filepath) {
 #endif
     } else if (keyword == Keyword::INCLUDE) {
       this->read_mesh(directory +
-                      line_trimmed);  // basic directory is this file's
+                      line_trimmed); // basic directory is this file's
       keyword = Keyword::NONE;
     }
 
@@ -125,7 +134,7 @@ void KeyFile::read_mesh(string _filepath) {
         coords[1] = boost::lexical_cast<float>(trim_copy(line.substr(24, 16)));
         coords[2] = boost::lexical_cast<float>(trim_copy(line.substr(40, 16)));
         db_nodes->add_node(
-            boost::lexical_cast<int>(trim_copy(line.substr(0, 8))), coords);
+          boost::lexical_cast<int>(trim_copy(line.substr(0, 8))), coords);
       } catch (const std::exception& ex) {
         cerr << "Error reading node in line " << (iLine + 1) << ":" << ex.what()
              << endl;
@@ -147,7 +156,7 @@ void KeyFile::read_mesh(string _filepath) {
 #endif
     }
 
-    /* ELEMENTS */
+    /* ELEMENTS SHELL */
     if (line_trimmed == "*ELEMENT_SHELL") {
       keyword = Keyword::ELEMENT_SHELL;
 #ifdef QD_DEBUG
@@ -159,25 +168,25 @@ void KeyFile::read_mesh(string _filepath) {
         id = boost::lexical_cast<int>(trim_copy(line.substr(0, 8)));
         partID = boost::lexical_cast<int>(trim_copy(line.substr(8, 8)));
         elemNodes_shell[0] =
-            boost::lexical_cast<int>(trim_copy(line.substr(16, 8)));
+          boost::lexical_cast<int>(trim_copy(line.substr(16, 8)));
         elemNodes_shell[1] =
-            boost::lexical_cast<int>(trim_copy(line.substr(24, 8)));
+          boost::lexical_cast<int>(trim_copy(line.substr(24, 8)));
         elemNodes_shell[2] =
-            boost::lexical_cast<int>(trim_copy(line.substr(32, 8)));
+          boost::lexical_cast<int>(trim_copy(line.substr(32, 8)));
         elemNodes_shell[3] =
-            boost::lexical_cast<int>(trim_copy(line.substr(40, 8)));
-        db_elements->add_element_byKeyFile(Element::SHELL, id, partID,
-                                           elemNodes_shell);
+          boost::lexical_cast<int>(trim_copy(line.substr(40, 8)));
+        db_elements->add_element_byKeyFile(
+          Element::SHELL, id, partID, elemNodes_shell);
       } catch (const std::exception& ex) {
-        cerr << "Error reading element in line " << (iLine + 1) << ":"
+        cerr << "Error reading shell in line " << (iLine + 1) << ":"
              << ex.what() << endl;
         keyword = Keyword::NONE;
       } catch (const string& ex) {
-        cerr << "Error reading element in line " << (iLine + 1) << ":" << ex
+        cerr << "Error reading shell in line " << (iLine + 1) << ":" << ex
              << endl;
         keyword = Keyword::NONE;
       } catch (...) {
-        cerr << "Error reading element in line " << (iLine + 1)
+        cerr << "Error reading shell in line " << (iLine + 1)
              << ": Unknown error." << endl;
         keyword = Keyword::NONE;
       }
@@ -189,7 +198,7 @@ void KeyFile::read_mesh(string _filepath) {
 #endif
     }
 
-    /* ELEMENTS */
+    /* ELEMENTS SOLID */
     if (line_trimmed == "*ELEMENT_SOLID") {
       keyword = Keyword::ELEMENT_SOLID;
       iCardLine = 0;
@@ -206,36 +215,36 @@ void KeyFile::read_mesh(string _filepath) {
 
         } else if (iCardLine == 1) {
           elemNodes_solid[0] =
-              boost::lexical_cast<int>(trim_copy(line.substr(0, 8)));
+            boost::lexical_cast<int>(trim_copy(line.substr(0, 8)));
           elemNodes_solid[1] =
-              boost::lexical_cast<int>(trim_copy(line.substr(8, 8)));
+            boost::lexical_cast<int>(trim_copy(line.substr(8, 8)));
           elemNodes_solid[2] =
-              boost::lexical_cast<int>(trim_copy(line.substr(16, 8)));
+            boost::lexical_cast<int>(trim_copy(line.substr(16, 8)));
           elemNodes_solid[3] =
-              boost::lexical_cast<int>(trim_copy(line.substr(24, 8)));
+            boost::lexical_cast<int>(trim_copy(line.substr(24, 8)));
           elemNodes_solid[4] =
-              boost::lexical_cast<int>(trim_copy(line.substr(32, 8)));
+            boost::lexical_cast<int>(trim_copy(line.substr(32, 8)));
           elemNodes_solid[5] =
-              boost::lexical_cast<int>(trim_copy(line.substr(40, 8)));
+            boost::lexical_cast<int>(trim_copy(line.substr(40, 8)));
           elemNodes_solid[6] =
-              boost::lexical_cast<int>(trim_copy(line.substr(48, 8)));
+            boost::lexical_cast<int>(trim_copy(line.substr(48, 8)));
           elemNodes_solid[7] =
-              boost::lexical_cast<int>(trim_copy(line.substr(56, 8)));
-          db_elements->add_element_byKeyFile(Element::SOLID, id, partID,
-                                             elemNodes_solid);
+            boost::lexical_cast<int>(trim_copy(line.substr(56, 8)));
+          db_elements->add_element_byKeyFile(
+            Element::SOLID, id, partID, elemNodes_solid);
           iCardLine = 0;
         }
 
       } catch (const std::exception& ex) {
-        cerr << "Error reading element in line " << (iLine + 1) << ":"
+        cerr << "Error reading solid in line " << (iLine + 1) << ":"
              << ex.what() << endl;
         keyword = Keyword::NONE;
       } catch (const string& ex) {
-        cerr << "Error reading element in line " << (iLine + 1) << ":" << ex
+        cerr << "Error reading solid in line " << (iLine + 1) << ":" << ex
              << endl;
         keyword = Keyword::NONE;
       } catch (...) {
-        cerr << "Error reading element in line " << (iLine + 1)
+        cerr << "Error reading solid in line " << (iLine + 1)
              << ": Unknown error." << endl;
         keyword = Keyword::NONE;
       }
@@ -248,7 +257,7 @@ void KeyFile::read_mesh(string _filepath) {
 #endif
     }
 
-    // BEAMS
+    /* ELEMENTS BEAM */
     if (line_trimmed.substr(0, string("*ELEMENT_BEAM").size()) ==
         "*ELEMENT_BEAM") {
       keyword = Keyword::ELEMENT_BEAM;
@@ -263,11 +272,11 @@ void KeyFile::read_mesh(string _filepath) {
           id = boost::lexical_cast<int>(trim_copy(line.substr(0, 8)));
           partID = boost::lexical_cast<int>(trim_copy(line.substr(8, 8)));
           elemNodes_beam[0] =
-              boost::lexical_cast<int>(trim_copy(line.substr(16, 8)));
+            boost::lexical_cast<int>(trim_copy(line.substr(16, 8)));
           elemNodes_beam[1] =
-              boost::lexical_cast<int>(trim_copy(line.substr(24, 8)));
-          db_elements->add_element_byKeyFile(Element::BEAM, id, partID,
-                                             elemNodes_beam);
+            boost::lexical_cast<int>(trim_copy(line.substr(24, 8)));
+          db_elements->add_element_byKeyFile(
+            Element::BEAM, id, partID, elemNodes_beam);
           ++iCardLine;
 
         } else if (iCardLine == 1) {
@@ -275,15 +284,15 @@ void KeyFile::read_mesh(string _filepath) {
         }
 
       } catch (const std::exception& ex) {
-        cerr << "Error reading element in line " << (iLine + 1) << ":"
-             << ex.what() << endl;
+        cerr << "Error reading beam in line " << (iLine + 1) << ":" << ex.what()
+             << endl;
         keyword = Keyword::ELEMENT_BEAM;
       } catch (const string& ex) {
-        cerr << "Error reading element in line " << (iLine + 1) << ":" << ex
+        cerr << "Error reading beam in line " << (iLine + 1) << ":" << ex
              << endl;
         keyword = Keyword::ELEMENT_BEAM;
       } catch (...) {
-        cerr << "Error reading element in line " << (iLine + 1)
+        cerr << "Error reading beam in line " << (iLine + 1)
              << ": Unknown error." << endl;
         keyword = Keyword::ELEMENT_BEAM;
       }
@@ -312,11 +321,13 @@ void KeyFile::read_mesh(string _filepath) {
       } else if (iCardLine == 1) {
         try {
           id = boost::lexical_cast<int>(trim_copy(line.substr(0, 10)));
-          auto part = db_parts->get_partByID(id);
-          if (part == NULL) {
-            part = db_parts->add_partByID(id);
+
+          try {
+            db_parts->get_partByID(id)->set_name(title);
+          } catch (std::invalid_argument& err) {
+            db_parts->add_partByID(id, title);
           }
-          part->set_name(title);
+
           ++iCardLine;
 
         } catch (const std::exception& ex) {
@@ -326,23 +337,18 @@ void KeyFile::read_mesh(string _filepath) {
         } catch (const string& ex) {
           cerr << "Error reading part in line " << (iLine + 1) << ":" << ex
                << endl;
-          keyword = Keyword::NONE;
-        } catch (...) {
-          cerr << "Error reading part in line " << (iLine + 1)
-               << ": Unknown error." << endl;
-          keyword = Keyword::NONE;
         }
-      }
 
-    } else if ((keyword == Keyword::PART) &&
-               (line_has_keyword | (iCardLine > 1))) {
-      keyword = Keyword::NONE;
+      } else if ((keyword == Keyword::PART) &&
+                 (line_has_keyword | (iCardLine > 1))) {
+        keyword = Keyword::NONE;
 #ifdef QD_DEBUG
-      cout << "*PART finished in line: " << (iLine + 1) << endl;
+        cout << "*PART finished in line: " << (iLine + 1) << endl;
 #endif
+      }
     }
 
-  }  // for lines
+  } // for lines
 #ifdef QD_DEBUG
   cout << "parsing of text-file done." << endl;
 #endif
