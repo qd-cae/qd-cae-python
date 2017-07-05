@@ -2,23 +2,11 @@ language: python
   - "3.5"
   - "3.6"
 
+compiler: gcc
+dist: trusty
+
 notifications:
   email: false
-
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - gcc-5.2
-    - g++-5.2
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.9
 
 git:
   submodules: false
@@ -33,8 +21,8 @@ before_install:
   
 install:
   # new gcc
-  - sudo apt-get install -qq g++-5
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 90
+  - sudo apt-get install -qq g++-6
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   # python packages
   - python3 -m pip install --upgrade pip setuptools wheel
   - python3 -m pip install --only-binary=numpy numpy
