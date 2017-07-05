@@ -5,6 +5,14 @@ language: python
 notifications:
   email: false
 
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-5.2
+    - g++-5.2
+
 git:
   submodules: false
   
@@ -17,7 +25,7 @@ install:
   - python3 -m pip install --only-binary=numpy numpy
   - python3 -m pip install diversipy
   - python3 -m pip install pybind11
-  - python3 setup.py install
+  - CC=gcc-5.2 CXX=g++-5.2 python3 setup.py install
 
 script: 
   - python3 setup.py test
