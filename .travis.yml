@@ -11,6 +11,7 @@ git:
 before_install:
   - sudo apt-get install python3-numpy
   - sudo apt-get install libboost-dev
+  - sudo apt-get install pybind11
   
 install:
   - python3 -m pip install --upgrade pip setuptools wheel
