@@ -8,6 +8,7 @@
 #include <dyna_cpp/db/Part.hpp>
 #include <dyna_cpp/dyna/D3plot.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
+#include <dyna_cpp/utility/PythonUtility.hpp>
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -158,14 +159,14 @@ PYBIND11_PLUGIN(dyna_cpp)
          &DB_Nodes::get_nNodes,
          py::return_value_policy::take_ownership)
     /* TODO: array versions (maybe also from numpy array)
-.def("get_node_id_from_index", &DB_Nodes::get_id_from_index<int>,
+.def("get_node_id_from_index", &DB_Nodes::get_id_from_index<long>,
     py::return_value_policy::take_ownership)
-.def("get_node_index_from_id", &DB_Nodes::get_index_from_id<int>,
+.def("get_node_index_from_id", &DB_Nodes::get_index_from_id<long>,
     py::return_value_policy::take_ownership)
     */
     .def("get_nodeByID",
-         (std::shared_ptr<Node>(DB_Nodes::*)(int)) &
-           DB_Nodes::get_nodeByID<int>,
+         (std::shared_ptr<Node>(DB_Nodes::*)(long)) &
+           DB_Nodes::get_nodeByID<long>,
          "id"_a,
          py::return_value_policy::reference_internal)
     .def("get_nodeByID",
@@ -179,8 +180,8 @@ PYBIND11_PLUGIN(dyna_cpp)
          "id"_a,
          py::return_value_policy::reference_internal)
     .def("get_nodeByIndex",
-         (std::shared_ptr<Node>(DB_Nodes::*)(int)) &
-           DB_Nodes::get_nodeByIndex<int>,
+         (std::shared_ptr<Node>(DB_Nodes::*)(long)) &
+           DB_Nodes::get_nodeByIndex<long>,
          "id"_a,
          py::return_value_policy::reference_internal)
     .def("get_nodeByIndex",
@@ -203,12 +204,12 @@ PYBIND11_PLUGIN(dyna_cpp)
          "element_type"_a = Element::NONE,
          py::return_value_policy::take_ownership)
     .def("get_elementByID",
-         &DB_Elements::get_elementByID<int>,
+         &DB_Elements::get_elementByID<long>,
          "element_type"_a,
          "id"_a,
          py::return_value_policy::reference_internal)
     .def("get_elementByIndex",
-         &DB_Elements::get_elementByIndex<int>,
+         &DB_Elements::get_elementByIndex<long>,
          "element_type"_a,
          "index"_a,
          py::return_value_policy::reference_internal);
@@ -225,8 +226,8 @@ PYBIND11_PLUGIN(dyna_cpp)
          &DB_Parts::get_parts,
          py::return_value_policy::reference_internal)
     .def("get_partByID",
-         (std::shared_ptr<Part>(DB_Parts::*)(int)) &
-           DB_Parts::get_partByID<int>,
+         (std::shared_ptr<Part>(DB_Parts::*)(long)) &
+           DB_Parts::get_partByID<long>,
          "id"_a,
          py::return_value_policy::reference_internal)
     .def("get_partByID",
@@ -240,8 +241,8 @@ PYBIND11_PLUGIN(dyna_cpp)
          "id"_a,
          py::return_value_policy::reference_internal)
     .def("get_partByIndex",
-         (std::shared_ptr<Part>(DB_Parts::*)(int)) &
-           DB_Parts::get_partByIndex<int>,
+         (std::shared_ptr<Part>(DB_Parts::*)(long)) &
+           DB_Parts::get_partByIndex<long>,
          "id"_a,
          py::return_value_policy::reference_internal)
     .def("get_partByIndex",

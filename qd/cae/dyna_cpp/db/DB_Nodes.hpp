@@ -8,10 +8,9 @@ class FEMFile;
 class DB_Elements;
 
 // includes
-#include <pybind11/stl.h>
-#include <dyna_cpp/utility/PythonUtility.hpp>
 #include "Node.hpp"
-#include "dyna_cpp/utility/TextUtility.hpp"
+#include <dyna_cpp/utility/PythonUtility.hpp>
+#include <dyna_cpp/utility/TextUtility.hpp>
 
 #include <iostream>
 #include <memory>
@@ -20,15 +19,16 @@ class DB_Elements;
 #include <unordered_map>
 #include <vector>
 
-class DB_Nodes {
+class DB_Nodes
+{
   friend FEMFile;
 
- private:
+private:
   FEMFile* femfile;
   std::unordered_map<int, size_t> id2index_nodes;
   std::vector<std::shared_ptr<Node>> nodes;
 
- public:
+public:
   DB_Nodes(FEMFile* _femfile);
   virtual ~DB_Nodes();
   size_t get_nNodes();
@@ -36,37 +36,41 @@ class DB_Nodes {
   FEMFile* get_femfile();
   std::shared_ptr<Node> add_node(int _id, std::vector<float> _coords);
 
-  template <typename T>
+  template<typename T>
   T get_id_from_index(size_t _id);
-  template <typename T>
+  template<typename T>
   size_t get_index_from_id(T _index);
 
-  template <typename T>
+  template<typename T>
   std::shared_ptr<Node> get_nodeByID(T _id);
-  template <typename T>
+  template<typename T>
   std::vector<std::shared_ptr<Node>> get_nodeByID(const std::vector<T>& _ids);
-  template <typename T>
+  template<typename T>
   std::shared_ptr<Node> get_nodeByIndex(T _index);
-  template <typename T>
+  template<typename T>
   std::vector<std::shared_ptr<Node>> get_nodeByIndex(
-      const std::vector<T>& _ids);
+    const std::vector<T>& _ids);
 
   // Python API
-  std::vector<std::shared_ptr<Node>> get_nodeByID_py(pybind11::list _ids) {
+  std::vector<std::shared_ptr<Node>> get_nodeByID_py(pybind11::list _ids)
+  {
     return this->get_nodeByID(qd::py::container_to_vector<int>(
-        _ids, "An entry of the list was not a fully fledged integer."));
+      _ids, "An entry of the list was not a fully fledged integer."));
   }
-  std::vector<std::shared_ptr<Node>> get_nodeByID_py(pybind11::tuple _ids) {
+  std::vector<std::shared_ptr<Node>> get_nodeByID_py(pybind11::tuple _ids)
+  {
     return this->get_nodeByID(qd::py::container_to_vector<int>(
-        _ids, "An entry of the list was not a fully fledged integer."));
+      _ids, "An entry of the list was not a fully fledged integer."));
   }
-  std::vector<std::shared_ptr<Node>> get_nodeByIndex_py(pybind11::list _ids) {
+  std::vector<std::shared_ptr<Node>> get_nodeByIndex_py(pybind11::list _ids)
+  {
     return this->get_nodeByIndex(qd::py::container_to_vector<int>(
-        _ids, "An entry of the list was not a fully fledged integer."));
+      _ids, "An entry of the list was not a fully fledged integer."));
   }
-  std::vector<std::shared_ptr<Node>> get_nodeByIndex_py(pybind11::tuple _ids) {
+  std::vector<std::shared_ptr<Node>> get_nodeByIndex_py(pybind11::tuple _ids)
+  {
     return this->get_nodeByIndex(qd::py::container_to_vector<int>(
-        _ids, "An entry of the list was not a fully fledged integer."));
+      _ids, "An entry of the list was not a fully fledged integer."));
   }
 };
 
@@ -75,8 +79,10 @@ class DB_Nodes {
  * @param T _id : node id
  * @return size_t : node index
  */
-template <typename T>
-T DB_Nodes::get_id_from_index(size_t _index) {
+template<typename T>
+T
+DB_Nodes::get_id_from_index(size_t _index)
+{
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   if (_index >= nodes.size())
@@ -90,8 +96,10 @@ T DB_Nodes::get_id_from_index(size_t _index) {
  * @param T _id : node id
  * @return size_t _index : node index
  */
-template <typename T>
-size_t DB_Nodes::get_index_from_id(T _id) {
+template<typename T>
+size_t
+DB_Nodes::get_index_from_id(T _id)
+{
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   const auto& it = this->id2index_nodes.find(_id);
@@ -107,14 +115,16 @@ size_t DB_Nodes::get_index_from_id(T _id) {
  * @return std::shared_ptr<Node> node : pointer to the node or nullptr if node
  * is not existing!
  */
-template <typename T>
-inline std::shared_ptr<Node> DB_Nodes::get_nodeByID(T _id) {
+template<typename T>
+inline std::shared_ptr<Node>
+DB_Nodes::get_nodeByID(T _id)
+{
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   const auto& it = this->id2index_nodes.find(_id);
   if (it == this->id2index_nodes.end())
-    throw(std::invalid_argument("Node with ID" + to_string(_id) +
-                                "does not exist"));
+    throw(std::invalid_argument("Node with id" + to_string(_id) +
+                                " does not exist"));
   return this->nodes[it->second];
 }
 
@@ -123,9 +133,10 @@ inline std::shared_ptr<Node> DB_Nodes::get_nodeByID(T _id) {
  * @param std::vector<T> _ids : node ids
  * @return std::vector<std::shared_ptr<Node>> nodes
  */
-template <typename T>
-inline std::vector<std::shared_ptr<Node>> DB_Nodes::get_nodeByID(
-    const std::vector<T>& _ids) {
+template<typename T>
+inline std::vector<std::shared_ptr<Node>>
+DB_Nodes::get_nodeByID(const std::vector<T>& _ids)
+{
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   std::vector<std::shared_ptr<Node>> ret;
@@ -141,8 +152,10 @@ inline std::vector<std::shared_ptr<Node>> DB_Nodes::get_nodeByID(
  * @return std::shared_ptr<Node> node : pointer to the node or nullptr if node
  * is not existing!
  */
-template <typename T>
-inline std::shared_ptr<Node> DB_Nodes::get_nodeByIndex(T _index) {
+template<typename T>
+inline std::shared_ptr<Node>
+DB_Nodes::get_nodeByIndex(T _index)
+{
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   if (_index >= this->nodes.size())
@@ -156,9 +169,10 @@ inline std::shared_ptr<Node> DB_Nodes::get_nodeByIndex(T _index) {
  * @param std::vector<T> _indexes : node indexes
  * @return std::vector<std::shared_ptr<Node>> nodes
  */
-template <typename T>
-inline std::vector<std::shared_ptr<Node>> DB_Nodes::get_nodeByIndex(
-    const std::vector<T>& _indexes) {
+template<typename T>
+inline std::vector<std::shared_ptr<Node>>
+DB_Nodes::get_nodeByIndex(const std::vector<T>& _indexes)
+{
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   std::vector<std::shared_ptr<Node>> ret;

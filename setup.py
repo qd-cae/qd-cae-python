@@ -40,9 +40,9 @@ if not os.path.isdir(boost_path) and (platform.system() == "Windows"):
 
 compiler_args_dyna = []
 include_dirs_dyna = [boost_path, np.get_include(), "qd/cae", pybind11_path]
-lib_dirs_dyna = []  # ["libs/boost_1_61_0/lib64-msvc-9.0"]
-libs_dyna = []  # ["boost_python"]
-srcs_dyna = [  # "qd/cae/dyna_cpp/python_api/wrapper.cpp",
+lib_dirs_dyna = []
+libs_dyna = []
+srcs_dyna = [
     "qd/cae/dyna_cpp/python_api/pybind_wrapper.cpp",
     "qd/cae/dyna_cpp/db/FEMFile.cpp",
     "qd/cae/dyna_cpp/db/DB_Elements.cpp",
@@ -55,9 +55,7 @@ srcs_dyna = [  # "qd/cae/dyna_cpp/python_api/wrapper.cpp",
     "qd/cae/dyna_cpp/dyna/D3plot.cpp",
     "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
     "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
-    "qd/cae/dyna_cpp/utility/FileUtility.cpp",
-    "qd/cae/dyna_cpp/utility/TextUtility.cpp",
-    "qd/cae/dyna_cpp/utility/MathUtility.cpp"]
+    "qd/cae/dyna_cpp/utility/FileUtility.cpp"]
 
 # FEMZIP usage? Libraries present?
 # You need to download the femzip libraries yourself from SIDACT GmbH

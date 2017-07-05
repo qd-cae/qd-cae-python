@@ -7,7 +7,6 @@ class Node;
 class DB_Elements;
 
 // includes
-#include <pybind11/numpy.h>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
 #include <iostream>
@@ -15,14 +14,21 @@ class DB_Elements;
 #include <set>
 #include <vector>
 
-class Element {
- public:
-  enum ElementType { NONE, BEAM, SHELL, SOLID };
+class Element
+{
+public:
+  enum ElementType
+  {
+    NONE,
+    BEAM,
+    SHELL,
+    SOLID
+  };
 
- private:
+private:
   int elementID;
   bool is_rigid;
-  std::vector<size_t> nodes;  // indexes
+  std::vector<size_t> nodes; // indexes
   std::vector<float> energy;
   std::vector<float> stress_mises;
   std::vector<float> plastic_strain;
@@ -32,9 +38,11 @@ class Element {
   ElementType elemType;
   DB_Elements* db_elements;
 
- public:
-  Element(const int _id, const ElementType _etype,
-          const std::vector<size_t>& _nodes, DB_Elements* db_elements);
+public:
+  Element(const int _id,
+          const ElementType _etype,
+          const std::vector<size_t>& _nodes,
+          DB_Elements* db_elements);
   ~Element();
   bool operator<(const Element& other) const;
   void check() const;
@@ -43,7 +51,7 @@ class Element {
   ElementType get_elementType() const;
   int get_elementID() const;
   bool get_is_rigid() const;
-  float get_estimated_element_size() const;  // fast
+  float get_estimated_element_size() const; // fast
   std::vector<std::shared_ptr<Node>> get_nodes() const;
   std::vector<int> get_node_ids() const;
   std::vector<size_t> get_node_indexes() const;
@@ -73,25 +81,32 @@ class Element {
   void clear_history_vars();
 
   // Python API
-  pybind11::array_t<float> get_coords_py(int iTimestep = 0) const {
+  pybind11::array_t<float> get_coords_py(int iTimestep = 0) const
+  {
     return qd::py::vector_to_nparray(this->get_coords(iTimestep));
   };
-  pybind11::array_t<float> get_energy_py() const {
+  pybind11::array_t<float> get_energy_py() const
+  {
     return qd::py::vector_to_nparray(this->get_energy());
   };
-  pybind11::array_t<float> get_stress_mises_py() const {
+  pybind11::array_t<float> get_stress_mises_py() const
+  {
     return qd::py::vector_to_nparray(this->get_stress_mises());
   };
-  pybind11::array_t<float> get_plastic_strain_py() const {
+  pybind11::array_t<float> get_plastic_strain_py() const
+  {
     return qd::py::vector_to_nparray(this->get_plastic_strain());
   };
-  pybind11::array_t<float> get_strain_py() const {
+  pybind11::array_t<float> get_strain_py() const
+  {
     return qd::py::vector_to_nparray(this->get_strain());
   };
-  pybind11::array_t<float> get_stress_py() const {
+  pybind11::array_t<float> get_stress_py() const
+  {
     return qd::py::vector_to_nparray(this->get_stress());
   };
-  pybind11::array_t<float> get_history_vars_py() const {
+  pybind11::array_t<float> get_history_vars_py() const
+  {
     return qd::py::vector_to_nparray(this->get_history_vars());
   };
 };

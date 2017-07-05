@@ -1,7 +1,5 @@
 
 #include "dyna_cpp/dyna/D3plot.hpp"
-#include <cmath>
-#include <string>
 #include "dyna_cpp/db/DB_Elements.hpp"
 #include "dyna_cpp/db/DB_Nodes.hpp"
 #include "dyna_cpp/db/DB_Parts.hpp"
@@ -13,6 +11,8 @@
 #include "dyna_cpp/utility/MathUtility.hpp"
 #include "dyna_cpp/utility/PythonUtility.hpp"
 #include "dyna_cpp/utility/TextUtility.hpp"
+#include <cmath>
+#include <string>
 
 #include <set>
 
@@ -28,14 +28,16 @@ namespace py = pybind11;
  * @param vector<string> state_variables : which state variables to read
  * @param bool use_femzip : set to true if your d3plot was femzipped
  */
-D3plot::D3plot(string _filename, vector<string> _state_variables,
+D3plot::D3plot(string _filename,
+               vector<string> _state_variables,
                bool _useFemzip)
-    : FEMFile(_filename) {
+  : FEMFile(_filename)
+{
   // standard vars
   this->init_vars();
 
   // maybe make it as argument in future
-  const int bytesPerWord = 4;  // future argument for DP
+  const int bytesPerWord = 4; // future argument for DP
   this->useFemzip = _useFemzip;
 
 // Create Buffer
@@ -51,13 +53,13 @@ D3plot::D3plot(string _filename, vector<string> _state_variables,
   }
 #else
   if (this->useFemzip) {
-    throw(std::invalid_argument(
-        "d3plot.cpp was compiled without femzip support."));
+    throw(
+      std::invalid_argument("d3plot.cpp was compiled without femzip support."));
   }
   this->buffer = new D3plotBuffer(this->get_filepath(), bytesPerWord);
 #endif
 
-  this->buffer->read_geometryBuffer();  // deallocated in read_geometry
+  this->buffer->read_geometryBuffer(); // deallocated in read_geometry
 
   // Header + Geometry
   this->read_header();
@@ -87,7 +89,8 @@ D3plot::D3plot(std::string _filepath, py::list _variables, bool _use_femzip)
  * Destructor
  *
  */
-D3plot::~D3plot() {
+D3plot::~D3plot()
+{
   if (this->buffer != nullptr) {
     delete this->buffer;
   }
@@ -99,59 +102,61 @@ D3plot::~D3plot() {
 /*
  * Initialize the object vars.
  */
-void D3plot::init_vars() {
-  this->dyna_ndim = -1;    // dimension parameter
-  this->dyna_numnp = -1;   // number of nodes
-  this->dyna_mdlopt = -1;  // describes element deletion
-  this->dyna_mattyp = -1;  // material types section is read
+void
+D3plot::init_vars()
+{
+  this->dyna_ndim = -1;   // dimension parameter
+  this->dyna_numnp = -1;  // number of nodes
+  this->dyna_mdlopt = -1; // describes element deletion
+  this->dyna_mattyp = -1; // material types section is read
 
-  this->dyna_nglbv = -1;  // global vars per timestep
+  this->dyna_nglbv = -1; // global vars per timestep
 
-  this->dyna_nel2 = -1;   // #elements with 2 nodes (beams)
-  this->dyna_nel4 = -1;   // #elements with 4 nodes (shells)
-  this->dyna_nel48 = -1;  // # 8 node shell elements?!?!?!
-  this->dyna_nel8 = -1;   // #elements with 8 nodes (solids)
-  this->dyna_nel20 = -1;  // # 20 node solid elements
-  this->dyna_nelth = -1;  // #thshells
+  this->dyna_nel2 = -1;  // #elements with 2 nodes (beams)
+  this->dyna_nel4 = -1;  // #elements with 4 nodes (shells)
+  this->dyna_nel48 = -1; // # 8 node shell elements?!?!?!
+  this->dyna_nel8 = -1;  // #elements with 8 nodes (solids)
+  this->dyna_nel20 = -1; // # 20 node solid elements
+  this->dyna_nelth = -1; // #thshells
 
-  this->dyna_nmmat = -1;    // #mats
-  this->dyna_nummat2 = -1;  // #mats for 1d/2d/3d/th elems
+  this->dyna_nmmat = -1;   // #mats
+  this->dyna_nummat2 = -1; // #mats for 1d/2d/3d/th elems
   this->dyna_nummat4 = -1;
   this->dyna_nummat8 = -1;
   this->dyna_nummatth = -1;
 
-  this->dyna_nv1d = -1;  // #vars for 1d/2d/3d/th elems
+  this->dyna_nv1d = -1; // #vars for 1d/2d/3d/th elems
   this->dyna_nv2d = -1;
   this->dyna_nv3d = -1;
   this->dyna_nv3dt = -1;
 
-  this->dyna_maxint = -1;  // #layers of integration points
-  this->dyna_istrn = -1;   // indicates whether strain was written
-  this->dyna_neiph = -1;   // extra variables for solids
-  this->dyna_neips = -1;   // extra variables for shells
+  this->dyna_maxint = -1; // #layers of integration points
+  this->dyna_istrn = -1;  // indicates whether strain was written
+  this->dyna_neiph = -1;  // extra variables for solids
+  this->dyna_neips = -1;  // extra variables for shells
 
-  this->dyna_iu = -1;  // Indicators for: disp/vel/accel/temp
+  this->dyna_iu = -1; // Indicators for: disp/vel/accel/temp
   this->dyna_iv = -1;
   this->dyna_ia = -1;
   this->dyna_it = -1;
-  this->dyna_idtdt = -1;  // temp change rate, numnp vals after temps
+  this->dyna_idtdt = -1; // temp change rate, numnp vals after temps
 
-  this->dyna_narbs = -1;  // dunno ... seems important
+  this->dyna_narbs = -1; // dunno ... seems important
 
-  this->dyna_ioshl1 = -1;  // 6 shell stresses
-  this->dyna_ioshl2 = -1;  // shell plastic strain
-  this->dyna_ioshl3 = -1;  // shell forces
-  this->dyna_ioshl4 = -1;  // thick,energy,2 extra
+  this->dyna_ioshl1 = -1; // 6 shell stresses
+  this->dyna_ioshl2 = -1; // shell plastic strain
+  this->dyna_ioshl3 = -1; // shell forces
+  this->dyna_ioshl4 = -1; // thick,energy,2 extra
 
-  this->dyna_extra = -1;    // double header length indicator
-  this->dyna_numprop = -1;  // number of mats
+  this->dyna_extra = -1;   // double header length indicator
+  this->dyna_numprop = -1; // number of mats
 
-  this->dyna_numrbe = -1;  // number of rigid body shell elems
+  this->dyna_numrbe = -1; // number of rigid body shell elems
 
   // just for checks ... can not be handled.
-  this->dyna_nmsph = -1;    // #nodes of sph
-  this->dyna_ngpsph = -1;   // #mats of sph
-  this->dyna_ialemat = -1;  // # some ale stuff .. it's late ...
+  this->dyna_nmsph = -1;   // #nodes of sph
+  this->dyna_ngpsph = -1;  // #mats of sph
+  this->dyna_ialemat = -1; // # some ale stuff .. it's late ...
 
   // Own Variables
   this->nStates = -0;
@@ -190,7 +195,9 @@ void D3plot::init_vars() {
  * Read the header data.
  *
  */
-void D3plot::read_header() {
+void
+D3plot::read_header()
+{
 #ifdef QD_DEBUG
   cout << "> HEADER " << endl;
 #endif
@@ -202,10 +209,10 @@ void D3plot::read_header() {
   }
   if ((filetype != 1) && (filetype != 5)) {
     throw(std::runtime_error(
-        "Wrong filetype " + to_string(this->buffer->read_int(11)) +
-        " != 1 (or 5) in header of d3plot. Your file might be in Double "
-        "Precision or the endian of the file is not the endian of the "
-        "machine."));
+      "Wrong filetype " + to_string(this->buffer->read_int(11)) +
+      " != 1 (or 5) in header of d3plot. Your file might be in Double "
+      "Precision or the endian of the file is not the endian of the "
+      "machine."));
   }
 
   this->dyna_title = this->buffer->read_str(0, 10);
@@ -231,7 +238,7 @@ void D3plot::read_header() {
     this->dyna_ndim = 3;
   } else if (this->dyna_ndim > 5) {
     throw(std::runtime_error(
-        "State data contains rigid road surface which can not be handled."));
+      "State data contains rigid road surface which can not be handled."));
   } else {
     throw(std::runtime_error("Invalid parameter dyna_ndim=" +
                              to_string(this->dyna_ndim)));
@@ -317,9 +324,9 @@ void D3plot::read_header() {
   } else {
     if (this->dyna_nv2d > 0) {
       if (this->dyna_nv2d -
-              this->dyna_maxint * (6 * this->dyna_ioshl1 + this->dyna_ioshl2 +
-                                   this->dyna_neips) +
-              8 * this->dyna_ioshl3 + 4 * this->dyna_ioshl4 >
+            this->dyna_maxint *
+              (6 * this->dyna_ioshl1 + this->dyna_ioshl2 + this->dyna_neips) +
+            8 * this->dyna_ioshl3 + 4 * this->dyna_ioshl4 >
           1) {
         this->dyna_istrn = 1;
       } else {
@@ -348,20 +355,22 @@ void D3plot::read_header() {
   //
   if (own_external_numbers_I8)
     throw(
-        std::runtime_error("Can not handle external ids with double length."));
+      std::runtime_error("Can not handle external ids with double length."));
 
   // update position
   if (this->dyna_extra > 0) {
-    wordPosition = 64 * 2;  // header has 128 words
+    wordPosition = 64 * 2; // header has 128 words
   } else {
-    wordPosition = 64;  // header has 64 words
+    wordPosition = 64; // header has 64 words
   }
 }
 
 /**  Print info about the data in the d3plot to the console.
  *
  */
-void D3plot::info() const {
+void
+D3plot::info() const
+{
   cout << "Title:  " << this->dyna_title << '\n';
   cout << "nNodes : " << this->dyna_numnp << '\n';
   cout << "nElem2 : " << this->dyna_nel2 << '\n';
@@ -373,7 +382,7 @@ void D3plot::info() const {
   cout << "nMats-Solver: " << this->dyna_nmmat << '\n';
   cout << "nMats-Input : "
        << this->dyna_nummat2 + this->dyna_nummat4 + this->dyna_nummat8 +
-              this->dyna_nummatth
+            this->dyna_nummatth
        << '\n';
   cout << "nMat2 : " << this->dyna_nummat2 << '\n';
   cout << "nMat4 : " << this->dyna_nummat4 << '\n';
@@ -399,14 +408,16 @@ void D3plot::info() const {
  *
  * Does nothing if mattyp==0.
  */
-void D3plot::read_matsection() {
+void
+D3plot::read_matsection()
+{
   // Nothing to do
   if (this->dyna_mattyp == 0) {
     dyna_numrbe = 0;
     return;
   }
 
-  this->dyna_numrbe = this->buffer->read_int(wordPosition);  // rigid shells
+  this->dyna_numrbe = this->buffer->read_int(wordPosition); // rigid shells
   int tmp_nummat = this->buffer->read_int(wordPosition + 1);
   if (tmp_nummat != dyna_nmmat)
     throw(std::runtime_error("dyna_nmmat != nummat in matsection!"));
@@ -423,7 +434,9 @@ void D3plot::read_matsection() {
 
 /** Read the geometry mesh (after the header)
  */
-void D3plot::read_geometry() {
+void
+D3plot::read_geometry()
+{
 #ifdef QD_DEBUG
   cout << "> GEOMETRY" << endl;
 #endif
@@ -438,7 +451,8 @@ void D3plot::read_geometry() {
   vector<vector<int>> buffer_elems8 = this->read_geometry_elem8();
 
   // 8-Node Thick Shells
-  if (dyna_nelth > 0) wordPosition += 9 * dyna_nelth;
+  if (dyna_nelth > 0)
+    wordPosition += 9 * dyna_nelth;
 
   // 2-Node Beams
   vector<vector<int>> buffer_elems2 = this->read_geometry_elem2();
@@ -450,8 +464,8 @@ void D3plot::read_geometry() {
   vector<vector<int>> buffer_numbering = this->read_geometry_numbering();
 
   if (!isFileEnding(wordPosition)) {
-    throw(std::runtime_error(
-        "Anticipated file ending wrong in geometry section."));
+    throw(
+      std::runtime_error("Anticipated file ending wrong in geometry section."));
   }
   wordPosition++;
 
@@ -459,7 +473,8 @@ void D3plot::read_geometry() {
   // (+DB)
   this->buffer->free_geometryBuffer();
   this->buffer->read_partBuffer();
-  if (this->useFemzip) wordPosition = 1;  // don't ask me why not 0 ...
+  if (this->useFemzip)
+    wordPosition = 1; // don't ask me why not 0 ...
   this->read_geometry_parts();
 
   if (!isFileEnding(wordPosition)) {
@@ -476,8 +491,8 @@ void D3plot::read_geometry() {
 #endif
   if (buffer_numbering[0].size() != buffer_nodes.size())
     throw(std::runtime_error(
-        "Buffer node-numbering and buffer-nodes have different sizes."));
-  DB_Nodes *db_nodes = this->get_db_nodes();
+      "Buffer node-numbering and buffer-nodes have different sizes."));
+  DB_Nodes* db_nodes = this->get_db_nodes();
   db_nodes->reserve(buffer_nodes.size());
   for (unsigned int ii = 0; ii < buffer_nodes.size(); ii++) {
     db_nodes->add_node(buffer_numbering[0][ii], buffer_nodes[ii]);
@@ -490,11 +505,11 @@ void D3plot::read_geometry() {
 #ifdef QD_DEBUG
   cout << "Adding beams ... ";
 #endif
-  DB_Elements *db_elems = this->get_db_elements();
+  DB_Elements* db_elems = this->get_db_elements();
   db_elems->reserve(Element::BEAM, buffer_elems2.size());
   for (size_t ii = 0; ii < buffer_elems2.size(); ++ii) {
-    db_elems->add_element_byD3plot(Element::BEAM, buffer_numbering[2][ii],
-                                   buffer_elems2[ii]);
+    db_elems->add_element_byD3plot(
+      Element::BEAM, buffer_numbering[2][ii], buffer_elems2[ii]);
     if ((dyna_mattyp == 1) &&
         (this->dyna_irbtyp[buffer_elems2[ii].back()] == 20)) {
     }
@@ -511,7 +526,7 @@ void D3plot::read_geometry() {
   db_elems->reserve(Element::SHELL, buffer_elems4.size());
   for (size_t ii = 0; ii < buffer_elems4.size(); ++ii) {
     auto elem = db_elems->add_element_byD3plot(
-        Element::SHELL, buffer_numbering[3][ii], buffer_elems4[ii]);
+      Element::SHELL, buffer_numbering[3][ii], buffer_elems4[ii]);
 
     // check if rigid material, very complicated ...
     // this bug took me 3 Days! material indexes start again at 1, not 0 :(
@@ -525,9 +540,9 @@ void D3plot::read_geometry() {
   cout << this->get_db_elements()->get_nElements(SHELL) << " done." << endl;
 #endif
   if (nRigidShells != this->dyna_numrbe)
-    throw(std::runtime_error(
-        "nRigidShells != numrbe: " + to_string(nRigidShells) +
-        " != " + to_string(this->dyna_numrbe)));
+    throw(
+      std::runtime_error("nRigidShells != numrbe: " + to_string(nRigidShells) +
+                         " != " + to_string(this->dyna_numrbe)));
 
 // Solids
 #ifdef QD_DEBUG
@@ -535,8 +550,8 @@ void D3plot::read_geometry() {
 #endif
   db_elems->reserve(Element::SOLID, buffer_elems8.size());
   for (size_t ii = 0; ii < buffer_elems8.size(); ++ii) {
-    db_elems->add_element_byD3plot(Element::SOLID, buffer_numbering[1][ii],
-                                   buffer_elems8[ii]);
+    db_elems->add_element_byD3plot(
+      Element::SOLID, buffer_numbering[1][ii], buffer_elems8[ii]);
     if ((dyna_mattyp == 1) &&
         (this->dyna_irbtyp[buffer_elems8[ii].back()] == 20)) {
     }
@@ -550,7 +565,9 @@ void D3plot::read_geometry() {
  * Read the nodes in the geometry section.
  *
  */
-vector<vector<float>> D3plot::read_geometry_nodes() {
+vector<vector<float>>
+D3plot::read_geometry_nodes()
+{
 #ifdef QD_DEBUG
   cout << "Reading nodes ... ";
 #endif
@@ -561,11 +578,6 @@ vector<vector<float>> D3plot::read_geometry_nodes() {
   size_t jj = 0;
   for (int ii = wordPosition; ii < wordPosition + wordsToRead; ii += 3, ++jj) {
     buffer->read_float_array(ii, 3, buffer_nodes[jj]);
-    /*
-    buffer_nodes[jj][0] = buffer->read_float(ii);
-    buffer_nodes[jj][1] = buffer->read_float(ii+1);
-    buffer_nodes[jj][2] = buffer->read_float(ii+2);
-    */
   }
 
   // Update word position
@@ -582,9 +594,12 @@ vector<vector<float>> D3plot::read_geometry_nodes() {
  * Read the 8 noded elements in the geometry section.
  *
  */
-vector<vector<int>> D3plot::read_geometry_elem8() {
+vector<vector<int>>
+D3plot::read_geometry_elem8()
+{
   // Check
-  if (dyna_nel8 == 0) return vector<vector<int>>();
+  if (dyna_nel8 == 0)
+    return vector<vector<int>>();
 
 #ifdef QD_DEBUG
   cout << "Reading elems8 ... ";
@@ -614,7 +629,8 @@ vector<vector<int>> D3plot::read_geometry_elem8() {
 
   // Update word position
   wordPosition += wordsToRead;
-  if (own_nel10) wordPosition += 2 * dyna_nel8;
+  if (own_nel10)
+    wordPosition += 2 * dyna_nel8;
 
 #ifdef QD_DEBUG
   cout << "done." << endl;
@@ -627,9 +643,12 @@ vector<vector<int>> D3plot::read_geometry_elem8() {
  * Read the 4 noded elements in the geometry section.
  *
  */
-vector<vector<int>> D3plot::read_geometry_elem4() {
+vector<vector<int>>
+D3plot::read_geometry_elem4()
+{
   // Check
-  if (dyna_nel4 == 0) return vector<vector<int>>();
+  if (dyna_nel4 == 0)
+    return vector<vector<int>>();
 
 #ifdef QD_DEBUG
   cout << "Reading elems4 ... ";
@@ -669,9 +688,12 @@ vector<vector<int>> D3plot::read_geometry_elem4() {
  * Read the 2 noded elements in the geometry section.
  *
  */
-vector<vector<int>> D3plot::read_geometry_elem2() {
+vector<vector<int>>
+D3plot::read_geometry_elem2()
+{
   // Check
-  if (dyna_nel2 == 0) return vector<vector<int>>();
+  if (dyna_nel2 == 0)
+    return vector<vector<int>>();
 
 #ifdef QD_DEBUG
   cout << "Reading elems2 ... ";
@@ -698,7 +720,7 @@ vector<vector<int>> D3plot::read_geometry_elem2() {
     */
     buffer_elems2[iElement][0] = buffer->read_int(ii);
     buffer_elems2[iElement][1] = buffer->read_int(ii + 1);
-    buffer_elems2[iElement][2] = buffer->read_int(ii + 5);  // mat
+    buffer_elems2[iElement][2] = buffer->read_int(ii + 5); // mat
 
     iElement++;
   }
@@ -722,7 +744,9 @@ vector<vector<int>> D3plot::read_geometry_elem2() {
  *           shells = 3
  *           (tshells= 4 - not implemented)
  */
-vector<vector<int>> D3plot::read_geometry_numbering() {
+vector<vector<int>>
+D3plot::read_geometry_numbering()
+{
   // TODO
   // NARBS check wrong?!?!?!
   /*
@@ -738,7 +762,8 @@ vector<vector<int>> D3plot::read_geometry_numbering() {
   }
   */
 
-  if (dyna_narbs == 0) return vector<vector<int>>();
+  if (dyna_narbs == 0)
+    return vector<vector<int>>();
 
 #ifdef QD_DEBUG
   cout << "Reading numbering ... ";
@@ -750,28 +775,28 @@ vector<vector<int>> D3plot::read_geometry_numbering() {
   int nsrh = buffer->read_int(wordPosition + 1);
   if (nsrh != dyna_numnp + abs(nsort))
     throw(std::runtime_error(
-        "nsrh != nsort + numnp is inconsistent in dyna file. Your "
-        "file might be using FEMZIP."));
+      "nsrh != nsort + numnp is inconsistent in dyna file. Your "
+      "file might be using FEMZIP."));
   // pointer to elem2 numbering
   int nsrb = buffer->read_int(wordPosition + 2);
   if (nsrb != nsrh + dyna_nel8)
     std::runtime_error(
-        string("nsrb != nsrh + nel8 is inconsistent in dyna file."));
+      string("nsrb != nsrh + nel8 is inconsistent in dyna file."));
   // pointer to elem4 numbering
   int nsrs = buffer->read_int(wordPosition + 3);
   if (nsrs != nsrb + dyna_nel2)
-    throw(std::runtime_error(
-        "nsrs != nsrb + nel2 is inconsistent in dyna file."));
+    throw(
+      std::runtime_error("nsrs != nsrb + nel2 is inconsistent in dyna file."));
   // pointer to elemth numbering
   int nsrt = buffer->read_int(wordPosition + 4);
   if (nsrt != nsrs + dyna_nel4)
-    throw(std::runtime_error(
-        "nsrt != nsrs + nel4 is inconsistent in dyna file."));
+    throw(
+      std::runtime_error("nsrt != nsrs + nel4 is inconsistent in dyna file."));
   // nNode consistent?
   if (buffer->read_int(wordPosition + 5) != dyna_numnp)
     throw(std::runtime_error(
-        "Number of nodes is not defined consistent in d3plot geometry "
-        "section."));
+      "Number of nodes is not defined consistent in d3plot geometry "
+      "section."));
 
   int nMaterials = dyna_nummat2 + dyna_nummat4 + dyna_nummat8 + dyna_nummatth;
 
@@ -849,13 +874,15 @@ vector<vector<int>> D3plot::read_geometry_numbering() {
 
   jj = 0;
   for (int ii = wordPosition + dyna_nmmat;
-       ii < wordPosition + dyna_nmmat + nMaterials; ii++) {
+       ii < wordPosition + dyna_nmmat + nMaterials;
+       ii++) {
     externalPartIDs[jj] = buffer->read_int(ii);
   }
 
   jj = 0;
   for (int ii = wordPosition + 2 * dyna_nmmat;
-       ii < wordPosition + 2 * dyna_nmmat + nMaterials; ii++) {
+       ii < wordPosition + 2 * dyna_nmmat + nMaterials;
+       ii++) {
     internalPartIDs[jj] = buffer->read_int(ii);
   }
 
@@ -869,11 +896,14 @@ vector<vector<int>> D3plot::read_geometry_numbering() {
 
   // extra node elements
   // 10 node solids: 2 node conn
-  if (own_nel10) wordPosition += 2 * abs(dyna_nel8);
+  if (own_nel10)
+    wordPosition += 2 * abs(dyna_nel8);
   // 8 node shells: 4 node conn
-  if (dyna_nel48 > 0) wordPosition += 5 * dyna_nel48;
+  if (dyna_nel48 > 0)
+    wordPosition += 5 * dyna_nel48;
   // 20 node solids: 12 node conn
-  if ((dyna_extra > 0) && (dyna_nel20 > 0)) wordPosition += 13 * dyna_nel20;
+  if ((dyna_extra > 0) && (dyna_nel20 > 0))
+    wordPosition += 13 * dyna_nel20;
 #ifdef QD_DEBUG
   cout << "done." << endl;
 #endif
@@ -884,7 +914,9 @@ vector<vector<int>> D3plot::read_geometry_numbering() {
 /*
  * Read the part names from the geometry section.
  */
-void D3plot::read_geometry_parts() {
+void
+D3plot::read_geometry_parts()
+{
 #ifdef QD_DEBUG
   cout << "Reading parts ... ";
 #endif
@@ -897,7 +929,7 @@ void D3plot::read_geometry_parts() {
   this->dyna_numprop = this->buffer->read_int(wordPosition + 1);
   if (this->dyna_numprop < 0)
     throw(std::runtime_error(
-        "negative number of parts in part section makes no sense."));
+      "negative number of parts in part section makes no sense."));
   for (int ii = 0; ii < this->dyna_numprop; ii++) {
     int start = (wordPosition + 1) + ii * 19 + 1;
     int partID = this->buffer->read_int(start);
@@ -918,8 +950,11 @@ void D3plot::read_geometry_parts() {
  * Check for the file ending marker. That is a float
  * of -999999.
  */
-bool D3plot::isFileEnding(int iWord) {
-  if (this->buffer->read_float(iWord) + 999999.0f == 0.) return true;
+bool
+D3plot::isFileEnding(int iWord)
+{
+  if (this->buffer->read_float(iWord) + 999999.0f == 0.)
+    return true;
   return false;
 }
 
@@ -927,7 +962,9 @@ bool D3plot::isFileEnding(int iWord) {
  * Parse the user input for state reading.
  *
  */
-void D3plot::read_states_parse(vector<string> _variables) {
+void
+D3plot::read_states_parse(vector<string> _variables)
+{
   // Safety reset
   this->disp_read = 0;
   this->vel_read = 0;
@@ -949,7 +986,7 @@ void D3plot::read_states_parse(vector<string> _variables) {
     if (_variables[ii].find("disp") != string::npos) {
       if (dyna_iu == 0)
         throw(std::invalid_argument(
-            "Unable to read displacements, since there are none."));
+          "Unable to read displacements, since there are none."));
       this->disp_read = read_states_parse_readMode(_variables[ii]);
 
       if (this->disp_is_read) {
@@ -962,7 +999,7 @@ void D3plot::read_states_parse(vector<string> _variables) {
     } else if (_variables[ii].find("vel") != string::npos) {
       if (dyna_iv == 0)
         throw(std::invalid_argument(
-            "Unable to read velocities, since there are none."));
+          "Unable to read velocities, since there are none."));
       this->vel_read = read_states_parse_readMode(_variables[ii]);
 
       if (this->vel_is_read) {
@@ -975,7 +1012,7 @@ void D3plot::read_states_parse(vector<string> _variables) {
     } else if (_variables[ii].find("accel") != string::npos) {
       if (dyna_ia == 0)
         throw(std::invalid_argument(
-            "Unable to read accelerations, since there are none."));
+          "Unable to read accelerations, since there are none."));
       this->acc_read = read_states_parse_readMode(_variables[ii]);
 
       if (this->acc_is_read) {
@@ -1033,7 +1070,7 @@ void D3plot::read_states_parse(vector<string> _variables) {
     } else if (_variables[ii].find("strain") != string::npos) {
       if (dyna_istrn == 0)
         throw(std::invalid_argument(
-            "Unable to read strains, since there are none."));
+          "Unable to read strains, since there are none."));
       this->strain_read = read_states_parse_readMode(_variables[ii]);
 
       if (this->strain_is_read) {
@@ -1046,7 +1083,7 @@ void D3plot::read_states_parse(vector<string> _variables) {
     } else if (_variables[ii].find("energy") != string::npos) {
       if (dyna_ioshl4 == 0)
         throw(std::invalid_argument(
-            "Unable to read energies, since there are none."));
+          "Unable to read energies, since there are none."));
       this->energy_read = read_states_parse_readMode(_variables[ii]);
 
       if (this->energy_is_read) {
@@ -1059,11 +1096,11 @@ void D3plot::read_states_parse(vector<string> _variables) {
     } else if (_variables[ii].find("history") != string::npos) {
       // retrieve history var indexes
       vector<unsigned int> hist_vars =
-          extract_integers<unsigned int>(_variables[ii]);
+        extract_integers<unsigned int>(_variables[ii]);
       if (hist_vars.size() < 1)
         throw(std::invalid_argument(
-            "No history variable index specified. Please input at "
-            "least one number seperated by spaces."));
+          "No history variable index specified. Please input at "
+          "least one number seperated by spaces."));
       unsigned int var_mode = read_states_parse_readMode(_variables[ii]);
 
       /* SHELLS */
@@ -1071,8 +1108,9 @@ void D3plot::read_states_parse(vector<string> _variables) {
         // Check: already loaded
         for (size_t jj = 0; jj < this->history_shell_is_read.size(); ++jj) {
           vector<unsigned int>::iterator kk =
-              find(hist_vars.begin(), hist_vars.end(),
-                   this->history_shell_is_read[jj]);
+            find(hist_vars.begin(),
+                 hist_vars.end(),
+                 this->history_shell_is_read[jj]);
           if (kk != hist_vars.end()) {
 #ifdef QD_DEBUG
             cout << "history variable " << *kk << " already loaded for shells."
@@ -1085,7 +1123,7 @@ void D3plot::read_states_parse(vector<string> _variables) {
         // Check: already defined in an argument previously
         for (size_t jj = 0; jj < this->history_shell_read.size(); ++jj) {
           vector<unsigned int>::iterator kk = find(
-              hist_vars.begin(), hist_vars.end(), this->history_shell_read[jj]);
+            hist_vars.begin(), hist_vars.end(), this->history_shell_read[jj]);
           if (kk != hist_vars.end()) {
             cout << "Warning: trying to read history variable " << *kk
                  << " twice for shells, using only first occurrence." << endl;
@@ -1097,7 +1135,7 @@ void D3plot::read_states_parse(vector<string> _variables) {
         for (size_t jj = 0; jj < hist_vars.size(); ++jj) {
           if (hist_vars[jj] < 1) {
             throw(std::invalid_argument(
-                "History variable index must be at least 1."));
+              "History variable index must be at least 1."));
           }
           if (static_cast<int>(hist_vars[jj]) > this->dyna_neips) {
             cout << "Warning: history variable " << hist_vars[jj]
@@ -1117,8 +1155,9 @@ void D3plot::read_states_parse(vector<string> _variables) {
         // Check: already loaded
         for (size_t jj = 0; jj < this->history_solid_is_read.size(); ++jj) {
           vector<unsigned int>::iterator kk =
-              find(hist_vars.begin(), hist_vars.end(),
-                   this->history_solid_is_read[jj]);
+            find(hist_vars.begin(),
+                 hist_vars.end(),
+                 this->history_solid_is_read[jj]);
           if (kk != hist_vars.end()) {
 #ifdef QD_DEBUG
             cout << "history variable " << *kk << " already loaded for solids."
@@ -1131,7 +1170,7 @@ void D3plot::read_states_parse(vector<string> _variables) {
         // Check: already defined in an argument previously
         for (size_t jj = 0; jj < this->history_solid_read.size(); ++jj) {
           vector<unsigned int>::iterator kk = find(
-              hist_vars.begin(), hist_vars.end(), this->history_solid_read[jj]);
+            hist_vars.begin(), hist_vars.end(), this->history_solid_read[jj]);
           if (kk != hist_vars.end()) {
             cout << "Warning: trying to read history variable " << *kk
                  << " twice for solids, using only first occurrence." << endl;
@@ -1143,7 +1182,7 @@ void D3plot::read_states_parse(vector<string> _variables) {
         for (size_t jj = 0; jj < hist_vars.size(); ++jj) {
           if (hist_vars[jj] < 1) {
             throw(std::invalid_argument(
-                "History variable index must be at least 1."));
+              "History variable index must be at least 1."));
           }
           if (static_cast<int>(hist_vars[jj]) > this->dyna_neiph) {
             cout << "Warning: history variable " << hist_vars[jj]
@@ -1161,22 +1200,24 @@ void D3plot::read_states_parse(vector<string> _variables) {
         // unknown element type
       } else {
         throw(std::invalid_argument(
-            "Please specify the element type for all history "
-            "variables as shell or solid"));
+          "Please specify the element type for all history "
+          "variables as shell or solid"));
       }
 
     } else {
       throw(std::invalid_argument("Reading of variable:" + _variables[ii] +
                                   string(" is undefined")));
-    }  // if:variable.find
-  }    // for:variables
+    } // if:variable.find
+  }   // for:variables
 }
 
 /*
  * Returns the int code for the read mode of the state variables in the d3plot.
  * Modes are: min,max,outer,mid,inner,mean
  */
-unsigned int D3plot::read_states_parse_readMode(const string &_variable) const {
+unsigned int
+D3plot::read_states_parse_readMode(const string& _variable) const
+{
   if (_variable.find("max") != string::npos) {
     return 1;
   } else if (_variable.find("min") != string::npos) {
@@ -1190,7 +1231,7 @@ unsigned int D3plot::read_states_parse_readMode(const string &_variable) const {
   } else if (_variable.find("mean") != string::npos) {
     return 6;
   } else {
-    return 6;  // std is mean
+    return 6; // std is mean
   }
 }
 
@@ -1198,7 +1239,9 @@ unsigned int D3plot::read_states_parse_readMode(const string &_variable) const {
  *
  * @param _variables vector of variables to read
  */
-void D3plot::read_states(vector<string> _variables) {
+void
+D3plot::read_states(vector<string> _variables)
+{
 #ifdef QD_DEBUG
   cout << "> STATES" << endl;
   for (size_t ii = 0; ii < _variables.size(); ++ii)
@@ -1207,7 +1250,7 @@ void D3plot::read_states(vector<string> _variables) {
 
   if ((_variables.size() < 1) && (this->timesteps.size() > 0))
     throw(
-        std::invalid_argument("The list of state variables to load is empty."));
+      std::invalid_argument("The list of state variables to load is empty."));
 
   // Decode variable reading
   this->read_states_parse(_variables);
@@ -1216,9 +1259,9 @@ void D3plot::read_states(vector<string> _variables) {
   // If just 1 is not read yet, the routine runs through.
   // Will not work first time :P since we must run through at least once
   if ((this->disp_read + this->vel_read + this->acc_read +
-           this->plastic_strain_read + this->energy_read + this->strain_read +
-           this->stress_read + this->stress_mises_read +
-           this->history_shell_read.size() + this->history_solid_read.size() ==
+         this->plastic_strain_read + this->energy_read + this->strain_read +
+         this->stress_read + this->stress_mises_read +
+         this->history_shell_read.size() + this->history_solid_read.size() ==
        0) &&
       (this->timesteps.size() != 0))
     return;
@@ -1245,7 +1288,8 @@ void D3plot::read_states(vector<string> _variables) {
 
   // Checks for timesteps
   bool timesteps_read = false;
-  if (this->timesteps.size() < 1) timesteps_read = true;
+  if (this->timesteps.size() < 1)
+    timesteps_read = true;
 
   bool firstFileDone = false;
 
@@ -1276,8 +1320,8 @@ void D3plot::read_states(vector<string> _variables) {
       int dyna_numprop_states = this->buffer->read_int(2);
       if (this->dyna_numprop != dyna_numprop_states)
         throw(std::runtime_error(
-            "Numprop in geometry section != numprop in states section!"));
-      wordPosition = 1;  // endline symbol at 0 in case of femzip ...
+          "Numprop in geometry section != numprop in states section!"));
+      wordPosition = 1; // endline symbol at 0 in case of femzip ...
       wordPosition += 1 + (this->dyna_numprop + 1) * 19 + 1;
       // this->femzip_state_offset = wordPosition;
     }
@@ -1362,14 +1406,17 @@ void D3plot::read_states(vector<string> _variables) {
  * Read the node displacement into the db.
  *
  */
-void D3plot::read_states_displacement() {
-  if (dyna_iu != 1) return;
+void
+D3plot::read_states_displacement()
+{
+  if (dyna_iu != 1)
+    return;
 
   int start = wordPosition + dyna_nglbv + 1;
   wordsToRead = dyna_numnp * dyna_ndim;
   size_t iNode = 0;
 
-  DB_Nodes *db_nodes = this->get_db_nodes();
+  DB_Nodes* db_nodes = this->get_db_nodes();
   vector<float> _disp(dyna_ndim);
 
   for (int ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
@@ -1386,14 +1433,17 @@ void D3plot::read_states_displacement() {
  * Read the node velocity.
  *
  */
-void D3plot::read_states_velocity() {
-  if (dyna_iv != 1) return;
+void
+D3plot::read_states_velocity()
+{
+  if (dyna_iv != 1)
+    return;
 
   int start = 1 + dyna_nglbv + (dyna_iu)*dyna_numnp * dyna_ndim + wordPosition;
   wordsToRead = dyna_numnp * dyna_ndim;
   size_t iNode = 0;
 
-  DB_Nodes *db_nodes = this->get_db_nodes();
+  DB_Nodes* db_nodes = this->get_db_nodes();
   vector<float> _vel(dyna_ndim);
 
   for (int ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
@@ -1416,15 +1466,18 @@ void D3plot::read_states_velocity() {
  * Read the node acceleration.
  *
  */
-void D3plot::read_states_acceleration() {
-  if (dyna_ia != 1) return;
+void
+D3plot::read_states_acceleration()
+{
+  if (dyna_ia != 1)
+    return;
 
   int start = 1 + dyna_nglbv + (dyna_iu + dyna_iv) * dyna_numnp * dyna_ndim +
               wordPosition;
   wordsToRead = dyna_numnp * dyna_ndim;
   int iNode = 0;
 
-  DB_Nodes *db_nodes = this->get_db_nodes();
+  DB_Nodes* db_nodes = this->get_db_nodes();
   vector<float> _accel(dyna_ndim);
 
   for (int ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
@@ -1452,17 +1505,20 @@ void D3plot::read_states_acceleration() {
  * > Eq. Plastic Strain
  *
  */
-void D3plot::read_states_elem8(size_t iState) {
-  if ((dyna_nv3d <= 0) && (dyna_nel8 <= 0)) return;
+void
+D3plot::read_states_elem8(size_t iState)
+{
+  if ((dyna_nv3d <= 0) && (dyna_nel8 <= 0))
+    return;
 
-  int start = this->wordPosition + 1  // time
+  int start = this->wordPosition + 1 // time
               + dyna_nglbv +
               (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim;
   wordsToRead = dyna_nv3d * dyna_nel8;
 
   vector<float> tmp_vector(6);
   vector<float> history_vars(this->history_solid_read.size());
-  DB_Elements *db_elements = this->get_db_elements();
+  DB_Elements* db_elements = this->get_db_elements();
 
   size_t iElement = 0;
   for (int ii = start; ii < start + wordsToRead; ii += dyna_nv3d) {
@@ -1472,16 +1528,9 @@ void D3plot::read_states_elem8(size_t iState) {
     if (this->stress_read || this->stress_mises_read) {
       // tmp_vector.clear();
       buffer->read_float_array(ii, 6, tmp_vector);
-      /*
-      tmp_vector.push_back(this->buffer->read_float(ii));
-      tmp_vector.push_back(this->buffer->read_float(ii+1));
-      tmp_vector.push_back(this->buffer->read_float(ii+2));
-      tmp_vector.push_back(this->buffer->read_float(ii+3));
-      tmp_vector.push_back(this->buffer->read_float(ii+4));
-      tmp_vector.push_back(this->buffer->read_float(ii+5));
-      */
 
-      if (this->stress_read) element->add_stress(tmp_vector);
+      if (this->stress_read)
+        element->add_stress(tmp_vector);
       if (this->stress_mises_read)
         element->add_stress_mises(MathUtility::mises_stress(tmp_vector));
     }
@@ -1495,14 +1544,6 @@ void D3plot::read_states_elem8(size_t iState) {
     if ((dyna_istrn == 1) && this->strain_read) {
       // tmp_vector.clear();
       buffer->read_float_array(ii + dyna_nv3d - 6, 6, tmp_vector);
-      /*
-      tmp_vector.push_back(this->buffer->read_float(ii+dyna_nv3d-6));
-      tmp_vector.push_back(this->buffer->read_float(ii+dyna_nv3d-5));
-      tmp_vector.push_back(this->buffer->read_float(ii+dyna_nv3d-4));
-      tmp_vector.push_back(this->buffer->read_float(ii+dyna_nv3d-3));
-      tmp_vector.push_back(this->buffer->read_float(ii+dyna_nv3d-2));
-      tmp_vector.push_back(this->buffer->read_float(ii+dyna_nv3d-1));
-      */
       element->add_strain(tmp_vector);
     }
 
@@ -1513,15 +1554,17 @@ void D3plot::read_states_elem8(size_t iState) {
       history_vars.clear();
 
       for (size_t jj = 0; jj < history_solid_read.size(); ++jj) {
+
         // Skip if over limit
-        if (this->history_solid_read[jj] > this->dyna_neiph) continue;
+        if (this->history_solid_read[jj] > this->dyna_neiph)
+          continue;
 
         history_vars.push_back(
-            this->buffer->read_float(ii + 6 + history_solid_read[jj]));
+          this->buffer->read_float(ii + 6 + history_solid_read[jj]));
 
-      }  // loop:history
+      } // loop:history
       element->add_history_vars(history_vars, iState);
-    }  // if:history
+    } // if:history
 
     iElement++;
   }
@@ -1536,21 +1579,23 @@ void D3plot::read_states_elem8(size_t iState) {
  * > Eq. Plastic Strain (done)
  *
  */
-void D3plot::read_states_elem4(size_t iState) {
+void
+D3plot::read_states_elem4(size_t iState)
+{
   if ((dyna_istrn != 1) && (dyna_nv2d <= 0) && (dyna_nel4 - dyna_numrbe > 0))
     return;
 
   // prepare looping
-  int start = this->wordPosition + 1  // time
+  int start = this->wordPosition + 1 // time
               + dyna_nglbv +
               (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
               dyna_nv3d * dyna_nel8 + dyna_nv1d * dyna_nel2;
   wordsToRead = dyna_nv2d * (dyna_nel4 - dyna_numrbe);
 
   // offsets
-  int iPlastStrainOffset = this->dyna_ioshl1 * 6;  // stresses before?
+  int iPlastStrainOffset = this->dyna_ioshl1 * 6; // stresses before?
   int iHistoryOffset =
-      iPlastStrainOffset + this->dyna_ioshl2;  // stresses & pl. strain before
+    iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
   int iLayerSize = dyna_neips + iHistoryOffset;
 
   // helpful vars
@@ -1566,7 +1611,7 @@ void D3plot::read_states_elem4(size_t iState) {
   for (int ii = start; ii < start + wordsToRead; ++iElement) {
     // get element (and check for rigidity)
     auto element =
-        this->get_db_elements()->get_elementByIndex(Element::SHELL, iElement);
+      this->get_db_elements()->get_elementByIndex(Element::SHELL, iElement);
     if (element->get_is_rigid()) {
       // does not increment ii, but iElement!!!!!
       continue;
@@ -1592,31 +1637,32 @@ void D3plot::read_states_elem4(size_t iState) {
 
         } else {
           switch (this->plastic_strain_read) {
-            case 1:  // max
+            case 1: // max
               plastic_strain = (plastic_strain > _tmp) ? plastic_strain : _tmp;
               break;
-            case 2:  // min
+            case 2: // min
               plastic_strain = (plastic_strain < _tmp) ? plastic_strain : _tmp;
               break;
-            case 3:  // out
-              if (iLayer == dyna_maxint - 1) plastic_strain = _tmp;
+            case 3: // out
+              if (iLayer == dyna_maxint - 1)
+                plastic_strain = _tmp;
               break;
-            case 4:  // mid
+            case 4: // mid
               if (iLayer == (int)(dyna_maxint_float / 2.f))
                 plastic_strain = _tmp;
               break;
-            case 5:  // in
+            case 5: // in
               // already ok
               break;
-            case 6:  // mean
+            case 6: // mean
               plastic_strain += _tmp;
               if (iLayer == dyna_maxint - 1)
                 plastic_strain /= dyna_maxint_float;
               break;
             default:
               break;
-          }  // end:switch
-        }    // end:iLayer!=0
+          } // end:switch
+        }   // end:iLayer!=0
       }
 
       // LAYER: STRESS TENSOR AND MISES
@@ -1630,131 +1676,137 @@ void D3plot::read_states_elem4(size_t iState) {
         } else {
           // stress tensor
           switch (this->stress_read) {
-            case 1:  // max
+            case 1: // max
               for (int jj = 0; jj < 6; jj++)
                 tmp_vec_stress[jj] = tmp_vec6[jj] > tmp_vec_stress[jj]
-                                         ? tmp_vec6[jj]
-                                         : tmp_vec_stress[jj];
+                                       ? tmp_vec6[jj]
+                                       : tmp_vec_stress[jj];
               break;
-            case 2:  // min
+            case 2: // min
               for (int jj = 0; jj < 6; jj++)
                 tmp_vec_stress[jj] = tmp_vec6[jj] < tmp_vec_stress[jj]
-                                         ? tmp_vec6[jj]
-                                         : tmp_vec_stress[jj];
+                                       ? tmp_vec6[jj]
+                                       : tmp_vec_stress[jj];
               break;
-            case 3:  // outer
-              if (iLayer == dyna_maxint - 1) tmp_vec_stress = tmp_vec6;
+            case 3: // outer
+              if (iLayer == dyna_maxint - 1)
+                tmp_vec_stress = tmp_vec6;
               break;
-            case 4:  // mid
+            case 4: // mid
               if (iLayer == (int)(dyna_maxint_float / 2.f))
                 tmp_vec_stress = tmp_vec6;
               break;
-            case 5:  // inner
+            case 5: // inner
               // nothing
               break;
-            case 6:  // mean
-              for (int jj = 0; jj < 6; jj++) tmp_vec_stress[jj] += tmp_vec6[jj];
+            case 6: // mean
+              for (int jj = 0; jj < 6; jj++)
+                tmp_vec_stress[jj] += tmp_vec6[jj];
 
               if (iLayer == dyna_maxint - 1)
                 for (int jj = 0; jj < 6; jj++)
                   tmp_vec_stress[jj] /= dyna_maxint_float;
 
               break;
-            default:  // none
+            default: // none
               break;
-          }  // end:switch(stress_read)
+          } // end:switch(stress_read)
 
           // stress mises calculation
           switch (this->stress_mises_read) {
-            case 1: {  // max
+            case 1: { // max
               float _tmp2 = MathUtility::mises_stress(tmp_vec6);
               stress_mises = _tmp2 > stress_mises ? _tmp2 : stress_mises;
               break;
             }
-            case 2: {  // min
+            case 2: { // min
               float _tmp2 = MathUtility::mises_stress(tmp_vec6);
               stress_mises = _tmp2 < stress_mises ? _tmp2 : stress_mises;
               break;
             }
-            case 3:  // outer
+            case 3: // outer
               if (iLayer == dyna_maxint - 1)
                 stress_mises = MathUtility::mises_stress(tmp_vec6);
               break;
-            case 4:  // mid
+            case 4: // mid
               if (iLayer == (int)(dyna_maxint_float / 2.f))
                 stress_mises = MathUtility::mises_stress(tmp_vec6);
               break;
-            case 5:  // inner
+            case 5: // inner
               // nothing
               break;
-            case 6:  // mean
+            case 6: // mean
               stress_mises += MathUtility::mises_stress(tmp_vec6);
-              if (iLayer == dyna_maxint - 1) stress_mises /= dyna_maxint_float;
+              if (iLayer == dyna_maxint - 1)
+                stress_mises /= dyna_maxint_float;
               break;
-            default:  // none
+            default: // none
               break;
-          }  // end:switch(stress_mises_read)
-        }    // end:iLayer!=0
-      }      // end:stress
+          } // end:switch(stress_mises_read)
+        }   // end:iLayer!=0
+      }     // end:stress
 
       // LAYERS: HISTORY SHELL
       for (size_t jj = 0; jj < this->history_shell_read.size(); ++jj) {
         // Skip if over limit
-        if (this->history_shell_read[jj] > this->dyna_neips) continue;
+        if (this->history_shell_read[jj] > this->dyna_neips)
+          continue;
 
         // max
         if (this->history_shell_mode[jj] == 1) {
           float _tmp;
           _tmp =
-              this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
+            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
           if (iLayer == 0) {
             history_vars[jj] = _tmp;
           } else {
             history_vars[jj] =
-                (_tmp > history_vars[jj]) ? _tmp : history_vars[jj];
+              (_tmp > history_vars[jj]) ? _tmp : history_vars[jj];
           }
           // min
         } else if (this->history_shell_mode[jj] == 2) {
           float _tmp;
           _tmp =
-              this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
+            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
           if (iLayer == 0) {
             history_vars[jj] = _tmp;
           } else {
             history_vars[jj] =
-                (_tmp < history_vars[jj]) ? _tmp : history_vars[jj];
+              (_tmp < history_vars[jj]) ? _tmp : history_vars[jj];
           }
           // out
         } else if ((this->history_shell_mode[jj] == 3) &&
                    (iLayer == dyna_maxint - 1)) {
           history_vars[jj] =
-              this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
+            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
           // mid
         } else if ((this->history_shell_mode[jj] == 4) &&
                    (iLayer == (int)(dyna_maxint_float / 2.f))) {
           history_vars[jj] =
-              this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
+            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
           // in
         } else if ((this->history_shell_mode[jj] == 5) && (iLayer == 1)) {
           history_vars[jj] =
-              this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
+            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
           // mean
         } else if ((this->history_shell_mode[jj] == 6)) {
           history_vars[jj] +=
-              this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
+            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
           if (iLayer == dyna_maxint - 1) {
             float _tmp = (float)dyna_maxint;
             history_vars[jj] /= _tmp;
           }
         }
-      }  // loop:history
-    }    // loop:layers
+      } // loop:history
+    }   // loop:layers
 
     // add layer vars (if requested)
     if (dyna_istrn && this->plastic_strain_read)
       element->add_plastic_strain(plastic_strain);
-    if (this->stress_read) element->add_stress(tmp_vec_stress);
-    if (this->stress_mises_read) element->add_stress_mises(stress_mises);
+    if (this->stress_read)
+      element->add_stress(tmp_vec_stress);
+    if (this->stress_mises_read)
+      element->add_stress_mises(stress_mises);
     if (this->history_shell_read.size())
       element->add_history_vars(history_vars, iState);
 
@@ -1762,7 +1814,7 @@ void D3plot::read_states_elem4(size_t iState) {
     if ((dyna_istrn == 1) && this->strain_read) {
       vector<float> strain(6);
       int strainStart =
-          (dyna_nv2d >= 45) ? ii + dyna_nv2d - 13 : ii + dyna_nv2d - 12;
+        (dyna_nv2d >= 45) ? ii + dyna_nv2d - 13 : ii + dyna_nv2d - 12;
 
       // max
       if (this->strain_read == 1) {
@@ -1826,13 +1878,21 @@ void D3plot::read_states_elem4(size_t iState) {
  *
  * @return timesteps : vector with the timestamp of the given state
  */
-vector<float> D3plot::get_timesteps() const { return this->timesteps; }
+vector<float>
+D3plot::get_timesteps() const
+{
+  return this->timesteps;
+}
 
 /** Get the title of the file in the header
  *
  * @return title
  */
-std::string D3plot::get_title() const { return this->dyna_title; }
+std::string
+D3plot::get_title() const
+{
+  return this->dyna_title;
+}
 
 /** Clears loaded result data loaded from the file
  *
@@ -1840,7 +1900,9 @@ std::string D3plot::get_title() const { return this->dyna_title; }
  *
  * Clears all variables by default!
  */
-void D3plot::clear(const vector<string> &_variables) {
+void
+D3plot::clear(const vector<string>& _variables)
+{
   // Default: Clear all
   if (_variables.size() == 0) {
     // hihi this is a naughty trick ... calling myself again
@@ -1900,74 +1962,101 @@ void D3plot::clear(const vector<string> &_variables) {
 
       } else {
         throw(
-            std::invalid_argument("Unknown variable type:" + _variables[iVar]));
+          std::invalid_argument("Unknown variable type:" + _variables[iVar]));
       }
 
-    }  // end:for
+    } // end:for
 
     // NODES: data deletion
     if (delete_disp || delete_vel || delete_accel) {
-      DB_Nodes *db_nodes = this->get_db_nodes();
+      DB_Nodes* db_nodes = this->get_db_nodes();
       std::shared_ptr<Node> _node = nullptr;
       for (size_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
         _node = db_nodes->get_nodeByIndex(iNode);
         if (_node) {
-          if (delete_disp) _node->clear_disp();
-          if (delete_vel) _node->clear_vel();
-          if (delete_accel) _node->clear_accel();
+          if (delete_disp)
+            _node->clear_disp();
+          if (delete_vel)
+            _node->clear_vel();
+          if (delete_accel)
+            _node->clear_accel();
         }
 
-      }  // end:for
+      } // end:for
 
       // reset flags
-      if (delete_disp) this->disp_is_read = false;
-      if (delete_vel) this->vel_is_read = false;
-      if (delete_accel) this->acc_is_read = false;
+      if (delete_disp)
+        this->disp_is_read = false;
+      if (delete_vel)
+        this->vel_is_read = false;
+      if (delete_accel)
+        this->acc_is_read = false;
     }
 
     // ELEMENT: data deletion
     if (delete_energy || delete_plastic_strain || delete_strain ||
         delete_stress || delete_stress_mises || delete_history_shell ||
         delete_history_solid) {
-      DB_Elements *db_elems = this->get_db_elements();
+      DB_Elements* db_elems = this->get_db_elements();
       std::shared_ptr<Element> _elem = nullptr;
 
       // shells
       for (size_t iElement = 0;
-           iElement < db_elems->get_nElements(Element::SHELL); iElement++) {
+           iElement < db_elems->get_nElements(Element::SHELL);
+           iElement++) {
         _elem = db_elems->get_elementByIndex(Element::SHELL, iElement);
         if (_elem) {
-          if (delete_energy) _elem->clear_energy();
-          if (delete_plastic_strain) _elem->clear_plastic_strain();
-          if (delete_strain) _elem->clear_strain();
-          if (delete_stress) _elem->clear_stress();
-          if (delete_stress_mises) _elem->clear_stress_mises();
-          if (delete_history_shell) _elem->clear_history_vars();
+          if (delete_energy)
+            _elem->clear_energy();
+          if (delete_plastic_strain)
+            _elem->clear_plastic_strain();
+          if (delete_strain)
+            _elem->clear_strain();
+          if (delete_stress)
+            _elem->clear_stress();
+          if (delete_stress_mises)
+            _elem->clear_stress_mises();
+          if (delete_history_shell)
+            _elem->clear_history_vars();
         }
       }
       // solids
       for (size_t iElement = 0;
-           iElement < db_elems->get_nElements(Element::SOLID); iElement++) {
+           iElement < db_elems->get_nElements(Element::SOLID);
+           iElement++) {
         _elem = db_elems->get_elementByIndex(Element::SOLID, iElement);
         if (_elem) {
-          if (delete_energy) _elem->clear_energy();
-          if (delete_plastic_strain) _elem->clear_plastic_strain();
-          if (delete_strain) _elem->clear_strain();
-          if (delete_stress) _elem->clear_stress();
-          if (delete_stress_mises) _elem->clear_stress_mises();
-          if (delete_history_solid) _elem->clear_history_vars();
+          if (delete_energy)
+            _elem->clear_energy();
+          if (delete_plastic_strain)
+            _elem->clear_plastic_strain();
+          if (delete_strain)
+            _elem->clear_strain();
+          if (delete_stress)
+            _elem->clear_stress();
+          if (delete_stress_mises)
+            _elem->clear_stress_mises();
+          if (delete_history_solid)
+            _elem->clear_history_vars();
         }
       }
 
       // reset flags
-      if (delete_energy) this->energy_is_read = false;
-      if (delete_plastic_strain) this->plastic_strain_is_read = false;
-      if (delete_strain) this->strain_is_read = false;
-      if (delete_stress) this->stress_is_read = false;
-      if (delete_stress_mises) this->stress_mises_is_read = false;
-      if (delete_history_shell) this->history_shell_is_read.clear();
-      if (delete_history_solid) this->history_solid_is_read.clear();
+      if (delete_energy)
+        this->energy_is_read = false;
+      if (delete_plastic_strain)
+        this->plastic_strain_is_read = false;
+      if (delete_strain)
+        this->strain_is_read = false;
+      if (delete_stress)
+        this->stress_is_read = false;
+      if (delete_stress_mises)
+        this->stress_mises_is_read = false;
+      if (delete_history_shell)
+        this->history_shell_is_read.clear();
+      if (delete_history_solid)
+        this->history_solid_is_read.clear();
 
-    }  // end:if Elements
-  }    // end:else for deletion
-}  // end:function clear
+    } // end:if Elements
+  }   // end:else for deletion
+} // end:function clear
