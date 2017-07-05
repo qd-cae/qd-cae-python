@@ -28,8 +28,8 @@ install:
   - python3 -m pip install --only-binary=numpy numpy
   - python3 -m pip install diversipy
   - python3 -m pip install pybind11
-  - python3 setup.py install
-  #- CC=gcc-5.2 CXX=g++-5.2 python3 setup.py install
+  #- python3 setup.py install
+  - CC=gcc-6 CXX=g++-6 python3 setup.py install
 
 script: 
   - python3 setup.py test
