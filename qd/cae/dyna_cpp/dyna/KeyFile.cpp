@@ -130,11 +130,10 @@ KeyFile::read_mesh(string _filepath)
     } else if ((keyword == Keyword::NODE) && !line_has_keyword &&
                (!line_trimmed.empty())) {
       try {
-        coords[0] = boost::lexical_cast<float>(trim_copy(line.substr(8, 16)));
-        coords[1] = boost::lexical_cast<float>(trim_copy(line.substr(24, 16)));
-        coords[2] = boost::lexical_cast<float>(trim_copy(line.substr(40, 16)));
-        db_nodes->add_node(
-          boost::lexical_cast<int>(trim_copy(line.substr(0, 8))), coords);
+        coords[0] = std::stof(line.substr(8, 16));
+        coords[1] = std::stof(line.substr(24, 16));
+        coords[2] = std::stof(line.substr(40, 16));
+        db_nodes->add_node(std::stoi(line.substr(0, 8)), coords);
       } catch (const std::exception& ex) {
         cerr << "Error reading node in line " << (iLine + 1) << ":" << ex.what()
              << endl;
@@ -165,25 +164,17 @@ KeyFile::read_mesh(string _filepath)
     } else if ((keyword == Keyword::ELEMENT_SHELL) && !line_has_keyword &&
                (!line.empty())) {
       try {
-        id = boost::lexical_cast<int>(trim_copy(line.substr(0, 8)));
-        partID = boost::lexical_cast<int>(trim_copy(line.substr(8, 8)));
-        elemNodes_shell[0] =
-          boost::lexical_cast<int>(trim_copy(line.substr(16, 8)));
-        elemNodes_shell[1] =
-          boost::lexical_cast<int>(trim_copy(line.substr(24, 8)));
-        elemNodes_shell[2] =
-          boost::lexical_cast<int>(trim_copy(line.substr(32, 8)));
-        elemNodes_shell[3] =
-          boost::lexical_cast<int>(trim_copy(line.substr(40, 8)));
+        id = std::stoi(line.substr(0, 8));
+        partID = std::stoi(line.substr(8, 8));
+        elemNodes_shell[0] = std::stoi(line.substr(16, 8));
+        elemNodes_shell[1] = std::stoi(line.substr(24, 8));
+        elemNodes_shell[2] = std::stoi(line.substr(32, 8));
+        elemNodes_shell[3] = std::stoi(line.substr(40, 8));
         db_elements->add_element_byKeyFile(
           Element::SHELL, id, partID, elemNodes_shell);
       } catch (const std::exception& ex) {
         cerr << "Error reading shell in line " << (iLine + 1) << ":"
              << ex.what() << endl;
-        keyword = Keyword::NONE;
-      } catch (const string& ex) {
-        cerr << "Error reading shell in line " << (iLine + 1) << ":" << ex
-             << endl;
         keyword = Keyword::NONE;
       } catch (...) {
         cerr << "Error reading shell in line " << (iLine + 1)
@@ -209,27 +200,19 @@ KeyFile::read_mesh(string _filepath)
                !line.empty()) {
       try {
         if (iCardLine == 0) {
-          id = boost::lexical_cast<int>(trim_copy(line.substr(0, 8)));
-          partID = boost::lexical_cast<int>(trim_copy(line.substr(8, 8)));
+          id = std::stoi(line.substr(0, 8));
+          partID = std::stoi(line.substr(8, 8));
           ++iCardLine;
 
         } else if (iCardLine == 1) {
-          elemNodes_solid[0] =
-            boost::lexical_cast<int>(trim_copy(line.substr(0, 8)));
-          elemNodes_solid[1] =
-            boost::lexical_cast<int>(trim_copy(line.substr(8, 8)));
-          elemNodes_solid[2] =
-            boost::lexical_cast<int>(trim_copy(line.substr(16, 8)));
-          elemNodes_solid[3] =
-            boost::lexical_cast<int>(trim_copy(line.substr(24, 8)));
-          elemNodes_solid[4] =
-            boost::lexical_cast<int>(trim_copy(line.substr(32, 8)));
-          elemNodes_solid[5] =
-            boost::lexical_cast<int>(trim_copy(line.substr(40, 8)));
-          elemNodes_solid[6] =
-            boost::lexical_cast<int>(trim_copy(line.substr(48, 8)));
-          elemNodes_solid[7] =
-            boost::lexical_cast<int>(trim_copy(line.substr(56, 8)));
+          elemNodes_solid[0] = std::stoi(line.substr(0, 8));
+          elemNodes_solid[1] = std::stoi(line.substr(8, 8));
+          elemNodes_solid[2] = std::stoi(line.substr(16, 8));
+          elemNodes_solid[3] = std::stoi(line.substr(24, 8));
+          elemNodes_solid[4] = std::stoi(line.substr(32, 8));
+          elemNodes_solid[5] = std::stoi(line.substr(40, 8));
+          elemNodes_solid[6] = std::stoi(line.substr(48, 8));
+          elemNodes_solid[7] = std::stoi(line.substr(56, 8));
           db_elements->add_element_byKeyFile(
             Element::SOLID, id, partID, elemNodes_solid);
           iCardLine = 0;
@@ -269,12 +252,10 @@ KeyFile::read_mesh(string _filepath)
                (!line.empty())) {
       try {
         if (iCardLine == 0) {
-          id = boost::lexical_cast<int>(trim_copy(line.substr(0, 8)));
-          partID = boost::lexical_cast<int>(trim_copy(line.substr(8, 8)));
-          elemNodes_beam[0] =
-            boost::lexical_cast<int>(trim_copy(line.substr(16, 8)));
-          elemNodes_beam[1] =
-            boost::lexical_cast<int>(trim_copy(line.substr(24, 8)));
+          id = std::stoi(line.substr(0, 8));
+          partID = std::stoi(line.substr(8, 8));
+          elemNodes_beam[0] = std::stoi(line.substr(16, 8));
+          elemNodes_beam[1] = std::stoi(line.substr(24, 8));
           db_elements->add_element_byKeyFile(
             Element::BEAM, id, partID, elemNodes_beam);
           ++iCardLine;
@@ -320,7 +301,7 @@ KeyFile::read_mesh(string _filepath)
         ++iCardLine;
       } else if (iCardLine == 1) {
         try {
-          id = boost::lexical_cast<int>(trim_copy(line.substr(0, 10)));
+          id = std::stoi(line.substr(0, 10));
 
           try {
             db_parts->get_partByID(id)->set_name(title);

@@ -23,6 +23,9 @@
 namespace py = pybind11;
 using namespace py::literals;
 
+// get the docstrings
+#include <dyna_cpp/python_api/docstrings.cpp>
+
 /* This hack ensures that a vector of instances is translated into a list of
  * instances in such a way, that it still references its d3plot in memory. If
  * not doing so then using the instance when the d3plot is dead results in an
@@ -74,27 +77,45 @@ PYBIND11_PLUGIN(dyna_cpp)
     return nullptr;
   };
 
+  // disable sigantures for docs
+  py::options options;
+  options.disable_function_signatures();
+
   // Node
-  py::class_<Node, std::shared_ptr<Node>> node_py(m, "Node");
+  py::class_<Node, std::shared_ptr<Node>> node_py(
+    m, "Node", qd_node_class_docs);
   node_py
-    .def("get_id", &Node::get_nodeID, py::return_value_policy::take_ownership)
+    .def("get_id",
+         &Node::get_nodeID,
+         py::return_value_policy::take_ownership,
+         get_node_id_docs)
     .def("get_coords",
          &Node::get_coords_py,
          "iTimestep"_a = 0,
-         py::return_value_policy::take_ownership)
-    .def(
-      "get_disp", &Node::get_disp_py, py::return_value_policy::take_ownership)
-    .def("get_vel", &Node::get_vel_py, py::return_value_policy::take_ownership)
-    .def(
-      "get_accel", &Node::get_accel_py, py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_node_coords_docs)
+    .def("get_disp",
+         &Node::get_disp_py,
+         py::return_value_policy::take_ownership,
+         get_node_disp_docs)
+    .def("get_vel",
+         &Node::get_vel_py,
+         py::return_value_policy::take_ownership,
+         get_node_vel_docs)
+    .def("get_accel",
+         &Node::get_accel_py,
+         py::return_value_policy::take_ownership,
+         get_node_accel_docs)
     .def("get_elements",
          &Node::get_elements,
-         py::return_value_policy::reference_internal);
+         py::return_value_policy::reference_internal,
+         get_node_elements_docs);
 
   // Element
-  py::class_<Element, std::shared_ptr<Element>> element_py(m, "Element");
+  py::class_<Element, std::shared_ptr<Element>> element_py(
+    m, "Element", qd_element_class_docs);
 
-  py::enum_<Element::ElementType>(element_py, "type")
+  py::enum_<Element::ElementType>(element_py, "type", element_type_docs)
     .value("none", Element::ElementType::NONE)
     .value("beam", Element::ElementType::BEAM)
     .value("shell", Element::ElementType::SHELL)
@@ -104,53 +125,73 @@ PYBIND11_PLUGIN(dyna_cpp)
   element_py
     .def("get_id",
          &Element::get_elementID,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_id_docs)
     .def("get_coords",
          &Element::get_coords_py,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_coords_docs)
     .def("get_energy",
          &Element::get_energy_py,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_energy_docs)
     .def("get_stress_mises",
          &Element::get_stress_mises_py,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_stress_mises_docs)
     .def("get_plastic_strain",
          &Element::get_plastic_strain_py,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_plastic_strain_docs)
     .def("get_strain",
          &Element::get_strain_py,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_strain_docs)
     .def("get_stress",
          &Element::get_stress_py,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_stress_docs)
     .def("get_history_variables",
          &Element::get_history_vars_py,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_history_docs)
     .def("is_rigid",
          &Element::get_is_rigid,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_is_rigid_docs)
     .def("get_estimated_size",
          &Element::get_estimated_element_size,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_estimated_size_docs)
     .def("get_type",
          &Element::get_elementType,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         get_element_type_docs)
     .def("get_nodes",
          &Element::get_nodes,
-         py::return_value_policy::reference_internal);
+         py::return_value_policy::reference_internal,
+         get_element_nodes_docs);
 
   // Part
   py::class_<Part, std::shared_ptr<Part>> part_py(m, "Part");
   part_py
-    .def("get_name", &Part::get_name, py::return_value_policy::take_ownership)
-    .def("get_id", &Part::get_partID, py::return_value_policy::take_ownership)
+    .def("get_name",
+         &Part::get_name,
+         py::return_value_policy::take_ownership,
+         get_part_name_docs)
+    .def("get_id",
+         &Part::get_partID,
+         py::return_value_policy::take_ownership,
+         get_part_id_docs)
     .def("get_nodes",
          &Part::get_nodes,
-         py::return_value_policy::reference_internal)
+         py::return_value_policy::reference_internal,
+         get_part_nodes_docs)
     .def("get_elements",
          &Part::get_elements,
-         "element_type"_a = Element::ElementType::NONE,
-         py::return_value_policy::reference_internal);
+         "element_filter"_a = Element::ElementType::NONE,
+         py::return_value_policy::reference_internal,
+         get_part_elements_docs);
 
   // DB_Nodes
   py::class_<DB_Nodes, std::shared_ptr<DB_Nodes>> db_nodes_py(m, "DB_Nodes");
