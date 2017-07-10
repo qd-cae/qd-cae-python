@@ -12,12 +12,16 @@ using namespace std;
 /*
  * Constructor.
  */
-DB_Nodes::DB_Nodes(FEMFile* _femfile) : femfile(_femfile) {}
+DB_Nodes::DB_Nodes(FEMFile* _femfile)
+  : femfile(_femfile)
+{
+}
 
 /*
  * Destructor.
  */
-DB_Nodes::~DB_Nodes() {
+DB_Nodes::~DB_Nodes()
+{
 #ifdef QD_DEBUG
   std::cout << "DB_Nodes::~DB_Nodes called." << std::endl;
 #endif
@@ -31,10 +35,12 @@ DB_Nodes::~DB_Nodes() {
  *
  * Returns a pointer to the new node.
  */
-std::shared_ptr<Node> DB_Nodes::add_node(int _nodeID, vector<float> coords) {
+std::shared_ptr<Node>
+DB_Nodes::add_node(int _nodeID, vector<float> coords)
+{
   if (coords.size() != 3) {
-    throw(std::invalid_argument(
-        "The node coordinate vector must have length 3."));
+    throw(
+      std::invalid_argument("The node coordinate vector must have length 3."));
   }
   if (_nodeID < 0) {
     throw(std::invalid_argument("Node-ID may not be negative!"));
@@ -57,16 +63,21 @@ std::shared_ptr<Node> DB_Nodes::add_node(int _nodeID, vector<float> coords) {
 /*
  * Get the owning d3plot of the db.
  */
-FEMFile* DB_Nodes::get_femfile() { return this->femfile; }
+FEMFile*
+DB_Nodes::get_femfile()
+{
+  return this->femfile;
+}
 
 /*
  * Get the number of nodes in the db.
  */
-size_t DB_Nodes::get_nNodes() {
+size_t
+DB_Nodes::get_nNodes()
+{
   if (this->id2index_nodes.size() != this->nodes.size())
-    throw(
-        std::runtime_error("Node database encountered error: "
-                           "id2index_nodes.size() != nodes.size()"));
+    throw(std::runtime_error("Node database encountered error: "
+                             "id2index_nodes.size() != nodes.size()"));
   return this->nodes.size();
 }
 
@@ -74,4 +85,18 @@ size_t DB_Nodes::get_nNodes() {
  *
  * @param _size size to reserve for new nodes
  */
-void DB_Nodes::reserve(const size_t _size) { this->nodes.reserve(_size); }
+void
+DB_Nodes::reserve(const size_t _size)
+{
+  this->nodes.reserve(_size);
+}
+
+/** Get the nodes of the databse
+ *
+ * @return nodes : nodes in the database
+ */
+std::vector<std::shared_ptr<Node>>
+DB_Nodes::get_nodes()
+{
+  return this->nodes;
+}

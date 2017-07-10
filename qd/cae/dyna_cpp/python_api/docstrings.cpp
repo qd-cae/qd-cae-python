@@ -1,5 +1,4 @@
 
-#include <string>
 
 /* --------------------- NODE --------------------- */
 const char* qd_node_class_docs = R"qddoc(
@@ -520,7 +519,7 @@ const char* dbnodes_get_nodeByIndex_docs = R"qddoc(
         >>> list_of_nodes = femfile.get_nodeByIndex( [1,2,3] )
 )qddoc";
 
-const char* get_nodes_docs = R"qddoc(
+const char* dbnodes_get_nodes_docs = R"qddoc(
     get_nodes()
 
     Returns

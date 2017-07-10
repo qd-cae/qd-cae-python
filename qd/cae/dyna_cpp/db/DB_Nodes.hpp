@@ -41,6 +41,7 @@ public:
   template<typename T>
   size_t get_index_from_id(T _index);
 
+  std::vector<std::shared_ptr<Node>> get_nodes();
   template<typename T>
   std::shared_ptr<Node> get_nodeByID(T _id);
   template<typename T>
@@ -123,7 +124,7 @@ DB_Nodes::get_nodeByID(T _id)
 
   const auto& it = this->id2index_nodes.find(_id);
   if (it == this->id2index_nodes.end())
-    throw(std::invalid_argument("Node with id" + to_string(_id) +
+    throw(std::invalid_argument("Node with id " + to_string(_id) +
                                 " does not exist"));
   return this->nodes[it->second];
 }

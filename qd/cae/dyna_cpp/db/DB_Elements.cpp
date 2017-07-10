@@ -303,3 +303,32 @@ DB_Elements::get_nElements(const Element::ElementType _type) const
   }
   return elements4.size() + elements2.size() + elements8.size();
 }
+
+/** Get the elements of the database of a certain type
+ *
+ * @param _type : optional filtering type
+ * @return elems : vector of elements
+ */
+std::vector<std::shared_ptr<Element>>
+DB_Elements::get_elements(const Element::ElementType _type)
+{
+
+  if (_type == Element::NONE) {
+    std::vector<std::shared_ptr<Element>> elems(this->get_nElements(_type));
+    elems.insert(elems.end(), elements2.begin(), elements2.end());
+    elems.insert(elems.end(), elements4.begin(), elements4.end());
+    elems.insert(elems.end(), elements8.begin(), elements8.end());
+    return elems;
+
+  } else if (_type == Element::BEAM) {
+    return elements2;
+
+  } else if (_type == Element::SHELL) {
+    return elements4;
+
+  } else if (_type == Element::SOLID) {
+    return elements8;
+  }
+
+  throw(std::invalid_argument("Unknown element type specified."));
+}

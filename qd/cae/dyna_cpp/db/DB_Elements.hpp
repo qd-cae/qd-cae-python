@@ -51,6 +51,8 @@ public:
 
   // getter
   size_t get_nElements(const Element::ElementType _type = Element::NONE) const;
+  std::vector<std::shared_ptr<Element>> get_elements(
+    const Element::ElementType _type = Element::NONE);
   template<typename T>
   std::shared_ptr<Element> get_elementByID(Element::ElementType _eType, T _id);
   template<typename T>

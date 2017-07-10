@@ -12,6 +12,7 @@
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
 #include <numpy/arrayobject.h>
@@ -26,49 +27,87 @@ using namespace py::literals;
 // get the docstrings
 #include <dyna_cpp/python_api/docstrings.cpp>
 
-/* This hack ensures that a vector of instances is translated into a list of
- * instances in such a way, that it still references its d3plot in memory. If
- * not doing so then using the instance when the d3plot is dead results in an
- * error.
+/* This hack ensures translation from vector of objects to
+ * python list of objects.
+ *
+ * Should also overwrite internal reference handling, so that
+ * every instance itself references its' d3plot. This is
+ * neccesary because if the d3plot is deallocated, some
+ * functions will not work anymore.
+ * (node -> node.get_elements() -> elem.get_nodes())
  */
-// DEBUG: Somehow not working ...
-/*
-using ListCasterBase =
-   pybind11::detail::list_caster<std::vector<std::shared_ptr<Node>>,
-                                 std::shared_ptr<Node>>;
+// DEBUG: Somehow not working correctly ...
+using ListCasterNodes =
+  pybind11::detail::list_caster<std::vector<std::shared_ptr<Node>>,
+                                std::shared_ptr<Node>>;
+using ListCasterElements =
+  pybind11::detail::list_caster<std::vector<std::shared_ptr<Element>>,
+                                std::shared_ptr<Element>>;
+using ListCasterParts =
+  pybind11::detail::list_caster<std::vector<std::shared_ptr<Part>>,
+                                std::shared_ptr<Part>>;
 namespace pybind11 {
 namespace detail {
-template <>
-struct type_caster<std::vector<std::shared_ptr<Node>>> : ListCasterBase {
- static handle cast(const std::vector<std::shared_ptr<Node>> &src,
-                    return_value_policy, handle parent) {
-   return ListCasterBase::cast(src, return_value_policy::reference_internal,
-                               parent);
- }
- static handle cast(const std::vector<std::shared_ptr<Node>> *src,
-                    return_value_policy pol, handle parent) {
-   return cast(*src, pol, parent);
- }
-};
-}
-}
-*/
-
-void
-qd_test_d3plot(std::shared_ptr<D3plot> d3plot)
+template<>
+struct type_caster<std::vector<std::shared_ptr<Node>>> : ListCasterNodes
 {
-  auto vec = d3plot->get_nodeByID(1)->get_disp();
-  size_t iRow = 0;
-  for (const auto& subvec : vec) {
-    std::cout << "iRow:" << iRow << " | " << subvec[0] << "  " << subvec[1]
-              << "  " << subvec[2] << std::endl;
-    iRow++;
+  static handle cast(const std::vector<std::shared_ptr<Node>>& src,
+                     return_value_policy,
+                     handle parent)
+  {
+    return ListCasterNodes::cast(
+      src, return_value_policy::reference_internal, parent);
   }
-}
+  static handle cast(const std::vector<std::shared_ptr<Node>>* src,
+                     return_value_policy pol,
+                     handle parent)
+  {
+    return cast(*src, pol, parent);
+  }
+};
 
+template<>
+struct type_caster<std::vector<std::shared_ptr<Element>>> : ListCasterElements
+{
+  static handle cast(const std::vector<std::shared_ptr<Element>>& src,
+                     return_value_policy,
+                     handle parent)
+  {
+    return ListCasterElements::cast(
+      src, return_value_policy::reference_internal, parent);
+  }
+  static handle cast(const std::vector<std::shared_ptr<Element>>* src,
+                     return_value_policy pol,
+                     handle parent)
+  {
+    return cast(*src, pol, parent);
+  }
+};
+
+template<>
+struct type_caster<std::vector<std::shared_ptr<Part>>> : ListCasterParts
+{
+  static handle cast(const std::vector<std::shared_ptr<Part>>& src,
+                     return_value_policy,
+                     handle parent)
+  {
+    return ListCasterParts::cast(
+      src, return_value_policy::reference_internal, parent);
+  }
+  static handle cast(const std::vector<std::shared_ptr<Part>>* src,
+                     return_value_policy pol,
+                     handle parent)
+  {
+    return cast(*src, pol, parent);
+  }
+};
+} // namespace detail
+} // namespace pybind11
+
+// PLUGIN: dyna_cpp
 PYBIND11_PLUGIN(dyna_cpp)
 {
-  py::module m("dyna_cpp", "ls-dyna c++ python wrapper");
+  py::module m("dyna_cpp", "c++ python wrapper for ls-dyna module");
 
   // load numpy
   if (_import_array() < 0) {
@@ -77,7 +116,7 @@ PYBIND11_PLUGIN(dyna_cpp)
     return nullptr;
   };
 
-  // disable sigantures for docs
+  // disable sigantures for documentation
   py::options options;
   options.disable_function_signatures();
 
@@ -173,7 +212,7 @@ PYBIND11_PLUGIN(dyna_cpp)
          element_get_nodes_docs);
 
   // Part
-  py::class_<Part, std::shared_ptr<Part>> part_py(m, "Part");
+  py::class_<Part, std::shared_ptr<Part>> part_py(m, "QD_Part");
   part_py
     .def("get_name",
          &Part::get_name,
@@ -201,12 +240,10 @@ PYBIND11_PLUGIN(dyna_cpp)
          &DB_Nodes::get_nNodes,
          py::return_value_policy::take_ownership,
          dbnodes_get_nNodes_docs)
-    /* TODO: array versions (maybe also from numpy array)
-.def("get_node_id_from_index", &DB_Nodes::get_id_from_index<long>,
-    py::return_value_policy::take_ownership)
-.def("get_node_index_from_id", &DB_Nodes::get_index_from_id<long>,
-    py::return_value_policy::take_ownership)
-    */
+    .def("get_nodes",
+         &DB_Nodes::get_nodes,
+         py::return_value_policy::take_ownership,
+         dbnodes_get_nodes_docs)
     .def("get_nodeByID",
          (std::shared_ptr<Node>(DB_Nodes::*)(long)) &
            DB_Nodes::get_nodeByID<long>,
@@ -249,6 +286,11 @@ PYBIND11_PLUGIN(dyna_cpp)
          "element_type"_a = Element::NONE,
          py::return_value_policy::take_ownership,
          dbelems_get_nElements_docs)
+    .def("get_elements",
+         &DB_Elements::get_elements,
+         "element_type"_a = Element::NONE,
+         py::return_value_policy::take_ownership,
+         get_elements_docs)
     .def(
       "get_elementByID",
       (std::shared_ptr<Element>(DB_Elements::*)(Element::ElementType, long)) &
@@ -353,7 +395,7 @@ PYBIND11_PLUGIN(dyna_cpp)
 
   // D3plot
   py::class_<D3plot, FEMFile, std::shared_ptr<D3plot>> d3plot_py(
-    m, "D3plot", d3plot_description);
+    m, "QD_D3plot", d3plot_description);
   d3plot_py
     .def(py::init<std::string, py::list, bool>(),
          "filepath"_a,
@@ -399,11 +441,8 @@ PYBIND11_PLUGIN(dyna_cpp)
 
   // KeyFile
   py::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
-    m, "KeyFile", keyfile_description);
+    m, "QD_KeyFile", keyfile_description);
   keyfile_py.def(py::init<std::string>(), "filepath"_a, keyfile_constructor);
-
-  // Test
-  // m.def("qd_test_d3plot", &qd_test_d3plot);
 
   return m.ptr();
 }
