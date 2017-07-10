@@ -14,21 +14,23 @@ We want to tackle this issue with this free library, in order to give engineerin
 # What's new
 
 *Changelog 18.05.2017*
+Version 0.6.0
+
+The whole C++ to Python API was rewritten with pybind11 because the old interface took to much time if one wanted to add new stuff (now much faster in terms of development). The code was also modernized a lot.
+
+**Note: The API changed a little bit (see below)**
+
+qd.cae.dyna
+  - The whole Python API was rewritten with pybind11 
+  - Due to this change, **many new functions** could be added (already existed in C++)
+  - **Element type specifier is not a string anymore**, but uses `Element.type` (enumeration in C++)
+  - Passing a string as element type does not work anymore! Use `Element.none`, `Element.beam`, `Element.shell` or `Element.solid` as replacement (might fix this on the future)
+  
+
+*Changelog 18.05.2017*
 Version 0.5.7
 
 Internal stuff only
-
-*Changelog 18.05.2017*
-Version 0.5.6
-
-qd.cae.dyna
- - bugfix: get_estimated_size fixed
-
-*Changelog 20.04.2017*
-Version 0.5.5
-
-qd.cae.dyna:
- - changed binout.read internally to fix reading of bndout
 
 # Descriptions
 
@@ -71,7 +73,7 @@ In the [dist folder](https://github.com/qd-cae/qd-eng/tree/master/dist) usually 
 
 ## Windows
 
-Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++11.
+Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++14 (also the old compiler created very slow code).
 
 First download [BOOST for C++](http://www.boost.org/) (we only need headers, do not compile it). 
 
@@ -95,7 +97,7 @@ Thereafter run the setup script, the code will automatically compile and install
 python3 setup.py install
 ```
 
-If one also wants to compile with FEMZIP support, download the libraries from the [Sidact Homepage](www.sidact.de). There are two things to download, the actual femunzip library, as well as the link libraries (Use FEMZIP 8.68 dyna NO OMP Windows VS2012 MD x64). Put all into a folder and also register the path in the header of the setup.py
+If one also wants to compile with FEMZIP support, download the libraries from the [Sidact Homepage](www.sidact.de). There are two things to download, the actual femunzip library, as well as the link libraries (Use FEMZIP 8.68 dyna NO OMP Windows VS2012 MD x64). Put all into a folder and also register the path in the header of the setup.py. The installation skips femzip if the libraries are missing (if in doubt then just ignore it).
 
 ```python
 femzip_path = "path/to/femzip/libs"
@@ -120,6 +122,7 @@ sudo apt-get install python3-numpy
 sudo python3 -m pip install --upgrade pip setuptools wheel
 sudo python3 -m pip install --only-binary=numpy numpy
 sudo python3 -m pip install diversipy
+sudo python3 -m pip install pybind11
 sudo python3 setup.py install
 ```
 
@@ -132,5 +135,5 @@ For further licensing requests or questions contact us.
 
 # Authors
 
-- C. Diez
-- D. Toewe
+- codie (C. Diez)
+- towelie (D. Toewe)
