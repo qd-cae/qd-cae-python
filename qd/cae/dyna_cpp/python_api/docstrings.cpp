@@ -445,8 +445,208 @@ const char* get_part_elements_docs = R"qddoc(
 )qddoc";
 
 /* ----------------------- DB_NODES ---------------------- */
+const char* dbnodes_description = R"qddoc(
+
+    This class is managing the nodes internally in the
+    background of a FEMFile. It can never be constructed
+    or attained individually.
+
+    Examples
+    --------
+        >>> # DB_Nodes is inherited by FEMFile
+        >>> issubclass(FEMFile, DB_Nodes)
+        True
+        >>> # Use DB_Nodes functions
+        >>> femfile = KeyFile(\"path/to/keyfile\")
+        >>> femfile.get_nNodes()
+        45236
+
+)qddoc";
+
+const char* dbnodes_get_nodeByID_docs = R"qddoc(
+    get_nodeByID(id)
+
+    Parameters
+    ----------
+    id : int or list(int)
+        node id or list of node ids
+
+    Returns
+    -------
+    node : Node or list(Node)
+        requested Node(s)
+
+    Raises:
+    -------
+    ValueError
+        if `id` does not exist.
+
+    Examples
+    --------
+        >>> # get by single id
+        >>> node = femfile.get_nodeByID(1)
+        >>> # get a list of nodes at once
+        >>> list_of_nodes = femfile.get_nodeByID( [1,2,3] )
+)qddoc";
+
+const char* dbnodes_get_nodeByIndex_docs = R"qddoc(
+    get_nodeByIndex(index)
+
+    Parameters
+    ----------
+    index : int or list(int)
+        internal node index or list inf indexes
+
+    Returns
+    -------
+    node : Node or list(Node)
+        Node(s)
+
+    Notes
+    -----
+        The internal index starts at 0 and ends at
+        `femfile.get_nNodes()`.
+
+    Raises:
+    -------
+    ValueError
+        if `index` larger `femfile.get_nNodes()`.
+
+    Examples
+    --------
+        >>> # single index
+        >>> node = femfile.get_nodeByIndex(1)
+        >>> # get a list of nodes at once
+        >>> list_of_nodes = femfile.get_nodeByIndex( [1,2,3] )
+)qddoc";
+
+const char* get_nodes_docs = R"qddoc(
+    get_nodes()
+
+    Returns
+    -------
+    nodes : list(Node)
+        list of node objects
+
+    Examples
+    --------
+        >>> list_of_nodes = femfile.get_nodes()
+    )qddoc";
+
+const char* dbnodes_get_nNodes_docs = R"qddoc(
+    get_nNodes()
+
+    Returns
+    -------
+    nNodes : int
+        number of nodes in the file
+
+    Examples
+    --------
+        >>> femfile.get_nNodes()
+        43145
+)qddoc";
 
 /* ----------------------- DB_ELEMENTS ---------------------- */
+const char* get_filepath_docs = R"qddoc(
+get_filepath()
+
+Returns
+-------
+filepath : str
+    Filepath of the femfile.
+
+Examples
+--------
+    >>> femfile.get_filepath()
+    \"path/to/femfile\"
+)qddoc";
+
+const char* get_elements_docs = R"qddoc(
+get_elements(element_filter=Element.none)
+
+Parameters
+----------
+element_filter : Element.type
+    Optional element type filter. May be beam, shell or solid.
+
+Returns
+-------
+elements : list(Element)
+    list of Elements
+
+Raises:
+-------
+ValueError
+    if invalid `element_filter` is given.
+
+Notes
+-----
+Get the elements of the femfile. One may use a filter by type.
+
+Examples
+--------
+    >>> all_elements = femfile.get_elements()
+    >>> shell_elements = femfile.get_elements(Element.shell)
+)qddoc";
+
+const char* get_nElements_docs = R"qddoc(
+get_nElements(element_filter=Element.none)
+
+Parameters
+----------
+element_filter : Element.type
+    Optional element type filter. May be beam, shell or solid.
+
+Returns
+-------
+nElements : int
+    number of elements
+
+Examples
+--------
+    >>> femfile.get_nElements()
+    43156
+)qddoc";
+
+const char* get_elementByID_docs = R"qddoc(
+get_elementByID(element_filter, id)
+
+Parameters
+----------
+element_filter : Element.type
+    type of the element. Must be beam, shell or solid.
+id : int or list(int)
+    element id or list of ids
+
+Returns
+-------
+element : Element
+    Element(s) depending on the arguments
+
+Notes
+-----
+    Since ids in the dyna file are non unique for
+    different element types, one has to specify the
+    type too.
+
+Raises:
+-------
+ValueError
+    if `element_filter` is invalid or `id` does not exist.
+
+Examples
+--------
+    >>> # single element
+    >>> elem = femfile.get_elementByID(Element.shell, 1)
+    >>> # multiple elements
+    >>> list_of_shells = femfile.get_elementByID(Element.shell, [1,2,3])
+    >>> # whoever had the great id of non unique ids ...
+    >>> femfile.get_elementByID(Element.beam, 1).get_type()
+    type.beam
+    >>> femfile.get_elementByID(Element.solid, 1).get_type()
+    type.solid
+)qddoc";
 
 /* ----------------------- DB_PARTS ---------------------- */
 

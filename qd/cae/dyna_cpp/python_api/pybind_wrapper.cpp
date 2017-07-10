@@ -194,11 +194,13 @@ PYBIND11_PLUGIN(dyna_cpp)
          get_part_elements_docs);
 
   // DB_Nodes
-  py::class_<DB_Nodes, std::shared_ptr<DB_Nodes>> db_nodes_py(m, "DB_Nodes");
+  py::class_<DB_Nodes, std::shared_ptr<DB_Nodes>> db_nodes_py(
+    m, "DB_Nodes", dbnodes_description);
   db_nodes_py
     .def("get_nNodes",
          &DB_Nodes::get_nNodes,
-         py::return_value_policy::take_ownership)
+         py::return_value_policy::take_ownership,
+         dbnodes_get_nNodes_docs)
     /* TODO: array versions (maybe also from numpy array)
 .def("get_node_id_from_index", &DB_Nodes::get_id_from_index<long>,
     py::return_value_policy::take_ownership)
@@ -209,7 +211,8 @@ PYBIND11_PLUGIN(dyna_cpp)
          (std::shared_ptr<Node>(DB_Nodes::*)(long)) &
            DB_Nodes::get_nodeByID<long>,
          "id"_a,
-         py::return_value_policy::reference_internal)
+         py::return_value_policy::reference_internal,
+         dbnodes_get_nodeByID_docs)
     .def("get_nodeByID",
          (std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(py::list)) &
            DB_Nodes::get_nodeByID_py,
@@ -223,17 +226,18 @@ PYBIND11_PLUGIN(dyna_cpp)
     .def("get_nodeByIndex",
          (std::shared_ptr<Node>(DB_Nodes::*)(long)) &
            DB_Nodes::get_nodeByIndex<long>,
-         "id"_a,
-         py::return_value_policy::reference_internal)
+         "index"_a,
+         py::return_value_policy::reference_internal,
+         dbnodes_get_nodeByIndex_docs)
     .def("get_nodeByIndex",
          (std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(py::list)) &
            DB_Nodes::get_nodeByIndex_py,
-         "id"_a,
+         "index"_a,
          py::return_value_policy::reference_internal)
     .def("get_nodeByIndex",
          (std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(py::tuple)) &
            DB_Nodes::get_nodeByIndex_py,
-         "id"_a,
+         "index"_a,
          py::return_value_policy::reference_internal);
 
   // DB_Elements
