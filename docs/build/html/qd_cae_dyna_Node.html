@@ -17,7 +17,7 @@
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Node &mdash; qd 0.5.7 documentation</title>
+  <title>Node &mdash; qd 0.6 documentation</title>
   
 
   
@@ -44,7 +44,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.5.7 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.6 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 
   
@@ -74,7 +74,7 @@
             
             
               <div class="version">
-                0.5.7
+                0.6
               </div>
             
           
@@ -186,29 +186,9 @@
 <dt id="qd.cae.dyna.Node">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Node</code><a class="headerlink" href="#qd.cae.dyna.Node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Container for handling nodal data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>femfile</strong> : FEMFile</p>
-<blockquote>
-<div><p>femfile from which to take the Element</p>
-</div></blockquote>
-<p><strong>number</strong> : int</p>
-<blockquote>
-<div><p>id or index of the node</p>
-</div></blockquote>
-<p><strong>use_index</strong> : bool</p>
-<blockquote class="last">
-<div><p>whether to get the node by id or index</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
 <p class="rubric">Examples</p>
-<p>It is recommended to get nodes by</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<p>Get nodes by</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node_list</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -288,11 +268,11 @@ before getting the coordinates at a different timestep.</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get_coords</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(3L,)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># load disp</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span><span class="s2">&quot;disp&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span>\<span class="s2">&quot;disp</span><span class="se">\&quot;</span><span class="s2">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get_coords</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -429,7 +409,7 @@ before getting the coordinates at a different timestep.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.7',
+            VERSION:'0.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

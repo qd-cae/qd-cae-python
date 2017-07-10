@@ -17,7 +17,7 @@
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>FEMFile (D3plot and KeyFile) &mdash; qd 0.5.7 documentation</title>
+  <title>FEMFile (D3plot and KeyFile) &mdash; qd 0.6 documentation</title>
   
 
   
@@ -44,7 +44,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.5.7 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.6 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/>
         <link rel="next" title="Element" href="qd_cae_dyna_Element.html"/>
         <link rel="prev" title="KeyFile" href="qd_cae_dyna_KeyFile.html"/> 
@@ -76,7 +76,7 @@
             
             
               <div class="version">
-                0.5.7
+                0.6
               </div>
             
           
@@ -186,15 +186,7 @@
 <dl class="class">
 <dt id="qd.cae.dyna.FEMFile">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">FEMFile</code><a class="headerlink" href="#qd.cae.dyna.FEMFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class is a super class of the D3plot and the KeyFile. It is meant for handling the mesh data.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">D3plot</span><span class="p">,</span> <span class="n">FEMFile</span><span class="p">,</span> <span class="n">KeyFile</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">D3plot</span><span class="p">,</span> <span class="n">FEMFile</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">issubclass</span><span class="p">(</span><span class="n">KeyFile</span><span class="p">,</span> <span class="n">FEMFile</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p class="rubric">Methods</p>
+<dd><p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -204,13 +196,13 @@
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByID</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByIndex</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_mesh</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></td>
@@ -219,82 +211,100 @@
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nParts</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByIndex</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByName</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="qd.cae.dyna.FEMFile.get_elementByID">
-<code class="descname">get_elementByID</code><span class="sig-paren">(</span><em>element_type</em>, <em>element_id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_elementByID" title="Permalink to this definition">¶</a></dt>
+<dt id="qd.cae.dyna.FEMFile.get_elementByIndex">
+<code class="descname">get_elementByIndex</code><span class="sig-paren">(</span><em>element_type</em>, <em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_elementByIndex" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : Element.type</p>
 <blockquote>
 <div><p>type of the element. Must be beam, shell or solid.</p>
 </div></blockquote>
-<p><strong>element_id</strong> : int or list(int)</p>
+<p><strong>index</strong> : int or list(int)</p>
 <blockquote>
-<div><p>element id or list of ids</p>
+<div><p>element index or list of indexes</p>
 </div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>element</strong> : Element</p>
-<blockquote class="last">
+<blockquote>
 <div><p>Element(s) depending on the arguments</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>if invalid <cite>element_type</cite> is given
+or <cite>index</cite> does not exist</p>
 </div></blockquote>
 </td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Notes</p>
-<p>Since ids in the dyna file are non unique for
-different element types, one has to specify the
-type too.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># single element</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByIndex</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># multiple elements</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_shells</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># whoever had the great id of non unique ids ...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;beam&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
-<span class="go">&quot;beam&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
-<span class="go">&quot;solid&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_shells</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByIndex</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">beam</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+<span class="go">type.beam</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByIndex</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">solid</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+<span class="go">type.solid</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.FEMFile.get_elements">
-<code class="descname">get_elements</code><span class="sig-paren">(</span><em>element_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_elements" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_elements</code><span class="sig-paren">(</span><em>element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_elements" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
 <blockquote>
 <div><p>Optional element type filter. May be beam, shell or solid.</p>
 </div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>elements</strong> : list(Element)</p>
-<blockquote class="last">
+<blockquote>
 <div><p>list of Elements</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>if invalid <cite>element_filter</cite> is given.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -304,7 +314,7 @@ type too.</p>
 <p>Get the elements of the femfile. One may use a filter by type.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_elements</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">shell_elements</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="s1">&#39;shell&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell_elements</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -326,33 +336,33 @@ type too.</p>
 </table>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_filepath</span><span class="p">()</span>
-<span class="go">&quot;path/to/femfile&quot;</span>
+<span class="go">\&quot;path/to/femfile\&quot;</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
-<dt id="qd.cae.dyna.FEMFile.get_mesh">
-<code class="descname">get_mesh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_mesh" title="Permalink to this definition">¶</a></dt>
-<dd><p>unfinished.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="qd.cae.dyna.FEMFile.get_nElements">
-<code class="descname">get_nElements</code><span class="sig-paren">(</span><em>element_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_nElements" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_nElements</code><span class="sig-paren">(</span><em>element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_nElements" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
 <blockquote>
 <div><p>Optional element type filter. May be beam, shell or solid.</p>
 </div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nElements</strong> : int</p>
-<blockquote class="last">
+<blockquote>
 <div><p>number of elements</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>if invalid <cite>element_filter</cite> is given.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -388,21 +398,49 @@ type too.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="qd.cae.dyna.FEMFile.get_nodeByID">
-<code class="descname">get_nodeByID</code><span class="sig-paren">(</span><em>node_id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_nodeByID" title="Permalink to this definition">¶</a></dt>
+<dt id="qd.cae.dyna.FEMFile.get_nParts">
+<code class="descname">get_nParts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_nParts" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>node_id</strong> : int or list(int)</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>int</strong> : nParts</p>
+<blockquote class="last">
+<div><p>number of parts in the database</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_nParts</span><span class="p">()</span>
+<span class="go">7</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.FEMFile.get_nodeByID">
+<code class="descname">get_nodeByID</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_nodeByID" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>id</strong> : int or list(int)</p>
 <blockquote>
 <div><p>node id or list of node ids</p>
 </div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node or list(Node)</p>
-<blockquote class="last">
+<blockquote>
 <div><p>requested Node(s)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>if <cite>id</cite> does not exist.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -419,20 +457,26 @@ type too.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.FEMFile.get_nodeByIndex">
-<code class="descname">get_nodeByIndex</code><span class="sig-paren">(</span><em>node_index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_nodeByIndex" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_nodeByIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_nodeByIndex" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>node_index</strong> : int or list(int)</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>index</strong> : int or list(int)</p>
 <blockquote>
 <div><p>internal node index or list inf indexes</p>
 </div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node or list(Node)</p>
-<blockquote class="last">
+<blockquote>
 <div><p>Node(s)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>if <cite>index</cite> larger <cite>femfile.get_nNodes()</cite>.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -473,20 +517,26 @@ type too.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.FEMFile.get_partByID">
-<code class="descname">get_partByID</code><span class="sig-paren">(</span><em>part_id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_partByID" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_partByID</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_partByID" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>part_id</strong> : int</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>id</strong> : int or list of int</p>
 <blockquote>
-<div><p>id of the part in the file</p>
+<div><p>id or ids of the part in the file</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>part</strong> : Part</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part or list of Parts</p>
+<blockquote>
+<div><p>output depending on arguments</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>Part object</p>
+<div><p>if some <cite>id</cite> does not exist.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -494,6 +544,72 @@ type too.</p>
 </table>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.FEMFile.get_partByIndex">
+<code class="descname">get_partByIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_partByIndex" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>index</strong> : int or list of int</p>
+<blockquote>
+<div><p>index or indexes of the part in the file</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part or list of Parts</p>
+<blockquote>
+<div><p>output depending on arguments</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>if some <cite>index</cite> does not exist.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByIndex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.FEMFile.get_partByName">
+<code class="descname">get_partByName</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.FEMFile.get_partByName" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>str</strong> : name</p>
+<blockquote>
+<div><p>name of the part</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part</p>
+<blockquote>
+<div><p>part with the given name</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>if a part with <cite>name</cite> does not exist.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByName</span><span class="p">(</span><span class="s2">&quot;Lower Bumper&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -567,7 +683,7 @@ type too.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.7',
+            VERSION:'0.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

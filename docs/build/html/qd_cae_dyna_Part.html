@@ -17,7 +17,7 @@
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Part &mdash; qd 0.5.7 documentation</title>
+  <title>Part &mdash; qd 0.6 documentation</title>
   
 
   
@@ -44,7 +44,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.5.7 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.6 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 
   
@@ -74,7 +74,7 @@
             
             
               <div class="version">
-                0.5.7
+                0.6
               </div>
             
           
@@ -185,33 +185,7 @@
 <dl class="class">
 <dt id="qd.cae.dyna.Part">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Part</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part" title="Permalink to this definition">¶</a></dt>
-<dd><p>Part of a D3plot. 
-The part specific mesh data may be accessed by this container.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>femfile</strong> : FEMFile</p>
-<blockquote>
-<div><p>femfile of which to get the part from</p>
-</div></blockquote>
-<p><strong>part_id</strong> : int</p>
-<blockquote class="last">
-<div><p>id of the part</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>It is recommended to get parts by:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part_list</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_parts</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part_id</span> <span class="o">=</span> <span class="mi">13</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="n">part_id</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="rubric">Methods</p>
+<dd><p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -294,13 +268,13 @@ browser.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.Part.get_elements">
-<code class="descname">get_elements</code><span class="sig-paren">(</span><em>element_type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part.get_elements" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_elements</code><span class="sig-paren">(</span><em>element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part.get_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the elements of the part.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : str</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : str</p>
 <blockquote>
 <div><p>Optional element type filter. May be beam, shell or solid.</p>
 </div></blockquote>
@@ -315,11 +289,11 @@ browser.</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span> <span class="p">)</span>
 <span class="go">49123</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span> <span class="p">)</span>
 <span class="go">45123</span>
 </pre></div>
 </div>
@@ -342,7 +316,7 @@ browser.</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
 <span class="go">1</span>
@@ -354,20 +328,8 @@ browser.</p>
 <dt id="qd.cae.dyna.Part.get_name">
 <code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part.get_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the name of the part. It&#8217;s the same name as in the input deck.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
-<blockquote class="last">
-<div><p>name of the part</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
 <span class="go">&#39;PLATE_C&#39;</span>
@@ -378,7 +340,9 @@ browser.</p>
 <dl class="method">
 <dt id="qd.cae.dyna.Part.get_nodes">
 <code class="descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part.get_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the nodes of the part. Note that a node may belong to two parts,
+<dd><p>)
+get_nodes()</p>
+<p>Get the nodes of the part. Note that a node may belong to two parts,
 since only the elements are uniquely assignable.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -393,7 +357,7 @@ since only the elements are uniquely assignable.</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span> <span class="p">)</span>
 <span class="go">52341</span>
@@ -440,7 +404,7 @@ since only the elements are uniquely assignable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.7',
+            VERSION:'0.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

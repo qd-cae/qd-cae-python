@@ -17,7 +17,7 @@
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Element &mdash; qd 0.5.7 documentation</title>
+  <title>Element &mdash; qd 0.6 documentation</title>
   
 
   
@@ -44,7 +44,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.5.7 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.6 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/>
         <link rel="prev" title="FEMFile (D3plot and KeyFile)" href="qd_cae_dyna_FEMFile.html"/> 
 
@@ -75,7 +75,7 @@
             
             
               <div class="version">
-                0.5.7
+                0.6
               </div>
             
           
@@ -186,34 +186,13 @@
 <dl class="class">
 <dt id="qd.cae.dyna.Element">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Element</code><a class="headerlink" href="#qd.cae.dyna.Element" title="Permalink to this definition">¶</a></dt>
-<dd><p>Container for handling element data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>femfile</strong> : FEMFile</p>
-<blockquote>
-<div><p>femfile from which to take the Element</p>
-</div></blockquote>
-<p><strong>element_type</strong> : str</p>
-<blockquote>
-<div><p>beam, shell or solid</p>
-</div></blockquote>
-<p><strong>id</strong> : int</p>
-<blockquote class="last">
-<div><p>id of the element in the file</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>It is recommended to get elements by</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<dd><p class="rubric">Examples</p>
+<p>Get elements by</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">element_list</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">shells</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shells</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">id</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">solid</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="rubric">Methods</p>
@@ -232,7 +211,7 @@
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_estimated_size</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_history</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_history_variables</span></code></td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_id</span></code></td>
@@ -257,6 +236,9 @@
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">is_rigid</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">type</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -294,7 +276,7 @@
 <dl class="method">
 <dt id="qd.cae.dyna.Element.get_energy">
 <code class="descname">get_energy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Element.get_energy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the energy of the element, if it was read with <cite>read_states</cite>.</p>
+<dd><p>Get the energy of the element, if it was read with <cite>d3plot.read_states</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -338,8 +320,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="qd.cae.dyna.Element.get_history">
-<code class="descname">get_history</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Element.get_history" title="Permalink to this definition">¶</a></dt>
+<dt id="qd.cae.dyna.Element.get_history_variables">
+<code class="descname">get_history_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Element.get_history_variables" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the loaded history variables of the element.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -357,8 +339,8 @@
 <p>The history variable column index corresponds to the order in which
 the variables were loaded</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span><span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;history 1 shell max&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_history</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">,read_states=</span><span class="se">\&quot;</span><span class="s2">history 1 shell max</span><span class="se">\&quot;</span><span class="s2">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_history</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(34L, 1L)</span>
 </pre></div>
 </div>
@@ -381,7 +363,7 @@ the variables were loaded</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
 <span class="go">1</span>
 </pre></div>
 </div>
@@ -412,7 +394,7 @@ the variables were loaded</p>
 <dl class="method">
 <dt id="qd.cae.dyna.Element.get_plastic_strain">
 <code class="descname">get_plastic_strain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Element.get_plastic_strain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the plastic strain of the element, if it was read with <cite>read_states</cite>.</p>
+<dd><p>Get the plastic strain of the element, if it was read with <cite>d3plot.read_states</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -435,7 +417,7 @@ the variables were loaded</p>
 <dl class="method">
 <dt id="qd.cae.dyna.Element.get_strain">
 <code class="descname">get_strain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Element.get_strain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the strain tensor of the element, if it was read with <cite>read_states</cite>.
+<dd><p>Get the strain tensor of the element, if it was read with <cite>d3plot.read_states</cite>.
 The strain vector contains the matrix components: [e_xx, e_yy, e_zz, e_xy, e_yz, e_xz]</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -459,7 +441,7 @@ The strain vector contains the matrix components: [e_xx, e_yy, e_zz, e_xy, e_yz,
 <dl class="method">
 <dt id="qd.cae.dyna.Element.get_stress">
 <code class="descname">get_stress</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Element.get_stress" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the stress tensor of the element, if it was read with <cite>read_states</cite>.
+<dd><p>Get the stress tensor of the element, if it was read with <cite>d3plot.read_states</cite>.
 The stress vector contains the matrix components: [s_xx, s_yy, s_zz, s_xy, s_yz, s_xz]</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -483,7 +465,7 @@ The stress vector contains the matrix components: [s_xx, s_yy, s_zz, s_xy, s_yz,
 <dl class="method">
 <dt id="qd.cae.dyna.Element.get_stress_mises">
 <code class="descname">get_stress_mises</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Element.get_stress_mises" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the mises stress of the element, if it was read with <cite>read_states</cite>.</p>
+<dd><p>Get the mises stress of the element, if it was read with <cite>d3plot.read_states</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -520,12 +502,12 @@ The stress vector contains the matrix components: [s_xx, s_yy, s_zz, s_xy, s_yz,
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;beam&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
-<span class="go">&#39;beam&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
-<span class="go">&#39;shell&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
-<span class="go">&#39;solid&#39;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">beam</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+<span class="go">type.beam</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+<span class="go">type.shell</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">solid</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+<span class="go">type.solid</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -534,7 +516,7 @@ The stress vector contains the matrix components: [s_xx, s_yy, s_zz, s_xy, s_yz,
 <dt id="qd.cae.dyna.Element.is_rigid">
 <code class="descname">is_rigid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Element.is_rigid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the status, whether the element is a rigid (flag for shells only).
-Rigid shells have no state data.</p>
+Rigid shells have no state data!</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -548,19 +530,34 @@ Rigid shells have no state data.</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;stress_mises max&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">elem1</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="mi">451</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">, read_states=</span><span class="se">\&quot;</span><span class="s2">stress_mises max</span><span class="se">\&quot;</span><span class="s2">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem1</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">451</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">elem1</span><span class="o">.</span><span class="n">is_rigid</span><span class="p">()</span>
 <span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">elem1</span><span class="o">.</span><span class="n">get_stress_mises</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(34L,)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">elem2</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="mi">9654</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem2</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">9654</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">elem2</span><span class="o">.</span><span class="n">is_rigid</span><span class="p">()</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">elem2</span><span class="o">.</span><span class="n">get_stress_mises</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem2</span><span class="o">.</span><span class="n">get_stress_mises</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span> <span class="c1"># rigid shells lack state data</span>
 <span class="go">(0L,)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="class">
+<dt id="qd.cae.dyna.Element.type">
+<em class="property">class </em><code class="descname">type</code><a class="headerlink" href="#qd.cae.dyna.Element.type" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Element types:</dt>
+<dd><ul class="first last simple">
+<li>Element.type.none (only used for filtering)</li>
+<li>Element.type.beam</li>
+<li>Element.type.shell</li>
+<li>Element.type.solid</li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -609,7 +606,7 @@ Rigid shells have no state data.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.5.7',
+            VERSION:'0.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

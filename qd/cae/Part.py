@@ -51,7 +51,6 @@ class Part(QD_Part):
             >>>     res = element.get_stress_mises()
             >>>     if len(res): # some elements may miss stresses
             >>>         return res[-1] # last timestep
-            >>> 
             >>> part.plot(iTimestep=-1, element_result=eval_fun)
         '''
 
