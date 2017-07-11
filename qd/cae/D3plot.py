@@ -11,11 +11,6 @@ import numpy as np
 class D3plot(QD_D3plot):
     __doc__ = QD_D3plot.__doc__
 
-    def __init__(self, *args, **kwargs):
-        super(D3plot, self).__init__(*args, **kwargs)
-    # copy description from super
-    __init__.__doc__ = QD_D3plot.__init__.__doc__
-
     def compare_scatter(self,
                         filepath_list,
                         element_result,

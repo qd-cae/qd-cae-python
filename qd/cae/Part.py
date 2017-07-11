@@ -2,6 +2,11 @@
 from .dyna_cpp import Part
 from ._dyna_utils import plot_parts
 
+# We can not subclass Part from C++ here, because it is always
+# constructed on C++ side, thus we can not make up a new class
+# here with additional python functions. Nonetheless, we can
+# "inject" new functions into the C++ base class.
+
 
 def plot(self, iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None):
     '''Plot the Part, currently shells only!
@@ -54,4 +59,4 @@ def plot(self, iTimestep=0, element_result=None, fringe_bounds=[None, None], exp
 
 
 # inject functions (dirty hack)
-Part.plot = plot
+Part.plot = classmethod(plot)
