@@ -212,7 +212,7 @@ PYBIND11_PLUGIN(dyna_cpp)
          element_get_nodes_docs);
 
   // Part
-  py::class_<Part, std::shared_ptr<Part>> part_py(m, "QD_Part");
+  py::class_<Part, std::shared_ptr<Part>> part_py(m, "Part");
   part_py
     .def("get_name",
          &Part::get_name,

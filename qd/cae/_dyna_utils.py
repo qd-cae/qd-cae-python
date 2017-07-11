@@ -10,7 +10,7 @@ import numpy as np
 from base64 import b64encode
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from .dyna_cpp import QD_Part, Element
+from .dyna_cpp import Element, Part
 
 
 def _read_file(filepath):
@@ -106,7 +106,7 @@ def _extract_elem_coords(parts, element_result=None, iTimestep=0, element_type=N
     '''
 
     # checks
-    assert all(isinstance(entry, QD_Part) for entry in parts)
+    assert all(isinstance(entry, Part) for entry in parts)
     assert callable(element_result) or element_result == None
 
     # handle possible results
@@ -199,7 +199,7 @@ def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
         mesh_coords, mesh_fringe, elem_texts : tuple(np.ndarray, np.ndarray, list)
     '''
 
-    if isinstance(parts, QD_Part):
+    if isinstance(parts, Part):
         parts = [parts]
 
     node_data = []
@@ -414,7 +414,7 @@ def _extract_surface_mesh(parts):
     '''
     if not isinstance(parts, (list, tuple, np.ndarray)):
         parts = [parts]
-    assert all(isinstance(QD_Part, entry) for entry in parts)
+    assert all(isinstance(Part, entry) for entry in parts)
 
     faces = {}
     for _part in parts:

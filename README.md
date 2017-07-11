@@ -67,7 +67,7 @@ The wheels which are used by pip can also be found here in the dist folder. Note
 
 ## Linux
 
-In the [dist folder](https://github.com/qd-cae/qd-eng/tree/master/dist) usually are some precompiled Linux wheels for installation with pip. Note that Linux wheels rarely work accross different systems, so do not expect them to work and also please see the [Compilation](#Compilation) section below. It's quite simple to compile it yourself.
+In the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist) usually are some precompiled Linux wheels for installation with pip. Note that Linux wheels rarely work accross different systems, so do not expect them to work and also please see the [Compilation](#Compilation) section below. It's quite simple to compile it yourself.
 
 # Compilation
 
@@ -80,7 +80,7 @@ First download [BOOST for C++](http://www.boost.org/) (we only need headers, do 
 For compilation of python version 3.5 or 3.6 on Windows download [Visual Studio 15](https://www.microsoft.com/de-DE/download/details.aspx?id=48146) (dunno if Visual Studio 17 also works). Then clone the repository into a folder:
 
 ```
-git clone https://github.com/qd-cae/qd-eng.git
+git clone https://github.com/qd-cae/qd-cae-python.git
 cd qd-eng
 ```
 
@@ -116,13 +116,11 @@ sudo apt-get install libboost-dev
 The setup script should now automatically find boost on your system, if you still have trouble download and register it the same way as on windows. Now just install with
 
 ```
-git clone https://github.com/qd-cae/qd-eng.git
-cd qd-eng
+git clone https://github.com/qd-cae/qd-cae-python.git
+cd qd-cae-python
 sudo apt-get install python3-numpy
-sudo python3 -m pip install --upgrade pip setuptools wheel
 sudo python3 -m pip install --only-binary=numpy numpy
-sudo python3 -m pip install diversipy
-sudo python3 -m pip install pybind11
+sudo python3 -m pip install -r requirements.txt
 sudo python3 setup.py install
 ```
 

@@ -1,7 +1,7 @@
 
 
 from ._dyna_utils import plot_parts, _parse_element_result, _extract_elem_coords
-from .dyna_cpp import QD_D3plot, QD_Part
+from .dyna_cpp import QD_D3plot, Part
 from .Part import Part
 
 import os
@@ -241,7 +241,7 @@ class D3plot(QD_D3plot):
         if not isinstance(parts, (tuple, list)):
             parts = [parts]
 
-        assert all(isinstance(part, QD_Part)
+        assert all(isinstance(part, Part)
                    for part in parts), "At least one list entry is not a part"
 
         plot_parts(parts,
