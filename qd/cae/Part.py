@@ -1,5 +1,5 @@
 
-from .dyna_cpp import Part
+from .dyna_cpp import QD_Part
 from ._dyna_utils import plot_parts
 
 # We can not subclass Part from C++ here, because it is always
@@ -51,7 +51,7 @@ def plot(self, iTimestep=0, element_result=None, fringe_bounds=[None, None], exp
         >>> part.plot(iTimestep=-1, element_result=eval_fun)
     '''
 
-    plot_parts(self,
+    plot_parts([self],
                iTimestep=iTimestep,
                element_result=element_result,
                fringe_bounds=fringe_bounds,
@@ -59,4 +59,4 @@ def plot(self, iTimestep=0, element_result=None, fringe_bounds=[None, None], exp
 
 
 # inject functions (dirty hack)
-Part.plot = classmethod(plot)
+QD_Part.plot = plot

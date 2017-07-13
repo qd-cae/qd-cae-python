@@ -10,7 +10,7 @@ import numpy as np
 from base64 import b64encode
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from .dyna_cpp import Element, Part
+from .dyna_cpp import Element, QD_Part
 
 
 def _read_file(filepath):
@@ -106,7 +106,7 @@ def _extract_elem_coords(parts, element_result=None, iTimestep=0, element_type=N
     '''
 
     # checks
-    assert all(isinstance(entry, Part) for entry in parts)
+    assert all(isinstance(entry, QD_Part) for entry in parts)
     assert callable(element_result) or element_result == None
 
     # handle possible results
@@ -199,7 +199,7 @@ def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
         mesh_coords, mesh_fringe, elem_texts : tuple(np.ndarray, np.ndarray, list)
     '''
 
-    if isinstance(parts, Part):
+    if isinstance(parts, QD_Part):
         parts = [parts]
 
     node_data = []
@@ -269,6 +269,9 @@ def _parts_to_html(parts, iTimestep=0, element_result=None, fringe_bounds=[None,
     html : str
         the 3D HTML as string
     '''
+
+    if isinstance(parts, QD_Part):
+        parts = [parts]
 
     # extract mesh dta
     node_coords, node_fringe, element_texts = _extract_mesh_from_parts(

@@ -25,6 +25,7 @@ qd.cae.dyna
   - Due to this change, **many new functions** could be added (already existed in C++)
   - **Element type specifier is not a string anymore**, but uses `Element.type` (enumeration in C++)
   - Passing a string as element type does not work anymore! Use `Element.none`, `Element.beam`, `Element.shell` or `Element.solid` as replacement (might fix this on the future)
+  - `Element.get_history` renamed to `Element.get_history_variables`
   
 
 *Changelog 18.05.2017*

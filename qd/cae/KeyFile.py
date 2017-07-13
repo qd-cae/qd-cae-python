@@ -1,8 +1,7 @@
 
 
 from .D3plot import plot_parts
-from .dyna_cpp import QD_KeyFile, Part
-from .Part import Part
+from .dyna_cpp import QD_KeyFile, QD_Part
 
 
 class KeyFile(QD_KeyFile):
@@ -40,7 +39,7 @@ class KeyFile(QD_KeyFile):
         if not isinstance(parts, (tuple, list)):
             parts = [parts]
 
-        assert all(isinstance(part, Part)
+        assert all(isinstance(part, QD_Part)
                    for part in parts), "At least one list entry is not a part"
 
         plot_parts(parts,

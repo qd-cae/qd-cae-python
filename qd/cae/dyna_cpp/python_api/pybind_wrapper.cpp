@@ -212,7 +212,7 @@ PYBIND11_PLUGIN(dyna_cpp)
          element_get_nodes_docs);
 
   // Part
-  py::class_<Part, std::shared_ptr<Part>> part_py(m, "Part");
+  py::class_<Part, std::shared_ptr<Part>> part_py(m, "QD_Part");
   part_py
     .def("get_name",
          &Part::get_name,
@@ -252,12 +252,12 @@ PYBIND11_PLUGIN(dyna_cpp)
          dbnodes_get_nodeByID_docs)
     .def("get_nodeByID",
          (std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(py::list)) &
-           DB_Nodes::get_nodeByID_py,
+           DB_Nodes::get_nodeByID,
          "id"_a,
          py::return_value_policy::reference_internal)
     .def("get_nodeByID",
          (std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(py::tuple)) &
-           DB_Nodes::get_nodeByID_py,
+           DB_Nodes::get_nodeByID,
          "id"_a,
          py::return_value_policy::reference_internal)
     .def("get_nodeByIndex",
@@ -268,12 +268,12 @@ PYBIND11_PLUGIN(dyna_cpp)
          dbnodes_get_nodeByIndex_docs)
     .def("get_nodeByIndex",
          (std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(py::list)) &
-           DB_Nodes::get_nodeByIndex_py,
+           DB_Nodes::get_nodeByIndex,
          "index"_a,
          py::return_value_policy::reference_internal)
     .def("get_nodeByIndex",
          (std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(py::tuple)) &
-           DB_Nodes::get_nodeByIndex_py,
+           DB_Nodes::get_nodeByIndex,
          "index"_a,
          py::return_value_policy::reference_internal);
 

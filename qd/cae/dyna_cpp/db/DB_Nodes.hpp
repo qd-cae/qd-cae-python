@@ -53,22 +53,22 @@ public:
     const std::vector<T>& _ids);
 
   // Python API
-  std::vector<std::shared_ptr<Node>> get_nodeByID_py(pybind11::list _ids)
+  std::vector<std::shared_ptr<Node>> get_nodeByID(pybind11::list _ids)
   {
     return this->get_nodeByID(qd::py::container_to_vector<int>(
       _ids, "An entry of the list was not a fully fledged integer."));
   }
-  std::vector<std::shared_ptr<Node>> get_nodeByID_py(pybind11::tuple _ids)
+  std::vector<std::shared_ptr<Node>> get_nodeByID(pybind11::tuple _ids)
   {
     return this->get_nodeByID(qd::py::container_to_vector<int>(
       _ids, "An entry of the list was not a fully fledged integer."));
   }
-  std::vector<std::shared_ptr<Node>> get_nodeByIndex_py(pybind11::list _ids)
+  std::vector<std::shared_ptr<Node>> get_nodeByIndex(pybind11::list _ids)
   {
     return this->get_nodeByIndex(qd::py::container_to_vector<int>(
       _ids, "An entry of the list was not a fully fledged integer."));
   }
-  std::vector<std::shared_ptr<Node>> get_nodeByIndex_py(pybind11::tuple _ids)
+  std::vector<std::shared_ptr<Node>> get_nodeByIndex(pybind11::tuple _ids)
   {
     return this->get_nodeByIndex(qd::py::container_to_vector<int>(
       _ids, "An entry of the list was not a fully fledged integer."));
@@ -177,8 +177,8 @@ DB_Nodes::get_nodeByIndex(const std::vector<T>& _indexes)
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   std::vector<std::shared_ptr<Node>> ret;
-  for (const auto& index : _indexes) {
-    ret.push_back(this->get_nodeByID(index));
+  for (const auto index : _indexes) {
+    ret.push_back(this->get_nodeByIndex(index));
   }
   return std::move(ret);
 }

@@ -314,7 +314,8 @@ DB_Elements::get_elements(const Element::ElementType _type)
 {
 
   if (_type == Element::NONE) {
-    std::vector<std::shared_ptr<Element>> elems(this->get_nElements(_type));
+    std::vector<std::shared_ptr<Element>> elems;
+    elems.reserve(this->get_nElements(_type));
     elems.insert(elems.end(), elements2.begin(), elements2.end());
     elems.insert(elems.end(), elements4.begin(), elements4.end());
     elems.insert(elems.end(), elements8.begin(), elements8.end());
