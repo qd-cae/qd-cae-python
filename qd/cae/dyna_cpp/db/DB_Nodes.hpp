@@ -10,7 +10,6 @@ class DB_Elements;
 // includes
 #include "Node.hpp"
 #include <dyna_cpp/utility/PythonUtility.hpp>
-#include <dyna_cpp/utility/TextUtility.hpp>
 
 #include <iostream>
 #include <memory>
@@ -87,7 +86,7 @@ DB_Nodes::get_id_from_index(size_t _index)
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   if (_index >= nodes.size())
-    throw(std::invalid_argument("Node with index " + to_string(_index) +
+    throw(std::invalid_argument("Node with index " + std::to_string(_index) +
                                 " does not exist in the db."));
   return _index;
 }
@@ -105,7 +104,7 @@ DB_Nodes::get_index_from_id(T _id)
 
   const auto& it = this->id2index_nodes.find(_id);
   if (it == this->id2index_nodes.end())
-    throw(std::invalid_argument("Node with id " + to_string(_id) +
+    throw(std::invalid_argument("Node with id " + std::to_string(_id) +
                                 " does not exist in the db."));
   return it->second;
 }
@@ -124,7 +123,7 @@ DB_Nodes::get_nodeByID(T _id)
 
   const auto& it = this->id2index_nodes.find(_id);
   if (it == this->id2index_nodes.end())
-    throw(std::invalid_argument("Node with id " + to_string(_id) +
+    throw(std::invalid_argument("Node with id " + std::to_string(_id) +
                                 " does not exist"));
   return this->nodes[it->second];
 }
@@ -160,7 +159,7 @@ DB_Nodes::get_nodeByIndex(T _index)
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   if (_index >= this->nodes.size())
-    throw(std::invalid_argument("Node with index " + to_string(_index) +
+    throw(std::invalid_argument("Node with index " + std::to_string(_index) +
                                 " does not exist in the db."));
   return this->nodes[_index];
 }

@@ -1,4 +1,5 @@
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -10,7 +11,7 @@
 #include "Node.hpp"
 #include "Part.hpp"
 
-using namespace std;
+using std::unordered_map;
 
 /** Constructor
  *
@@ -37,7 +38,8 @@ DB_Elements::~DB_Elements()
  *
  * @param ElementType _eType : type of the element to add, enum in Element.hpp
  * @param int _elementID : id of the element to add
- * @param vector<int> _elementData : element data from d3plot, node ids and part
+ * @param std::vector<int> _elementData : element data from d3plot, node ids and
+ * part
  * id
  * @return std::shared_ptr<Element> element : pointer to created instance
  *
@@ -48,7 +50,7 @@ DB_Elements::~DB_Elements()
 std::shared_ptr<Element>
 DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
                                   const int _elementID,
-                                  const vector<int>& _elementData)
+                                  const std::vector<int>& _elementData)
 {
   if (_elementID < 0) {
     throw(std::invalid_argument("Element-ID may not be negative!"));
@@ -56,23 +58,24 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
 
   // Find part
   // index is decremented once, since ls-dyna starts at 1 (fortran array style)
-  auto part = this->db_parts->get_partByIndex(_elementData.back() - 1);
+  const auto part = this->db_parts->get_partByIndex(_elementData.back() - 1);
   if (part == nullptr) {
-    throw(std::invalid_argument("Could not find part with index:" +
-                                to_string(_elementData.back()) + " in db."));
+    throw(std::invalid_argument(
+      "Could not find part with index:" + std::to_string(_elementData.back()) +
+      " in db."));
   }
 
   // Find nodes
-  vector<std::shared_ptr<Node>> nodes;
-  vector<size_t> node_indexes;
+  std::vector<std::shared_ptr<Node>> nodes;
+  std::vector<size_t> node_indexes;
   for (size_t iNode = 0; iNode < _elementData.size() - 1;
        iNode++) { // last is mat
     auto _node = this->db_nodes->get_nodeByIndex(
       _elementData[iNode] -
       1); // dyna starts at index 1 (fortran), this program at 0 of course
     if (_node == nullptr)
-      throw(invalid_argument(
-        "A node with index:" + to_string(_elementData[iNode]) +
+      throw(std::invalid_argument(
+        "A node with index:" + std::to_string(_elementData[iNode]) +
         " does not exist and can not be added to an element."));
     if (iNode > 0 && (_elementData[iNode] == _elementData[iNode - 1]))
       break; // repeating an id means that there are just dummy ids
@@ -82,51 +85,44 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
   }
 
   // Create element
-  std::shared_ptr<Element> element_ptr;
-  unique_ptr<Element> element =
-    std::make_unique<Element>(_elementID, _eType, node_indexes, this);
+  std::shared_ptr<Element> element =
+    std::make_shared<Element>(_elementID, _eType, node_indexes, this);
 
   if (_eType == Element::BEAM) {
-    unordered_map<int, size_t>::iterator it =
-      this->id2index_elements2.find(_elementID);
+    auto it = this->id2index_elements2.find(_elementID);
     if (it != this->id2index_elements2.end()) {
       throw(std::invalid_argument(
         "Trying to insert an element with same id twice:" +
-        to_string(_elementID)));
+        std::to_string(_elementID)));
     }
 
     this->id2index_elements2.insert(
-      pair<int, size_t>(_elementID, this->elements2.size()));
-    this->elements2.push_back(std::move(element));
-    element_ptr = this->elements2.back();
+      std::pair<int, size_t>(_elementID, this->elements2.size()));
+    this->elements2.push_back(element);
 
   } else if (_eType == Element::SHELL) {
-    unordered_map<int, size_t>::iterator it =
-      this->id2index_elements4.find(_elementID);
+    auto it = this->id2index_elements4.find(_elementID);
     if (it != this->id2index_elements4.end()) {
       throw(std::invalid_argument(
         "Trying to insert an element with same id twice:" +
-        to_string(_elementID)));
+        std::to_string(_elementID)));
     }
 
     this->id2index_elements4.insert(
-      pair<int, size_t>(_elementID, this->elements4.size()));
-    this->elements4.push_back(std::move(element));
-    element_ptr = this->elements4.back();
+      std::pair<int, size_t>(_elementID, this->elements4.size()));
+    this->elements4.push_back(element);
 
   } else if (_eType == Element::SOLID) {
-    unordered_map<int, size_t>::iterator it =
-      this->id2index_elements8.find(_elementID);
+    auto it = this->id2index_elements8.find(_elementID);
     if (it != this->id2index_elements8.end()) {
       throw(std::invalid_argument(
         "Trying to insert an element with same id twice:" +
-        to_string(_elementID)));
+        std::to_string(_elementID)));
     }
 
     this->id2index_elements8.insert(
-      pair<int, size_t>(_elementID, this->elements8.size()));
-    this->elements8.push_back(std::move(element));
-    element_ptr = this->elements8.back();
+      std::pair<int, size_t>(_elementID, this->elements8.size()));
+    this->elements8.push_back(element);
 
   } else {
     throw(std::invalid_argument(
@@ -136,11 +132,11 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
 
   // Register Elements
   for (auto& node : nodes) {
-    node->add_element(element_ptr);
+    node->add_element(element);
   }
-  part->add_element(element_ptr);
+  part->add_element(element);
 
-  return element_ptr;
+  return element;
 }
 
 /** Add an element coming from a KeyFile/Dyna Input File
@@ -149,7 +145,7 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
  * Element.hpp
  * @param int _elementID : id of the element to add
  * @param int part_id : id of the part, the element belongs to
- * @param vector<int> _node_ids : node ids of the used nodes
+ * @param std::vector<int> _node_ids : node ids of the used nodes
  * @return std::shared_ptr<Element> element : pointer to created instance
  *
  * Add an element to the db by it's ID  and it's nodeIDs. Throws an exception
@@ -160,7 +156,7 @@ std::shared_ptr<Element>
 DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
                                    int _elementID,
                                    int _partid,
-                                   vector<int> _node_ids)
+                                   std::vector<int> _node_ids)
 {
   if (_elementID < 0) {
     throw(std::invalid_argument("Element-ID may not be negative!"));
@@ -170,18 +166,18 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   std::shared_ptr<Part> part = nullptr;
   try {
     part = this->db_parts->get_partByID(_partid);
-  } catch (const std::invalid_argument& err) {
+  } catch (std::invalid_argument) {
     this->db_parts->add_partByID(_partid);
   }
 
   // Find nodes
-  vector<std::shared_ptr<Node>> nodes;
-  vector<size_t> node_indexes;
+  std::vector<std::shared_ptr<Node>> nodes;
+  std::vector<size_t> node_indexes;
   for (size_t iNode = 0; iNode < _node_ids.size(); ++iNode) {
     auto _node = this->db_nodes->get_nodeByID(_node_ids[iNode]);
     if (_node == nullptr)
       _node =
-        this->db_nodes->add_node(_node_ids[iNode], vector<float>(3, 0.0f));
+        this->db_nodes->add_node(_node_ids[iNode], std::vector<float>(3, 0.0f));
     if (iNode > 0)
       if (_node_ids[iNode] == _node_ids[iNode - 1])
         break; // dummy ids start
@@ -190,51 +186,44 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   }
 
   // Create element
-  std::shared_ptr<Element> element_ptr;
-  shared_ptr<Element> element =
+  std::shared_ptr<Element> element =
     std::make_shared<Element>(_elementID, _eType, node_indexes, this);
 
   if (_eType == Element::BEAM) {
-    unordered_map<int, size_t>::iterator it =
-      this->id2index_elements2.find(_elementID);
+    auto it = this->id2index_elements2.find(_elementID);
     if (it != this->id2index_elements2.end()) {
       throw(std::invalid_argument(
         "Trying to insert an element with same id twice:" +
-        to_string(_elementID)));
+        std::to_string(_elementID)));
     }
 
     this->id2index_elements2.insert(
-      pair<int, size_t>(_elementID, this->elements2.size()));
-    this->elements2.push_back(std::move(element));
-    element_ptr = this->elements2.back();
+      std::pair<int, size_t>(_elementID, this->elements2.size()));
+    this->elements2.push_back(element);
 
   } else if (_eType == Element::SHELL) {
-    unordered_map<int, size_t>::iterator it =
-      this->id2index_elements4.find(_elementID);
+    auto it = this->id2index_elements4.find(_elementID);
     if (it != this->id2index_elements4.end()) {
       throw(std::invalid_argument(
         "Trying to insert an element with same id twice:" +
-        to_string(_elementID)));
+        std::to_string(_elementID)));
     }
 
     this->id2index_elements4.insert(
-      pair<int, size_t>(_elementID, this->elements4.size()));
-    this->elements4.push_back(std::move(element));
-    element_ptr = this->elements4.back();
+      std::pair<int, size_t>(_elementID, this->elements4.size()));
+    this->elements4.push_back(element);
 
   } else if (_eType == Element::SOLID) {
-    unordered_map<int, size_t>::iterator it =
-      this->id2index_elements8.find(_elementID);
+    auto it = this->id2index_elements8.find(_elementID);
     if (it != this->id2index_elements8.end()) {
       throw(std::invalid_argument(
         "Trying to insert an element with same id twice:" +
-        to_string(_elementID)));
+        std::to_string(_elementID)));
     }
 
     this->id2index_elements8.insert(
-      pair<int, size_t>(_elementID, this->elements8.size()));
-    this->elements8.push_back(std::move(element));
-    element_ptr = this->elements8.back();
+      std::pair<int, size_t>(_elementID, this->elements8.size()));
+    this->elements8.push_back(element);
 
   } else {
     throw(std::invalid_argument(
@@ -244,11 +233,11 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
 
   // Register Elements
   for (auto& node : nodes) {
-    node->add_element(element_ptr);
+    node->add_element(element);
   }
-  part->add_element(element_ptr);
+  part->add_element(element);
 
-  return element_ptr;
+  return element;
 }
 
 /** Get the DynaInputFile pointer
@@ -307,7 +296,7 @@ DB_Elements::get_nElements(const Element::ElementType _type) const
 /** Get the elements of the database of a certain type
  *
  * @param _type : optional filtering type
- * @return elems : vector of elements
+ * @return elems : std::vector of elements
  */
 std::vector<std::shared_ptr<Element>>
 DB_Elements::get_elements(const Element::ElementType _type)

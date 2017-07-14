@@ -15,6 +15,7 @@
  * @param T value : value to convert to string
  * @return string result
  */
+/*
 template<typename T>
 std::string
 to_string(T const& value)
@@ -22,6 +23,50 @@ to_string(T const& value)
   std::ostringstream os;
   os << value;
   return os.str();
+}
+*/
+
+/** Trim a string from left
+ *
+ * @param s : string getting trimmed
+ * @return trimmed_s : string trimmed
+ */
+inline std::string
+trim_left(std::string& s)
+{
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+            return !std::isspace(ch);
+          }));
+  return s;
+}
+
+/** Trim a string from right
+ *
+ * @param s : string getting trimmed
+ * @return trimmed_s : string trimmed
+ */
+inline std::string
+trim_right(std::string& s)
+{
+  s.erase(std::find_if(s.rbegin(),
+                       s.rend(),
+                       [](unsigned char ch) { return !std::isspace(ch); })
+            .base(),
+          s.end());
+  return s;
+}
+
+/** Trim a string from both sides
+ *
+ * @param s : string getting trimmed
+ * @return trimmed_s : string trimmed
+ */
+inline std::string
+trim(std::string& s)
+{
+  trim_right(s);
+  trim_left(s);
+  return s;
 }
 
 /** Convert string into some type

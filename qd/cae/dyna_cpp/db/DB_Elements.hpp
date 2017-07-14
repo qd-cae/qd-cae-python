@@ -16,7 +16,6 @@ class FEMFile;
 #include <vector>
 
 #include <dyna_cpp/db/Element.hpp>
-#include <dyna_cpp/utility/TextUtility.hpp>
 
 class DB_Elements
 {
@@ -127,26 +126,26 @@ DB_Elements::get_elementByID(Element::ElementType _elementType, T _elementID)
     const auto& it = this->id2index_elements2.find(_elementID);
     if (it == id2index_elements2.end())
       throw(std::invalid_argument("Can not find beam element with id " +
-                                  to_string(_elementID) + " in database"));
+                                  std::to_string(_elementID) + " in database"));
     return elements2[it->second];
 
   } else if (_elementType == Element::ElementType::SHELL) {
     const auto& it = this->id2index_elements4.find(_elementID);
     if (it == id2index_elements4.end())
       throw(std::invalid_argument("Can not find shell element with id " +
-                                  to_string(_elementID) + " in database"));
+                                  std::to_string(_elementID) + " in database"));
     return elements4[it->second];
 
   } else if (_elementType == Element::ElementType::SOLID) {
     const auto& it = this->id2index_elements8.find(_elementID);
     if (it == id2index_elements8.end())
       throw(std::invalid_argument("Can not find solid element with id " +
-                                  to_string(_elementID) + " in database"));
+                                  std::to_string(_elementID) + " in database"));
     return elements8[it->second];
   }
 
   throw(std::invalid_argument("Can not get element with elementType:" +
-                              to_string(_elementID)));
+                              std::to_string(_elementID)));
 }
 
 /** Get the element by a list of ids and it's type.
@@ -190,7 +189,7 @@ DB_Elements::get_elementByIndex(Element::ElementType _elementType,
       return elements2[_elementIndex];
     } else {
       throw(std::invalid_argument("beam element index " +
-                                  to_string(_elementIndex) +
+                                  std::to_string(_elementIndex) +
                                   " exceeds the number of elements."));
     }
 
@@ -199,7 +198,7 @@ DB_Elements::get_elementByIndex(Element::ElementType _elementType,
       return elements4[_elementIndex];
     } else {
       throw(std::invalid_argument("shell element index " +
-                                  to_string(_elementIndex) +
+                                  std::to_string(_elementIndex) +
                                   " exceeds the number of elements."));
     }
 
@@ -208,13 +207,13 @@ DB_Elements::get_elementByIndex(Element::ElementType _elementType,
       return elements8[_elementIndex];
     } else {
       throw(std::invalid_argument("solid element index " +
-                                  to_string(_elementIndex) +
+                                  std::to_string(_elementIndex) +
                                   " exceeds the number of elements."));
     }
   }
 
   throw(std::invalid_argument("Can not get element with elementType " +
-                              to_string(_elementIndex)));
+                              std::to_string(_elementIndex)));
 }
 
 /** Get the element by a list of internal indexes and it's type.

@@ -7,8 +7,6 @@
 #include <stdexcept>
 #include <string>
 
-using namespace std;
-
 /*
  * Constructor.
  */
@@ -30,17 +28,17 @@ DB_Nodes::~DB_Nodes()
 /** Add a node to the db by node-ID and it's
  *
  * @param int _nodeID : id of the node
- * @param vector<float> coords : coordinates of the node
+ * @param std::vector<float> coords : coordinates of the node
  * @return std::shared_ptr<Node> node : pointer to created instance
  *
  * Returns a pointer to the new node.
  */
 std::shared_ptr<Node>
-DB_Nodes::add_node(int _nodeID, vector<float> coords)
+DB_Nodes::add_node(int _nodeID, std::vector<float> coords)
 {
   if (coords.size() != 3) {
-    throw(
-      std::invalid_argument("The node coordinate vector must have length 3."));
+    throw(std::invalid_argument(
+      "The node coordinate std::vector must have length 3."));
   }
   if (_nodeID < 0) {
     throw(std::invalid_argument("Node-ID may not be negative!"));
@@ -49,15 +47,15 @@ DB_Nodes::add_node(int _nodeID, vector<float> coords)
   // Check if node already is in map
   if (this->id2index_nodes.count(_nodeID) != 0)
     throw(std::invalid_argument("Trying to insert a node with same id twice:" +
-                                to_string(_nodeID)));
+                                std::to_string(_nodeID)));
 
   // Create and add new node
-  shared_ptr<Node> node = std::make_shared<Node>(_nodeID, coords, this);
+  std::shared_ptr<Node> node = std::make_shared<Node>(_nodeID, coords, this);
 
-  id2index_nodes.insert(pair<int, size_t>(_nodeID, this->nodes.size()));
-  this->nodes.push_back(std::move(node));
+  id2index_nodes.insert(std::pair<int, size_t>(_nodeID, this->nodes.size()));
+  this->nodes.push_back(node);
 
-  return this->nodes.back();
+  return std::move(node);
 }
 
 /*

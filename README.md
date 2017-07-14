@@ -16,15 +16,14 @@ We want to tackle this issue with this free library, in order to give engineerin
 *Changelog 18.05.2017*
 Version 0.6.0
 
-The whole C++ Python API was rewritten with pybind11 because the old interface took to much time to add new stuff (now much faster in terms of development). The code was also modernized a lot (to C++14).
+The whole C++ Python API was rewritten with pybind11 because the old interface took to much time to add new stuff. Wrapping new stuff now is much easier. Also the code was modernized to C++14.
 
 **Note: The API changed a little bit (see below)**
 
 qd.cae.dyna
   - The whole Python API was rewritten with pybind11 
   - Due to this change, **many new functions** could be added (already existed in C++)
-  - **Element type specifier is not a string anymore**, but uses `Element.type` (enumeration in C++)
-  - Passing a string as element type does not work anymore! Use `Element.none`, `Element.beam`, `Element.shell` or `Element.solid` as replacement (might fix this on the future)
+  - **Element type specifier is not a string anymore**, but uses `Element.type` (enumeration in C++). Use `Element.none`, `Element.beam`, `Element.shell` or `Element.solid` as replacement (might add string support in the future again).
   - `Element.get_history` renamed to `Element.get_history_variables`
   
 
@@ -60,7 +59,7 @@ or
 python3 -m pip install qd
 ```
 
-The wheels which are used by pip can also be found here in the dist folder. Note though that your python distribution might not neccessarily find an appropriate version and fail. In that case one has 3 options:
+The wheels which are used by pip can also be found here in the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist). Note though that your windows python distribution might not neccessarily find an appropriate version and fail. In that case one has 3 options:
 
  - Download and use [Anaconda Python x64](https://www.continuum.io/downloads#windows)
  - Open a request for compilation of a specific distribution
@@ -68,13 +67,13 @@ The wheels which are used by pip can also be found here in the dist folder. Note
 
 ## Linux
 
-In the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist) usually are some precompiled Linux wheels for installation with pip. Note that Linux wheels rarely work accross different systems, so do not expect them to work and also please see the [Compilation](#Compilation) section below. It's quite simple to compile it yourself.
+In the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist) usually are some precompiled Linux wheels for installation with pip. Note that Linux wheels rarely work accross different systems, so do not expect them to work and in case of trouble see the [Compilation](#Compilation) section below. It's quite simple to compile it yourself on Linux.
 
 # Compilation
 
 ## Windows
 
-Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++14 (also the old compiler created very slow code).
+Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++14 (also the old compiler created very very very slow code).
 
 First download [BOOST for C++](http://www.boost.org/) (we only need headers, do not compile it). 
 
@@ -85,7 +84,7 @@ git clone https://github.com/qd-cae/qd-cae-python.git
 cd qd-eng
 ```
 
-Now register the boost directory in the header of the file: setup.py. There is a variable for it:
+Now register the boost directory in the header of the file: `setup.py`. There is a variable for it:
 
 ```python
 # In top of setup.py
@@ -94,7 +93,8 @@ boost_path = "path/to/boost"
 
 Thereafter run the setup script, the code will automatically compile and install. 
 
-```
+```bash
+python3 -m pip install -r requirements.txt
 python3 setup.py install
 ```
 
@@ -116,11 +116,10 @@ sudo apt-get install libboost-dev
 
 The setup script should now automatically find boost on your system, if you still have trouble download and register it the same way as on windows. Now just install with
 
-```
+```bash
 git clone https://github.com/qd-cae/qd-cae-python.git
 cd qd-cae-python
 sudo apt-get install python3-numpy
-sudo python3 -m pip install --only-binary=numpy numpy
 sudo python3 -m pip install -r requirements.txt
 sudo python3 setup.py install
 ```

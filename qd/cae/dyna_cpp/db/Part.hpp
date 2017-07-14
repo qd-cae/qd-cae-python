@@ -10,14 +10,15 @@ class FEMFile;
 #include <dyna_cpp/db/Element.hpp>
 #include <vector>
 
-class Part {
- private:
+class Part
+{
+private:
   int partID;
   FEMFile* femfile;
   std::string partName;
-  std::vector<std::shared_ptr<Element> > elements;
+  std::vector<std::shared_ptr<Element>> elements;
 
- public:
+public:
   Part(int _partID, std::string _partName, FEMFile* _femfile);
   ~Part();
   void set_name(std::string _partName);
@@ -25,9 +26,9 @@ class Part {
 
   int get_partID();
   std::string get_name();
-  std::vector<std::shared_ptr<Node> > get_nodes();
-  std::vector<std::shared_ptr<Element> > get_elements(
-      Element::ElementType _etype = Element::NONE);
+  std::vector<std::shared_ptr<Node>> get_nodes();
+  std::vector<std::shared_ptr<Element>> get_elements(
+    Element::ElementType _etype = Element::NONE);
 };
 
 #endif

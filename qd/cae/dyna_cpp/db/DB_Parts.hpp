@@ -5,6 +5,7 @@
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -73,8 +74,8 @@ DB_Parts::get_partByID(T _id)
     return parts[it->second];
   } else {
     // :(
-    throw(
-      std::invalid_argument("Could not find part with id " + to_string(_id)));
+    throw(std::invalid_argument("Could not find part with id " +
+                                std::to_string(_id)));
   }
 }
 
@@ -114,7 +115,7 @@ DB_Parts::get_partByIndex(T _index)
   } else {
     // :(
     throw(std::invalid_argument("Could not find part with index " +
-                                to_string(_index)));
+                                std::to_string(_index)));
   }
 }
 

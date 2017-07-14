@@ -9,7 +9,6 @@ class DB_Elements;
 // includes
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
-#include <iostream>
 #include <memory>
 #include <set>
 #include <vector>
