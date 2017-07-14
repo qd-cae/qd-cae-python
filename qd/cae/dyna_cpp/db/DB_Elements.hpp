@@ -56,12 +56,12 @@ public:
   template<typename T>
   std::shared_ptr<Element> get_elementByID(Element::ElementType _eType, T _id);
   template<typename T>
-  std::shared_ptr<Element> get_elementByIndex(Element::ElementType _eType,
-                                              T _index);
-  template<typename T>
   std::vector<std::shared_ptr<Element>> get_elementByID(
     Element::ElementType _eType,
     const std::vector<T>& _ids);
+  template<typename T>
+  std::shared_ptr<Element> get_elementByIndex(Element::ElementType _eType,
+                                              T _index);
   template<typename T>
   std::vector<std::shared_ptr<Element>> get_elementByIndex(
     Element::ElementType _eType,
@@ -116,11 +116,6 @@ public:
  * @param _elementID : id of the element (like in the solver)
  * @return _element
  *
- * Type may be: Element.ElementType
- * NONE = 0 -> error
- * BEAM = 1
- * SHELL = 2
- * SOLID = 3
  */
 template<typename T>
 std::shared_ptr<Element>
@@ -160,11 +155,6 @@ DB_Elements::get_elementByID(Element::ElementType _elementType, T _elementID)
  * @param _ids : vector of ids
  * @return ret vector of elements
  *
- * Type may be: Element.ElementType
- * NONE = 0 -> error
- * BEAM = 1
- * SHELL = 2
- * SOLID = 3
  */
 template<typename T>
 std::vector<std::shared_ptr<Element>>
@@ -186,11 +176,6 @@ DB_Elements::get_elementByID(Element::ElementType _elementType,
  * @param int _elementIndex : index of the element (not id!)
  * @return std::shared_ptr<Element> _element
  *
- * Type may be: Element.ElementType
- * NONE = 0 -> error
- * BEAM = 1
- * SHELL = 2
- * SOLID = 3
  */
 template<typename T>
 // typename std::enable_if<std::is_integral<T>::value>::type
@@ -238,11 +223,6 @@ DB_Elements::get_elementByIndex(Element::ElementType _elementType,
  * @param _indexes : vector of indexes
  * @return ret : vector of elements
  *
- * Type may be: Element.ElementType
- * NONE = 0 -> error
- * BEAM = 1
- * SHELL = 2
- * SOLID = 3
  */
 template<typename T>
 std::vector<std::shared_ptr<Element>>

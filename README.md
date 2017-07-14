@@ -16,7 +16,7 @@ We want to tackle this issue with this free library, in order to give engineerin
 *Changelog 18.05.2017*
 Version 0.6.0
 
-The whole C++ to Python API was rewritten with pybind11 because the old interface took to much time if one wanted to add new stuff (now much faster in terms of development). The code was also modernized a lot.
+The whole C++ Python API was rewritten with pybind11 because the old interface took to much time to add new stuff (now much faster in terms of development). The code was also modernized a lot (to C++14).
 
 **Note: The API changed a little bit (see below)**
 
