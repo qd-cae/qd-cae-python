@@ -12,9 +12,12 @@ class DB_Nodes;
 #include <memory>
 #include <vector>
 
-class Node {
- private:
-  int nodeID;
+namespace qd {
+
+class Node
+{
+private:
+  int_32_t nodeID;
   std::vector<std::shared_ptr<Element>> elements;
   std::vector<float> coords;
   std::vector<std::vector<float>> disp;
@@ -22,8 +25,8 @@ class Node {
   std::vector<std::vector<float>> accel;
   DB_Nodes* db_nodes;
 
- public:
-  Node(int _nodeID, std::vector<float> _coords, DB_Nodes* db_nodes);
+public:
+  Node(int_32_t _nodeID, std::vector<float> _coords, DB_Nodes* db_nodes);
   ~Node();
   bool operator<(const Node& other) const;
   std::shared_ptr<Element> add_element(std::shared_ptr<Element>);
@@ -35,28 +38,35 @@ class Node {
   inline void clear_accel() { this->accel.clear(); }
 
   // Getter
-  inline int get_nodeID() { return this->nodeID; }
-  inline std::vector<std::shared_ptr<Element>> get_elements() {
+  inline int_32_t get_nodeID() { return this->nodeID; }
+  inline std::vector<std::shared_ptr<Element>> get_elements()
+  {
     return this->elements;
   }
-  std::vector<float> get_coords(int iTimestep = 0);
+  std::vector<float> get_coords(int_32_t iTimestep = 0);
   inline std::vector<std::vector<float>> get_disp() { return this->disp; }
   inline std::vector<std::vector<float>> get_vel() { return this->vel; }
   inline std::vector<std::vector<float>> get_accel() { return this->accel; }
 
   // Python API
-  inline pybind11::array_t<float> get_coords_py(int iTimestep) {
+  inline pybind11::array_t<float> get_coords_py(int_32_t iTimestep)
+  {
     return qd::py::vector_to_nparray(this->get_coords(iTimestep));
   }
-  inline pybind11::array_t<float> get_disp_py() {
+  inline pybind11::array_t<float> get_disp_py()
+  {
     return qd::py::vector_to_nparray(this->get_disp());
   }
-  inline pybind11::array_t<float> get_vel_py() {
+  inline pybind11::array_t<float> get_vel_py()
+  {
     return qd::py::vector_to_nparray(this->get_vel());
   }
-  inline pybind11::array_t<float> get_accel_py() {
+  inline pybind11::array_t<float> get_accel_py()
+  {
     return qd::py::vector_to_nparray(this->get_accel());
   }
 };
+
+} // namespace qd
 
 #endif

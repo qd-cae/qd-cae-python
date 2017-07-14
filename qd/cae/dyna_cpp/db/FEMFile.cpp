@@ -4,6 +4,8 @@
 #include "dyna_cpp/db/DB_Nodes.hpp"
 #include "dyna_cpp/db/DB_Parts.hpp"
 
+namespace qd {
+
 /** Constructor for a new FEMFile
  */
 FEMFile::FEMFile()
@@ -51,3 +53,5 @@ FEMFile::get_filepath()
 {
   return this->filepath;
 }
+
+} // namespace qd

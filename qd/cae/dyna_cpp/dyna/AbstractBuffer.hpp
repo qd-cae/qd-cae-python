@@ -3,22 +3,24 @@
 #define ABSTRACTBUFFER_HPP
 
 #include <bitset>
-#include <cstring>
+#include <cstdint>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
+namespace qd {
+
 class AbstractBuffer
 {
 
 protected:
-  int wordSize;
+  int_32_t wordSize;
   std::vector<char> current_buffer;
 
 public:
   // Standard
-  AbstractBuffer(int _wordSize)
+  AbstractBuffer(int_32_t _wordSize)
     : wordSize(_wordSize){};
   virtual ~AbstractBuffer(){};
   // Geometry
@@ -37,19 +39,19 @@ public:
   virtual void finish_reading() = 0;
 
   // Vars
-  inline int read_int(int _iWord);
-  inline float read_float(int _iWord);
-  inline void read_float_array(int _iWord,
-                               int _length,
+  inline int_32_t read_int(int_32_t _iWord);
+  inline float read_float(int_32_t _iWord);
+  inline void read_float_array(int_32_t _iWord,
+                               int_32_t _length,
                                std::vector<float>& _buffer);
-  inline std::string read_str(int _iWord, int _length);
+  inline std::string read_str(int_32_t _iWord, int_32_t _length);
 };
 
 /*
- * read an int from the current buffer
+ * read an int_32_t from the current buffer
  */
-int
-AbstractBuffer::read_int(int iWord)
+int_32_t
+AbstractBuffer::read_int(int_32_t iWord)
 {
 
 #ifdef QD_DEBUG
@@ -60,19 +62,19 @@ AbstractBuffer::read_int(int iWord)
 
   // BIG ENDIAN ?
   // SMALL ENDIAN ?
-  int start = iWord * this->wordSize;
+  int_32_t start = iWord * this->wordSize;
   return (((current_buffer[start + 3] & 0xff) << 24) |
           ((current_buffer[start + 2] & 0xff) << 16) |
           ((current_buffer[start + 1] & 0xff) << 8) |
           ((current_buffer[start + 0] & 0xff)));
-  // int header = *reinterpret_cast<const int*>(&soundFileDataVec[4]);
+  // int_32_t header = *reinterpret_cast<const int_32_t*>(&soundFileDataVec[4]);
 }
 
 /*
  * read a float from the current buffer
  */
 float
-AbstractBuffer::read_float(int iWord)
+AbstractBuffer::read_float(int_32_t iWord)
 {
 
 #ifdef QD_DEBUG
@@ -93,8 +95,8 @@ AbstractBuffer::read_float(int iWord)
  * Read a float array into an allocated buffer
  */
 void
-AbstractBuffer::read_float_array(int _iWord,
-                                 int _length,
+AbstractBuffer::read_float_array(int_32_t _iWord,
+                                 int_32_t _length,
                                  std::vector<float>& _buffer)
 {
 
@@ -109,7 +111,7 @@ AbstractBuffer::read_float_array(int _iWord,
 
   /*
   BUGGY
-  int pos = _iWord*this->wordSize;
+  int_32_t pos = _iWord*this->wordSize;
   std::copy(&current_buffer[pos],
             &current_buffer[pos]+_length*sizeof(float),
             &_buffer[0]);
@@ -123,12 +125,12 @@ AbstractBuffer::read_float_array(int _iWord,
  * read a string from the current buffer
  */
 std::string
-AbstractBuffer::read_str(int iWord, int wordLength)
+AbstractBuffer::read_str(int_32_t iWord, int_32_t wordLength)
 {
   // if(this->bufferSize <= (iWord+wordLength)*this->wordSize){
   //  throw("read_str tries to read beyond the buffer size.");
   std::stringstream res;
-  for (int ii = iWord * this->wordSize;
+  for (int_32_t ii = iWord * this->wordSize;
        ii < (iWord + wordLength) * this->wordSize;
        ii++) {
     res << char(std::bitset<8>(this->current_buffer[ii]).to_ulong());
@@ -136,5 +138,7 @@ AbstractBuffer::read_str(int iWord, int wordLength)
 
   return res.str();
 }
+
+} // namespace qd
 
 #endif

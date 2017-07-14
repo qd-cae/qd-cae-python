@@ -2,22 +2,29 @@
 #ifndef D3PLOTBUFFER_HPP
 #define D3PLOTBUFFER_HPP
 
+// includes
+#include <dyna_cpp/dyna/AbstractBuffer.hpp>
+
+#include <cstdint>
+#include <future>
 #include <string>
 #include <vector>
-#include <future>
-#include "dyna_cpp/dyna/AbstractBuffer.hpp"
 
-class D3plotBuffer : public AbstractBuffer {
+namespace qd {
 
-  private:
-  unsigned int iStateFile;
-  std::vector< std::future< std::vector<char> > > state_buffers; // preloaded states (REVERSED!!!)
+class D3plotBuffer : public AbstractBuffer
+{
+
+private:
+  size_t iStateFile;
+  std::vector<std::future<std::vector<char>>>
+    state_buffers; // preloaded states (REVERSED!!!)
   long bufferSize;
   std::vector<std::string> d3plots;
   static std::vector<char> get_bufferFromFile(std::string); // helper function
 
-  public:
-  D3plotBuffer(std::string _d3plot_path, int _wordSize);
+public:
+  D3plotBuffer(std::string _d3plot_path, int_32_t _wordSize);
   ~D3plotBuffer();
   void read_geometryBuffer();
   void free_geometryBuffer();
@@ -32,8 +39,8 @@ class D3plotBuffer : public AbstractBuffer {
   void end_nextState();
   // Close
   void finish_reading();
-
 };
 
+} // namespace qd
 
 #endif

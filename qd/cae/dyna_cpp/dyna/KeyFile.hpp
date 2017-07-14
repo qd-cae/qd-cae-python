@@ -11,6 +11,8 @@
 // forward declarations
 class D3plot;
 
+namespace qd {
+
 /**
  * This is a class for reading LS-Dyna input files.The mesh will be parsed with
  * it's properties, currently only in a limited way.
@@ -31,5 +33,7 @@ public:
   };
   KeyFile* get_keyFile() { return this; };
 };
+
+} // namespace qd
 
 #endif

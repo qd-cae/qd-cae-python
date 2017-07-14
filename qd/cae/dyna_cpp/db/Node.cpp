@@ -1,20 +1,24 @@
 
-#include <iostream>
-#include <stdexcept>
-#include <string>
 
+#include "dyna_cpp/db/Node.hpp"
 #include "dyna_cpp/db/DB_Elements.hpp"
 #include "dyna_cpp/db/DB_Nodes.hpp"
 #include "dyna_cpp/db/Element.hpp"
 #include "dyna_cpp/db/FEMFile.hpp"
-#include "dyna_cpp/db/Node.hpp"
 #include "dyna_cpp/dyna/D3plot.hpp"
 #include "dyna_cpp/utility/TextUtility.hpp"
+
+#include <cstdint>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+
+namespace qd {
 
 /*
  * Constructor.
  */
-Node::Node(int _nodeID, std::vector<float> _coords, DB_Nodes* _db_nodes)
+Node::Node(int_32_t _nodeID, std::vector<float> _coords, DB_Nodes* _db_nodes)
   : nodeID(_nodeID)
   , coords(_coords)
   , db_nodes(_db_nodes)
@@ -108,7 +112,7 @@ Node::add_accel(std::vector<float> new_accel)
  * of length 3.
  */
 std::vector<float>
-Node::get_coords(int iTimestep)
+Node::get_coords(int_32_t iTimestep)
 {
   // D3plot with iTimestep != 0
   if (this->db_nodes->get_femfile()->is_d3plot()) {
@@ -118,7 +122,7 @@ Node::get_coords(int iTimestep)
     if (iTimestep != 0) {
       if (d3plot->displacement_is_read()) {
         if (iTimestep < 0)
-          iTimestep = static_cast<int>(d3plot->get_timesteps().size()) +
+          iTimestep = static_cast<int_32_t>(d3plot->get_timesteps().size()) +
                       iTimestep; // Python array style
 
         if ((iTimestep < 0))
@@ -129,9 +133,7 @@ Node::get_coords(int iTimestep)
           throw(std::invalid_argument(
             "Specified timestep exceeds real time step size."));
 
-        std::vector<float> ret;
-        ret = this->coords; // copies
-
+        std::vector<float> ret = this->coords; // copies
         ret[0] += this->disp[iTimestep][0];
         ret[1] += this->disp[iTimestep][1];
         ret[2] += this->disp[iTimestep][2];
@@ -161,3 +163,5 @@ Node::get_coords(int iTimestep)
   // iTimestep == 0
   return this->coords;
 }
+
+} // namespace qd

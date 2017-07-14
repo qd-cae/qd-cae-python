@@ -3,22 +3,21 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <string.h>
+#include <string>
 
 #include "dyna_cpp/dyna/D3plotBuffer.hpp"
 #include "dyna_cpp/utility/FileUtility.hpp"
 
-using namespace std;
+namespace qd {
 
 /*
  * Constructor
  */
-D3plotBuffer::D3plotBuffer(string _d3plot_path, int _wordSize)
+D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int_32_t _wordSize)
   : AbstractBuffer(_wordSize)
+  , iStateFile(0)
+  , wordSize(_wordSize)
 {
-
-  // Init vars
-  iStateFile = 0;
 
   // Check File
   if (!FileUtility::check_ExistanceAndAccess(_d3plot_path)) {
@@ -40,8 +39,6 @@ D3plotBuffer::D3plotBuffer(string _d3plot_path, int _wordSize)
     throw(std::invalid_argument(
       "No D3plot result file could be found with the given path:" +
       _d3plot_path));
-
-  this->wordSize = _wordSize;
 }
 
 /*
@@ -49,7 +46,7 @@ D3plotBuffer::D3plotBuffer(string _d3plot_path, int _wordSize)
  */
 D3plotBuffer::~D3plotBuffer()
 {
-
+  // clean up futures
   while (state_buffers.size() != 0) {
     state_buffers.back().get();
     state_buffers.pop_back();
@@ -60,11 +57,11 @@ D3plotBuffer::~D3plotBuffer()
  * Get a char* byte buffer from the given file.
  *
  */
-vector<char>
-D3plotBuffer::get_bufferFromFile(string filepath)
+std::vector<char>
+D3plotBuffer::get_bufferFromFile(std::string filepath)
 {
 
-  vector<char> state_buffer;
+  std::vector<char> state_buffer;
 
   // Read data into buffer
   ifstream fStream;
@@ -177,7 +174,6 @@ D3plotBuffer::read_nextState()
 void
 D3plotBuffer::rewind_nextState()
 {
-
   iStateFile = 0;
   this->current_buffer = D3plotBuffer::get_bufferFromFile(d3plots[0]);
 }
@@ -189,10 +185,6 @@ D3plotBuffer::rewind_nextState()
 bool
 D3plotBuffer::has_nextState()
 {
-  /*
-  if(iStateFile < d3plots.size())
-    return true;
-  */
   if (state_buffers.size() > 0)
     return true;
   return false;
@@ -218,3 +210,5 @@ D3plotBuffer::finish_reading()
 
   this->current_buffer.clear();
 }
+
+} // namespace qd

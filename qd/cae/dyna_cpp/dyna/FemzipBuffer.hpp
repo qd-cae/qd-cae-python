@@ -2,42 +2,45 @@
 #ifndef FEMZIPBUFFER_HPP
 #define FEMZIPBUFFER_HPP
 
-#include <string>
-#include <future>
 #include "dyna_cpp/dyna/AbstractBuffer.hpp"
 
-class FemzipBuffer : public AbstractBuffer {
+#include <future>
+#include <string>
+
+namespace qd {
+
+class FemzipBuffer : public AbstractBuffer
+{
 
   /* PRIVATE */
-  private:
+private:
   std::string filepath;
 
-  std::future< std::vector<char> > next_state_buffer;
+  std::future<std::vector<char>> next_state_buffer;
 
   // general
-  int filetype;// = 1;
-  int ier;
-  int pos;
+  int_32_t filetype; // = 1;
+  int_32_t ier;
+  int_32_t pos;
   // Sizing
-  int size_geo;
-  int size_state;
-  int size_disp;
-  int size_activity;
-  int size_post;
-  int size_titles;
+  int_32_t size_geo;
+  int_32_t size_state;
+  int_32_t size_disp;
+  int_32_t size_activity;
+  int_32_t size_post;
+  int_32_t size_titles;
   // States
-  int iTimeStep; // ... why
-  int nTimeStep;
-  int size_times;
+  int_32_t iTimeStep; // ... why
+  int_32_t nTimeStep;
+  int_32_t size_times;
   float* timese;
   // config
-  int adjust;
+  int_32_t adjust;
 
   void check_ier(std::string);
-  void init_vars();
 
   /* PUBLIC */
-  public:
+public:
   FemzipBuffer(std::string);
   ~FemzipBuffer();
   void read_geometryBuffer();
@@ -53,7 +56,8 @@ class FemzipBuffer : public AbstractBuffer {
   void end_nextState();
   // Close
   void finish_reading();
-
 };
+
+} // namespace qd
 
 #endif

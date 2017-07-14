@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+namespace qd {
+
 /** Convert some type into a string.
  * @param T value : value to convert to string
  * @return string result
@@ -167,5 +169,7 @@ preprocess_string_dyna(std::string _text)
     return _text.substr(0, pos);
   return _text;
 }
+
+} // namespace qd
 
 #endif

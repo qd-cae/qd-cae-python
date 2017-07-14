@@ -3,6 +3,8 @@
 #include "dyna_cpp/db/FEMFile.hpp"
 #include "dyna_cpp/db/Part.hpp"
 
+namespace qd {
+
 /**
  * Constructor
  */
@@ -24,7 +26,7 @@ DB_Parts::~DB_Parts()
 /** Create a part with it's id. The index is just size + 1.
  */
 std::shared_ptr<Part>
-DB_Parts::add_partByID(int _partID, const std::string& name)
+DB_Parts::add_partByID(int_32_t _partID, const std::string& name)
 {
 #ifdef QD_DEBUG
   const auto& it = id2index_parts.find(_partID);
@@ -36,7 +38,7 @@ DB_Parts::add_partByID(int _partID, const std::string& name)
   auto part = std::make_shared<Part>(_partID, name, this->femfile);
   this->parts.push_back(part);
   this->id2index_parts.insert(
-    std::pair<int, size_t>(_partID, this->parts.size() - 1));
+    std::pair<int_32_t, size_t>(_partID, this->parts.size() - 1));
   return part;
 }
 
@@ -91,3 +93,5 @@ DB_Parts::print_parts() const
     std::cout << std::flush;
   }
 }
+
+} // namespace qd

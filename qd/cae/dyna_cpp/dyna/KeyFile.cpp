@@ -8,14 +8,16 @@
 #include "dyna_cpp/utility/BoostException.hpp"
 #include "dyna_cpp/utility/FileUtility.hpp"
 #include "dyna_cpp/utility/TextUtility.hpp"
+
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
+
+#include <cstdint>
 #include <fstream>
 #include <iostream>
-#include <stdexcept> // std::invalid_argument
+#include <stdexcept>
 
-using namespace std;
-using namespace boost::algorithm;
+namespace qd {
 
 // Enumeration
 namespace Keyword {
@@ -42,7 +44,7 @@ KeyFile::KeyFile()
  *
  * @param string filepath : filepath of a key file to read
  */
-KeyFile::KeyFile(string _filepath)
+KeyFile::KeyFile(std::string _filepath)
   : FEMFile(_filepath)
 {
   // Read the mesh
@@ -51,30 +53,31 @@ KeyFile::KeyFile(string _filepath)
 
 /** Read the mesh from the file given in the filepath
  *
+ * @param string filepath : filepath of a key file to read
  */
 void
-KeyFile::read_mesh(string _filepath)
+KeyFile::read_mesh(std::string _filepath)
 {
 #ifdef QD_DEBUG
-  cout << " === Parsing File: " << _filepath << endl;
+  std::cout << " === Parsing File: " << _filepath << std::endl;
 #endif
 
   // File directory for Includes
-  string directory = "";
+  std::string directory = "";
   size_t pos = _filepath.find_last_of("/\\");
-  if (pos != string::npos)
+  if (pos != std::string::npos)
     directory = _filepath.substr(0, pos) + "/";
 #ifdef QD_DEBUG
-  cout << "Basic directory for *INCLUDE: " << directory << endl;
+  std::cout << "Basic directory for *INCLUDE: " << directory << std::endl;
 #endif
 
 // Read the lines
 #ifdef QD_DEBUG
-  cout << "Filling IO-Buffer ... " << flush;
+  std::cout << "Filling IO-Buffer ... " << flush;
 #endif
-  vector<string> lines = FileUtility::read_textFile(_filepath);
+  std::<std::string> lines = FileUtility::read_textFile(_filepath);
 #ifdef QD_DEBUG
-  cout << "done." << endl;
+  std::cout << "done." << std::endl;
 #endif
 
   // Get databases
@@ -84,19 +87,20 @@ KeyFile::read_mesh(string _filepath)
 
   // Time to do the thing
   Keyword::Keyword keyword = Keyword::NONE;
-  string line;
-  string line_trimmed;
-  vector<float> coords(3);
-  vector<int> elemNodes_beam(2);
-  vector<int> elemNodes_shell(4);
-  vector<int> elemNodes_solid(8);
-  int id;
-  int partID = -1;
-  string title;
+  std::string line;
+  std::string line_trimmed;
+  std::vector<float> coords(3);
+  std::vector<int_32_t> elemNodes_beam(2);
+  std::vector<int_32_t> elemNodes_shell(4);
+  std::vector<int_32_t> elemNodes_solid(8);
+  int_32_t id;
+  int_32_t partID = -1;
+  std::string title;
   size_t iCardLine = 0;
   bool line_has_keyword = false;
 
-  for (vector<string>::size_type iLine = 0; iLine != lines.size(); iLine++) {
+  for (std::vector<std::string>::size_type iLine = 0; iLine != lines.size();
+       iLine++) {
     // Remove comments, etc
     // line = preprocess_string_dyna(lines[iLine]);
     line = lines[iLine];
@@ -106,13 +110,13 @@ KeyFile::read_mesh(string _filepath)
       continue;
 
     line_trimmed = trim_copy(line);
-    line_has_keyword = (line_trimmed.find('*') != string::npos);
+    line_has_keyword = (line_trimmed.find('*') != std::string::npos);
 
     /* INCLUDE */
     if (line_trimmed == "*INCLUDE") {
       keyword = Keyword::INCLUDE;
 #ifdef QD_DEBUG
-      cout << "*INCLUDE in line: " << (iLine + 1) << endl;
+      std::cout << "*INCLUDE in line: " << (iLine + 1) << std::endl;
 #endif
     } else if (keyword == Keyword::INCLUDE) {
       this->read_mesh(directory +
@@ -124,7 +128,7 @@ KeyFile::read_mesh(string _filepath)
     if (line_trimmed == "*NODE") {
       keyword = Keyword::NODE;
 #ifdef QD_DEBUG
-      cout << "Starting *NODE in line: " << (iLine + 1) << endl;
+      std::cout << "Starting *NODE in line: " << (iLine + 1) << std::endl;
 #endif
 
     } else if ((keyword == Keyword::NODE) && !line_has_keyword &&
@@ -135,23 +139,23 @@ KeyFile::read_mesh(string _filepath)
         coords[2] = std::stof(line.substr(40, 16));
         db_nodes->add_node(std::stoi(line.substr(0, 8)), coords);
       } catch (const std::exception& ex) {
-        cerr << "Error reading node in line " << (iLine + 1) << ":" << ex.what()
-             << endl;
+        std::cerr << "Error reading node in line " << (iLine + 1) << ":"
+                  << ex.what() << std::endl;
         keyword = Keyword::NODE;
-      } catch (const string& ex) {
-        cerr << "Error reading node in line " << (iLine + 1) << ":" << ex
-             << endl;
+      } catch (const std::string& ex) {
+        std::cerr << "Error reading node in line " << (iLine + 1) << ":" << ex
+                  << std::endl;
         keyword = Keyword::NODE;
       } catch (...) {
-        cerr << "Error reading node in line " << (iLine + 1)
-             << ": Unknown error." << endl;
+        std::cerr << "Error reading node in line " << (iLine + 1)
+                  << ": Unknown error." << std::endl;
         keyword = Keyword::NODE;
       }
     } else if ((keyword == Keyword::NODE) &&
                (line_has_keyword | line.empty())) {
       keyword = Keyword::NONE;
 #ifdef QD_DEBUG
-      cout << "*NODE finished in line: " << (iLine + 1) << endl;
+      std::cout << "*NODE finished in line: " << (iLine + 1) << std::std::endl;
 #endif
     }
 
@@ -159,7 +163,8 @@ KeyFile::read_mesh(string _filepath)
     if (line_trimmed == "*ELEMENT_SHELL") {
       keyword = Keyword::ELEMENT_SHELL;
 #ifdef QD_DEBUG
-      cout << "Starting *ELEMENT_SHELL in line: " << (iLine + 1) << endl;
+      std::cout << "Starting *ELEMENT_SHELL in line: " << (iLine + 1)
+                << std::endl;
 #endif
     } else if ((keyword == Keyword::ELEMENT_SHELL) && !line_has_keyword &&
                (!line.empty())) {
@@ -173,19 +178,20 @@ KeyFile::read_mesh(string _filepath)
         db_elements->add_element_byKeyFile(
           Element::SHELL, id, partID, elemNodes_shell);
       } catch (const std::exception& ex) {
-        cerr << "Error reading shell in line " << (iLine + 1) << ":"
-             << ex.what() << endl;
+        std::cerr << "Error reading shell in line " << (iLine + 1) << ":"
+                  << ex.what() << std::endl;
         keyword = Keyword::NONE;
       } catch (...) {
-        cerr << "Error reading shell in line " << (iLine + 1)
-             << ": Unknown error." << endl;
+        std::cerr << "Error reading shell in line " << (iLine + 1)
+                  << ": Unknown error." << std::endl;
         keyword = Keyword::NONE;
       }
     } else if ((keyword == Keyword::ELEMENT_SHELL) &&
                (line_has_keyword | line.empty())) {
       keyword = Keyword::NONE;
 #ifdef QD_DEBUG
-      cout << "*ELEMENT_SHELL finished in line: " << (iLine + 1) << endl;
+      std::cout << "*ELEMENT_SHELL finished in line: " << (iLine + 1)
+                << std::endl;
 #endif
     }
 
@@ -194,7 +200,8 @@ KeyFile::read_mesh(string _filepath)
       keyword = Keyword::ELEMENT_SOLID;
       iCardLine = 0;
 #ifdef QD_DEBUG
-      cout << "Starting *ELEMENT_SOLID in line: " << (iLine + 1) << endl;
+      std::cout << "Starting *ELEMENT_SOLID in line: " << (iLine + 1)
+                << std::endl;
 #endif
     } else if ((keyword == Keyword::ELEMENT_SOLID) && !line_has_keyword &&
                !line.empty()) {
@@ -219,16 +226,16 @@ KeyFile::read_mesh(string _filepath)
         }
 
       } catch (const std::exception& ex) {
-        cerr << "Error reading solid in line " << (iLine + 1) << ":"
-             << ex.what() << endl;
+        std::cerr << "Error reading solid in line " << (iLine + 1) << ":"
+                  << ex.what() << std::endl;
         keyword = Keyword::NONE;
-      } catch (const string& ex) {
-        cerr << "Error reading solid in line " << (iLine + 1) << ":" << ex
-             << endl;
+      } catch (const std::string& ex) {
+        std::cerr << "Error reading solid in line " << (iLine + 1) << ":" << ex
+                  << std::endl;
         keyword = Keyword::NONE;
       } catch (...) {
-        cerr << "Error reading solid in line " << (iLine + 1)
-             << ": Unknown error." << endl;
+        std::cerr << "Error reading solid in line " << (iLine + 1)
+                  << ": Unknown error." << std::endl;
         keyword = Keyword::NONE;
       }
 
@@ -236,17 +243,19 @@ KeyFile::read_mesh(string _filepath)
                (line_has_keyword | line.empty())) {
       keyword = Keyword::NONE;
 #ifdef QD_DEBUG
-      cout << "*ELEMENT_SOLID finished in line: " << (iLine + 1) << endl;
+      std::cout << "*ELEMENT_SOLID finished in line: " << (iLine + 1)
+                << std::endl;
 #endif
     }
 
     /* ELEMENTS BEAM */
-    if (line_trimmed.substr(0, string("*ELEMENT_BEAM").size()) ==
+    if (line_trimmed.substr(0, std::string("*ELEMENT_BEAM").size()) ==
         "*ELEMENT_BEAM") {
       keyword = Keyword::ELEMENT_BEAM;
       iCardLine = 0;
 #ifdef QD_DEBUG
-      cout << "Starting *ELEMENT_BEAM in line: " << (iLine + 1) << endl;
+      std::cout << "Starting *ELEMENT_BEAM in line: " << (iLine + 1)
+                << std::endl;
 #endif
     } else if ((keyword == Keyword::ELEMENT_BEAM) && !line_has_keyword &&
                (!line.empty())) {
@@ -265,16 +274,16 @@ KeyFile::read_mesh(string _filepath)
         }
 
       } catch (const std::exception& ex) {
-        cerr << "Error reading beam in line " << (iLine + 1) << ":" << ex.what()
-             << endl;
+        std::cerr << "Error reading beam in line " << (iLine + 1) << ":"
+                  << ex.what() << std::endl;
         keyword = Keyword::ELEMENT_BEAM;
-      } catch (const string& ex) {
-        cerr << "Error reading beam in line " << (iLine + 1) << ":" << ex
-             << endl;
+      } catch (const std::string& ex) {
+        std::cerr << "Error reading beam in line " << (iLine + 1) << ":" << ex
+                  << std::endl;
         keyword = Keyword::ELEMENT_BEAM;
       } catch (...) {
-        cerr << "Error reading beam in line " << (iLine + 1)
-             << ": Unknown error." << endl;
+        std::cerr << "Error reading beam in line " << (iLine + 1)
+                  << ": Unknown error." << std::endl;
         keyword = Keyword::ELEMENT_BEAM;
       }
 
@@ -282,7 +291,8 @@ KeyFile::read_mesh(string _filepath)
                (line_has_keyword | line.empty())) {
       keyword = Keyword::ELEMENT_BEAM;
 #ifdef QD_DEBUG
-      cout << "*ELEMENT_BEAM finished in line: " << (iLine + 1) << endl;
+      std::cout << "*ELEMENT_BEAM finished in line: " << (iLine + 1)
+                << std::endl;
 #endif
     }
 
@@ -290,7 +300,7 @@ KeyFile::read_mesh(string _filepath)
     if (line_trimmed.substr(0, 5) == "*PART") {
       keyword = Keyword::PART;
 #ifdef QD_DEBUG
-      cout << "Starting *PART in line: " << (iLine + 1) << endl;
+      std::cout << "Starting *PART in line: " << (iLine + 1) << std::endl;
 #endif
       iCardLine = 0;
 
@@ -312,25 +322,27 @@ KeyFile::read_mesh(string _filepath)
           ++iCardLine;
 
         } catch (const std::exception& ex) {
-          cerr << "Error reading part in line " << (iLine + 1) << ":"
-               << ex.what() << endl;
+          std::cerr << "Error reading part in line " << (iLine + 1) << ":"
+                    << ex.what() << std::endl;
           keyword = Keyword::NONE;
-        } catch (const string& ex) {
-          cerr << "Error reading part in line " << (iLine + 1) << ":" << ex
-               << endl;
+        } catch (const std::string& ex) {
+          std::cerr << "Error reading part in line " << (iLine + 1) << ":" << ex
+                    << std::endl;
         }
 
       } else if ((keyword == Keyword::PART) &&
                  (line_has_keyword | (iCardLine > 1))) {
         keyword = Keyword::NONE;
 #ifdef QD_DEBUG
-        cout << "*PART finished in line: " << (iLine + 1) << endl;
+        std::cout << "*PART finished in line: " << (iLine + 1) << std::endl;
 #endif
       }
     }
 
   } // for lines
 #ifdef QD_DEBUG
-  cout << "parsing of text-file done." << endl;
+  std::cout << "parsing of text-file done." << std::endl;
 #endif
 }
+
+} // namespace qd

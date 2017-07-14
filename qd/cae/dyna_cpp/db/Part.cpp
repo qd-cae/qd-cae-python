@@ -7,10 +7,12 @@
 
 #include <set>
 
+namespace qd {
+
 /**
  * Constructor
  */
-Part::Part(int _partID, std::string _partName, FEMFile* _femfile)
+Part::Part(int_32_t _partID, std::string _partName, FEMFile* _femfile)
   : partName(_partName)
   , partID(_partID)
   , femfile(_femfile)
@@ -36,7 +38,7 @@ Part::set_name(std::string _name)
 /**
  * Get the id of the part.
  */
-int
+int_32_t
 Part::get_partID()
 {
   return this->partID;
@@ -109,3 +111,5 @@ Part::get_elements(Element::ElementType _etype)
     return _elems;
   }
 }
+
+} // namespace qd

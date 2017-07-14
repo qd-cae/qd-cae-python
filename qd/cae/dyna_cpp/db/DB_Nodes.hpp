@@ -11,6 +11,7 @@ class DB_Elements;
 #include "Node.hpp"
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -18,13 +19,15 @@ class DB_Elements;
 #include <unordered_map>
 #include <vector>
 
+namespace qd {
+
 class DB_Nodes
 {
   friend FEMFile;
 
 private:
   FEMFile* femfile;
-  std::unordered_map<int, size_t> id2index_nodes;
+  std::unordered_map<int_32_t, size_t> id2index_nodes;
   std::vector<std::shared_ptr<Node>> nodes;
 
 public:
@@ -33,7 +36,7 @@ public:
   size_t get_nNodes();
   void reserve(const size_t _size);
   FEMFile* get_femfile();
-  std::shared_ptr<Node> add_node(int _id, std::vector<float> _coords);
+  std::shared_ptr<Node> add_node(int_32_t _id, std::vector<float> _coords);
 
   template<typename T>
   T get_id_from_index(size_t _id);
@@ -54,22 +57,22 @@ public:
   // Python API
   std::vector<std::shared_ptr<Node>> get_nodeByID(pybind11::list _ids)
   {
-    return this->get_nodeByID(qd::py::container_to_vector<int>(
+    return this->get_nodeByID(qd::py::container_to_vector<int_32_t>(
       _ids, "An entry of the list was not a fully fledged integer."));
   }
   std::vector<std::shared_ptr<Node>> get_nodeByID(pybind11::tuple _ids)
   {
-    return this->get_nodeByID(qd::py::container_to_vector<int>(
+    return this->get_nodeByID(qd::py::container_to_vector<int_32_t>(
       _ids, "An entry of the list was not a fully fledged integer."));
   }
   std::vector<std::shared_ptr<Node>> get_nodeByIndex(pybind11::list _ids)
   {
-    return this->get_nodeByIndex(qd::py::container_to_vector<int>(
+    return this->get_nodeByIndex(qd::py::container_to_vector<int_32_t>(
       _ids, "An entry of the list was not a fully fledged integer."));
   }
   std::vector<std::shared_ptr<Node>> get_nodeByIndex(pybind11::tuple _ids)
   {
-    return this->get_nodeByIndex(qd::py::container_to_vector<int>(
+    return this->get_nodeByIndex(qd::py::container_to_vector<int_32_t>(
       _ids, "An entry of the list was not a fully fledged integer."));
   }
 };
@@ -148,7 +151,7 @@ DB_Nodes::get_nodeByID(const std::vector<T>& _ids)
 
 /** Get a node from the node index.
  *
- * @param int _index : index of the node
+ * @param int_32_t _index : index of the node
  * @return std::shared_ptr<Node> node : pointer to the node or nullptr if node
  * is not existing!
  */
@@ -181,5 +184,7 @@ DB_Nodes::get_nodeByIndex(const std::vector<T>& _indexes)
   }
   return std::move(ret);
 }
+
+} // namespace qd
 
 #endif

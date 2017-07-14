@@ -9,6 +9,7 @@ class DB_Parts;
 class FEMFile;
 
 // includes
+#include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -17,6 +18,8 @@ class FEMFile;
 
 #include <dyna_cpp/db/Element.hpp>
 
+namespace qd {
+
 class DB_Elements
 {
 private:
@@ -24,9 +27,9 @@ private:
   DB_Nodes* db_nodes;
   DB_Parts* db_parts;
 
-  std::unordered_map<int, size_t> id2index_elements2;
-  std::unordered_map<int, size_t> id2index_elements4;
-  std::unordered_map<int, size_t> id2index_elements8;
+  std::unordered_map<int_32_t, size_t> id2index_elements2;
+  std::unordered_map<int_32_t, size_t> id2index_elements4;
+  std::unordered_map<int_32_t, size_t> id2index_elements8;
   std::vector<std::shared_ptr<Element>> elements2;
   std::vector<std::shared_ptr<Element>> elements4;
   std::vector<std::shared_ptr<Element>> elements8;
@@ -41,12 +44,13 @@ public:
   void reserve(const Element::ElementType _type, const size_t _size);
   std::shared_ptr<Element> add_element_byD3plot(
     const Element::ElementType _eType,
-    const int _id,
-    const std::vector<int>& _elem_data);
-  std::shared_ptr<Element> add_element_byKeyFile(Element::ElementType _eType,
-                                                 int _id,
-                                                 int _partid,
-                                                 std::vector<int> _node_ids);
+    const int_32_t _id,
+    const std::vector<int_32_t>& _elem_data);
+  std::shared_ptr<Element> add_element_byKeyFile(
+    Element::ElementType _eType,
+    int_32_t _id,
+    int_32_t _partid,
+    std::vector<int_32_t> _node_ids);
 
   // getter
   size_t get_nElements(const Element::ElementType _type = Element::NONE) const;
@@ -171,8 +175,8 @@ DB_Elements::get_elementByID(Element::ElementType _elementType,
 
 /** Get the element by it's internal index and it's type.
  *
- * @param int _elementType : see description
- * @param int _elementIndex : index of the element (not id!)
+ * @param int_32_t _elementType : see description
+ * @param int_32_t _elementIndex : index of the element (not id!)
  * @return std::shared_ptr<Element> _element
  *
  */
@@ -236,5 +240,7 @@ DB_Elements::get_elementByIndex(Element::ElementType _elementType,
   }
   return ret;
 }
+
+} // namespace qd
 
 #endif

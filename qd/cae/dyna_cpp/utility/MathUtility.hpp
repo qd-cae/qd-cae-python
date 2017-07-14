@@ -6,6 +6,8 @@
 #include <cmath>
 #include <vector>
 
+namespace qd {
+
 class MathUtility
 {
 
@@ -22,7 +24,7 @@ public:
 
   // matrix
   template<typename T>
-  static std::vector<std::vector<T>> m_zeros(unsigned int n1, unsigned int n2);
+  static std::vector<std::vector<T>> m_zeros(size_t n1, size_t n2);
   template<typename T>
   static std::vector<std::vector<T>> m_mult(std::vector<std::vector<T>> a,
                                             std::vector<std::vector<T>> b);
@@ -123,7 +125,7 @@ MathUtility::v_dot(std::vector<T> a, std::vector<T> b)
  */
 template<typename T>
 std::vector<std::vector<T>>
-MathUtility::m_zeros(unsigned int n1, unsigned int n2)
+MathUtility::m_zeros(size_t n1, size_t n2)
 {
 
   if (n1 == 0)
@@ -212,5 +214,7 @@ MathUtility::mises_stress(const std::vector<T>& _stress_vector)
                    _stress_vector[4] * _stress_vector[4] +
                    _stress_vector[5] * _stress_vector[5]));
 }
+
+} // namespace qd
 
 #endif

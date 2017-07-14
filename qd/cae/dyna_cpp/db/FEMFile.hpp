@@ -9,6 +9,8 @@
 
 #include <string>
 
+namespace qd {
+
 // forward declarations
 class D3plot;
 class KeyFile;
@@ -39,5 +41,7 @@ public:
   virtual D3plot* get_d3plot() = 0;
   virtual KeyFile* get_keyFile() = 0;
 };
+
+} // namespace qd
 
 #endif

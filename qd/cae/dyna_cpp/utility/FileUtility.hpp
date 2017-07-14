@@ -5,16 +5,20 @@
 #include <string>
 #include <vector>
 
+namespace qd {
+
 /** Utility class for file related things.
  */
-class FileUtility {
+class FileUtility
+{
 
 public:
   static bool check_ExistanceAndAccess(std::string);
   static std::vector<std::string> globVector(std::string);
   static std::vector<std::string> read_textFile(std::string _filepath);
   static std::vector<std::string> findDynaResultFiles(std::string _base_file);
-
 };
+
+} // namespace qd
 
 #endif
