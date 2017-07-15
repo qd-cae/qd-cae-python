@@ -17,17 +17,14 @@ before_install:
   - sudo apt-get update -qq
   # python stuff
   - sudo apt-get install python3-numpy
-  - sudo apt-get install libboost-dev
   
 install:
   # new gcc
   - sudo apt-get install -qq g++-6
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   # python packages
-  - python3 -m pip install --upgrade pip setuptools wheel
   - python3 -m pip install --only-binary=numpy numpy
-  - python3 -m pip install diversipy
-  - python3 -m pip install pybind11
+  - python3 -m pip install -r requirements.txt
   #- python3 setup.py install
   - CC=gcc-6 CXX=g++-6 python3 setup.py install
 

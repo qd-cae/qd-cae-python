@@ -48,7 +48,7 @@ DB_Nodes::add_node(int32_t _nodeID, std::vector<float> coords)
 
   // Check if node already is in map
   if (this->id2index_nodes.count(_nodeID) != 0)
-    throw(std::invalid_argument("Trying to insert a node with same id twice:" +
+    throw(std::invalid_argument("Trying to insert a node with same id twice: " +
                                 std::to_string(_nodeID)));
 
   // Create and add new node

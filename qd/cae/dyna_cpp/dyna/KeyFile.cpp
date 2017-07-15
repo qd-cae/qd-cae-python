@@ -133,20 +133,20 @@ KeyFile::read_mesh(std::string _filepath)
         coords[0] = std::stof(line.substr(8, 16));
         coords[1] = std::stof(line.substr(24, 16));
         coords[2] = std::stof(line.substr(40, 16));
+
         db_nodes->add_node(std::stoi(line.substr(0, 8)), coords);
+
       } catch (const std::exception& ex) {
-        std::cerr << "Error reading node in line " << (iLine + 1) << ":"
+        std::cerr << "Error reading node in line " << (iLine + 1) << ": "
                   << ex.what() << std::endl;
         keyword = Keyword::NODE;
-      } catch (const std::string& ex) {
-        std::cerr << "Error reading node in line " << (iLine + 1) << ":" << ex
-                  << std::endl;
-        keyword = Keyword::NODE;
+
       } catch (...) {
         std::cerr << "Error reading node in line " << (iLine + 1)
                   << ": Unknown error." << std::endl;
         keyword = Keyword::NODE;
       }
+
     } else if ((keyword == Keyword::NODE) &&
                (line_has_keyword | line.empty())) {
       keyword = Keyword::NONE;
@@ -164,6 +164,7 @@ KeyFile::read_mesh(std::string _filepath)
 #endif
     } else if ((keyword == Keyword::ELEMENT_SHELL) && !line_has_keyword &&
                (!line.empty())) {
+
       try {
         id = std::stoi(line.substr(0, 8));
         partID = std::stoi(line.substr(8, 8));
@@ -182,6 +183,7 @@ KeyFile::read_mesh(std::string _filepath)
                   << ": Unknown error." << std::endl;
         keyword = Keyword::NONE;
       }
+
     } else if ((keyword == Keyword::ELEMENT_SHELL) &&
                (line_has_keyword | line.empty())) {
       keyword = Keyword::NONE;
@@ -224,10 +226,6 @@ KeyFile::read_mesh(std::string _filepath)
       } catch (const std::exception& ex) {
         std::cerr << "Error reading solid in line " << (iLine + 1) << ":"
                   << ex.what() << std::endl;
-        keyword = Keyword::NONE;
-      } catch (const std::string& ex) {
-        std::cerr << "Error reading solid in line " << (iLine + 1) << ":" << ex
-                  << std::endl;
         keyword = Keyword::NONE;
       } catch (...) {
         std::cerr << "Error reading solid in line " << (iLine + 1)
@@ -273,10 +271,6 @@ KeyFile::read_mesh(std::string _filepath)
         std::cerr << "Error reading beam in line " << (iLine + 1) << ":"
                   << ex.what() << std::endl;
         keyword = Keyword::ELEMENT_BEAM;
-      } catch (const std::string& ex) {
-        std::cerr << "Error reading beam in line " << (iLine + 1) << ":" << ex
-                  << std::endl;
-        keyword = Keyword::ELEMENT_BEAM;
       } catch (...) {
         std::cerr << "Error reading beam in line " << (iLine + 1)
                   << ": Unknown error." << std::endl;
@@ -302,10 +296,12 @@ KeyFile::read_mesh(std::string _filepath)
 
     } else if ((keyword == Keyword::PART) && !line_has_keyword &&
                (!line.empty())) {
+
       if (iCardLine == 0) {
         title = line_trimmed;
         ++iCardLine;
       } else if (iCardLine == 1) {
+
         try {
           id = std::stoi(line.substr(0, 10));
 
@@ -321,9 +317,6 @@ KeyFile::read_mesh(std::string _filepath)
           std::cerr << "Error reading part in line " << (iLine + 1) << ":"
                     << ex.what() << std::endl;
           keyword = Keyword::NONE;
-        } catch (const std::string& ex) {
-          std::cerr << "Error reading part in line " << (iLine + 1) << ":" << ex
-                    << std::endl;
         }
 
       } else if ((keyword == Keyword::PART) &&

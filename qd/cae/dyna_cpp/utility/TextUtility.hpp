@@ -28,13 +28,13 @@ to_string(T const& value)
 }
 */
 
-/** Trim a string from left
+/** Trim a string from left and copy it
  *
  * @param s : string getting trimmed
  * @return trimmed_s : string trimmed
  */
 inline std::string
-trim_left_copy(std::string& s)
+trim_left_copy(std::string s)
 {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
             return !std::isspace(ch);
@@ -42,13 +42,27 @@ trim_left_copy(std::string& s)
   return s;
 }
 
-/** Trim a string from right
+/** Trim a string from left
  *
  * @param s : string getting trimmed
  * @return trimmed_s : string trimmed
  */
 inline std::string
-trim_right_copy(std::string& s)
+trim_left(std::string& s)
+{
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+            return !std::isspace(ch);
+          }));
+  return s;
+}
+
+/** Trim a string from right and copy it
+ *
+ * @param s : string getting trimmed
+ * @return trimmed_s : string trimmed
+ */
+inline std::string
+trim_right_copy(std::string s)
 {
   s.erase(std::find_if(s.rbegin(),
                        s.rend(),
@@ -58,17 +72,44 @@ trim_right_copy(std::string& s)
   return s;
 }
 
+/** Trim a string from right
+ *
+ * @param s : string getting trimmed
+ * @return trimmed_s : string trimmed
+ */
+inline std::string
+trim_right(std::string& s)
+{
+  s.erase(std::find_if(s.rbegin(),
+                       s.rend(),
+                       [](unsigned char ch) { return !std::isspace(ch); })
+            .base(),
+          s.end());
+  return s;
+}
+
+/** Trim a string from both sides and copy it
+ *
+ * @param s : string getting trimmed
+ * @return trimmed_s : string trimmed
+ */
+inline std::string
+trim(std::string& s)
+{
+  trim_right(s);
+  return trim_left(s);
+}
+
 /** Trim a string from both sides
  *
  * @param s : string getting trimmed
  * @return trimmed_s : string trimmed
  */
 inline std::string
-trim_copy(std::string& s)
+trim_copy(std::string s)
 {
-  trim_right_copy(s);
-  trim_left_copy(s);
-  return s;
+  trim_right(s);
+  return trim_left(s);
 }
 
 /** Convert string into some type

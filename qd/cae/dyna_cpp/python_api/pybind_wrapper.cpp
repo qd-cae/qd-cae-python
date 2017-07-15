@@ -174,6 +174,7 @@ PYBIND11_PLUGIN(dyna_cpp)
          element_get_id_docs)
     .def("get_coords",
          &Element::get_coords_py,
+         "iTimestep"_a = 0,
          pybind11::return_value_policy::take_ownership,
          element_get_coords_docs)
     .def("get_energy",

@@ -164,7 +164,7 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   try {
     part = this->db_parts->get_partByID(_partid);
   } catch (std::invalid_argument) {
-    this->db_parts->add_partByID(_partid);
+    part = this->db_parts->add_partByID(_partid);
   }
 
   // Find nodes
@@ -234,7 +234,7 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   }
   part->add_element(element);
 
-  return element;
+  return std::move(element);
 }
 
 /** Get the DynaInputFile pointer
