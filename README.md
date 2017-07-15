@@ -16,13 +16,13 @@ We want to tackle this issue with this free library, in order to give engineerin
 *Changelog 18.05.2017*
 Version 0.6.0
 
-The whole C++ Python API was rewritten with pybind11 because the old interface took to much time to add new stuff. Wrapping new stuff now is much easier. Also the code was modernized to C++14.
+The whole C++ Python API was rewritten with pybind11 because the old interface took too much time for add new stuff. The code was also modernized to C++14. Speed is still about the same.
 
 **Note: The API changed a little bit (see below)**
 
 qd.cae.dyna
   - The whole Python API was rewritten with pybind11 
-  - Due to this change, **many new functions** could be added (already existed in C++)
+  - Due to this change, **a few new functions** could be added (already existed natively)
   - **Element type specifier is not a string anymore**, but uses `Element.type` (enumeration in C++). Use `Element.none`, `Element.beam`, `Element.shell` or `Element.solid` as replacement (might add string support in the future again).
   - `Element.get_history` renamed to `Element.get_history_variables`
   

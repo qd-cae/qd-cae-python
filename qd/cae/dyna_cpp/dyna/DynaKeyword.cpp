@@ -1,9 +1,6 @@
 
 #include <dyna_cpp/dyna/DynaKeyword.hpp>
-#include <dyna_cpp/utility/BoostException.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
-
-#include <boost/algorithm/string/trim.hpp>
 
 namespace qd {
 
@@ -38,13 +35,13 @@ void
 DynaKeyword::parse_keyfile_row(std::string _line, const size_t iCardRow)
 {
 
-  std::string line_trimmed = boost::algorithm::trim_copy(_line);
+  std::string line_trimmed = trim_copy(_line);
 
   // values present
   if (!line_trimmed.empty()) {
 
     // save the card entries
-    this->rows.insert(pair<size_t, std::string>(iCardRow, line_trimmed));
+    this->rows.insert(std::pair<size_t, std::string>(iCardRow, line_trimmed));
 
     // no values
   } else {
@@ -67,7 +64,7 @@ std::string
 DynaKeyword::get_card_row(const size_t iRow)
 {
 
-  map<size_t, std::string>::iterator it = this->rows.find(iRow);
+  auto it = this->rows.find(iRow);
 
   // there is a saved line with iRow
   if (it != this->rows.end()) {
@@ -82,10 +79,9 @@ DynaKeyword::get_card_row(const size_t iRow)
 
     // There was no card with iRow index
   } else {
-    throw(
-      std::string("iRow=") + to_string(iRow) +
-      std::string(" was out of scope of empty line counter after keyword, so "
-                  "there definitely was no default value present."));
+    throw("iRow=" + std::to_string(iRow) +
+          " was out of scope of empty line counter after keyword, so "
+          "there definitely was no default value present.");
   }
 }
 

@@ -29,14 +29,14 @@ DB_Nodes::~DB_Nodes()
 
 /** Add a node to the db by node-ID and it's
  *
- * @param int_32_t _nodeID : id of the node
+ * @param int32_t _nodeID : id of the node
  * @param std::vector<float> coords : coordinates of the node
  * @return std::shared_ptr<Node> node : pointer to created instance
  *
  * Returns a pointer to the new node.
  */
 std::shared_ptr<Node>
-DB_Nodes::add_node(int_32_t _nodeID, std::vector<float> coords)
+DB_Nodes::add_node(int32_t _nodeID, std::vector<float> coords)
 {
   if (coords.size() != 3) {
     throw(std::invalid_argument(
@@ -55,7 +55,7 @@ DB_Nodes::add_node(int_32_t _nodeID, std::vector<float> coords)
   std::shared_ptr<Node> node = std::make_shared<Node>(_nodeID, coords, this);
 
   id2index_nodes.insert(
-    std::pair<int_32_t, size_t>(_nodeID, this->nodes.size()));
+    std::pair<int32_t, size_t>(_nodeID, this->nodes.size()));
   this->nodes.push_back(node);
 
   return std::move(node);

@@ -6,9 +6,7 @@
 #include <string>
 #include <vector>
 
-
-// forward declarations
-// None
+namespace qd {
 
 class DynaKeyword
 {
@@ -29,5 +27,7 @@ public:
   const size_t get_nCardRows();
   const size_t get_nCardCols();
 };
+
+} // namespace qd
 
 #endif

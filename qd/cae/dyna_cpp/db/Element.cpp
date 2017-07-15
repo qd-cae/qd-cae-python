@@ -17,7 +17,7 @@ namespace qd {
 /*
  * Constructor.
  */
-Element::Element(const int_32_t _elementID,
+Element::Element(const int32_t _elementID,
                  const Element::ElementType _elementType,
                  const std::vector<size_t>& _node_indexes,
                  DB_Elements* _db_elements)
@@ -87,9 +87,9 @@ Element::get_elementType() const
 }
 
 /** Get the elementID.
- * @return int_32_t elementID
+ * @return int32_t elementID
  */
-int_32_t
+int32_t
 Element::get_elementID() const
 {
   return this->elementID;
@@ -120,15 +120,15 @@ Element::get_nodes() const
 
 /** Return the ids of the elements nodes
  *
- * @return vector<int_32_t> node_ids
+ * @return vector<int32_t> node_ids
  */
-std::vector<int_32_t>
+std::vector<int32_t>
 Element::get_node_ids() const
 {
-  std::vector<int_32_t> node_ids;
+  std::vector<int32_t> node_ids;
   DB_Nodes* db_nodes = db_elements->get_db_nodes();
   for (size_t iNode = 0; iNode < this->nodes.size(); ++iNode) {
-    node_ids.push_back(db_nodes->get_id_from_index<int_32_t>(nodes[iNode]));
+    node_ids.push_back(db_nodes->get_id_from_index<int32_t>(nodes[iNode]));
   }
   return node_ids;
 }
@@ -239,7 +239,7 @@ Element::get_energy() const
  * the average of all nodes.
  */
 std::vector<float>
-Element::get_coords(int_32_t iTimestep) const
+Element::get_coords(int32_t iTimestep) const
 {
   if (this->nodes.size() < 1)
     throw(std::invalid_argument("Element with id " +
@@ -263,10 +263,10 @@ Element::get_coords(int_32_t iTimestep) const
   }
 
   if (iTimestep < 0)
-    iTimestep = static_cast<int_32_t>(this->db_elements->get_femfile()
-                                        ->get_d3plot()
-                                        ->get_timesteps()
-                                        .size()) +
+    iTimestep = static_cast<int32_t>(this->db_elements->get_femfile()
+                                       ->get_d3plot()
+                                       ->get_timesteps()
+                                       .size()) +
                 iTimestep; // Python array style
 
   if ((iTimestep < 0))

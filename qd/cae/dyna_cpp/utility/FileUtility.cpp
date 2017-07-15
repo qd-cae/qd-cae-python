@@ -36,7 +36,7 @@ FileUtility::read_textFile(std::string filepath)
   std::vector<std::string> filebuffer;
 
   // open stream
-  ifstream filestream(filepath.c_str());
+  std::ifstream filestream(filepath.c_str());
   if (!filestream.is_open())
     throw(std::invalid_argument("Error while opening file " + filepath));
 
@@ -150,6 +150,8 @@ FileUtility::findDynaResultFiles(std::string _base_filepath)
 
   return files;
 }
+
+} // namespace qd
 
 /* === LINUX === */
 #else

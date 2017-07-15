@@ -33,8 +33,8 @@ DB_Elements::~DB_Elements()
 /** Add an element coming from a D3plot file
  *
  * @param ElementType _eType : type of the element to add, enum in Element.hpp
- * @param int_32_t _elementID : id of the element to add
- * @param std::vector<int_32_t> _elementData : element data from d3plot, node
+ * @param int32_t _elementID : id of the element to add
+ * @param std::vector<int32_t> _elementData : element data from d3plot, node
  * ids and
  * part
  * id
@@ -46,8 +46,8 @@ DB_Elements::~DB_Elements()
  */
 std::shared_ptr<Element>
 DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
-                                  const int_32_t _elementID,
-                                  const std::vector<int_32_t>& _elementData)
+                                  const int32_t _elementID,
+                                  const std::vector<int32_t>& _elementData)
 {
   if (_elementID < 0) {
     throw(std::invalid_argument("Element-ID may not be negative!"));
@@ -94,7 +94,7 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
     }
 
     this->id2index_elements2.insert(
-      std::pair<int_32_t, size_t>(_elementID, this->elements2.size()));
+      std::pair<int32_t, size_t>(_elementID, this->elements2.size()));
     this->elements2.push_back(element);
 
   } else if (_eType == Element::SHELL) {
@@ -106,7 +106,7 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
     }
 
     this->id2index_elements4.insert(
-      std::pair<int_32_t, size_t>(_elementID, this->elements4.size()));
+      std::pair<int32_t, size_t>(_elementID, this->elements4.size()));
     this->elements4.push_back(element);
 
   } else if (_eType == Element::SOLID) {
@@ -118,7 +118,7 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
     }
 
     this->id2index_elements8.insert(
-      std::pair<int_32_t, size_t>(_elementID, this->elements8.size()));
+      std::pair<int32_t, size_t>(_elementID, this->elements8.size()));
     this->elements8.push_back(element);
 
   } else {
@@ -140,9 +140,9 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
  *
  * @param Element::ElementType _eType : type of the element to add, enum in
  * Element.hpp
- * @param int_32_t _elementID : id of the element to add
- * @param int_32_t part_id : id of the part, the element belongs to
- * @param std::vector<int_32_t> _node_ids : node ids of the used nodes
+ * @param int32_t _elementID : id of the element to add
+ * @param int32_t part_id : id of the part, the element belongs to
+ * @param std::vector<int32_t> _node_ids : node ids of the used nodes
  * @return std::shared_ptr<Element> element : pointer to created instance
  *
  * Add an element to the db by it's ID  and it's nodeIDs. Throws an exception
@@ -151,9 +151,9 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
  */
 std::shared_ptr<Element>
 DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
-                                   int_32_t _elementID,
-                                   int_32_t _partid,
-                                   std::vector<int_32_t> _node_ids)
+                                   int32_t _elementID,
+                                   int32_t _partid,
+                                   std::vector<int32_t> _node_ids)
 {
   if (_elementID < 0) {
     throw(std::invalid_argument("Element-ID may not be negative!"));
@@ -195,7 +195,7 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
     }
 
     this->id2index_elements2.insert(
-      std::pair<int_32_t, size_t>(_elementID, this->elements2.size()));
+      std::pair<int32_t, size_t>(_elementID, this->elements2.size()));
     this->elements2.push_back(element);
 
   } else if (_eType == Element::SHELL) {
@@ -207,7 +207,7 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
     }
 
     this->id2index_elements4.insert(
-      std::pair<int_32_t, size_t>(_elementID, this->elements4.size()));
+      std::pair<int32_t, size_t>(_elementID, this->elements4.size()));
     this->elements4.push_back(element);
 
   } else if (_eType == Element::SOLID) {
@@ -219,7 +219,7 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
     }
 
     this->id2index_elements8.insert(
-      std::pair<int_32_t, size_t>(_elementID, this->elements8.size()));
+      std::pair<int32_t, size_t>(_elementID, this->elements8.size()));
     this->elements8.push_back(element);
 
   } else {
@@ -274,7 +274,7 @@ DB_Elements::reserve(const Element::ElementType _type, const size_t _size)
 }
 
 /** Get the number of  in the db.
- * @return unsigned int_32_t nElements : returns the total number of elements in
+ * @return unsigned int32_t nElements : returns the total number of elements in
  * the
  * db
  */

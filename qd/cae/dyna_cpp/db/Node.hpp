@@ -2,10 +2,6 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-// forward declarations
-class Element;
-class DB_Nodes;
-
 // includes
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
@@ -14,10 +10,14 @@ class DB_Nodes;
 
 namespace qd {
 
+// forward declarations
+class Element;
+class DB_Nodes;
+
 class Node
 {
 private:
-  int_32_t nodeID;
+  int32_t nodeID;
   std::vector<std::shared_ptr<Element>> elements;
   std::vector<float> coords;
   std::vector<std::vector<float>> disp;
@@ -26,7 +26,7 @@ private:
   DB_Nodes* db_nodes;
 
 public:
-  Node(int_32_t _nodeID, std::vector<float> _coords, DB_Nodes* db_nodes);
+  Node(int32_t _nodeID, std::vector<float> _coords, DB_Nodes* db_nodes);
   ~Node();
   bool operator<(const Node& other) const;
   std::shared_ptr<Element> add_element(std::shared_ptr<Element>);
@@ -38,18 +38,18 @@ public:
   inline void clear_accel() { this->accel.clear(); }
 
   // Getter
-  inline int_32_t get_nodeID() { return this->nodeID; }
+  inline int32_t get_nodeID() { return this->nodeID; }
   inline std::vector<std::shared_ptr<Element>> get_elements()
   {
     return this->elements;
   }
-  std::vector<float> get_coords(int_32_t iTimestep = 0);
+  std::vector<float> get_coords(int32_t iTimestep = 0);
   inline std::vector<std::vector<float>> get_disp() { return this->disp; }
   inline std::vector<std::vector<float>> get_vel() { return this->vel; }
   inline std::vector<std::vector<float>> get_accel() { return this->accel; }
 
   // Python API
-  inline pybind11::array_t<float> get_coords_py(int_32_t iTimestep)
+  inline pybind11::array_t<float> get_coords_py(int32_t iTimestep)
   {
     return qd::py::vector_to_nparray(this->get_coords(iTimestep));
   }

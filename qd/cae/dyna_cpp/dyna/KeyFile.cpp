@@ -1,16 +1,13 @@
 
-#include "dyna_cpp/dyna/KeyFile.hpp"
-#include "dyna_cpp/db/DB_Elements.hpp"
-#include "dyna_cpp/db/DB_Nodes.hpp"
-#include "dyna_cpp/db/DB_Parts.hpp"
-#include "dyna_cpp/db/Element.hpp"
-#include "dyna_cpp/db/Part.hpp"
-#include "dyna_cpp/utility/BoostException.hpp"
-#include "dyna_cpp/utility/FileUtility.hpp"
-#include "dyna_cpp/utility/TextUtility.hpp"
-
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/lexical_cast.hpp>
+#include <dyna_cpp/db/DB_Elements.hpp>
+#include <dyna_cpp/db/DB_Nodes.hpp>
+#include <dyna_cpp/db/DB_Parts.hpp>
+#include <dyna_cpp/db/Element.hpp>
+#include <dyna_cpp/db/Part.hpp>
+#include <dyna_cpp/dyna/KeyFile.hpp>
+#include <dyna_cpp/utility/BoostException.hpp>
+#include <dyna_cpp/utility/FileUtility.hpp>
+#include <dyna_cpp/utility/TextUtility.hpp>
 
 #include <cstdint>
 #include <fstream>
@@ -75,37 +72,36 @@ KeyFile::read_mesh(std::string _filepath)
 #ifdef QD_DEBUG
   std::cout << "Filling IO-Buffer ... " << flush;
 #endif
-  std::<std::string> lines = FileUtility::read_textFile(_filepath);
+  std::vector<std::string> lines = FileUtility::read_textFile(_filepath);
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
 
   // Get databases
-  DB_Parts* db_parts = this->get_db_parts();
-  DB_Nodes* db_nodes = this->get_db_nodes();
-  DB_Elements* db_elements = this->get_db_elements();
+  auto db_parts = this->get_db_parts();
+  auto db_nodes = this->get_db_nodes();
+  auto db_elements = this->get_db_elements();
 
   // Time to do the thing
   Keyword::Keyword keyword = Keyword::NONE;
   std::string line;
   std::string line_trimmed;
   std::vector<float> coords(3);
-  std::vector<int_32_t> elemNodes_beam(2);
-  std::vector<int_32_t> elemNodes_shell(4);
-  std::vector<int_32_t> elemNodes_solid(8);
-  int_32_t id;
-  int_32_t partID = -1;
+  std::vector<int32_t> elemNodes_beam(2);
+  std::vector<int32_t> elemNodes_shell(4);
+  std::vector<int32_t> elemNodes_solid(8);
+  int32_t id;
+  int32_t partID = -1;
   std::string title;
   size_t iCardLine = 0;
   bool line_has_keyword = false;
 
-  for (std::vector<std::string>::size_type iLine = 0; iLine != lines.size();
-       iLine++) {
+  for (size_t iLine = 0; iLine != lines.size(); iLine++) {
     // Remove comments, etc
     // line = preprocess_string_dyna(lines[iLine]);
     line = lines[iLine];
 
-    // Skip empty lines
+    // Skip comment lines
     if (line[0] == '$')
       continue;
 

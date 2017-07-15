@@ -34,7 +34,7 @@ to_string(T const& value)
  * @return trimmed_s : string trimmed
  */
 inline std::string
-trim_left(std::string& s)
+trim_left_copy(std::string& s)
 {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
             return !std::isspace(ch);
@@ -48,7 +48,7 @@ trim_left(std::string& s)
  * @return trimmed_s : string trimmed
  */
 inline std::string
-trim_right(std::string& s)
+trim_right_copy(std::string& s)
 {
   s.erase(std::find_if(s.rbegin(),
                        s.rend(),
@@ -64,10 +64,10 @@ trim_right(std::string& s)
  * @return trimmed_s : string trimmed
  */
 inline std::string
-trim(std::string& s)
+trim_copy(std::string& s)
 {
-  trim_right(s);
-  trim_left(s);
+  trim_right_copy(s);
+  trim_left_copy(s);
   return s;
 }
 

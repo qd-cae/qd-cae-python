@@ -13,10 +13,11 @@ namespace qd {
 /*
  * Constructor
  */
-D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int_32_t _wordSize)
+D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t _wordSize)
   : AbstractBuffer(_wordSize)
   , iStateFile(0)
   , wordSize(_wordSize)
+  , bufferSize(0)
 {
 
   // Check File
@@ -27,11 +28,11 @@ D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int_32_t _wordSize)
 
   this->d3plots = FileUtility::findDynaResultFiles(_d3plot_path);
 #ifdef QD_DEBUG
-  cout << "Found result files:" << endl;
+  std::cout << "Found result files:" << endl;
   for (size_t ii = 0; ii < this->d3plots.size(); ++ii) {
-    cout << this->d3plots[ii] << endl;
+    std::cout << this->d3plots[ii] << endl;
   }
-  cout << "End of file list." << endl;
+  std::cout << "End of file list." << endl;
 #endif
   // this->d3plots = FileUtility::globVector(_d3plot_path+"*");
 
@@ -64,12 +65,12 @@ D3plotBuffer::get_bufferFromFile(std::string filepath)
   std::vector<char> state_buffer;
 
   // Read data into buffer
-  ifstream fStream;
-  fStream.open(filepath.c_str(), ios::binary | ios::in);
-  fStream.seekg(0, ios::end);
-  long _bufferSize = fStream.tellg();
-  fStream.seekg(0, ios::beg);
-  // cout << "Filesize: " << *bufferSize << endl; // DEBUG
+  std::ifstream fStream;
+  fStream.open(filepath.c_str(), std::ios::binary | std::ios::in);
+  fStream.seekg(0, std::ios::end);
+  std::streamoff _bufferSize = fStream.tellg();
+  fStream.seekg(0, std::ios::beg);
+  // std::cout << "Filesize: " << *bufferSize << endl; // DEBUG
   state_buffer.reserve(_bufferSize);
   fStream.read(&state_buffer[0], _bufferSize);
   fStream.close();
@@ -123,7 +124,7 @@ D3plotBuffer::init_nextState()
 
 // empty remaining data (prevents memory leak)
 #ifdef QD_DEBUG
-  cout << "Emptying previous IO-Buffers" << endl;
+  std::cout << "Emptying previous IO-Buffers" << endl;
 #endif
   while (state_buffers.size() != 0) {
     state_buffers.back().get();
@@ -158,7 +159,7 @@ D3plotBuffer::read_nextState()
   }
 
 #ifdef QD_DEBUG
-  cout << "Loading state-file:" << d3plots[iStateFile] << endl;
+  std::cout << "Loading state-file:" << d3plots[iStateFile] << endl;
 #endif
 
   this->current_buffer = state_buffers.back().get();

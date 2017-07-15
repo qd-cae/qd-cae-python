@@ -2,13 +2,6 @@
 #ifndef D3PLOT_HPP
 #define D3PLOT_HPP
 
-// forward declarations
-class KeyFile;
-class DB_Nodes;
-class DB_Parts;
-class DB_Elements;
-class AbstractBuffer;
-
 // includes
 #include <dyna_cpp/db/FEMFile.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
@@ -16,11 +9,19 @@ class AbstractBuffer;
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace qd {
+
+// forward declarations
+class KeyFile;
+class DB_Nodes;
+class DB_Parts;
+class DB_Elements;
+class AbstractBuffer;
 
 class D3plot : public FEMFile
 {
@@ -28,126 +29,126 @@ private:
   std::string dyna_title;
   std::string dyna_datetime; // BUGGY
 
-  int_32_t dyna_ndim;   // dimension parameter
-  int_32_t dyna_numnp;  // number of nodes
-  int_32_t dyna_mdlopt; // describes element deletion
-  int_32_t dyna_mattyp; // material types section is read
+  int32_t dyna_ndim;   // dimension parameter
+  int32_t dyna_numnp;  // number of nodes
+  int32_t dyna_mdlopt; // describes element deletion
+  int32_t dyna_mattyp; // material types section is read
 
-  int_32_t dyna_nglbv; // global vars per timestep
+  int32_t dyna_nglbv; // global vars per timestep
 
-  int_32_t dyna_nel2;  // #elements with 2 nodes (beams)
-  int_32_t dyna_nel4;  // #elements with 4 nodes (shells)
-  int_32_t dyna_nel48; // # 8 node shell elements?!?!?!
-  int_32_t dyna_nel8;  // #elements with 8 nodes (solids)
-  int_32_t dyna_nel20; // # 20 node solid elements
-  int_32_t dyna_nelth; // #thshells
+  int32_t dyna_nel2;  // #elements with 2 nodes (beams)
+  int32_t dyna_nel4;  // #elements with 4 nodes (shells)
+  int32_t dyna_nel48; // # 8 node shell elements?!?!?!
+  int32_t dyna_nel8;  // #elements with 8 nodes (solids)
+  int32_t dyna_nel20; // # 20 node solid elements
+  int32_t dyna_nelth; // #thshells
 
-  int_32_t dyna_nmmat;   // #mats
-  int_32_t dyna_nummat2; // #mats for 1d/2d/3d/th elems
-  int_32_t dyna_nummat4;
-  int_32_t dyna_nummat8;
-  int_32_t dyna_nummatth;
+  int32_t dyna_nmmat;   // #mats
+  int32_t dyna_nummat2; // #mats for 1d/2d/3d/th elems
+  int32_t dyna_nummat4;
+  int32_t dyna_nummat8;
+  int32_t dyna_nummatth;
 
-  int_32_t dyna_nv1d; // #vars for 1d/2d/3d/th elems
-  int_32_t dyna_nv2d;
-  int_32_t dyna_nv3d;
-  int_32_t dyna_nv3dt;
+  int32_t dyna_nv1d; // #vars for 1d/2d/3d/th elems
+  int32_t dyna_nv2d;
+  int32_t dyna_nv3d;
+  int32_t dyna_nv3dt;
 
-  int_32_t dyna_maxint; // #layers of integration points
-  int_32_t dyna_istrn;  // indicates whether strain was written
-  int_32_t dyna_neiph;  // extra variables for solids
-  int_32_t dyna_neips;  // extra variables for shells
+  int32_t dyna_maxint; // #layers of integration points
+  int32_t dyna_istrn;  // indicates whether strain was written
+  int32_t dyna_neiph;  // extra variables for solids
+  int32_t dyna_neips;  // extra variables for shells
 
-  int_32_t dyna_iu; // Indicators for: disp/vel/accel/temp
-  int_32_t dyna_iv;
-  int_32_t dyna_ia;
-  int_32_t dyna_it;
-  int_32_t dyna_idtdt; // temp change rate, numnp vals after temps
+  int32_t dyna_iu; // Indicators for: disp/vel/accel/temp
+  int32_t dyna_iv;
+  int32_t dyna_ia;
+  int32_t dyna_it;
+  int32_t dyna_idtdt; // temp change rate, numnp vals after temps
 
-  int_32_t dyna_narbs; // dunno ... seems important
+  int32_t dyna_narbs; // dunno ... seems important
 
-  int_32_t dyna_ioshl1; // 6 shell stresses
-  int_32_t dyna_ioshl2; // shell plastic strain
-  int_32_t dyna_ioshl3; // shell forces
-  int_32_t dyna_ioshl4; // thick,energy,2 extra
+  int32_t dyna_ioshl1; // 6 shell stresses
+  int32_t dyna_ioshl2; // shell plastic strain
+  int32_t dyna_ioshl3; // shell forces
+  int32_t dyna_ioshl4; // thick,energy,2 extra
 
-  int_32_t dyna_extra;   // double header length indicator
-  int_32_t dyna_numprop; // number of properties dude!!!
+  int32_t dyna_extra;   // double header length indicator
+  int32_t dyna_numprop; // number of properties dude!!!
 
-  int_32_t dyna_numrbe; // number of rigid body shell elems
-  std::vector<int_32_t>
+  int32_t dyna_numrbe; // number of rigid body shell elems
+  std::vector<int32_t>
     dyna_irbtyp; // rigid body material type numbers (internal)
 
   // just for checks ... can not be handled.
-  int_32_t dyna_nmsph;   // #nodes of sph
-  int_32_t dyna_ngpsph;  // #mats of sph
-  int_32_t dyna_ialemat; // # some ale stuff .. it's late ...
+  int32_t dyna_nmsph;   // #nodes of sph
+  int32_t dyna_ngpsph;  // #mats of sph
+  int32_t dyna_ialemat; // # some ale stuff .. it's late ...
 
   // Own Variables
-  int_32_t nStates;
+  int32_t nStates;
   std::vector<float> timesteps;
 
   bool own_nel10;               // dunno anymore
   bool own_external_numbers_I8; // if 64bit integers written, not 32
 
-  int_32_t wordPosition; // tracker of word position in file
-  int_32_t wordsToRead;
-  int_32_t wordPositionStates; // remembers where states begin
+  int32_t wordPosition; // tracker of word position in file
+  int32_t wordsToRead;
+  int32_t wordPositionStates; // remembers where states begin
 
   bool useFemzip; // femzip usage?
-  int_32_t femzip_state_offset;
+  int32_t femzip_state_offset;
 
   // Checks for already read variables
   bool plastic_strain_is_read;
-  size_t plastic_strain_read;
+  int32_t plastic_strain_read;
   bool energy_is_read;
-  size_t energy_read;
+  int32_t energy_read;
   bool strain_is_read;
-  size_t strain_read;
+  int32_t strain_read;
   bool stress_is_read;
-  size_t stress_read;
+  int32_t stress_read;
   bool stress_mises_is_read;
-  size_t stress_mises_read;
+  int32_t stress_mises_read;
   bool disp_is_read;
-  size_t disp_read;
+  int32_t disp_read;
   bool acc_is_read;
-  size_t acc_read;
+  int32_t acc_read;
   bool vel_is_read;
-  size_t vel_read;
+  int32_t vel_read;
 
-  std::vector<size_t> history_is_read;
-  std::vector<size_t> history_shell_is_read;
-  std::vector<size_t> history_solid_is_read;
+  std::vector<int32_t> history_is_read;
+  std::vector<int32_t> history_shell_is_read;
+  std::vector<int32_t> history_solid_is_read;
 
-  std::vector<size_t> history_var_read;
-  std::vector<size_t> history_shell_read;
-  std::vector<size_t> history_solid_read;
+  std::vector<int32_t> history_var_read;
+  std::vector<int32_t> history_shell_read;
+  std::vector<int32_t> history_solid_read;
 
-  std::vector<size_t> history_var_mode;
-  std::vector<size_t> history_shell_mode;
-  std::vector<size_t> history_solid_mode;
+  std::vector<int32_t> history_var_mode;
+  std::vector<int32_t> history_shell_mode;
+  std::vector<int32_t> history_solid_mode;
 
-  std::unqique_ptr<AbstractBuffer> buffer;
+  std::unique_ptr<AbstractBuffer> buffer;
 
   // Functions
   void read_header();
   void read_matsection();
   void read_geometry();
   std::vector<std::vector<float>> read_geometry_nodes();
-  std::vector<std::vector<int_32_t>> read_geometry_elem8();
-  std::vector<std::vector<int_32_t>> read_geometry_elem4();
-  std::vector<std::vector<int_32_t>> read_geometry_elem2();
-  std::vector<std::vector<int_32_t>> read_geometry_numbering();
+  std::vector<std::vector<int32_t>> read_geometry_elem8();
+  std::vector<std::vector<int32_t>> read_geometry_elem4();
+  std::vector<std::vector<int32_t>> read_geometry_elem2();
+  std::vector<std::vector<int32_t>> read_geometry_numbering();
   void read_geometry_parts();
   void read_states_init();
   void read_states_parse(std::vector<std::string>);
-  size_t read_states_parse_readMode(const std::string& _variable) const;
+  int32_t read_states_parse_readMode(const std::string& _variable) const;
   void read_states_displacement();
   void read_states_velocity();
   void read_states_acceleration();
   void read_states_elem8(size_t iState);
   void read_states_elem4(size_t iState);
-  bool isFileEnding(int_32_t);
+  bool isFileEnding(int32_t _iWord);
 
   // === P U B L I C === //
 public:

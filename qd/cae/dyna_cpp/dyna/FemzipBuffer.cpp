@@ -85,20 +85,20 @@ FemzipBuffer::read_geometryBuffer()
   std::string nonsense_s = "nonsense";
   char* nonsense = (char*)nonsense_s.c_str();
   char* argv[] = { nonsense, (char*)this->filepath.c_str() };
-  int_32_t p1[1000];
-  int_32_t p2[1000];
-  int_32_t l1 = 0;
-  int_32_t l2 = 0;
+  int32_t p1[1000];
+  int32_t p2[1000];
+  int32_t l1 = 0;
+  int32_t l2 = 0;
   wrapinput(2, argv, p1, p2, &l1, &l2);
 
-  this->current_buffer.reserve(sizeof(int_32_t) * this->size_geo);
+  this->current_buffer.reserve(sizeof(int32_t) * this->size_geo);
   geometry_read(p1,
                 p2,
                 &l1,
                 &l2,
                 &this->ier,
                 &this->pos,
-                (int_32_t*)&this->current_buffer[0],
+                (int32_t*)&this->current_buffer[0],
                 &this->size_geo);
   this->check_ier("Femzip Error while reading geometry.");
 }
@@ -121,13 +121,13 @@ FemzipBuffer::read_partBuffer()
   this->pos = 0;
   part_titles_read(&this->ier,
                    &this->pos,
-                   (int_32_t*)&this->current_buffer[0],
+                   (int32_t*)&this->current_buffer[0],
                    &this->size_titles);
-  this->current_buffer.reserve(sizeof(int_32_t) * this->size_geo);
+  this->current_buffer.reserve(sizeof(int32_t) * this->size_geo);
   this->pos = 0;
   part_titles_read(&this->ier,
                    &this->pos,
-                   (int_32_t*)&this->current_buffer[0],
+                   (int32_t*)&this->current_buffer[0],
                    &this->size_titles);
   check_ier("Femzip Error during part_titles_read.");
 }
@@ -148,8 +148,8 @@ FemzipBuffer::init_nextState()
 {
 
   this->iTimeStep = 1;
-  int_32_t retry = 0;
-  int_32_t size_times = 2000;
+  int32_t retry = 0;
+  int32_t size_times = 2000;
 retry:
   this->timese = new float[size_times];
   this->pos = 0;
@@ -178,12 +178,12 @@ retry:
 
   // preload timestep
   this->next_state_buffer = std::async(
-    [](int_32_t _iTimestep, int_32_t _size_state) {
-      int_32_t _ier = 0;
-      int_32_t _pos = 0;
-      std::vector<char> state_buffer(sizeof(int_32_t) * _size_state);
+    [](int32_t _iTimestep, int32_t _size_state) {
+      int32_t _ier = 0;
+      int32_t _pos = 0;
+      std::vector<char> state_buffer(sizeof(int32_t) * _size_state);
       states_read(
-        &_ier, &_pos, &_iTimestep, (int_32_t*)&state_buffer[0], &_size_state);
+        &_ier, &_pos, &_iTimestep, (int32_t*)&state_buffer[0], &_size_state);
       if (_ier != 0) {
         if (state_buffer.size() != 0) {
           state_buffer = std::vector<char>();
@@ -217,12 +217,12 @@ FemzipBuffer::read_nextState()
 
   // preload timestep
   this->next_state_buffer = std::async(
-    [](int_32_t _iTimestep, int_32_t _size_state) {
-      int_32_t _ier = 0;
-      int_32_t _pos = 0;
-      std::vector<char> state_buffer(sizeof(int_32_t) * _size_state);
+    [](int32_t _iTimestep, int32_t _size_state) {
+      int32_t _ier = 0;
+      int32_t _pos = 0;
+      std::vector<char> state_buffer(sizeof(int32_t) * _size_state);
       states_read(
-        &_ier, &_pos, &_iTimestep, (int_32_t*)&state_buffer[0], &_size_state);
+        &_ier, &_pos, &_iTimestep, (int32_t*)&state_buffer[0], &_size_state);
       if (_ier != 0) {
         if (state_buffer.size() != 0) {
           state_buffer = std::vector<char>();
@@ -283,7 +283,7 @@ FemzipBuffer::end_nextState()
 
   states_close(&this->ier,
                &this->pos,
-               (int_32_t*)&this->current_buffer[0],
+               (int32_t*)&this->current_buffer[0],
                &this->size_geo);
   current_buffer.clear();
 

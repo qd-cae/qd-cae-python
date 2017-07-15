@@ -18,7 +18,7 @@ namespace qd {
 /*
  * Constructor.
  */
-Node::Node(int_32_t _nodeID, std::vector<float> _coords, DB_Nodes* _db_nodes)
+Node::Node(int32_t _nodeID, std::vector<float> _coords, DB_Nodes* _db_nodes)
   : nodeID(_nodeID)
   , coords(_coords)
   , db_nodes(_db_nodes)
@@ -112,7 +112,7 @@ Node::add_accel(std::vector<float> new_accel)
  * of length 3.
  */
 std::vector<float>
-Node::get_coords(int_32_t iTimestep)
+Node::get_coords(int32_t iTimestep)
 {
   // D3plot with iTimestep != 0
   if (this->db_nodes->get_femfile()->is_d3plot()) {
@@ -122,7 +122,7 @@ Node::get_coords(int_32_t iTimestep)
     if (iTimestep != 0) {
       if (d3plot->displacement_is_read()) {
         if (iTimestep < 0)
-          iTimestep = static_cast<int_32_t>(d3plot->get_timesteps().size()) +
+          iTimestep = static_cast<int32_t>(d3plot->get_timesteps().size()) +
                       iTimestep; // Python array style
 
         if ((iTimestep < 0))

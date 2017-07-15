@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <vector>
 
-
 namespace qd {
 
 // forward declarations
@@ -23,7 +22,7 @@ class DB_Parts
 private:
   FEMFile* femfile;
   std::vector<std::shared_ptr<Part>> parts;
-  std::unordered_map<int_32_t, size_t> id2index_parts;
+  std::unordered_map<int32_t, size_t> id2index_parts;
 
 public:
   DB_Parts(FEMFile* _femfile);
@@ -31,7 +30,7 @@ public:
 
   size_t get_nParts() const;
   void print_parts() const;
-  std::shared_ptr<Part> add_partByID(int_32_t _partID,
+  std::shared_ptr<Part> add_partByID(int32_t _partID,
                                      const std::string& name = "");
 
   std::vector<std::shared_ptr<Part>> get_parts();
@@ -48,19 +47,19 @@ public:
   // Python Wrapper
   std::vector<std::shared_ptr<Part>> get_partByID(pybind11::list _ids)
   {
-    return this->get_partByID(qd::py::container_to_vector<int_32_t>(_ids));
+    return this->get_partByID(qd::py::container_to_vector<int32_t>(_ids));
   };
   std::vector<std::shared_ptr<Part>> get_partByID(pybind11::tuple _ids)
   {
-    return this->get_partByID(qd::py::container_to_vector<int_32_t>(_ids));
+    return this->get_partByID(qd::py::container_to_vector<int32_t>(_ids));
   };
   std::vector<std::shared_ptr<Part>> get_partByIndex(pybind11::list _ids)
   {
-    return this->get_partByIndex(qd::py::container_to_vector<int_32_t>(_ids));
+    return this->get_partByIndex(qd::py::container_to_vector<int32_t>(_ids));
   };
   std::vector<std::shared_ptr<Part>> get_partByIndex(pybind11::tuple _ids)
   {
-    return this->get_partByIndex(qd::py::container_to_vector<int_32_t>(_ids));
+    return this->get_partByIndex(qd::py::container_to_vector<int32_t>(_ids));
   };
 };
 

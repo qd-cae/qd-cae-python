@@ -19,23 +19,23 @@ private:
   std::future<std::vector<char>> next_state_buffer;
 
   // general
-  int_32_t filetype; // = 1;
-  int_32_t ier;
-  int_32_t pos;
+  int32_t filetype; // = 1;
+  int32_t ier;
+  int32_t pos;
   // Sizing
-  int_32_t size_geo;
-  int_32_t size_state;
-  int_32_t size_disp;
-  int_32_t size_activity;
-  int_32_t size_post;
-  int_32_t size_titles;
+  int32_t size_geo;
+  int32_t size_state;
+  int32_t size_disp;
+  int32_t size_activity;
+  int32_t size_post;
+  int32_t size_titles;
   // States
-  int_32_t iTimeStep; // ... why
-  int_32_t nTimeStep;
-  int_32_t size_times;
+  int32_t iTimeStep; // ... why
+  int32_t nTimeStep;
+  int32_t size_times;
   float* timese;
   // config
-  int_32_t adjust;
+  int32_t adjust;
 
   void check_ier(std::string);
 

@@ -37,27 +37,29 @@ using namespace pybind11::literals;
  */
 // DEBUG: Somehow not working correctly ...
 using ListCasterNodes =
-  pybind11::detail::list_caster<std::vector<std::shared_ptr<Node>>,
-                                std::shared_ptr<Node>>;
+  pybind11::detail::list_caster<std::vector<std::shared_ptr<qd::Node>>,
+                                std::shared_ptr<qd::Node>>;
 using ListCasterElements =
-  pybind11::detail::list_caster<std::vector<std::shared_ptr<Element>>,
-                                std::shared_ptr<Element>>;
+  pybind11::detail::list_caster<std::vector<std::shared_ptr<qd::Element>>,
+                                std::shared_ptr<qd::Element>>;
 using ListCasterParts =
-  pybind11::detail::list_caster<std::vector<std::shared_ptr<Part>>,
-                                std::shared_ptr<Part>>;
+  pybind11::detail::list_caster<std::vector<std::shared_ptr<qd::Part>>,
+                                std::shared_ptr<qd::Part>>;
 namespace pybind11 {
 namespace detail {
+
+// vector of nodes -> list of python nodes
 template<>
-struct type_caster<std::vector<std::shared_ptr<Node>>> : ListCasterNodes
+struct type_caster<std::vector<std::shared_ptr<qd::Node>>> : ListCasterNodes
 {
-  static handle cast(const std::vector<std::shared_ptr<Node>>& src,
+  static handle cast(const std::vector<std::shared_ptr<qd::Node>>& src,
                      return_value_policy,
                      handle parent)
   {
     return ListCasterNodes::cast(
       src, return_value_policy::reference_internal, parent);
   }
-  static handle cast(const std::vector<std::shared_ptr<Node>>* src,
+  static handle cast(const std::vector<std::shared_ptr<qd::Node>>* src,
                      return_value_policy pol,
                      handle parent)
   {
@@ -65,17 +67,19 @@ struct type_caster<std::vector<std::shared_ptr<Node>>> : ListCasterNodes
   }
 };
 
+// vector of elements -> list of python elements
 template<>
-struct type_caster<std::vector<std::shared_ptr<Element>>> : ListCasterElements
+struct type_caster<std::vector<std::shared_ptr<qd::Element>>>
+  : ListCasterElements
 {
-  static handle cast(const std::vector<std::shared_ptr<Element>>& src,
+  static handle cast(const std::vector<std::shared_ptr<qd::Element>>& src,
                      return_value_policy,
                      handle parent)
   {
     return ListCasterElements::cast(
       src, return_value_policy::reference_internal, parent);
   }
-  static handle cast(const std::vector<std::shared_ptr<Element>>* src,
+  static handle cast(const std::vector<std::shared_ptr<qd::Element>>* src,
                      return_value_policy pol,
                      handle parent)
   {
@@ -83,17 +87,18 @@ struct type_caster<std::vector<std::shared_ptr<Element>>> : ListCasterElements
   }
 };
 
+// vector of parts -> list of python parts
 template<>
-struct type_caster<std::vector<std::shared_ptr<Part>>> : ListCasterParts
+struct type_caster<std::vector<std::shared_ptr<qd::Part>>> : ListCasterParts
 {
-  static handle cast(const std::vector<std::shared_ptr<Part>>& src,
+  static handle cast(const std::vector<std::shared_ptr<qd::Part>>& src,
                      return_value_policy,
                      handle parent)
   {
     return ListCasterParts::cast(
       src, return_value_policy::reference_internal, parent);
   }
-  static handle cast(const std::vector<std::shared_ptr<Part>>* src,
+  static handle cast(const std::vector<std::shared_ptr<qd::Part>>* src,
                      return_value_policy pol,
                      handle parent)
   {
@@ -102,6 +107,8 @@ struct type_caster<std::vector<std::shared_ptr<Part>>> : ListCasterParts
 };
 } // namespace detail
 } // namespace pybind11
+
+namespace qd {
 
 // PLUGIN: dyna_cpp
 PYBIND11_PLUGIN(dyna_cpp)
@@ -449,3 +456,5 @@ PYBIND11_PLUGIN(dyna_cpp)
 
   return m.ptr();
 }
+
+} //  namespace qd
