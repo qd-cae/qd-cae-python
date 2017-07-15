@@ -1084,7 +1084,7 @@ D3plot::read_states_parse(std::vector<std::string> _variables)
       }
       // History variables
     } else if (_variables[ii].find("history") != std::string::npos) {
-      // retrieve history var indexes
+      // retrieve history var indexesindexes
       auto hist_vars = extract_integers<int32_t>(_variables[ii]);
       if (hist_vars.size() < 1)
         throw(std::invalid_argument(
@@ -1194,7 +1194,7 @@ D3plot::read_states_parse(std::vector<std::string> _variables)
       } else {
         throw(std::invalid_argument(
           "Please specify the element type for all history "
-          "variables as shell or solid"));
+          "variables as either shell or solid"));
       }
 
     } else {
