@@ -155,6 +155,9 @@ public:
   D3plot(std::string filepath,
          std::vector<std::string> _variables = std::vector<std::string>(),
          bool _use_femzip = false);
+  D3plot(std::string filepath,
+         std::string _variables = std::string(),
+         bool _use_femzip = false);
   ~D3plot();
   void info() const;
   void read_states(std::vector<std::string> _variables);
@@ -186,13 +189,6 @@ public:
              qd::py::container_to_vector<std::string>(
                _variables,
                "An entry of read_states was not of type str"),
-             _use_femzip){};
-  D3plot(std::string _filepath, std::string _variable, bool _use_femzip)
-    : D3plot(_filepath,
-             [_variable](std::string) -> std::vector<std::string> {
-               std::vector<std::string> vec = { _variable };
-               return vec;
-             }(_variable),
              _use_femzip){};
   void read_states(pybind11::list _variables)
   {
@@ -232,7 +228,6 @@ public:
   };
   pybind11::array_t<float> get_timesteps_py()
   {
-    // return pybind11::array_t<float>();
     return qd::py::vector_to_nparray(this->get_timesteps());
   };
 };

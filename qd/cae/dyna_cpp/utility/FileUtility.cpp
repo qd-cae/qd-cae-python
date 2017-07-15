@@ -2,8 +2,6 @@
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 
-#include <boost/algorithm/string/trim.hpp>
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>

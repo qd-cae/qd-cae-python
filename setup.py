@@ -10,9 +10,8 @@ import pybind11
 from setuptools import setup, Extension
 
 # ======= S E T T I N G S ======= #
-boost_path = "libs/boost_1_61_0"
-femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
 pybind11_path = pybind11.get_include()
+femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
 # femzip_path = "libs/femzip/Linux/64Bit" # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
@@ -24,22 +23,8 @@ _version = "0.6.0"
 # (1) Native Code Stuff
 # (1.1) DYNA-CPP toolbox
 
-# BOOST
-if not os.path.isdir(boost_path) and "linux" in platform.system().lower():
-    if os.path.isdir("/usr/include/boost"):
-        boost_path = "/usr/include/boost"
-    elif os.path.isdir("/usr/local/include/boost"):
-        boost_path = "/usr/local/include/boost"
-    else:
-        raise Exception(
-            "Could neither detect boost on system, nor was %s correct." % boost_path)
-if not os.path.isdir(boost_path) and (platform.system() == "Windows"):
-    raise Exception("Invalid boost library path: %s." % boost_path)
-    # b2 --toolset=msvc-10.0 --build-type=complete architecture=x86
-    # address-model=64 stage
-
 compiler_args_dyna = []
-include_dirs_dyna = [boost_path, np.get_include(), "qd/cae", pybind11_path]
+include_dirs_dyna = [np.get_include(), "qd/cae", pybind11_path]
 lib_dirs_dyna = []
 libs_dyna = []
 srcs_dyna = [

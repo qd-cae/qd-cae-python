@@ -22,10 +22,10 @@
 namespace qd {
 
 /** Constructor for a D3plot.
- * @param std::string filepath : path to the d3plot file
- * @param std::vector<std::string> state_variables : which state variables to
- * read
- * @param bool use_femzip : set to true if your d3plot was femzipped
+ * @param filepath : path to the d3plot file
+ * @param state_variables : which state variables to read, see member function
+ *                          read_states
+ * @param use_femzip : set to true if your d3plot was femzipped
  */
 D3plot::D3plot(std::string _filename,
                std::vector<std::string> _state_variables,
@@ -98,6 +98,11 @@ D3plot::D3plot(std::string _filename,
   , buffer([](std::string _filename,
               bool _useFemzip) -> std::unique_ptr<AbstractBuffer> {
 
+// WTF is this ?!?!?!
+// This is a lambda for initialization of the buffer variable
+// Since the buffer is a std::unique_ptr I need to do it in the
+// initializer list. And since it is a little bit more complicated,
+// I need to use a lambda function
 #ifdef QD_USE_FEMZIP
     if (_useFemzip) {
       return std::move((std::make_unique<FemzipBuffer>(_filename)));
@@ -116,33 +121,7 @@ D3plot::D3plot(std::string _filename,
 
   }(_filename, _useFemzip))
 {
-
-/*
-// maybe make it as argument in future
- const int32_t bytesPerWord = 4;
-
-#ifdef QD_USE_FEMZIP
-  if (this->useFemzip) {
-    this->buffer = std::move(static_cast<std::unique_ptr<AbstractBuffer>>(
-      std::make_unique<FemzipBuffer>(this->get_filepath())));
-  } else {
-    this->buffer =
-      std::make_unique<D3plotBuffer>(this->get_filepath(), bytesPerWord);
-  }
-#else
-  if (this->useFemzip) {
-    throw(
-      std::invalid_argument("d3plot.cpp was compiled without femzip support."));
-  }
-  this->buffer =
-    std::make_unique<D3plotBuffer>(this->get_filepath(), bytesPerWord);
-#endif
-*/
-
-// Create Buffer
-#ifdef QD_DEBUG
-  std::cout << "Reading d3plot ... " << std::endl;
-#endif
+  // --> Constructor starts here ...
 
   this->buffer->read_geometryBuffer(); // deallocated in read_geometry
 
@@ -156,7 +135,26 @@ D3plot::D3plot(std::string _filename,
   // This routine must run through, even though no variables might be read.
   // This is due to the fact, that femzip must read the states before
   // closing the file. It is not possible to leave this out.
+  //
+  // Need to check this but I think I also set some other vars like the
+  // beginning of the state section and the state count.
   this->read_states(_state_variables);
+}
+
+/** Constructor for a D3plot.
+ * @param filepath : path to the d3plot file
+ * @param _variable : which state variable to read, see member function
+ *                    read_states
+ * @param use_femzip : set to true if your d3plot was femzipped
+ */
+D3plot::D3plot(std::string _filepath, std::string _variable, bool _use_femzip)
+  : D3plot(_filepath,
+           [_variable](std::string) -> std::vector<std::string> {
+             std::vector<std::string> vec = { _variable };
+             return vec;
+           }(_variable),
+           _use_femzip)
+{
 }
 
 /*
