@@ -27,7 +27,7 @@ class TestDynaModule(unittest.TestCase):
         d3plot_filepath = "test/d3plot"
         d3plot_modes = ["inner", "mid", "outer", "max", "min", "mean"]
         d3plot_vars = ["disp", "vel", "accel",
-                       "stress", "strain", "plastic_strain", "stress"
+                       "stress", "strain", "plastic_strain", "stress", "stress_mises",
                        "history 1 shell", "history 1 solid"]
         element_result_list = [None,
                                "plastic_strain",
@@ -123,7 +123,6 @@ class TestDynaModule(unittest.TestCase):
         self.assertTrue(part1.get_id() == 1)
         self.assertTrue(len(part1.get_elements()) == 4696)
         self.assertTrue(len(part1.get_nodes()) == 4915)
-        part2 = d3plot.get_parts()[0]
 
         # Node
         node_ids = [1, 2]
@@ -167,9 +166,15 @@ class TestDynaModule(unittest.TestCase):
         elem2 = element_ids_shell_v2[0]
         for element in element_ids_shell_v1:
             pass
+        self.assertEqual(elem1.get_plastic_strain().shape, (1,))
+        self.assertEqual(elem1.get_stress().shape, (1, 6))
+        self.assertEqual(elem1.get_stress_mises().shape, (1,))
+        self.assertEqual(elem1.get_strain().shape, (1, 6))
+        self.assertEqual(elem1.get_history_variables().shape, (1, 1))
         # .. TODO Error stoff
 
-        # plotting
+        # plotting (disabled)
+        '''
         export_path = os.path.join(
             os.path.dirname(__file__), "test_export.html")
         for element_result in element_result_list:
@@ -201,6 +206,7 @@ class TestDynaModule(unittest.TestCase):
                     iTimestep=-1, element_result=None, export_filepath=export_path)
                 self.assertTrue(os.path.isfile(export_path))
                 os.remove(export_path)
+        '''
 
     def test_binout(self):
         """Testing qd.cae.dyna.Binout"""
