@@ -31,4 +31,4 @@ install:
   - sudo CC=gcc-6 CXX=g++-6 python3 setup.py install
 
 script: 
-  - python3 setup.py test
+  - sudo python3 setup.py test
