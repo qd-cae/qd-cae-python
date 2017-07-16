@@ -183,8 +183,8 @@
 <h1>Part<a class="headerlink" href="#part" title="Permalink to this headline">¶</a></h1>
 <p>Class for handling Part data.</p>
 <dl class="class">
-<dt id="qd.cae.dyna.Part">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Part</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part" title="Permalink to this definition">¶</a></dt>
+<dt id="qd.cae.dyna.QD_Part">
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">QD_Part</code><a class="headerlink" href="#qd.cae.dyna.QD_Part" title="Permalink to this definition">¶</a></dt>
 <dd><p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -210,8 +210,107 @@
 </tbody>
 </table>
 <dl class="method">
-<dt id="qd.cae.dyna.Part.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part.plot" title="Permalink to this definition">¶</a></dt>
+<dt id="qd.cae.dyna.QD_Part.get_elements">
+<code class="descname">get_elements</code><span class="sig-paren">(</span><em>element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the elements of the part.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : str</p>
+<blockquote>
+<div><p>Optional element type filter. May be beam, shell or solid.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>elements</strong> : list(Element)</p>
+<blockquote class="last">
+<div><p>list of Elements</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span> <span class="p">)</span>
+<span class="go">49123</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span> <span class="p">)</span>
+<span class="go">45123</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_id">
+<code class="descname">get_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the id of the part.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>id</strong> : int</p>
+<blockquote class="last">
+<div><p>id of the part</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_name">
+<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the part. It&#8217;s the same name as in the input deck.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+<span class="go">&#39;PLATE_C&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_nodes">
+<code class="descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>)
+get_nodes()</p>
+<p>Get the nodes of the part. Note that a node may belong to two parts,
+since only the elements are uniquely assignable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nodes</strong> : list(Node)</p>
+<blockquote class="last">
+<div><p>nodes belonging to the elements of the part</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span> <span class="p">)</span>
+<span class="go">52341</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the Part, currently shells only!</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -260,107 +359,7 @@ browser.</p>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">res</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_stress_mises</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">):</span> <span class="c1"># some elements may miss stresses</span>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># last timestep</span>
-<span class="gp">&gt;&gt;&gt; </span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">element_result</span><span class="o">=</span><span class="n">eval_fun</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="qd.cae.dyna.Part.get_elements">
-<code class="descname">get_elements</code><span class="sig-paren">(</span><em>element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part.get_elements" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the elements of the part.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : str</p>
-<blockquote>
-<div><p>Optional element type filter. May be beam, shell or solid.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>elements</strong> : list(Element)</p>
-<blockquote class="last">
-<div><p>list of Elements</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span> <span class="p">)</span>
-<span class="go">49123</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span> <span class="p">)</span>
-<span class="go">45123</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="qd.cae.dyna.Part.get_id">
-<code class="descname">get_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part.get_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the id of the part.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>id</strong> : int</p>
-<blockquote class="last">
-<div><p>id of the part</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
-<span class="go">1</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="qd.cae.dyna.Part.get_name">
-<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part.get_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the name of the part. It&#8217;s the same name as in the input deck.</p>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
-<span class="go">&#39;PLATE_C&#39;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="qd.cae.dyna.Part.get_nodes">
-<code class="descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Part.get_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>)
-get_nodes()</p>
-<p>Get the nodes of the part. Note that a node may belong to two parts,
-since only the elements are uniquely assignable.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nodes</strong> : list(Node)</p>
-<blockquote class="last">
-<div><p>nodes belonging to the elements of the part</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">part</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span> <span class="p">)</span>
-<span class="go">52341</span>
 </pre></div>
 </div>
 </dd></dl>

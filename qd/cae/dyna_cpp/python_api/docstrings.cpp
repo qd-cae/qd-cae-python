@@ -9,7 +9,7 @@ const char* qd_node_class_docs = R"qddoc(
     --------
         Get nodes by
 
-        >>> femfile = D3plot(\"path/to/d3plot\")
+        >>> femfile = D3plot("path/to/d3plot")
         >>> node_list = femfile.get_nodes()
         >>> node = femfile.get_nodeByID(1)
         >>> node = femfile.get_nodeByIndex(1)
@@ -49,11 +49,11 @@ const char* node_get_coords_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\")
+        >>> d3plot = D3plot("path/to/d3plot")
         >>> node.get_coords().shape
         (3L,)
         >>> # load disp
-        >>> d3plot.read_states(\"disp\")
+        >>> d3plot.read_states("disp")
         >>> node.get_coords(iTimestep=10)
 )qddoc";
 
@@ -128,7 +128,7 @@ const char* element_description = R"qddoc(
     --------
         Get elements by
 
-        >>> femfile = D3plot(\"path/to/d3plot\")
+        >>> femfile = D3plot("path/to/d3plot")
         >>> element_list = femfile.get_elements()
         >>> shells = femfile.get_elements(Element.shell)
         >>> id = 1
@@ -290,7 +290,7 @@ const char* element_get_history_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\",read_states=\"history 1 shell max\")
+        >>> d3plot = D3plot("path/to/d3plot",read_states="history 1 shell max")
         >>> d3plot.get_elementByID(Element.shell, 1).get_history().shape
         (34L, 1L)
 
@@ -349,7 +349,7 @@ const char* element_get_is_rigid_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\", read_states=\"stress_mises max\")
+        >>> d3plot = D3plot("path/to/d3plot", read_states="stress_mises max")
         >>> elem1 = d3plot.get_elementByID(Element.shell, 451)
         >>> elem1.is_rigid()
         False
@@ -375,7 +375,7 @@ const char* part_get_id_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\")
+        >>> d3plot = D3plot("path/to/d3plot")
         >>> part = d3plot.get_partByID(1)
         >>> part.get_id()
         1
@@ -393,7 +393,7 @@ const char* part_get_name_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\")
+        >>> d3plot = D3plot("path/to/d3plot")
         >>> part = d3plot.get_partByID(1)
         >>> part.get_name()
         'PLATE_C'
@@ -412,7 +412,7 @@ const char* part_get_nodes_docs = R"qddoc()
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\")
+        >>> d3plot = D3plot("path/to/d3plot")
         >>> part = d3plot.get_partByID(1)
         >>> len( part.get_nodes() )
         52341
@@ -435,7 +435,7 @@ const char* part_get_elements_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\")
+        >>> d3plot = D3plot("path/to/d3plot")
         >>> part = d3plot.get_partByID(1)
         >>> len( part.get_elements() )
         49123
@@ -456,7 +456,7 @@ const char* dbnodes_description = R"qddoc(
         >>> issubclass(FEMFile, DB_Nodes)
         True
         >>> # Use DB_Nodes functions
-        >>> femfile = KeyFile(\"path/to/keyfile\")
+        >>> femfile = KeyFile("path/to/keyfile")
         >>> femfile.get_nNodes()
         45236
 
@@ -559,7 +559,7 @@ const char* dbelems_description = R"qddoc(
         >>> issubclass(FEMFile, DB_Elements)
         True
         >>> # brief usage example
-        >>> femfile = D3plot(\"path/to/d3plot\")
+        >>> femfile = D3plot("path/to/d3plot")
         >>> femfile.get_nElements()
         45236
         >>> list_of_shells = femfile.get_elements(Element.shell)
@@ -705,7 +705,7 @@ const char* dbparts_description = R"qddoc(
         >>> issubclass(FEMFile, DB_Parts)
         True
         >>> # brief usage example
-        >>> femfile = D3plot(\"path/to/d3plot\")
+        >>> femfile = D3plot("path/to/d3plot")
         >>> femfile.get_nParts()
         7
         >>> list_of_parts = femfile.get_parts()
@@ -821,7 +821,7 @@ const char* femfile_get_filepath_docs = R"qddoc(
     Examples
     --------
         >>> femfile.get_filepath()
-        \"path/to/femfile\"
+        "path/to/femfile"
 )qddoc";
 
 /* ----------------------- D3PLOT ---------------------- */
@@ -901,7 +901,7 @@ const char* d3plot_info_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\")
+        >>> d3plot = D3plot("path/to/d3plot")
         >>> d3plot.info()
 )qddoc";
 
@@ -913,7 +913,7 @@ const char* d3plot_get_title_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\")
+        >>> d3plot = D3plot("path/to/d3plot")
         >>> d3plot.get_title()
         "Barrier Impact"
 )qddoc";
@@ -930,7 +930,7 @@ const char* d3plot_get_timesteps_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\")
+        >>> d3plot = D3plot("path/to/d3plot")
         >>> time = d3plot.get_timesteps()
 )qddoc";
 
@@ -946,7 +946,7 @@ const char* d3plot_get_nStates = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\")
+        >>> d3plot = D3plot("path/to/d3plot")
         >>> d3plot.nStates()
         32
 )qddoc";
@@ -993,18 +993,18 @@ const char* d3plot_read_states_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\") # just geometry
+        >>> d3plot = D3plot("path/to/d3plot") # just geometry
         >>> node = d3plot.get_nodeByID(1)
         >>> len( node.get_disp() ) # no disps loaded
         0
         >>> # Read displacements
-        >>> d3plot.read_states(\"disp\")
+        >>> d3plot.read_states("disp")
         >>> len( node.get_disp() ) # here they are
         31
         >>> # multi-loading, already loaded will be skipped
-        >>> d3plot.read_states([\"disp\",\"vel\",\"stress_mises max\",\"shell history 1 mean\"])
+        >>> d3plot.read_states(["disp","vel","stress_mises max","shell history 1 mean"])
         >>> # most efficient way, load the results directly when opening
-        >>> D3plot(\"path/to/d3plot\", read_states=[\"disp\",\"vel\",\"plastic_strain max\"])
+        >>> D3plot("path/to/d3plot", read_states=["disp","vel","plastic_strain max"])
 )qddoc";
 
 const char* d3plot_clear_docs = R"qddoc(
@@ -1034,16 +1034,16 @@ const char* d3plot_clear_docs = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot(\"path/to/d3plot\", read_states=\"strain inner\")
-        >>> elem = d3plot.get_elementByID(\"shell\",1)
+        >>> d3plot = D3plot("path/to/d3plot", read_states="strain inner")
+        >>> elem = d3plot.get_elementByID("shell",1)
         >>> len( elem.get_strain() )
         34
         >>> # clear specific field
-        >>> d3plot.clear(\"strain\")
+        >>> d3plot.clear("strain")
         >>> len( elem.get_strain() )
         0
         >>> # reread some data
-        >>> d3plot.read_states(\"strain outer\")
+        >>> d3plot.read_states("strain outer")
         >>> len( elem.get_strain() )
         34
         >>> d3plot.clear() # clear all
@@ -1094,7 +1094,7 @@ const char* keyfile_constructor = R"qddoc(
 
     Examples
     --------
-        >>> keyfile = KeyFile(\"path/to/keyfile\")
+        >>> keyfile = KeyFile("path/to/keyfile")
         >>> # get mesh data similar to D3plot
         >>> node = keyfile.get_nodeByIndex(0)
 

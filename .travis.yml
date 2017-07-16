@@ -24,7 +24,7 @@ install:
   - sudo apt-get install -qq g++-6
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   # python packages
-  - python3 -m pip install --only-binary=numpy numpy
+  #- python3 -m pip install --only-binary=numpy numpy
   - python3 -m pip install -r requirements.txt
   #- python3 setup.py install
   - CC=gcc-6 CXX=g++-6 python3 setup.py install

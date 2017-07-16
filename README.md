@@ -4,8 +4,8 @@
 
 [![Build Status](https://travis-ci.org/qd-cae/qd-cae-python.svg?branch=master)](https://travis-ci.org/qd-cae/qd-cae-python)
 
-This **Python3** library is an open source software package with utility functions regarding engineering, especially Simulation and Computer Aided Engineering (CAE).
-The library is still young, so features drop in over time depending on the persons who contribute. Visit our website at http://www.qd-eng.de/
+This Python3 library is an open source software package with utility functions regarding engineering, especially Simulation and Computer Aided Engineering (CAE).
+The library is still young, so features drop in over time depending on the needs of the persons who contribute. Visit our website at http://www.qd-eng.de/
 
 CAE suffers greatly from expensive tools with bad or moderate scripting access. Also many algorithms developed in research never get published due to licensing or being very specific regarding a certain software environment. Engineering is lacking behind here in contrast to modern informatics.
 
@@ -16,17 +16,18 @@ We want to tackle this issue with this free library, in order to give engineerin
 *Changelog 18.05.2017*
 Version 0.6.0
 
-The whole C++ Python API was rewritten with pybind11 because the old interface took too much time for add new stuff. The code was also modernized to C++14. Speed is still about the same.
+The whole C++ Python API was rewritten with pybind11 because the old interface took too much maintenance. The code was also modernized to C++14. Speed is still about the same.
 
 **Note: The API changed a little bit (see below)**
 
 compilation:
-  - Boost was removed from the project (yay)
-  - pybind11 is added as dependency (see [compilation](#Compilation))
+  - Boost as dependency was removed from the project (yay)
+  - pybind11 was added as dependency (see [compilation](#Compilation))
+  - [compilation](#Compilation) in general is now simpler
 
 qd.cae.dyna
   - The whole Python API was rewritten with pybind11 
-  - Due to this change, **some new functions** could be added (already existed natively)
+  - Due to this change, **some new functions** were added (already existed natively)
   - **Element type specifier is not a string anymore**, but uses `Element.type` (enumeration in C++). Use `Element.none`, `Element.beam`, `Element.shell` or `Element.solid` as replacement (might add string support in the future again).
   - `Element.get_history` renamed to `Element.get_history_variables`
   
@@ -101,7 +102,12 @@ femzip_path = "path/to/femzip/libs"
 
 ## Linux
 
-Note that in contrast to windows, on Linux the library can be compiled for both, python2 and python3. Just install as follows:
+Note that in contrast to windows, on Linux the library can be compiled for both, python2 and python3. Check first whether your compiler is new enough.
+
+```bash
+g++ --version
+```
+You will need **g++ version 4.9 or higher**. If your compiler is fine, just install as follows:
 
 ```bash
 git clone https://github.com/qd-cae/qd-cae-python.git
@@ -109,6 +115,12 @@ cd qd-cae-python
 sudo apt-get install python3-numpy
 sudo python3 -m pip install -r requirements.txt
 sudo python3 setup.py install
+```
+
+As a little hint, if you want force python to take your modern compiler version (it may happen you have multiple), simply overwrite the `CC` attribute before the call:
+
+```bash
+sudo CC=g++-4.9 python3 setup.py install
 ```
 
 In case of the desire for FEMZIP support, simply download and register it the same way as for windows.

@@ -46,7 +46,6 @@
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="qd 0.6 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/>
-        <link rel="next" title="D3plot" href="qd_cae_dyna_D3plot.html"/>
         <link rel="prev" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 
   
@@ -103,7 +102,9 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Binout</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Binout</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_D3plot.html">D3plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_KeyFile.html">KeyFile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_FEMFile.html">FEMFile (D3plot and KeyFile)</a></li>
@@ -181,6 +182,137 @@
             
   <div class="section" id="binout">
 <h1>Binout<a class="headerlink" href="#binout" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="qd.cae.dyna.Binout">
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Binout</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is meant to read binouts from LS-Dyna</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>path to the binout</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This class is only a utility wrapper for Lsda from LSTC.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">read</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">to_string</span></code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="qd.cae.dyna.Binout.read">
+<code class="descname">read</code><span class="sig-paren">(</span><em>path) Read all data from Binout (top to low level</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read all data from Binout (top to low level)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>path</strong> : list(str) or str</p>
+<blockquote>
+<div><p>internal path in the folder structure of the binout</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ret</strong> : list(str) or np.ndarray</p>
+<blockquote class="last">
+<div><p>list of subdata within the folder or data itself</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This function is used to read any data from the binout. It has been used
+to make the access to the data more comfortable. The return type depends 
+on the given path:</p>
+<blockquote>
+<div><ul class="simple">
+<li><cite>binout.read()</cite> : list(str) names of directories (in binout)</li>
+<li><cite>binout.read(dir)</cite> : list(str) names of variables or subdirs</li>
+<li><cite>binout.read(dir1, ..., variable)</cite> : np.array(float/int) data</li>
+</ul>
+</div></blockquote>
+<p>If you have multiple outputs with different ids (e.g. in nodout for 
+multiple nodes) then don&#8217;t forget to read the ids array for 
+identification or id-labels.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">Binout</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;test/binout&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get top dirs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">[&#39;swforc&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">)</span>
+<span class="go">[&#39;title&#39;, &#39;failure&#39;, &#39;ids&#39;, &#39;failure_time&#39;, ...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;shear&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(321L, 26L)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;ids&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(26L,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;ids&quot;</span><span class="p">)</span>
+<span class="go">array([52890, 52891, 52892, ...])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># strings are just numbers, see Binout.to_string</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;typenames&quot;</span><span class="p">)</span>
+<span class="go">array([99, 111, 110, ...]) </span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="qd.cae.dyna.Binout.to_string">
+<em class="property">static </em><code class="descname">to_string</code><span class="sig-paren">(</span><em>data_array</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a data series of numbers (usually ints) to a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : np.array of int</p>
+<blockquote>
+<div><p>some data array</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>string</strong> : str</p>
+<blockquote class="last">
+<div><p>data array converted to characters</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This is needed for the reason that sometimes the binary data
+within the files are strings.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># strings also are just plain numbers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;typenames&quot;</span><span class="p">)</span>
+<span class="go">array([99, 111, 110, ...]) </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Binout</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span> <span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;typenames&quot;</span><span class="p">)</span> <span class="p">)</span>
+<span class="go">&#39;constraint,weld,beam,solid,non nodal, ,solid assembly&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -192,8 +324,6 @@
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="qd_cae_dyna_D3plot.html" class="btn btn-neutral float-right" title="D3plot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="qd_cae_dyna.html" class="btn btn-neutral" title="qd.cae.dyna" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

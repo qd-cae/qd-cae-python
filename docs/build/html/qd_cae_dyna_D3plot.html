@@ -45,8 +45,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="qd 0.6 documentation" href="index.html"/>
-        <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/>
-        <link rel="prev" title="Binout" href="qd_cae_dyna_Binout.html"/> 
+        <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -184,7 +183,7 @@
 <h1>D3plot<a class="headerlink" href="#d3plot" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="qd.cae.dyna.D3plot">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">D3plot</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">D3plot</code><a class="headerlink" href="#qd.cae.dyna.D3plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>A D3plot is a binary result file from LS-Dyna, a 
 commercial FEM-Solver from LSTC. The class reads
 the mesh and result data and makes it available 
@@ -482,16 +481,16 @@ from the memory. Valid variable names are:</p>
 <p>The specification of shell or solid for history is optional. Deletes
 all history variables if none given.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">, read_states=</span><span class="se">\&quot;</span><span class="s2">strain inner</span><span class="se">\&quot;</span><span class="s2">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span>\<span class="s2">&quot;shell</span><span class="se">\&quot;</span><span class="s2">,1)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;strain inner&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
 <span class="go">34</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># clear specific field</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span>\<span class="s2">&quot;strain</span><span class="se">\&quot;</span><span class="s2">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
 <span class="go">0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># reread some data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span>\<span class="s2">&quot;strain outer</span><span class="se">\&quot;</span><span class="s2">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span><span class="s2">&quot;strain outer&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
 <span class="go">34</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span> <span class="c1"># clear all</span>
@@ -600,7 +599,7 @@ or <cite>index</cite> does not exist</p>
 </table>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_filepath</span><span class="p">()</span>
-<span class="go">\&quot;path/to/femfile\&quot;</span>
+<span class="go">&quot;path/to/femfile&quot;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -700,7 +699,7 @@ or <cite>index</cite> does not exist</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">nStates</span><span class="p">()</span>
 <span class="go">32</span>
 </pre></div>
@@ -940,7 +939,7 @@ or <cite>index</cite> does not exist</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">time</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_timesteps</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -952,7 +951,7 @@ or <cite>index</cite> does not exist</p>
 <dd><p>Get the title of the d3plot, which is part
 of the header data.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_title</span><span class="p">()</span>
 <span class="go">&quot;Barrier Impact&quot;</span>
 </pre></div>
@@ -966,7 +965,7 @@ of the header data.</p>
 involves node info, element info, written state data and
 so forth.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1020,18 +1019,18 @@ treatment of these layers:</p>
 <li>min</li>
 </ul>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">) # just geometry</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span> <span class="c1"># just geometry</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">get_disp</span><span class="p">()</span> <span class="p">)</span> <span class="c1"># no disps loaded</span>
 <span class="go">0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Read displacements</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span>\<span class="s2">&quot;disp</span><span class="se">\&quot;</span><span class="s2">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span><span class="s2">&quot;disp&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">get_disp</span><span class="p">()</span> <span class="p">)</span> <span class="c1"># here they are</span>
 <span class="go">31</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># multi-loading, already loaded will be skipped</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">([</span>\<span class="s2">&quot;disp</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">vel</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">stress_mises max</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">shell history 1 mean</span><span class="se">\&quot;</span><span class="s2">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">([</span><span class="s2">&quot;disp&quot;</span><span class="p">,</span><span class="s2">&quot;vel&quot;</span><span class="p">,</span><span class="s2">&quot;stress_mises max&quot;</span><span class="p">,</span><span class="s2">&quot;shell history 1 mean&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># most efficient way, load the results directly when opening</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="p">(</span>\<span class="s2">&quot;path/to/d3plot</span><span class="se">\&quot;</span><span class="s2">, read_states=[</span><span class="se">\&quot;</span><span class="s2">disp</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">vel</span><span class="se">\&quot;</span><span class="s2">,</span><span class="se">\&quot;</span><span class="s2">plastic_strain max</span><span class="se">\&quot;</span><span class="s2">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;disp&quot;</span><span class="p">,</span><span class="s2">&quot;vel&quot;</span><span class="p">,</span><span class="s2">&quot;plastic_strain max&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1047,13 +1046,6 @@ treatment of these layers:</p>
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
-        <a href="qd_cae_dyna_Binout.html" class="btn btn-neutral" title="Binout" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>
