@@ -157,7 +157,7 @@ FileUtility::findDynaResultFiles(std::string _base_filepath)
 bool
 FileUtility::check_ExistanceAndAccess(std::string filepath)
 {
-  ifstream ifile(filepath.c_str());
+  std::ifstream ifile(filepath.c_str());
   return ifile.good();
 }
 

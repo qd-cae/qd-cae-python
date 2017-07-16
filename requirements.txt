@@ -1,4 +1,4 @@
 qd
-numpy>=1.11
+numpy>=1.8
 diversipy>=0.5
 pybind11>=2.1.1

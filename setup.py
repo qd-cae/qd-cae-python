@@ -12,7 +12,7 @@ from setuptools import setup, Extension
 # ======= S E T T I N G S ======= #
 pybind11_path = pybind11.get_include()
 femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
-# femzip_path = "libs/femzip/Linux/64Bit" # optional
+femzip_path = "libs/femzip/Linux/64Bit"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
@@ -121,7 +121,7 @@ setup(name='qd',
       },
       ext_package='qd.cae',  # where to place c extensions
       ext_modules=[dyna_extension],
-      install_requires=['numpy>=1.11', 'diversipy', 'pybind11>2.1.0'],
+      install_requires=['numpy>=1.8', 'diversipy', 'pybind11>2.1.0'],
       keywords=['cae',
                   'simulation',
                   'engineering',

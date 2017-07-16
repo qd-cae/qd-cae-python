@@ -100,7 +100,7 @@ is_type(PyObject* obj)
 /** Convert a python list or tuple to a vector
  *
  * @param U _container : container to convert to a vector
- * @return std::vector<T> vec
+ * @return vec
  */
 template<typename T,
          class U,
@@ -111,6 +111,8 @@ container_to_vector(U _container, const std::string& error_message = "")
 {
   std::vector<T> res;
   for (const auto& entry : _container) {
+
+    // Check if casting is possible
     if (!is_type<T>(entry.ptr())) {
       if (!error_message.empty()) {
         throw(std::invalid_argument(error_message));
@@ -119,7 +121,10 @@ container_to_vector(U _container, const std::string& error_message = "")
           "An entry of the python list/tuple does not have a valid type!"));
       }
     }
-    res.push_back(entry.cast<T>());
+
+    // cast and add it
+    //res.push_back( entry.cast<T>() );
+    res.push_back( pybind11::cast<T>(entry) );
   }
 
   return res;

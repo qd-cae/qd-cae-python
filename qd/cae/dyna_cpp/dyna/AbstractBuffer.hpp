@@ -7,6 +7,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <cstring> // std::memcopy
 #include <vector>
 
 namespace qd {
