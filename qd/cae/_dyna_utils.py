@@ -160,11 +160,7 @@ def _extract_elem_data(element, iTimestep=0, element_result=None):
 
     if element_result == None:
         return None
-    elif callable(element_result):
-        elem_result = element_result(element)
-        assert isinstance(
-            elem_result, numbers.Number), "The return from the element_result function must be a number!"
-        return elem_result
+
     elif isinstance(element_result, str):
 
         if "plastic_strain" in element_result:
@@ -174,6 +170,12 @@ def _extract_elem_data(element, iTimestep=0, element_result=None):
         else:
             raise ValueError(
                 "Unknown result type %s. Try energy or plastic_strain." % element_result)
+
+    elif callable(element_result):
+        elem_result = element_result(element)
+        assert isinstance(
+            elem_result, numbers.Number), "The return from the element_result function must be a number!"
+        return elem_result
 
     else:
         raise ValueError(
