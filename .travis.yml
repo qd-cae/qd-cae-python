@@ -28,7 +28,7 @@ install:
   #- python3 -m pip install --only-binary=numpy numpy
   - sudo python3 -m pip install -r requirements.txt
   #- python3 setup.py install
-  - CC=gcc-6 CXX=g++-6 python3 setup.py install
+  - sudo CC=gcc-6 CXX=g++-6 python3 setup.py install
 
 script: 
   - python3 setup.py test
