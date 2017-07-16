@@ -10,8 +10,8 @@ namespace qd {
  */
 FEMFile::FEMFile()
   : DB_Nodes(this)
-  , DB_Elements(this)
   , DB_Parts(this)
+  , DB_Elements(this)
 {
 }
 
@@ -20,11 +20,10 @@ FEMFile::FEMFile()
  */
 FEMFile::FEMFile(const std::string& _filepath)
   : DB_Nodes(this)
-  , DB_Elements(this)
   , DB_Parts(this)
+  , DB_Elements(this)
   , filepath(_filepath)
 {
-  // assign vars
 }
 
 /** Destructor for a new FEMFile

@@ -56,12 +56,18 @@ public:
   std::vector<std::shared_ptr<Element>> get_elements(
     const Element::ElementType _type = Element::NONE);
   template<typename T>
+  T get_element_id_from_index(Element::ElementType _type, size_t _index);
+  template<typename T>
+  size_t get_element_index_from_id(Element::ElementType _type, T _id);
+
+  template<typename T>
   std::shared_ptr<Element> get_elementByID(Element::ElementType _eType, T _id);
   template<typename T>
   std::vector<std::shared_ptr<Element>> get_elementByID(
     Element::ElementType _eType,
     const std::vector<T>& _ids);
   template<typename T>
+
   std::shared_ptr<Element> get_elementByIndex(Element::ElementType _eType,
                                               T _index);
   template<typename T>
@@ -112,6 +118,65 @@ public:
   };
 };
 
+/** Get the element idnex from an id
+ *
+ * @param _id : element id
+ * @return _index : index of the element
+ */
+template<typename T>
+size_t
+DB_Elements::get_element_index_from_id(Element::ElementType _type, T _id)
+{
+
+  switch (_type) {
+
+    case Element::ElementType::BEAM: {
+      const auto& it = this->id2index_elements2.find(_id);
+      if (it == id2index_elements2.end())
+        throw(std::invalid_argument("Can not find beam element with id " +
+                                    std::to_string(_id) + " in database"));
+      return it->second;
+      break;
+    }
+
+    case Element::ElementType::SHELL: {
+      const auto& it = this->id2index_elements4.find(_id);
+      if (it == id2index_elements4.end())
+        throw(std::invalid_argument("Can not find shell element with id " +
+                                    std::to_string(_id) + " in database"));
+      return it->second;
+      break;
+    }
+
+    case Element::ElementType::SOLID: {
+      const auto& it = this->id2index_elements8.find(_id);
+      if (it == id2index_elements8.end())
+        throw(std::invalid_argument("Can not find solid element with id " +
+                                    std::to_string(_id) + " in database"));
+      return it->second;
+      break;
+    }
+
+    default:
+      throw(std::invalid_argument("Can not get element with type:" +
+                                  std::to_string(_type)));
+      break;
+  }
+}
+
+/** Get the element id from an index
+ *
+ * @param _index : element index
+ * @return _id : id of the element
+ */
+template<typename T>
+T
+DB_Elements::get_element_id_from_index(Element::ElementType _type,
+                                       size_t _index)
+{
+  return this->get_elementByIndex(_type, _index)->get_elementID();
+}
+
 /** Get the element by it's internal id and it's type.
  *
  * @param _elementType : see description
@@ -121,34 +186,12 @@ public:
  */
 template<typename T>
 std::shared_ptr<Element>
-DB_Elements::get_elementByID(Element::ElementType _elementType, T _elementID)
+DB_Elements::get_elementByID(Element::ElementType _type, T _id)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  if (_elementType == Element::ElementType::BEAM) {
-    const auto& it = this->id2index_elements2.find(_elementID);
-    if (it == id2index_elements2.end())
-      throw(std::invalid_argument("Can not find beam element with id " +
-                                  std::to_string(_elementID) + " in database"));
-    return elements2[it->second];
-
-  } else if (_elementType == Element::ElementType::SHELL) {
-    const auto& it = this->id2index_elements4.find(_elementID);
-    if (it == id2index_elements4.end())
-      throw(std::invalid_argument("Can not find shell element with id " +
-                                  std::to_string(_elementID) + " in database"));
-    return elements4[it->second];
-
-  } else if (_elementType == Element::ElementType::SOLID) {
-    const auto& it = this->id2index_elements8.find(_elementID);
-    if (it == id2index_elements8.end())
-      throw(std::invalid_argument("Can not find solid element with id " +
-                                  std::to_string(_elementID) + " in database"));
-    return elements8[it->second];
-  }
-
-  throw(std::invalid_argument("Can not get element with elementType:" +
-                              std::to_string(_elementID)));
+  return this->get_elementByIndex(_type,
+                                  this->get_element_index_from_id(_type, _id));
 }
 
 /** Get the element by a list of ids and it's type.
@@ -169,7 +212,7 @@ DB_Elements::get_elementByID(Element::ElementType _elementType,
   for (const auto id : _ids) {
     ret.push_back(this->get_elementByID(_elementType, id));
   }
-  return ret;
+  return std::move(ret);
 }
 
 /** Get the element by it's internal index and it's type.
@@ -182,41 +225,47 @@ DB_Elements::get_elementByID(Element::ElementType _elementType,
 template<typename T>
 // typename std::enable_if<std::is_integral<T>::value>::type
 std::shared_ptr<Element>
-DB_Elements::get_elementByIndex(Element::ElementType _elementType,
-                                T _elementIndex)
+DB_Elements::get_elementByIndex(Element::ElementType _type, T _index)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  if (_elementType == Element::ElementType::BEAM) {
-    if (_elementIndex < elements2.size()) {
-      return elements2[_elementIndex];
-    } else {
-      throw(std::invalid_argument("beam element index " +
-                                  std::to_string(_elementIndex) +
-                                  " exceeds the number of elements."));
+  switch (_type) {
+
+    case Element::ElementType::BEAM: {
+      try {
+        return this->elements2.at(_index);
+      } catch (const std::out_of_range&) {
+        throw(std::invalid_argument("Could not find beam element with index " +
+                                    std::to_string(_index)));
+      }
+      break;
     }
 
-  } else if (_elementType == Element::ElementType::SHELL) {
-    if (_elementIndex < elements4.size()) {
-      return elements4[_elementIndex];
-    } else {
-      throw(std::invalid_argument("shell element index " +
-                                  std::to_string(_elementIndex) +
-                                  " exceeds the number of elements."));
+    case Element::ElementType::SHELL: {
+      try {
+        return this->elements4.at(_index);
+      } catch (const std::out_of_range&) {
+        throw(std::invalid_argument("Could not find shell element with index " +
+                                    std::to_string(_index)));
+      }
+      break;
     }
 
-  } else if (_elementType == Element::ElementType::SOLID) {
-    if (_elementIndex < elements8.size()) {
-      return elements8[_elementIndex];
-    } else {
-      throw(std::invalid_argument("solid element index " +
-                                  std::to_string(_elementIndex) +
-                                  " exceeds the number of elements."));
+    case Element::ElementType::SOLID: {
+      try {
+        return this->elements8.at(_index);
+      } catch (const std::out_of_range&) {
+        throw(std::invalid_argument("Could not find solid element with index " +
+                                    std::to_string(_index)));
+      }
+      break;
     }
+
+    default:
+      throw(std::invalid_argument("Can not get element with type:" +
+                                  std::to_string(_type)));
+      break;
   }
-
-  throw(std::invalid_argument("Can not get element with elementType " +
-                              std::to_string(_elementIndex)));
 }
 
 /** Get the element by a list of internal indexes and it's type.
@@ -237,7 +286,7 @@ DB_Elements::get_elementByIndex(Element::ElementType _elementType,
   for (const auto index : _indexes) {
     ret.push_back(this->get_elementByIndex(_elementType, index));
   }
-  return ret;
+  return std::move(ret);
 }
 
 } // namespace qd

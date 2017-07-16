@@ -21,11 +21,11 @@ Element::Element(const int32_t _elementID,
                  const Element::ElementType _elementType,
                  const std::vector<size_t>& _node_indexes,
                  DB_Elements* _db_elements)
-  : is_rigid(false)
-  , elementID(_elementID)
+  : elementID(_elementID)
+  , is_rigid(false)
+  , nodes(_node_indexes)
   , elemType(_elementType)
   , db_elements(_db_elements)
-  , nodes(_node_indexes)
 {
   // Checks
   if (_db_elements == nullptr)

@@ -82,16 +82,12 @@ public:
  * @return size_t : node index
  */
 template<typename T>
-T
+inline T
 DB_Nodes::get_id_from_index(size_t _index)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  if (_index >= nodes.size())
-    throw(std::invalid_argument("Node with index " + std::to_string(_index) +
-                                " does not exist in the db."));
-
-  return this->nodes[_index]->get_nodeID();
+  return this->get_nodeByIndex(_index)->get_nodeID();
 }
 
 /** Get the node id from it's index
@@ -100,15 +96,16 @@ DB_Nodes::get_id_from_index(size_t _index)
  * @return size_t _index : node index
  */
 template<typename T>
-size_t
+inline size_t
 DB_Nodes::get_index_from_id(T _id)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   const auto& it = this->id2index_nodes.find(_id);
   if (it == this->id2index_nodes.end())
-    throw(std::invalid_argument("Node with id " + std::to_string(_id) +
-                                " does not exist in the db."));
+    throw(std::invalid_argument("Could not find node with id " +
+                                std::to_string(_id)));
+
   return it->second;
 }
 
@@ -124,11 +121,7 @@ DB_Nodes::get_nodeByID(T _id)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  const auto& it = this->id2index_nodes.find(_id);
-  if (it == this->id2index_nodes.end())
-    throw(std::invalid_argument("Node with id " + std::to_string(_id) +
-                                " does not exist"));
-  return this->nodes[it->second];
+  return this->get_nodeByIndex(this->get_index_from_id(_id));
 }
 
 /** Get a list node from an id list
@@ -146,6 +139,7 @@ DB_Nodes::get_nodeByID(const std::vector<T>& _ids)
   for (const auto& node_id : _ids) {
     ret.push_back(this->get_nodeByID(node_id));
   }
+
   return std::move(ret);
 }
 
@@ -161,10 +155,12 @@ DB_Nodes::get_nodeByIndex(T _index)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  if (_index >= this->nodes.size())
-    throw(std::invalid_argument("Node with index " + std::to_string(_index) +
-                                " does not exist in the db."));
-  return this->nodes[_index];
+  try {
+    return this->nodes.at(_index);
+  } catch (const std::out_of_range&) {
+    throw(std::invalid_argument("Could not find node with index " +
+                                std::to_string(_index)));
+  }
 }
 
 /** Get a list of node from an index list
@@ -182,6 +178,7 @@ DB_Nodes::get_nodeByIndex(const std::vector<T>& _indexes)
   for (const auto index : _indexes) {
     ret.push_back(this->get_nodeByIndex(index));
   }
+
   return std::move(ret);
 }
 

@@ -2,10 +2,6 @@
 #ifndef PART_HPP
 #define PART_HPP
 
-// forward declaration
-class Node;
-class FEMFile;
-
 // includes
 #include <dyna_cpp/db/Element.hpp>
 
@@ -13,6 +9,10 @@ class FEMFile;
 #include <vector>
 
 namespace qd {
+
+// forward declaration
+class Node;
+class FEMFile;
 
 class Part
 {

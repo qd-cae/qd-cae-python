@@ -40,7 +40,8 @@ srcs_dyna = [
     "qd/cae/dyna_cpp/dyna/D3plot.cpp",
     "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
     "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
-    "qd/cae/dyna_cpp/utility/FileUtility.cpp"]
+    "qd/cae/dyna_cpp/utility/FileUtility.cpp",
+    "qd/cae/dyna_cpp/utility/TextUtility.cpp"]
 
 # FEMZIP usage? Libraries present?
 # You need to download the femzip libraries yourself from SIDACT GmbH

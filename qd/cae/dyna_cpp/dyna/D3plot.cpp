@@ -501,7 +501,7 @@ D3plot::read_geometry()
 #ifdef QD_DEBUG
   std::cout << "Adding shells ... ";
 #endif
-  size_t nRigidShells = 0;
+  int32_t nRigidShells = 0;
   db_elems->reserve(Element::SHELL, buffer_elems4.size());
   for (size_t ii = 0; ii < buffer_elems4.size(); ++ii) {
     auto elem = db_elems->add_element_byD3plot(
@@ -1729,7 +1729,7 @@ D3plot::read_states_elem4(size_t iState)
       }     // end:stress
 
       // LAYERS: HISTORY SHELL
-      for (int32_t jj = 0; jj < this->history_shell_read.size(); ++jj) {
+      for (size_t jj = 0; jj < this->history_shell_read.size(); ++jj) {
         // Skip if over limit
         if (this->history_shell_read[jj] > this->dyna_neips)
           continue;

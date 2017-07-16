@@ -13,9 +13,9 @@ namespace qd {
  * Constructor
  */
 Part::Part(int32_t _partID, std::string _partName, FEMFile* _femfile)
-  : partName(trim_copy(_partName))
-  , partID(_partID)
+  : partID(_partID)
   , femfile(_femfile)
+  , partName(trim_copy(_partName))
 {
 }
 

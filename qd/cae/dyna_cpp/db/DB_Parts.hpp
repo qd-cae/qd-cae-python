@@ -2,6 +2,7 @@
 #ifndef DB_PARTS_HPP
 #define DB_PARTS_HPP
 
+#include <dyna_cpp/db/Part.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
 #include <cstdint>
@@ -14,7 +15,7 @@
 namespace qd {
 
 // forward declarations
-class Part;
+// class Part;
 class FEMFile;
 
 class DB_Parts
@@ -28,11 +29,15 @@ public:
   DB_Parts(FEMFile* _femfile);
   virtual ~DB_Parts();
 
+  template<typename T>
+  size_t get_part_index_from_id(T _id);
+  template<typename T>
+  T get_part_id_from_index(size_t _index);
+
   size_t get_nParts() const;
   void print_parts() const;
   std::shared_ptr<Part> add_partByID(int32_t _partID,
                                      const std::string& name = "");
-
   std::vector<std::shared_ptr<Part>> get_parts();
   std::shared_ptr<Part> get_partByName(const std::string&);
   template<typename T>
@@ -63,6 +68,31 @@ public:
   };
 };
 
+template<typename T>
+inline size_t
+DB_Parts::get_part_index_from_id(T _id)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  const auto& it = this->id2index_parts.find(_id);
+  if (it != id2index_parts.end()) {
+    return it->second;
+  } else {
+    // :(
+    throw(std::invalid_argument("Could not find part with id " +
+                                std::to_string(_id)));
+  }
+}
+
+template<typename T>
+T
+DB_Parts::get_part_id_from_index(size_t _index)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  return this->get_partByIndex(_index)->get_partID();
+}
+
 /** Get a part from a single id
  * @param _id
  * @return part_ptr
@@ -73,14 +103,7 @@ DB_Parts::get_partByID(T _id)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  const auto& it = this->id2index_parts.find(_id);
-  if (it != id2index_parts.end()) {
-    return parts[it->second];
-  } else {
-    // :(
-    throw(std::invalid_argument("Could not find part with id " +
-                                std::to_string(_id)));
-  }
+  return this->get_partByIndex(this->get_part_index_from_id(_id));
 }
 
 /** Get a part from a list of ids
@@ -98,7 +121,7 @@ DB_Parts::get_partByID(std::vector<T> _ids)
     ret.push_back(this->get_partByID(id));
   }
 
-  return ret;
+  return std::move(ret);
 }
 
 /** Get a part from an internal index
@@ -108,16 +131,14 @@ DB_Parts::get_partByID(std::vector<T> _ids)
  * The index must be smaller than the number of parts.
  */
 template<typename T>
-std::shared_ptr<Part>
+inline std::shared_ptr<Part>
 DB_Parts::get_partByIndex(T _index)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  // Part existing
-  if (_index < parts.size()) {
-    return parts[_index];
-  } else {
-    // :(
+  try {
+    return this->parts.at(_index);
+  } catch (const std::out_of_range&) {
     throw(std::invalid_argument("Could not find part with index " +
                                 std::to_string(_index)));
   }
@@ -138,7 +159,7 @@ DB_Parts::get_partByIndex(std::vector<T> _indexes)
     ret.push_back(this->get_partByIndex(index));
   }
 
-  return ret;
+  return std::move(ret);
 }
 
 } // namespace qd

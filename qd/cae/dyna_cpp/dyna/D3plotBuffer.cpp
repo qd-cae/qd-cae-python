@@ -16,8 +16,8 @@ namespace qd {
 D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t _wordSize)
   : AbstractBuffer(_wordSize)
   , iStateFile(0)
-  , wordSize(_wordSize)
   , bufferSize(0)
+  , wordSize(_wordSize)
 {
 
   // Check File

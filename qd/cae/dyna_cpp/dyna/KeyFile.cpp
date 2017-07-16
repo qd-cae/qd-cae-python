@@ -87,13 +87,13 @@ KeyFile::read_mesh(std::string _filepath)
   std::string line;
   std::string line_trimmed;
   std::vector<float> coords(3);
-  std::vector<int32_t> elemNodes_beam(2);
-  std::vector<int32_t> elemNodes_shell(4);
-  std::vector<int32_t> elemNodes_solid(8);
-  int32_t id;
+  std::vector<int32_t> elemNodes_beam(2, 0);
+  std::vector<int32_t> elemNodes_shell(4, 0);
+  std::vector<int32_t> elemNodes_solid(8, 0);
+  int32_t id = -1;
   int32_t partID = -1;
-  std::string title;
   size_t iCardLine = 0;
+  std::string title;
   bool line_has_keyword = false;
 
   for (size_t iLine = 0; iLine != lines.size(); iLine++) {
@@ -307,7 +307,7 @@ KeyFile::read_mesh(std::string _filepath)
 
           try {
             db_parts->get_partByID(id)->set_name(title);
-          } catch (std::invalid_argument& err) {
+          } catch (std::invalid_argument&) {
             db_parts->add_partByID(id, title);
           }
 
