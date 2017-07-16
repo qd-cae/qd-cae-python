@@ -18,6 +18,7 @@ before_install:
   # python stuff
   - sudo apt-get install python3-pip
   - sudo apt-get install python3-numpy
+  - sudo apt-get install python3-scipy
   
 install:
   # new gcc
