@@ -174,7 +174,6 @@ class TestDynaModule(unittest.TestCase):
         # .. TODO Error stoff
 
         # plotting (disabled)
-        '''
         export_path = os.path.join(
             os.path.dirname(__file__), "test_export.html")
         for element_result in element_result_list:
@@ -206,7 +205,6 @@ class TestDynaModule(unittest.TestCase):
                     iTimestep=-1, element_result=None, export_filepath=export_path)
                 self.assertTrue(os.path.isfile(export_path))
                 os.remove(export_path)
-        '''
 
     def test_binout(self):
         """Testing qd.cae.dyna.Binout"""
