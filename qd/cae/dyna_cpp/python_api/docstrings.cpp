@@ -323,8 +323,8 @@ const char* element_get_type_docs = R"qddoc(
 
     Returns
     -------
-    element_type : str
-        beam, shell or solid
+    element_type : Element.type
+        Element.beam, Element.shell or Element.solid
 
     Examples
     --------

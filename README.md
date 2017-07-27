@@ -7,29 +7,35 @@
 This Python3 library is an open source software package with utility functions regarding engineering, especially Simulation and Computer Aided Engineering (CAE).
 The library is still young, so features drop in over time depending on the needs of the persons who contribute. Visit our website at http://www.qd-eng.de/
 
-CAE suffers greatly from expensive tools with bad or moderate scripting access. Also many algorithms developed in research never get published due to licensing or being very specific regarding a certain software environment. Engineering is lacking behind here in contrast to modern informatics.
+CAE suffers greatly from expensive tools with bad or moderate scripting access and utility. Also many algorithms developed in research never get published due to licensing or being very specific regarding a certain software environment. Engineering is lacking behind here in contrast to modern informatics.
 
-We want to tackle this issue with this free library, in order to give engineering a boost. Use it, build more awesome applications with it, share your projects too and if possible contribute.
+We want to tackle this issue with this free library, in order to give engineering a boost. Simple data access is crucial for further ideas to emerge! Use this library, build more awesome applications with it, share your projects too if not critical and please contribute to us or science in general.
 
-# What's new
+# What's new?
 
-*Changelog 18.05.2017*
+*Changelog 28.07.2017*
 Version 0.6.0
 
-The whole C++ Python API was rewritten with pybind11 because the old interface took too much maintenance. The code was also modernized to C++14. Speed is still about the same.
+**The API changed a little bit (see below)**
 
-**Note: The API changed a little bit (see below)**
+The whole C++ Python API was rewritten with pybind11 because the old interface took too much maintenance. The code was also modernized to C++14. Speed is slightly better. Note that the API changed a little bit, which may happen for a software with a version below 1.0.0!
 
-compilation:
+[compilation](#Compilation) in general is now simpler:
   - Boost as dependency was removed from the project (yay)
-  - pybind11 was added as dependency (see [compilation](#Compilation))
-  - [compilation](#Compilation) in general is now simpler
+  - pybind11 was added, but is installed via python in the process (yay)
+
 
 qd.cae.dyna
-  - The whole Python API was rewritten with pybind11 
-  - Due to this change, **some new functions** were added (already existed natively)
-  - **Element type specifier is not a string anymore**, but uses `Element.type` (enumeration in C++). Use `Element.none`, `Element.beam`, `Element.shell` or `Element.solid` as replacement (might add string support in the future again).
-  - `Element.get_history` renamed to `Element.get_history_variables`
+  - The whole Python API was rewritten with pybind11
+  - **API Changes**:
+    - **Element type specifier is not a string anymore**, but uses `Element.type` (enumeration in C++). Use `Element.none`, `Element.beam`, `Element.shell` or `Element.solid` as replacement (might add string support in the future again).
+    - `Element.get_history` renamed to `Element.get_history_variables`
+  - **New functions** were added (already existed natively)
+    - `femfile.get_partByIndex`
+    - `femfile.get_partByName`
+    - `femfile.get_elementByIndex`
+    - `d3plot.get_nStates`
+    - `d3plot.get_title`
   
 
 *Changelog 18.05.2017*
@@ -54,7 +60,7 @@ You can find the [full Documentation here](https://qd-cae.github.io/qd-cae-pytho
 
 ## Windows
 
-The wheel is always compiled with FEMZIP support. For **Windows** (x64 Python 3.5 and higher). If possible install by using pip. Since the package is uploaded to pipy, the following should work:
+For **Windows** (x64 Python 3.5 and higher) install by using pip. The precompiled wheels are always compiled with FEMZIP support. Since the package is uploaded to pipy, the following should work:
 
 ```
 pip install qd
@@ -64,15 +70,21 @@ or
 python3 -m pip install qd
 ```
 
-The wheels which are used by pip can also be found here in the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist). Note though that your windows python distribution might not neccessarily find an appropriate version and fail. In that case one has 3 options:
+The wheels, which are used by pip, can also be found here in the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist). If neccessary download the appropriate one and install it with:
+
+```python
+pip install [path/to/downloaded/wheel]
+```
+
+Note though that your windows python distribution might not neccessarily find an appropriate version and fail. In that case one has 3 options:
 
  - Download and use [Anaconda Python x64](https://www.continuum.io/downloads#windows)
- - Open a request for compilation of a specific distribution
  - Compile it yourself (see [Compilation](#Compilation))  
+ - Open a request for compilation of a specific distribution
 
 ## Linux
 
-In the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist) usually are some precompiled Linux wheels for installation with pip. Note that Linux wheels rarely work accross different systems, so do not expect them to work and in case of trouble see the [Compilation](#Compilation) section below. It's quite simple to compile it yourself on Linux.
+In the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist) usually are some precompiled Linux wheels for installation with pip. Note that Linux wheels rarely work accross different systems, so do not expect them to work and in case of trouble see the [Compilation](#Compilation) section below. It's quite simple to compile it yourself on Linux (❤).
 
 # Compilation
 
@@ -117,7 +129,7 @@ sudo python3 -m pip install -r requirements.txt
 sudo python3 setup.py install
 ```
 
-As a little hint, if you want force python to take your modern compiler version (it may happen you have multiple), simply overwrite the `CC` attribute before the call:
+As a little hint, if you want force python to take your modern compiler version (it may happen that you have multiple g++), simply overwrite the `CC` attribute before the running the setup script:
 
 ```bash
 sudo CC=g++-4.9 python3 setup.py install
