@@ -164,7 +164,7 @@ public:
   void clear(
     const std::vector<std::string>& _variables = std::vector<std::string>());
 
-  size_t get_nStates() const;
+  size_t get_nTimesteps() const;
   std::string get_title() const;
   std::vector<float> get_timesteps() const;
   bool displacement_is_read() const;
@@ -247,7 +247,7 @@ D3plot::displacement_is_read() const
  * @return nStates
  */
 inline size_t
-D3plot::get_nStates() const
+D3plot::get_nTimesteps() const
 {
   return this->timesteps.size();
 }

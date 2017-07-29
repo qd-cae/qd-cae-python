@@ -934,20 +934,20 @@ const char* d3plot_get_timesteps_docs = R"qddoc(
         >>> time = d3plot.get_timesteps()
 )qddoc";
 
-const char* d3plot_get_nStates = R"qddoc(
-    get_nStates()
+const char* d3plot_get_nTimesteps_docs = R"qddoc(
+    get_nTimesteps()
 
-    Get the number of states of the d3plot.
+    Get the number of timesteps of the d3plot.
 
     Returns
     -------
-    nStates : int
-        number of states
+    nTimesteps : int
+        number of timesteps
 
     Examples
     --------
         >>> d3plot = D3plot("path/to/d3plot")
-        >>> d3plot.nStates()
+        >>> d3plot.get_nTimesteps()
         32
 )qddoc";
 

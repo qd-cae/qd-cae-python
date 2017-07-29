@@ -22,7 +22,7 @@ The whole C++ Python API was rewritten with pybind11 because the old interface t
 
 [compilation](#Compilation) in general is now simpler:
   - Boost as dependency was removed from the project (yay)
-  - pybind11 was added, but is installed via python in the process (yay)
+  - pybind11 was added, but is installed via requirements.txt
 
 
 qd.cae.dyna
@@ -34,7 +34,7 @@ qd.cae.dyna
     - `femfile.get_partByIndex`
     - `femfile.get_partByName`
     - `femfile.get_elementByIndex`
-    - `d3plot.get_nStates`
+    - `d3plot.get_nTimesteps`
     - `d3plot.get_title`
   
 

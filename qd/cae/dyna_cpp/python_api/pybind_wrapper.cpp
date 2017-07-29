@@ -440,10 +440,10 @@ PYBIND11_PLUGIN(dyna_cpp)
          &D3plot::get_timesteps_py,
          pybind11::return_value_policy::take_ownership,
          d3plot_get_timesteps_docs)
-    .def("get_nStates",
-         &D3plot::get_nStates,
+    .def("get_nTimesteps",
+         &D3plot::get_nTimesteps,
          pybind11::return_value_policy::take_ownership,
-         d3plot_get_nStates)
+         d3plot_get_nTimesteps_docs)
     .def("get_title",
          &D3plot::get_title,
          pybind11::return_value_policy::take_ownership,
