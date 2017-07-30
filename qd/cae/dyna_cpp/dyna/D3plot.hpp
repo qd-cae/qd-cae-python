@@ -163,10 +163,11 @@ public:
   void read_states(std::vector<std::string> _variables);
   void clear(
     const std::vector<std::string>& _variables = std::vector<std::string>());
-
   size_t get_nTimesteps() const;
   std::string get_title() const;
   std::vector<float> get_timesteps() const;
+  // void save_sqlite(const std::string& filepath, int32_t iTimestep = 0);
+
   bool displacement_is_read() const;
   bool is_d3plot() const { return true; };
   bool is_keyFile() const { return false; };

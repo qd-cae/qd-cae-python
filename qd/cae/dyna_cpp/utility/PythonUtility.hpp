@@ -5,8 +5,11 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
 // includes
+extern "C" {
 #include <Python.h>
-#include <numpy/arrayobject.h>
+//#include <numpy/arrayobject.h>
+}
+
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
@@ -123,8 +126,8 @@ container_to_vector(U _container, const std::string& error_message = "")
     }
 
     // cast and add it
-    //res.push_back( entry.cast<T>() );
-    res.push_back( pybind11::cast<T>(entry) );
+    // res.push_back( entry.cast<T>() );
+    res.push_back(pybind11::cast<T>(entry));
   }
 
   return res;

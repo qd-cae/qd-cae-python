@@ -10,7 +10,10 @@
 #include <dyna_cpp/dyna/KeyFile.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
+extern "C" {
 #include <pybind11/numpy.h>
+}
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -448,6 +451,11 @@ PYBIND11_PLUGIN(dyna_cpp)
          &D3plot::get_title,
          pybind11::return_value_policy::take_ownership,
          d3plot_get_title_docs);
+  /*.def("save_sqlite",
+       &D3plot::save_sqlite,
+       "filepath"_a,
+       "iTimestep"_a = 0,
+       "NO DOCS AVAILABLE.");*/
 
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(

@@ -67,7 +67,6 @@ public:
     Element::ElementType _eType,
     const std::vector<T>& _ids);
   template<typename T>
-
   std::shared_ptr<Element> get_elementByIndex(Element::ElementType _eType,
                                               T _index);
   template<typename T>
