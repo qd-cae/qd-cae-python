@@ -19,7 +19,7 @@ class KeyFile;
  */
 class FEMFile : public DB_Nodes, public DB_Parts, public DB_Elements
 {
-  // class FEMFile {
+
 private:
   std::string filepath;
 
