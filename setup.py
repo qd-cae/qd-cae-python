@@ -12,7 +12,7 @@ from setuptools import setup, Extension
 # ======= S E T T I N G S ======= #
 pybind11_path = pybind11.get_include()
 femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
-# femzip_path = "libs/femzip/Linux64/64Bit/"  # optional
+femzip_path = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
@@ -40,10 +40,8 @@ srcs_dyna = [
     "qd/cae/dyna_cpp/dyna/D3plot.cpp",
     "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
     "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
-    "qd/cae/dyna_cpp/utility/SQLiteUtility.cpp",
     "qd/cae/dyna_cpp/utility/FileUtility.cpp",
-    "qd/cae/dyna_cpp/utility/TextUtility.cpp",
-    "qd/cae/dyna_cpp/sqlite/sqlite3.c"]
+    "qd/cae/dyna_cpp/utility/TextUtility.cpp"]
 
 # FEMZIP usage? Libraries present?
 # You need to download the femzip libraries yourself from SIDACT GmbH
