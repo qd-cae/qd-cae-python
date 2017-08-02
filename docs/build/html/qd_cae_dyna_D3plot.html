@@ -220,7 +220,7 @@ not support something.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nParts</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nStates</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nTimesteps</span></code></td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></td>
@@ -473,7 +473,7 @@ from the memory. Valid variable names are:</p>
 all history variables if none given.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;strain inner&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="s2">&quot;shell&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
 <span class="go">34</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># clear specific field</span>
@@ -674,16 +674,16 @@ or <cite>index</cite> does not exist</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="qd.cae.dyna.D3plot.get_nStates">
-<code class="descname">get_nStates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nStates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the number of states of the d3plot.</p>
+<dt id="qd.cae.dyna.D3plot.get_nTimesteps">
+<code class="descname">get_nTimesteps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nTimesteps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of timesteps of the d3plot.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nStates</strong> : int</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nTimesteps</strong> : int</p>
 <blockquote class="last">
-<div><p>number of states</p>
+<div><p>number of timesteps</p>
 </div></blockquote>
 </td>
 </tr>
@@ -691,7 +691,7 @@ or <cite>index</cite> does not exist</p>
 </table>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">nStates</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nTimesteps</span><span class="p">()</span>
 <span class="go">32</span>
 </pre></div>
 </div>
@@ -866,7 +866,7 @@ or <cite>index</cite> does not exist</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>str</strong> : name</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
 <blockquote>
 <div><p>name of the part</p>
 </div></blockquote>

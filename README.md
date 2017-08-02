@@ -18,7 +18,9 @@ Version 0.6.0
 
 **The API changed a little bit (see below)**
 
-The whole C++ Python API was rewritten with pybind11 because the old interface took too much maintenance. The code was also modernized to C++14. Speed is slightly better. Note that the API changed a little bit, which may happen for a software with a version below 1.0.0!
+The whole C++ Python API was rewritten with pybind11 because the old interface took too much maintenance. This change makes it easier to implement further developmens. The code was also modernized to C++14. Speed is slightly better. 
+
+Note that the API changed a little bit, which may happen for a software with a version below 1.0.0! This will not be done often, so don't worry.
 
 [compilation](#Compilation) in general is now simpler:
   - Boost as dependency was removed from the project (yay)

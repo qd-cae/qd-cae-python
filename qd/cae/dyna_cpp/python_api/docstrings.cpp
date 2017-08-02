@@ -425,7 +425,7 @@ const char* part_get_elements_docs = R"qddoc(
 
     Parameters
     ----------
-    element_filter : str
+    element_filter : Element.type
         Optional element type filter. May be beam, shell or solid.
 
     Returns
@@ -791,7 +791,7 @@ const char* dbparts_get_partByName_docs = R"qddoc(
 
     Parameters
     ----------
-    str : name
+    name : str
         name of the part
 
     Raises
@@ -1035,7 +1035,7 @@ const char* d3plot_clear_docs = R"qddoc(
     Examples
     --------
         >>> d3plot = D3plot("path/to/d3plot", read_states="strain inner")
-        >>> elem = d3plot.get_elementByID("shell",1)
+        >>> elem = d3plot.get_elementByID(Element.shell, 1)
         >>> len( elem.get_strain() )
         34
         >>> # clear specific field
