@@ -6,17 +6,23 @@ import glob
 import platform
 import numpy as np
 import unittest
-import pybind11
 from setuptools import setup, Extension
 
+try:
+    import pybind11
+except ImportError :
+    import pip
+    pip.main(['install', 'pybind11'])
+    import pybind11
+
 # ======= S E T T I N G S ======= #
-pybind11_path = pybind11.get_include()
-femzip_path = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
-femzip_path = "libs/femzip/Linux64/64Bit/"  # optional
+#pybind11_path = pybind11.get_include()
+femzip_path_windows = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
+femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-_version = "0.6.0"
+version = "0.6.0"
 # =============================== #
 
 
@@ -24,7 +30,9 @@ _version = "0.6.0"
 # (1.1) DYNA-CPP toolbox
 
 compiler_args_dyna = []
-include_dirs_dyna = [np.get_include(), "qd/cae", pybind11_path]
+include_dirs_dyna = [np.get_include(), 
+                     "qd/cae", 
+                     pybind11.get_include()]
 lib_dirs_dyna = []
 libs_dyna = []
 srcs_dyna = [
@@ -47,23 +55,22 @@ srcs_dyna = [
 # You need to download the femzip libraries yourself from SIDACT GmbH
 # www.sidact.de
 # If you have questions, write a mail.
-if os.path.isdir(femzip_path):
-    if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path)):
-        srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
-        lib_dirs_dyna.append(os.path.join(femzip_path))
-        libs_dyna = ['femunziplib_standard_dyna', 'ipp_zlibd', 'ippcoremt',
-                     'ippdcmt', 'ippsmt', 'ifwin', 'ifconsol', 'ippvmmt', 'libmmd',
-                     'libirc', 'svml_dispmd', 'msvcrt']
-        compiler_args_dyna.append("/DQD_USE_FEMZIP")
-    elif (platform.system() == "Linux") and os.path.isdir(femzip_path):
-        srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
-        lib_dirs_dyna.append(femzip_path)
-        libs_dyna = ['femunzip_dyna_standard', 'ipp_z', 'ippcore',
-                     'ippdc', 'ipps', 'ifcore_pic', 'ifcoremt', 'imf',
-                     'ipgo', 'irc', 'svml', 'ippcore_l', 'stdc++', 'dl']
-        compiler_args_dyna.append("-DQD_USE_FEMZIP")
+if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path_windows)):
+    srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
+    lib_dirs_dyna.append(os.path.join(femzip_path_windows))
+    libs_dyna = ['femunziplib_standard_dyna', 'ipp_zlibd', 'ippcoremt',
+                 'ippdcmt', 'ippsmt', 'ifwin', 'ifconsol', 'ippvmmt', 'libmmd',
+                 'libirc', 'svml_dispmd', 'msvcrt']
+    compiler_args_dyna.append("/DQD_USE_FEMZIP")
+elif (platform.system() == "Linux") and os.path.isdir(femzip_path_linux):
+    srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
+    lib_dirs_dyna.append(femzip_path_linux)
+    libs_dyna = ['femunzip_dyna_standard', 'ipp_z', 'ippcore',
+                 'ippdc', 'ipps', 'ifcore_pic', 'ifcoremt', 'imf',
+                 'ipgo', 'irc', 'svml', 'ippcore_l', 'stdc++', 'dl']
+    compiler_args_dyna.append("-DQD_USE_FEMZIP")
 else:
-    print("FEMZIP library %s not found. Compiling without femzip support." % femzip_path)
+    print("FEMZIP library not found. Compiling without femzip support.")
 
 # CFLAGS linux
 if (platform.system().lower() == "linux") or (platform.system().lower() == "linux2"):
@@ -98,7 +105,7 @@ def my_test_suite():
 
 # (3) SETUP
 setup(name='qd',
-      version=_version,
+      version=version,
       license='GNU GPL v3',
       description='QD-Engineering Python Library for CAE',
       author='C. Diez, D. Toewe',
