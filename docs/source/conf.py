@@ -30,7 +30,8 @@ def find_egg():
         sys.path.append(os.path.abspath(files[-1]))
 find_egg()
 
-autodoc_member_order = 'bysource'
+#autodoc_member_order = 'bysource'
+autoclass_content = 'init' # 'both' 
 numpydoc_show_class_members = True
 
 # -- General configuration ------------------------------------------------

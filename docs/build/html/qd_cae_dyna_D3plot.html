@@ -89,8 +89,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Binout.html">Binout</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">D3plot</a><ul class="simple">
@@ -106,7 +105,6 @@
 <li class="toctree-l1"><a class="reference internal" href="qd_cae_beta.html">qd.cae.beta</a></li>
 <li class="toctree-l1"><a class="reference internal" href="qd_numerics.html">qd.numerics</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="compilation_guide.html">Compilation Guide</a></li>
 </ul>
@@ -178,18 +176,60 @@
 <h1>D3plot<a class="headerlink" href="#d3plot" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="qd.cae.dyna.D3plot">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">D3plot</code><a class="headerlink" href="#qd.cae.dyna.D3plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>A D3plot is a binary result file from LS-Dyna, a 
-commercial FEM-Solver from LSTC. The class reads
-the mesh and result data and makes it available 
-to the user.</p>
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">D3plot</code><span class="sig-paren">(</span><em>filepath</em>, <em>use_femzip=False</em>, <em>read_states=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote>
+<div><p>path to the d3plot</p>
+</div></blockquote>
+<p><strong>use_femzip</strong> : bool</p>
+<blockquote>
+<div><p>whether to use femzip for decompression</p>
+</div></blockquote>
+<p><strong>read_states</strong> : str or list of str</p>
+<blockquote>
+<div><p>read state information directly (saves time), 
+see the function <cite>read_states</cite></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>D3plot d3plot</strong> : instance</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote>
+<div><p>in case of an invalid filepath or locked file</p>
+</div></blockquote>
+<p><strong>RuntimeError</strong></p>
+<blockquote class="last">
+<div><p>if anything goes wrong (internal checks) during reading</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Notes</p>
-<p>The library focuses entirely on structural
-simulation results and does not support CFD
-or something else.
-A lot of checks take place during reading,
-therefore the library will complain if it does
-not support something.</p>
+<p>If LS-Dyna writes multiple files (one for each timestep),
+give the filepath to the first file. The library finds all
+other files.
+Please read state information with the read_states flag 
+in the constructor or with the member function.</p>
+<p class="rubric">Examples</p>
+<p>Read the plain geometry data</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read a compressed d3plot</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span> <span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read d3plot with state data at once.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mises_stress max&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -269,6 +309,56 @@ not support something.</p>
 </tbody>
 </table>
 <dl class="method">
+<dt id="qd.cae.dyna.D3plot.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><em>vars</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.clear" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vars</strong> : str or list(str)</p>
+<blockquote class="last">
+<div><p>variable or list of variables to delete</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This function may be used if one wants to clear certain state data
+from the memory. Valid variable names are:</p>
+<ul class="simple">
+<li>disp</li>
+<li>vel</li>
+<li>accel</li>
+<li>strain</li>
+<li>stress</li>
+<li>stress_mises</li>
+<li>plastic_strain</li>
+<li>history [(optional) shell or solid]</li>
+</ul>
+<p>The specification of shell or solid for history is optional. Deletes
+all history variables if none given.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;strain inner&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
+<span class="go">34</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># clear specific field</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># reread some data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span><span class="s2">&quot;strain outer&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
+<span class="go">34</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span> <span class="c1"># clear all</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="qd.cae.dyna.D3plot.compare_scatter">
 <code class="descname">compare_scatter</code><span class="sig-paren">(</span><em>filepath_list</em>, <em>element_result</em>, <em>pid_filter_list=None</em>, <em>kMappingNeighbors=4</em>, <em>export_filepath=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.compare_scatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare the scatter between mutliple d3plot files</p>
@@ -329,168 +419,6 @@ computed between all runs as maximum difference.</p>
 <span class="gp">&gt;&gt;&gt; </span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># compute and plot scatter</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">compare_scatter</span><span class="p">(</span><span class="n">other_files</span><span class="p">,</span> <span class="n">elem_eval_fun</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="n">state_vars</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="qd.cae.dyna.D3plot.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the D3plot, currently shells only!</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>iTimestep</strong> : int</p>
-<blockquote>
-<div><p>timestep at which to plot the D3plot</p>
-</div></blockquote>
-<p><strong>element_result</strong> : str or function</p>
-<blockquote>
-<div><p>which type of results to use as fringe
-None means no fringe is used.
-When using string as arg you may use plastic_strain or energy.
-Function shall take elem as input and return a float value (for fringe)</p>
-</div></blockquote>
-<p><strong>fringe_bounds</strong> : list(float,float) or tuple(float,float)</p>
-<blockquote>
-<div><p>bounds for the fringe, default will use min and max value</p>
-</div></blockquote>
-<p><strong>export_filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>optional filepath for saving. If none, the model
-is exported to a temporary file and shown in the
-browser.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>Load a d3plot and plot it’s geometry</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="c1"># just geometry</span>
-</pre></div>
-</div>
-<p>Read the state data and plot in deformed state</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># read state data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">([</span><span class="s2">&quot;disp&quot;</span><span class="p">,</span><span class="s2">&quot;plastic_strain max&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># last state</span>
-</pre></div>
-</div>
-<p>Use a user-defined element evaluation function for fringe colors.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># User defined evaluation function</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">eval_fun</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">res</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_plastic_strain</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">):</span> <span class="c1"># some elements may miss plastic strain</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># last timestep</span>
-<span class="gp">&gt;&gt;&gt; </span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">element_result</span><span class="o">=</span><span class="n">eval_fun</span><span class="p">,</span> <span class="n">fringe_bounds</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="qd.cae.dyna.D3plot.plot_parts">
-<em class="property">static </em><code class="descname">plot_parts</code><span class="sig-paren">(</span><em>parts, iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot_parts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot a selected group of parts.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part or list(Part)</p>
-<blockquote>
-<div><p>parts to plot. May be from different files.</p>
-</div></blockquote>
-<p><strong>iTimestep</strong> : int</p>
-<blockquote>
-<div><p>timestep at which to plot the D3plot</p>
-</div></blockquote>
-<p><strong>element_result</strong> : str or function</p>
-<blockquote>
-<div><p>which type of results to use as fringe
-None means no fringe is used
-When using string as arg you may use plastic_strain or energy.
-Function shall take elem as input and return a float value (for fringe)</p>
-</div></blockquote>
-<p><strong>fringe_bounds</strong> : list(float,float) or tuple(float,float)</p>
-<blockquote>
-<div><p>bounds for the fringe, default will use min and max value</p>
-</div></blockquote>
-<p><strong>export_filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>optional filepath for saving. If none, the model
-is exported to a temporary file and shown in the
-browser.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Notes</p>
-<p>Can be applied to parts, coming from different files.</p>
-<p class="rubric">Examples</p>
-<p>For a full description of plotting functionality, see <cite>d3plot.plot</cite>.
-Load a d3plot and plot a part from it:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_1</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_1&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part_1</span> <span class="o">=</span> <span class="n">d3plot_1</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="o">.</span><span class="n">plot_parts</span><span class="p">(</span> <span class="p">[</span><span class="n">part_1</span><span class="p">]</span> <span class="p">)</span> <span class="c1"># static function!</span>
-</pre></div>
-</div>
-<p>Read a second d3plot and plot both parts at once</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_2</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_2&quot;</span><span class="p">)</span> <span class="c1"># different file!</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">part_2</span> <span class="o">=</span> <span class="n">d3plot_2</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="o">.</span><span class="n">plot_parts</span><span class="p">(</span> <span class="p">[</span><span class="n">part_1</span><span class="p">,</span> <span class="n">part_2</span><span class="p">]</span> <span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="qd.cae.dyna.D3plot.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><em>vars</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.clear" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vars</strong> : str or list(str)</p>
-<blockquote class="last">
-<div><p>variable or list of variables to delete</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Notes</p>
-<p>This function may be used if one wants to clear certain state data
-from the memory. Valid variable names are:</p>
-<ul class="simple">
-<li>disp</li>
-<li>vel</li>
-<li>accel</li>
-<li>strain</li>
-<li>stress</li>
-<li>stress_mises</li>
-<li>plastic_strain</li>
-<li>history [(optional) shell or solid]</li>
-</ul>
-<p>The specification of shell or solid for history is optional. Deletes
-all history variables if none given.</p>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;strain inner&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
-<span class="go">34</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># clear specific field</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
-<span class="go">0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># reread some data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span><span class="s2">&quot;strain outer&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
-<span class="go">34</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span> <span class="c1"># clear all</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
-<span class="go">0</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -962,6 +890,118 @@ so forth.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the D3plot, currently shells only!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>iTimestep</strong> : int</p>
+<blockquote>
+<div><p>timestep at which to plot the D3plot</p>
+</div></blockquote>
+<p><strong>element_result</strong> : str or function</p>
+<blockquote>
+<div><p>which type of results to use as fringe
+None means no fringe is used.
+When using string as arg you may use plastic_strain or energy.
+Function shall take elem as input and return a float value (for fringe)</p>
+</div></blockquote>
+<p><strong>fringe_bounds</strong> : list(float,float) or tuple(float,float)</p>
+<blockquote>
+<div><p>bounds for the fringe, default will use min and max value</p>
+</div></blockquote>
+<p><strong>export_filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>optional filepath for saving. If none, the model
+is exported to a temporary file and shown in the
+browser.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load a d3plot and plot it’s geometry</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="c1"># just geometry</span>
+</pre></div>
+</div>
+<p>Read the state data and plot in deformed state</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># read state data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">([</span><span class="s2">&quot;disp&quot;</span><span class="p">,</span><span class="s2">&quot;plastic_strain max&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># last state</span>
+</pre></div>
+</div>
+<p>Use a user-defined element evaluation function for fringe colors.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># User defined evaluation function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">eval_fun</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">res</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_plastic_strain</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">):</span> <span class="c1"># some elements may miss plastic strain</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># last timestep</span>
+<span class="gp">&gt;&gt;&gt; </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">element_result</span><span class="o">=</span><span class="n">eval_fun</span><span class="p">,</span> <span class="n">fringe_bounds</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="qd.cae.dyna.D3plot.plot_parts">
+<em class="property">static </em><code class="descname">plot_parts</code><span class="sig-paren">(</span><em>parts, iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot_parts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a selected group of parts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part or list(Part)</p>
+<blockquote>
+<div><p>parts to plot. May be from different files.</p>
+</div></blockquote>
+<p><strong>iTimestep</strong> : int</p>
+<blockquote>
+<div><p>timestep at which to plot the D3plot</p>
+</div></blockquote>
+<p><strong>element_result</strong> : str or function</p>
+<blockquote>
+<div><p>which type of results to use as fringe
+None means no fringe is used
+When using string as arg you may use plastic_strain or energy.
+Function shall take elem as input and return a float value (for fringe)</p>
+</div></blockquote>
+<p><strong>fringe_bounds</strong> : list(float,float) or tuple(float,float)</p>
+<blockquote>
+<div><p>bounds for the fringe, default will use min and max value</p>
+</div></blockquote>
+<p><strong>export_filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>optional filepath for saving. If none, the model
+is exported to a temporary file and shown in the
+browser.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Can be applied to parts, coming from different files.</p>
+<p class="rubric">Examples</p>
+<p>For a full description of plotting functionality, see <cite>d3plot.plot</cite>.
+Load a d3plot and plot a part from it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_1</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_1</span> <span class="o">=</span> <span class="n">d3plot_1</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="o">.</span><span class="n">plot_parts</span><span class="p">(</span> <span class="p">[</span><span class="n">part_1</span><span class="p">]</span> <span class="p">)</span> <span class="c1"># static function!</span>
+</pre></div>
+</div>
+<p>Read a second d3plot and plot both parts at once</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_2</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_2&quot;</span><span class="p">)</span> <span class="c1"># different file!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_2</span> <span class="o">=</span> <span class="n">d3plot_2</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="o">.</span><span class="n">plot_parts</span><span class="p">(</span> <span class="p">[</span><span class="n">part_1</span><span class="p">,</span> <span class="n">part_2</span><span class="p">]</span> <span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

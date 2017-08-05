@@ -90,8 +90,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Binout.html">Binout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_D3plot.html">D3plot</a></li>
@@ -107,7 +106,6 @@
 <li class="toctree-l1"><a class="reference internal" href="qd_cae_beta.html">qd.cae.beta</a></li>
 <li class="toctree-l1"><a class="reference internal" href="qd_numerics.html">qd.numerics</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="compilation_guide.html">Compilation Guide</a></li>
 </ul>
@@ -180,15 +178,44 @@
 <p>This class is for handling input files for the solver, usually having the file ending <a href="#id1"><span class="problematic" id="id2">*</span></a>.key. Currently only mesh reading is supported (similar to a D3plot).</p>
 <dl class="class">
 <dt id="qd.cae.dyna.KeyFile">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">KeyFile</code><a class="headerlink" href="#qd.cae.dyna.KeyFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>A KeyFile is a textual input file for the FEM-Solver
-LS-Dyna from LSTC. The input file contains all the data 
-neccessary, such as nodes, elements, material and so on.</p>
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">KeyFile</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote>
+<div><p>path to the keyfile</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>keyfile</strong> : KeyFile</p>
+<blockquote>
+<div><p>instance</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote>
+<div><p>in case of a wrong filepath</p>
+</div></blockquote>
+<p><strong>RuntimeError</strong></p>
+<blockquote class="last">
+<div><p>if anything goes wrong during reading</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Notes</p>
-<p>The library currently supports keyfiles only on a
-very primitive level. The mesh data is available
-in the same way as in a d3plot but everything 
-else is neglected (for now … I’m lazy).</p>
+<p>If the keyfile uses includes, then these
+will also be read on the process</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get mesh data similar to D3plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">keyfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -246,18 +273,6 @@ else is neglected (for now … I’m lazy).</p>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="qd.cae.dyna.KeyFile.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the KeyFile geometry.</p>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="qd.cae.dyna.KeyFile.plot_parts">
-<em class="property">static </em><code class="descname">plot_parts</code><span class="sig-paren">(</span><em>parts</em>, <em>export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.plot_parts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot a selected group of parts</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="qd.cae.dyna.KeyFile.get_elementByIndex">
 <code class="descname">get_elementByIndex</code><span class="sig-paren">(</span><em>element_type</em>, <em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.get_elementByIndex" title="Permalink to this definition">¶</a></dt>
@@ -654,6 +669,18 @@ or <cite>index</cite> does not exist</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_all_parts</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_parts</span><span class="p">()</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.KeyFile.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the KeyFile geometry.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="qd.cae.dyna.KeyFile.plot_parts">
+<em class="property">static </em><code class="descname">plot_parts</code><span class="sig-paren">(</span><em>parts</em>, <em>export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.plot_parts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a selected group of parts</p>
 </dd></dl>
 
 </dd></dl>

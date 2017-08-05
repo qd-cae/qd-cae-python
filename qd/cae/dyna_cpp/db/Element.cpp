@@ -7,8 +7,7 @@
 #include "dyna_cpp/utility/MathUtility.hpp"
 
 #include <algorithm> // std::max
-#include <cmath>     // std::abs
-#include <cmath>     // sqrt
+#include <cmath>     // std::abs, std::sqrt
 #include <stdexcept>
 #include <utility> // std::move
 

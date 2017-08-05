@@ -98,9 +98,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Compilation Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#compilation-on-windows">Compilation on Windows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#compilation-on-linux">Compilation on Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compilation-with-femzip-support">Compilation with FEMZIP support</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#compilation-with-femzip-support">Compilation with FEMZIP support</a></li>
 </ul>
 
             
@@ -172,7 +172,7 @@
 <p>Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++14 (also the old compiler created 3x slower code).</p>
 <p>For compilation of python version 3.5 or 3.6 on Windows download <a class="reference external" href="https://www.visualstudio.com/de/vs/older-downloads/">Visual Studio 15</a> (dunno if Visual Studio 17 also works, but may be worth a try). Then clone the repository into a folder:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/qd-cae/qd-cae-python.git
-<span class="nb">cd</span> qd-eng
+<span class="nb">cd</span> qd-cae-python
 </pre></div>
 </div>
 <p>Thereafter run the setup script, the code will automatically compile and install.</p>
@@ -194,11 +194,9 @@ sudo python3 setup.py install
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo <span class="nv">CC</span><span class="o">=</span>g++-4.9 python3 setup.py install
 </pre></div>
 </div>
-<p>In case of the desire for FEMZIP support, simply download and register it the same way as for windows.</p>
-</div>
 </div>
 <div class="section" id="compilation-with-femzip-support">
-<h1>Compilation with FEMZIP support<a class="headerlink" href="#compilation-with-femzip-support" title="Permalink to this headline">¶</a></h1>
+<h2>Compilation with FEMZIP support<a class="headerlink" href="#compilation-with-femzip-support" title="Permalink to this headline">¶</a></h2>
 <p>Important note: The installation skips femzip if the libraries are missing (checks if folder with link libraries exists). If it can not find the folder, then the compiler definition <code class="code docutils literal"><span class="pre">QD_USE_FEMZIP</span></code> is not used. This cancels out all code in the source files regarding FEMZIP.</p>
 <p>If one wants to compile with FEMZIP support, download the libraries from the <a class="reference external" href="http://www.sidact.com/">Sidact Homepage</a>. There are two things to download, the actual femunzip library:</p>
 <blockquote>
@@ -211,6 +209,7 @@ sudo python3 setup.py install
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">femzip_path_windows</span> <span class="o">=</span> <span class="s2">&quot;path/to/femzip/windows/libs&quot;</span>
 <span class="n">femzip_path_linux</span>   <span class="o">=</span> <span class="s2">&quot;path/to/femzip/linux/libs&quot;</span>
 </pre></div>
+</div>
 </div>
 </div>
 

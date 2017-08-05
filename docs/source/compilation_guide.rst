@@ -17,7 +17,7 @@ For compilation of python version 3.5 or 3.6 on Windows download `Visual Studio 
 .. code-block:: bash
 
     git clone https://github.com/qd-cae/qd-cae-python.git
-    cd qd-eng
+    cd qd-cae-python
 
 Thereafter run the setup script, the code will automatically compile and install. 
 
@@ -51,11 +51,9 @@ As a little hint, if you want force python to take your modern compiler version 
 
     sudo CC=g++-4.9 python3 setup.py install
 
-In case of the desire for FEMZIP support, simply download and register it the same way as for windows.
-
 
 Compilation with FEMZIP support
-===============================
+-------------------------------
 
 Important note: The installation skips femzip if the libraries are missing (checks if folder with link libraries exists). If it can not find the folder, then the compiler definition :code:`QD_USE_FEMZIP` is not used. This cancels out all code in the source files regarding FEMZIP.
 

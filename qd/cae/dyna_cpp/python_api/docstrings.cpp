@@ -399,7 +399,7 @@ const char* part_get_name_docs = R"qddoc(
         'PLATE_C'
 )qddoc";
 
-const char* part_get_nodes_docs = R"qddoc()
+const char* part_get_nodes_docs = R"qddoc(
     get_nodes()
 
     Get the nodes of the part. Note that a node may belong to two parts,
@@ -839,12 +839,13 @@ const char* d3plot_description = R"qddoc(
         or something else.
         A lot of checks take place during reading,
         therefore the library will complain if it does
-        not support something.
+        not support something (or it will fatally crash
+        and kill your computer forever).
 
 )qddoc";
 
 const char* d3plot_constructor = R"qddoc(
-    D3plot(filepath, use_femzip=False, read_states=[])
+    __init__(filepath, use_femzip=False, read_states=[])
 
     Parameters
     ----------

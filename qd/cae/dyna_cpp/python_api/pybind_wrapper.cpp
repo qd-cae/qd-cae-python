@@ -411,8 +411,7 @@ PYBIND11_PLUGIN(dyna_cpp)
     .def(pybind11::init<std::string, pybind11::list, bool>(),
          "filepath"_a,
          "read_states"_a = pybind11::list(),
-         "use_femzip"_a = false,
-         d3plot_constructor)
+         "use_femzip"_a = false)
     .def(pybind11::init<std::string, pybind11::tuple, bool>(),
          "filepath"_a,
          "read_states"_a = pybind11::tuple(),
@@ -420,7 +419,8 @@ PYBIND11_PLUGIN(dyna_cpp)
     .def(pybind11::init<std::string, std::string, bool>(),
          "filepath"_a,
          "read_states"_a = std::string(),
-         "use_femzip"_a = false)
+         "use_femzip"_a = false,
+         d3plot_constructor)
     .def("info", &D3plot::info, d3plot_info_docs)
     .def("read_states",
          (void (D3plot::*)(std::string)) & D3plot::read_states,
