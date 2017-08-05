@@ -6,17 +6,26 @@ Welcome to qd's documentation!
 
 qd is python3 library for Computer Aided Engineering (CAE). I've developed this library, since I was very unhappy with many expensive commercial software tools in our field of work. I believe many new scientific ideas emerge from freedom and simplicity, therefore the main focus of this project was on a good API and Speed. As a result memory took quite some, so watch you RAM when you load a full vehicle.
 
-Module Description
-==================
+Modules
+=======
 
 .. toctree::
    :maxdepth: 3
-   :caption: Contents:
 
    qd_cae_dyna
    qd_cae_beta
    qd_numerics
 
+Compilation Guide
+=================
+
+Try installation of the precompiled python wheels in the `dist folder <https://github.com/qd-cae/qd-cae-python/tree/master/dist>`_ before compiling it yourself. If your python distribution doesn't match any of the wheels, then you're in the right spot here.
+
+.. toctree::
+    :maxdepth: 2
+
+    compilation_guide
+    
 
 Indices and tables
 ==================

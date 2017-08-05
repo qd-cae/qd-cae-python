@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Compilation Guide &mdash; qd 0.6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="qd 0.6 documentation" href="index.html"/>
+        <link rel="prev" title="qd.numerics" href="qd_numerics.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> qd
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_beta.html">qd.cae.beta</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qd_numerics.html">qd.numerics</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Compilation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#compilation-on-windows">Compilation on Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compilation-on-linux">Compilation on Linux</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#compilation-with-femzip-support">Compilation with FEMZIP support</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">qd</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Compilation Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/compilation_guide.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="compilation-guide">
+<h1>Compilation Guide<a class="headerlink" href="#compilation-guide" title="Permalink to this headline">¶</a></h1>
+<p>Compilation of the package is quite simple (said the expert …).</p>
+<div class="section" id="compilation-on-windows">
+<h2>Compilation on Windows<a class="headerlink" href="#compilation-on-windows" title="Permalink to this headline">¶</a></h2>
+<p>Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++14 (also the old compiler created 3x slower code).</p>
+<p>For compilation of python version 3.5 or 3.6 on Windows download <a class="reference external" href="https://www.visualstudio.com/de/vs/older-downloads/">Visual Studio 15</a> (dunno if Visual Studio 17 also works, but may be worth a try). Then clone the repository into a folder:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/qd-cae/qd-cae-python.git
+<span class="nb">cd</span> qd-eng
+</pre></div>
+</div>
+<p>Thereafter run the setup script, the code will automatically compile and install.</p>
+</div>
+<div class="section" id="compilation-on-linux">
+<h2>Compilation on Linux<a class="headerlink" href="#compilation-on-linux" title="Permalink to this headline">¶</a></h2>
+<p>Note that in contrast to windows, on Linux the library can be compiled for both, python2 and python3. Check first whether your compiler is new enough.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>g++ --version
+</pre></div>
+</div>
+<p>You will need <strong>g++ version 4.9 or higher</strong>. If your compiler is fine, just install as follows:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/qd-cae/qd-cae-python.git
+<span class="nb">cd</span> qd-cae-python
+sudo python3 -m pip install -r requirements.txt
+sudo python3 setup.py install
+</pre></div>
+</div>
+<p>As a little hint, if you want force python to take your modern compiler version (it may happen that you have multiple g++), simply overwrite the <cite>CC</cite> attribute before the running the setup script:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo <span class="nv">CC</span><span class="o">=</span>g++-4.9 python3 setup.py install
+</pre></div>
+</div>
+<p>In case of the desire for FEMZIP support, simply download and register it the same way as for windows.</p>
+</div>
+</div>
+<div class="section" id="compilation-with-femzip-support">
+<h1>Compilation with FEMZIP support<a class="headerlink" href="#compilation-with-femzip-support" title="Permalink to this headline">¶</a></h1>
+<p>Important note: The installation skips femzip if the libraries are missing (checks if folder with link libraries exists). If it can not find the folder, then the compiler definition <code class="code docutils literal"><span class="pre">QD_USE_FEMZIP</span></code> is not used. This cancels out all code in the source files regarding FEMZIP.</p>
+<p>If one wants to compile with FEMZIP support, download the libraries from the <a class="reference external" href="http://www.sidact.com/">Sidact Homepage</a>. There are two things to download, the actual femunzip library:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Windows: <strong>FEMZIP_[version]_dyna_NO_OMP_Windows_VS2012_MD_x64.tar.gz</strong></li>
+<li>Linux: <strong>FEMZIP_[version]_dyna_NO_OMP_Linux_64Bit.tar.gz</strong></li>
+</ul>
+</div></blockquote>
+<p>as well as the link libraries (<strong>FEMUNZIPLIB-LPR_[version]_link_libraries.tar.gz</strong>). Put all content into a folder and register the path in the header of the <cite>setup.py</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">femzip_path_windows</span> <span class="o">=</span> <span class="s2">&quot;path/to/femzip/windows/libs&quot;</span>
+<span class="n">femzip_path_linux</span>   <span class="o">=</span> <span class="s2">&quot;path/to/femzip/linux/libs&quot;</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="qd_numerics.html" class="btn btn-neutral" title="qd.numerics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, C. Diez, D. Toewe.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.6',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
