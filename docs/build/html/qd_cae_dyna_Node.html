@@ -36,9 +36,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="qd 0.6 documentation" href="index.html"/>
-        <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/>
-        <link rel="next" title="Part" href="qd_cae_dyna_Part.html"/>
-        <link rel="prev" title="Element" href="qd_cae_dyna_Element.html"/> 
+        <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -98,7 +96,9 @@
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_KeyFile.html">KeyFile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_FEMFile.html">FEMFile (D3plot and KeyFile)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Element.html">Element</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Node</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Node</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Part.html">Part</a></li>
 </ul>
 </li>
@@ -178,6 +178,196 @@
   <div class="section" id="node">
 <h1>Node<a class="headerlink" href="#node" title="Permalink to this headline">¶</a></h1>
 <p>Class for nodal data.</p>
+<dl class="class">
+<dt id="qd.cae.dyna.Node">
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Node</code><a class="headerlink" href="#qd.cae.dyna.Node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container for handling nodal data.</p>
+<p class="rubric">Examples</p>
+<p>Get nodes by</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node_list</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_accel</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_coords</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_disp</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_id</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_vel</span></code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="qd.cae.dyna.Node.get_accel">
+<code class="descname">get_accel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Node.get_accel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time series of the acceleration vector.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>disp</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>time series of acceleration</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get_accel</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(34L, 3L)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.Node.get_coords">
+<code class="descname">get_coords</code><span class="sig-paren">(</span><em>iTimestep=0</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Node.get_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the geometric nodal coordinates at a timestep. One needs to load the displacements
+before getting the coordinates at a different timestep.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>iTimestep</strong> : int</p>
+<blockquote>
+<div><p>timestep at which to take the coordinates</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>coords</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>coordinate vector (x,z,y)</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get_coords</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(3L,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load disp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">(</span><span class="s2">&quot;disp&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get_coords</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.Node.get_disp">
+<code class="descname">get_disp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Node.get_disp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time series of the displacement vector.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>disp</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>time series of displacements</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get_disp</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(34L, 3L)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.Node.get_elements">
+<code class="descname">get_elements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Node.get_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the elements of the node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>elements</strong> : list(Element)</p>
+<blockquote class="last">
+<div><p>elements of the node</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span> <span class="p">)</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.Node.get_id">
+<code class="descname">get_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Node.get_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the id of the node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>id</strong> : int</p>
+<blockquote class="last">
+<div><p>id of the node</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.Node.get_vel">
+<code class="descname">get_vel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Node.get_vel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time series of the velocity vector.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>disp</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>time series of displacements</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span><span class="o">.</span><span class="n">get_disp</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(34L, 3L)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -187,15 +377,6 @@
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="qd_cae_dyna_Part.html" class="btn btn-neutral float-right" title="Part" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="qd_cae_dyna_Element.html" class="btn btn-neutral" title="Element" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

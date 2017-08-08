@@ -279,7 +279,7 @@ const char* element_get_coords_docs = R"qddoc(
 )qddoc";
 
 const char* element_get_history_docs = R"qddoc(
-    get_history()
+    get_history_variables()
 
     Get the loaded history variables of the element.
 
@@ -291,7 +291,7 @@ const char* element_get_history_docs = R"qddoc(
     Examples
     --------
         >>> d3plot = D3plot("path/to/d3plot",read_states="history 1 shell max")
-        >>> d3plot.get_elementByID(Element.shell, 1).get_history().shape
+        >>> d3plot.get_elementByID(Element.shell, 1).get_history_variables().shape
         (34L, 1L)
 
     Notes
@@ -717,7 +717,7 @@ const char* dbparts_get_nParts_docs = R"qddoc(
 
     Returns
     -------
-    int : nParts
+    nParts : int
         number of parts in the database
 
     Examples
@@ -912,6 +912,12 @@ const char* d3plot_get_title_docs = R"qddoc(
     Get the title of the d3plot, which is part
     of the header data.
 
+    Returns
+    -------
+    title : str
+        the title of the d3plot
+
+
     Examples
     --------
         >>> d3plot = D3plot("path/to/d3plot")
@@ -960,10 +966,6 @@ const char* d3plot_read_states_docs = R"qddoc(
     vars : str or list(str)
         variable or list of variables to read (see Notes below)
 
-    Returns
-    -------
-    timesteps : np.ndarray
-        state timesteps of the D3plot
 
     Notes
     -----
