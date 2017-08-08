@@ -26,7 +26,7 @@ Try installation of the precompiled python wheels in the `dist folder`_ before c
 .. toctree::
     :maxdepth: 2
 
-    compilation guide
+    compilation_guide
 
 Developer Guide
 ===============
