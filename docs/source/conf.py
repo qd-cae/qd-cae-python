@@ -33,6 +33,7 @@ find_egg()
 #autodoc_member_order = 'bysource'
 autoclass_content = 'init' # 'both' 
 numpydoc_show_class_members = True
+plantuml = 'java -jar ../utils/plantuml.jar'
 
 # -- General configuration ------------------------------------------------
 
@@ -49,6 +50,7 @@ extensions = ['sphinx.ext.autodoc',
     #'sphinx.ext.viewcode',
     'sphinx.ext.autosummary',
     #'sphinxcontrib.googleanalytics',
+    'sphinxcontrib.plantuml',
     'numpydoc']
 
 # Add any paths that contain templates here, relative to this directory.

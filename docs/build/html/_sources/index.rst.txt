@@ -19,14 +19,26 @@ Modules
 Compilation Guide
 =================
 
-Try installation of the precompiled python wheels in the `dist folder <https://github.com/qd-cae/qd-cae-python/tree/master/dist>`_ before compiling it yourself. If your python distribution doesn't match any of the wheels, then you're in the right spot here.
+Try installation of the precompiled python wheels in the `dist folder`_ before compiling it yourself. If your python distribution doesn't match any of the wheels, then you're in the right spot here.
+
+.. _dist folder: https://github.com/qd-cae/qd-cae-python/tree/master/dist
 
 .. toctree::
     :maxdepth: 2
 
-    compilation_guide
-    
+    compilation guide
 
+Developer Guide
+===============
+
+This section is for anyone, who wants to extend this library or build a new tool from it.
+
+.. toctree::
+    :maxdepth: 2
+
+    developer_guide
+    
+    
 Indices and tables
 ==================
 

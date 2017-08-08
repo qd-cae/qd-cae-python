@@ -1,4 +1,5 @@
+twine >= 1.9.1
 sphinx >= 1.6.3
 numpydoc >= 0.7
 sphinx_rtd_theme >= 0.2.4
-twine >= 1.9.1
+sphinxcontrib-plantuml

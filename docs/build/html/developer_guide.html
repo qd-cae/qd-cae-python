@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Developer Guide &mdash; qd 0.6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="qd 0.6 documentation" href="index.html"/>
+        <link rel="prev" title="qd.numerics" href="qd_numerics.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> qd
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_beta.html">qd.cae.beta</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qd_numerics.html">qd.numerics</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#compilation">Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-new-classes">Adding new Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#connecting-c-and-python">Connecting C++ and Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#internal-data-structure">Internal Data Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">qd</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Developer Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/developer_guide.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="developer-guide">
+<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
+<p>This guide is meant for people, who want to extend this package.</p>
+<div class="section" id="compilation">
+<h2>Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h2>
+<p>First step is to get the package to compile. Therefore visit the <a class="reference external" href="https://qd-cae.github.io/qd-cae-python/build/html/compilation_guide.html">compilation guide</a> for your respective OS.</p>
+</div>
+<div class="section" id="adding-new-classes">
+<h2>Adding new Classes<a class="headerlink" href="#adding-new-classes" title="Permalink to this headline">¶</a></h2>
+<p><strong>Coding guideline</strong></p>
+<p>Even though I also don’t stick rigidly to it, please follow the <a class="reference external" href="https://google.github.io/styleguide/cppguide.html">google coding style</a>. If you don’t know it yet, then read it. It really benefits you as programmer in general.</p>
+<p>The code is written in modern C++14. This means:</p>
+<blockquote>
+<div><ul class="simple">
+<li>use smart pointers for storage (no raw ones): <cite>#include &lt;memory&gt;</cite></li>
+<li>use standardized integers: <cite>#include &lt;cstdint&gt;</cite></li>
+<li>use static compiler checks</li>
+</ul>
+</div></blockquote>
+<p><strong>Creating new files</strong></p>
+<p>The first step is to create a new source file (.cpp) and new header file (.hpp). Don’t forget the header guards, and also embed your code in the <em>namespace qd</em>.  Example case:</p>
+<p><em>my_class.hpp</em></p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="cp">#ifndef MY_CLASS_HPP</span>
+<span class="cp">#define MY_CLASS_HPP</span>
+
+<span class="c1">// includes</span>
+<span class="cp">#include</span> <span class="cpf">&lt;cstdint&gt;</span><span class="cp"></span>
+
+<span class="n">namepspace</span> <span class="n">qd</span> <span class="p">{</span>
+
+<span class="k">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
+    <span class="kt">int32_t</span> <span class="n">some_int</span><span class="p">;</span>
+
+    <span class="n">MyClass</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">_some_int</span><span class="p">);</span>
+    <span class="kt">int32_t</span> <span class="nf">get_id</span><span class="p">();</span>
+<span class="p">};</span>
+
+<span class="p">}</span> <span class="c1">// namespace qd</span>
+
+<span class="cp">#endif </span><span class="c1">// MY_CLASS_HPP</span>
+</pre></div>
+</div>
+<p><em>my_class.cpp</em></p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;my_class.hpp&gt;</span><span class="cp"></span>
+
+<span class="n">namepspace</span> <span class="n">qd</span> <span class="p">{</span>
+
+<span class="n">MyClass</span><span class="o">::</span><span class="n">MyClass</span><span class="p">(</span><span class="kt">int32_t</span> <span class="n">_some_int</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">some_int</span><span class="p">(</span><span class="n">_some_int</span><span class="p">)</span> <span class="c1">// always initialize variables!</span>
+<span class="p">{</span>
+    <span class="c1">// nothing here</span>
+<span class="p">}</span>
+
+<span class="kt">int32_t</span> <span class="n">MyClass</span><span class="o">::</span><span class="n">get_id</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">some_int</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">}</span> <span class="c1">// namespace qd</span>
+</pre></div>
+</div>
+<p><strong>Adding files to the build process</strong></p>
+<p>The new source file (not header) must be added to the <cite>setup.py</cite>. There is a list variable called <cite>srcs_dyna</cite>. Simply append your new source file.</p>
+</div>
+<div class="section" id="connecting-c-and-python">
+<h2>Connecting C++ and Python<a class="headerlink" href="#connecting-c-and-python" title="Permalink to this headline">¶</a></h2>
+<p>You should already be able to compile the package now with your new source file (simply try it). It is now time to connect your C++ class to Python. The wrapper library for it is <a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a>. First open the file, which compiles the API, called: <strong>pybind_wrapper.cpp</strong>. A class can be added quite easily:</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">pybind11</span><span class="o">::</span><span class="n">class_</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyClass</span><span class="o">&gt;&gt;</span>
+    <span class="n">my_class_py</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="s">&quot;MyClass&quot;</span><span class="p">,</span> <span class="n">my_class_description</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The variable <cite>my_class_description</cite> is a <cite>const char*</cite> and contains the documentation of the file (numpydoc style). Documentation strings are added to the file <cite>docstrings.cpp</cite>, but in the beginning simply ignore this. The <cite>shared_ptr</cite> tells <a class="reference external" href="https://github.com/pybind/pybind11">pybind11</a> to use a <cite>shared_ptr</cite> as holder type.</p>
+<p>First we need to add the constructor of the class.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">my_class_py</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="n">pybind11</span><span class="o">::</span><span class="n">init</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">(),</span>
+                <span class="s">&quot;id&quot;</span><span class="n">_a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first line tells pybind11 to make a constructor and the second one specifies, that the first argument has the name <cite>id</cite>. One may assign a default value here by the way. The literal ending <cite>_a</cite> is a string literal, telling pybind11, that we define the argument name here. Pybind11 handles the conversion of basic datatypes, such as <cite>int</cite> etc. automatically. It is getting more complicated, if a <cite>std::vector</cite> is needed as argument (there is a conversion routine in the utilities, which converts python containers to C++ containers).</p>
+<p>Finally we also add the class function.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">my_class_py</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;get_id&quot;</span><span class="p">,</span>
+                <span class="n">pybind11</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">take_ownership</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The string <cite>get_id</cite> is the name of the function in python. The <cite>pybind11::return_value_policy</cite> explicitly specifies how to deal with the value in memory. For raw data, such as an int here, it does not really make any difference. Pointers though might need a different return policy.</p>
+<p>Here we are, lets compile and run the code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="kn">import</span> <span class="n">MyClass</span>
+<span class="n">mc</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">get_id</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="internal-data-structure">
+<h2>Internal Data Structure<a class="headerlink" href="#internal-data-structure" title="Permalink to this headline">¶</a></h2>
+<p><strong>TODO</strong></p>
+<p class="plantuml">
+<img src="_images/plantuml-a7c0457ba163d87e5d6d971d06ccec3a0a117a5b.png" alt="&#64;startuml
+
+FEMFile --|&gt; DB_Nodes
+FEMFile --|&gt; DB_Elements
+FEMFile --|&gt; DB_Parts
+D3plot  --|&gt; FEMFile
+KeyFile --|&gt; FEMFile
+&#64;enduml" />
+</p>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p><strong>TODO</strong></p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="qd_numerics.html" class="btn btn-neutral" title="qd.numerics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, C. Diez, D. Toewe.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.6',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
