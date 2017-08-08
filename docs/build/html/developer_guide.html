@@ -249,6 +249,7 @@
 <p>The first line tells pybind11 to make a constructor and the second one specifies, that the first argument has the name <cite>id</cite>. One may assign a default value here by the way. The literal ending <cite>_a</cite> is a string literal, telling pybind11, that we define the argument name here. Pybind11 handles the conversion of basic datatypes, such as <cite>int</cite> etc. automatically. It is getting more complicated, if a <cite>std::vector</cite> is needed as argument (there is a conversion routine in the utilities, which converts python containers to C++ containers).</p>
 <p>Finally we also add the class function.</p>
 <div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">my_class_py</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;get_id&quot;</span><span class="p">,</span>
+                <span class="o">&amp;</span><span class="n">MyClass</span><span class="o">::</span><span class="n">get_id</span><span class="p">,</span>
                 <span class="n">pybind11</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">take_ownership</span><span class="p">)</span>
 </pre></div>
 </div>

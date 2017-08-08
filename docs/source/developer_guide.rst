@@ -109,6 +109,7 @@ Finally we also add the class function.
 .. code-block:: cpp
 
     my_class_py.def("get_id",
+                    &MyClass::get_id,
                     pybind11::return_value_policy::take_ownership)
 
 The string `get_id` is the name of the function in python. The `pybind11::return_value_policy` explicitly specifies how to deal with the value in memory. For raw data, such as an int here, it does not really make any difference. Pointers though might need a different return policy.
