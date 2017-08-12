@@ -2,6 +2,8 @@
 #include <cmath>
 #include <string>
 
+#include <H5Cpp.h>
+
 #include <dyna_cpp/db/DB_Elements.hpp>
 #include <dyna_cpp/db/DB_Nodes.hpp>
 #include <dyna_cpp/db/DB_Parts.hpp>
@@ -2042,5 +2044,36 @@ D3plot::clear(const std::vector<std::string>& _variables)
     } // end:if Elements
   }   // end:else for deletion
 } // end:function clear
+
+void
+D3plot::save_hdf5(const std::string& _filepath) const
+{
+
+  H5::Exception::dontPrint();
+
+  // const H5::H5std_string filepath_hdf5(_filepath);
+  // const H5::H5std_string DATASET_NAME("IntArray");
+
+  H5::H5File file(_filepath, H5F_ACC_TRUNC);
+
+  try {
+  } catch (H5::FileIException error) {
+    error.printError();
+  }
+  // catch failure caused by the DataSet operations
+  catch (H5::DataSetIException error) {
+    error.printError();
+  }
+  // catch failure caused by the DataSpace operations
+  catch (H5::DataSpaceIException error) {
+    error.printError();
+  }
+  // catch failure caused by the DataSpace operations
+  catch (H5::DataTypeIException error) {
+    error.printError();
+  }
+  
+
+} // D3plot::save_hdf5
 
 } // namespace qd

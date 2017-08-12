@@ -10,13 +10,13 @@ from setuptools import setup, Extension
 
 try:
     import pybind11
-except ImportError :
+except ImportError:
     import pip
     pip.main(['install', 'pybind11'])
     import pybind11
 
 # ======= S E T T I N G S ======= #
-#pybind11_path = pybind11.get_include()
+# pybind11_path = pybind11.get_include()
 femzip_path_windows = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
 femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
@@ -24,84 +24,142 @@ debugging_mode = False
 measure_time = False
 version = "0.6.0"
 # =============================== #
+is_windows = (platform.system() == "Windows")
+is_linux = (platform.system() == "Linux")
+# =============================== #
 
 
-# (1) Native Code Stuff
-# (1.1) DYNA-CPP toolbox
+def setup_dyna_cpp():
 
-compiler_args_dyna = []
-include_dirs_dyna = [np.get_include(), 
-                     "qd/cae", 
-                     pybind11.get_include()]
-lib_dirs_dyna = []
-libs_dyna = []
-srcs_dyna = [
-    "qd/cae/dyna_cpp/python_api/pybind_wrapper.cpp",
-    "qd/cae/dyna_cpp/db/FEMFile.cpp",
-    "qd/cae/dyna_cpp/db/DB_Elements.cpp",
-    "qd/cae/dyna_cpp/db/DB_Nodes.cpp",
-    "qd/cae/dyna_cpp/db/DB_Parts.cpp",
-    "qd/cae/dyna_cpp/db/Element.cpp",
-    "qd/cae/dyna_cpp/db/Node.cpp",
-    "qd/cae/dyna_cpp/db/Part.cpp",
-    "qd/cae/dyna_cpp/dyna/D3plotBuffer.cpp",
-    "qd/cae/dyna_cpp/dyna/D3plot.cpp",
-    "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
-    "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
-    "qd/cae/dyna_cpp/utility/FileUtility.cpp",
-    "qd/cae/dyna_cpp/utility/TextUtility.cpp"]
+    include_dirs = ["qd/cae",
+                    np.get_include(),
+                    pybind11.get_include()]
+    srcs = [
+        "qd/cae/dyna_cpp/python_api/pybind_wrapper.cpp",
+        "qd/cae/dyna_cpp/db/FEMFile.cpp",
+        "qd/cae/dyna_cpp/db/DB_Elements.cpp",
+        "qd/cae/dyna_cpp/db/DB_Nodes.cpp",
+        "qd/cae/dyna_cpp/db/DB_Parts.cpp",
+        "qd/cae/dyna_cpp/db/Element.cpp",
+        "qd/cae/dyna_cpp/db/Node.cpp",
+        "qd/cae/dyna_cpp/db/Part.cpp",
+        "qd/cae/dyna_cpp/dyna/D3plotBuffer.cpp",
+        "qd/cae/dyna_cpp/dyna/D3plot.cpp",
+        "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
+        "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
+        "qd/cae/dyna_cpp/utility/FileUtility.cpp",
+        "qd/cae/dyna_cpp/utility/TextUtility.cpp"]
 
-# FEMZIP usage? Libraries present?
-# You need to download the femzip libraries yourself from SIDACT GmbH
-# www.sidact.de
-# If you have questions, write a mail.
-if (platform.system() == "Windows") and os.path.isdir(os.path.join(femzip_path_windows)):
-    srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
-    lib_dirs_dyna.append(os.path.join(femzip_path_windows))
-    libs_dyna = ['femunziplib_standard_dyna', 'ipp_zlibd', 'ippcoremt',
+    # linux compiler args
+    if is_linux:
+        compiler_args = ["-std=c++14",
+                         "-O3",
+                         "-fPIC"]
+        if debugging_mode:
+            compiler_args.append("-DQD_DEBUG")
+        if measure_time:
+            compiler_args.append("-DQD_MEASURE_TIME")
+
+    # windowscompiler args
+    elif is_windows:
+        compiler_args = ["/EHa"]
+        if debugging_mode:
+            compiler_args.append("/DQD_DEBUG")
+        if measure_time:
+            compiler_args.append("/DQD_MEASURE_TIME")
+    else:
+        raise RuntimeError("Could not determine os (windows or linux)")
+
+    return srcs, include_dirs, compiler_args
+
+
+def setup_dyna_cpp_femzip(srcs, lib_dirs, libs, compiler_args):
+    ''' Checks for femzip libraries
+    '''
+
+    # Uses FEMZIP, iff link librares are present
+    # You need to download the femzip libraries yourself from SIDACT GmbH
+    # www.sidact.de
+    # If you have questions, write a mail.
+
+    # windows
+    if is_windows and os.path.isdir(os.path.join(femzip_path_windows)):
+
+        srcs.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
+        lib_dirs.append(os.path.join(femzip_path_windows))
+        libs += ['femunziplib_standard_dyna', 'ipp_zlibd', 'ippcoremt',
                  'ippdcmt', 'ippsmt', 'ifwin', 'ifconsol', 'ippvmmt', 'libmmd',
                  'libirc', 'svml_dispmd', 'msvcrt']
-    compiler_args_dyna.append("/DQD_USE_FEMZIP")
-elif (platform.system() == "Linux") and os.path.isdir(femzip_path_linux):
-    srcs_dyna.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
-    lib_dirs_dyna.append(femzip_path_linux)
-    libs_dyna = ['femunzip_dyna_standard', 'ipp_z', 'ippcore',
+        compiler_args.append("/DQD_USE_FEMZIP")
+
+    # linux
+    elif is_linux and os.path.isdir(femzip_path_linux):
+
+        srcs.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
+        lib_dirs.append(femzip_path_linux)
+        libs += ['femunzip_dyna_standard', 'ipp_z', 'ippcore',
                  'ippdc', 'ipps', 'ifcore_pic', 'ifcoremt', 'imf',
                  'ipgo', 'irc', 'svml', 'ippcore_l', 'stdc++', 'dl']
-    compiler_args_dyna.append("-DQD_USE_FEMZIP")
-else:
-    print("FEMZIP library not found. Compiling without femzip support.")
+        compiler_args.append("-DQD_USE_FEMZIP")
+    else:
+        print("FEMZIP library not found. Compiling without FEMZIP.")
 
-# CFLAGS linux
-if (platform.system().lower() == "linux") or (platform.system().lower() == "linux2"):
-    compiler_args_dyna.append("-std=c++14")
-    compiler_args_dyna.append("-O3")
-    compiler_args_dyna.append("-fPIC")
-    if debugging_mode:
-        compiler_args_dyna.append("-DQD_DEBUG")
-    if measure_time:
-        compiler_args_dyna.append("-DQD_MEASURE_TIME")
-# CFLAGS Windows
-else:
-    compiler_args_dyna.append("/EHa")
-    if debugging_mode:
-        compiler_args_dyna.append("/DQD_DEBUG")
-    if measure_time:
-        compiler_args_dyna.append("/DQD_MEASURE_TIME")
+    return srcs, lib_dirs, libs, compiler_args
+
+
+def setup_dyna_cpp_hdf5(libs, lib_dirs, include_dirs):
+    ''' Sets up the hdf5 compilation
+    '''
+
+    if is_linux:
+        raise RuntimeError("Linux HDF5 compilation missing.")
+
+    if is_windows:
+
+        import ntpath
+        files = glob.glob("libs/hdf5/windows/lib/lib*.lib")
+        files = [ntpath.basename(entry).replace(".lib", "") for entry in files ]
+        libs += files
+
+        lib_dirs.append("libs/hdf5/windows/lib")
+        include_dirs.append("libs/hdf5/windows/include")
+
+    return libs, lib_dirs, include_dirs
+
+
+def my_test_suite():
+    ''' Sets up the testing
+    '''
+    test_loader = unittest.TestLoader()
+    test_suite = test_loader.discover('test', pattern='test_*.py')
+    return test_suite
+
+
+
+# setup basic extension
+lib_dirs_dyna = []
+libs_dyna = []
+srcs_dyna, include_dirs_dyna, compiler_args_dyna = setup_dyna_cpp()
+
+# setup hdf5
+# (MUST be before femzip, due to linking)
+libs_dyna, lib_dirs_dyna, include_dirs_dyna = setup_dyna_cpp_hdf5(libs_dyna,
+                                                                  lib_dirs_dyna,
+                                                                  include_dirs_dyna)
+
+# setup femzip (if possible)
+srcs_dyna, lib_dirs_dyna, libs_dyna, compiler_args_dyna = setup_dyna_cpp_femzip(
+    srcs_dyna,
+    lib_dirs_dyna,
+    libs_dyna,
+    compiler_args_dyna)
+
+# setup extension
 dyna_extension = Extension("dyna_cpp", srcs_dyna,
                            extra_compile_args=compiler_args_dyna,
                            library_dirs=lib_dirs_dyna,
                            libraries=libs_dyna,
                            include_dirs=include_dirs_dyna,)
-
-# (2) UNIT-TESTING
-
-
-def my_test_suite():
-    test_loader = unittest.TestLoader()
-    test_suite = test_loader.discover('test', pattern='test_*.py')
-    return test_suite
-
 
 # (3) SETUP
 setup(name='qd',
