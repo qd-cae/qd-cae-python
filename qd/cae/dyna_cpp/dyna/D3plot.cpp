@@ -13,6 +13,7 @@
 #include <dyna_cpp/dyna/D3plot.hpp>
 #include <dyna_cpp/dyna/D3plotBuffer.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
+#include <dyna_cpp/utility/HDF5_Utility.hpp>
 #include <dyna_cpp/utility/MathUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
@@ -2045,34 +2046,60 @@ D3plot::clear(const std::vector<std::string>& _variables)
   }   // end:else for deletion
 } // end:function clear
 
+/**
+ *
+ */
 void
-D3plot::save_hdf5(const std::string& _filepath) const
+D3plot::save_hdf5(const std::string& _filepath,
+                  bool _overwrite_run,
+                  const std::string& _run_name) const
 {
 
-  H5::Exception::dontPrint();
+  // empty string means use run title
+  std::string run_folder = _run_name.empty() ? this->get_title() : _run_name;
 
-  // const H5::H5std_string filepath_hdf5(_filepath);
-  // const H5::H5std_string DATASET_NAME("IntArray");
+  // hard coded settings
+  H5::StrType strdatatype(H5::PredType::C_S1, 256);
+  auto attr_str_dataspace = H5::DataSpace(H5S_SCALAR);
 
-  H5::H5File file(_filepath, H5F_ACC_TRUNC);
+  const std::string qd_version_str(QD_VERSION);
+
+  const std::string info_folder("/info");
+  const std::string state_folder("/state_data");
+  const std::string elements_folder("/elements");
+  const std::string nodes_folder("/nodes");
 
   try {
+
+    H5::Exception::dontPrint();
+
+    // Open the file
+    auto file = open_hdf5(_filepath, _overwrite_run);
+
+    // info
+    auto group = file.createGroup(info_folder);
+    group.createAttribute("QD_VERSION", strdatatype, attr_str_dataspace)
+      .write(strdatatype, qd_version_str.c_str());
+
   } catch (H5::FileIException error) {
     error.printError();
+    throw std::runtime_error("H5::FileIException");
   }
   // catch failure caused by the DataSet operations
   catch (H5::DataSetIException error) {
     error.printError();
+    throw std::runtime_error("H5::DataSetIException");
   }
   // catch failure caused by the DataSpace operations
   catch (H5::DataSpaceIException error) {
     error.printError();
+    throw std::runtime_error("H5::DataSpaceIException");
   }
   // catch failure caused by the DataSpace operations
   catch (H5::DataTypeIException error) {
     error.printError();
+    throw std::runtime_error("H5::DataTypeIException");
   }
-  
 
 } // D3plot::save_hdf5
 

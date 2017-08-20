@@ -72,7 +72,7 @@ KeyFile::read_mesh(std::string _filepath)
 #ifdef QD_DEBUG
   std::cout << "Filling IO-Buffer ... " << flush;
 #endif
-  std::vector<std::string> lines = FileUtility::read_textFile(_filepath);
+  std::vector<std::string> lines = read_textFile(_filepath);
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif

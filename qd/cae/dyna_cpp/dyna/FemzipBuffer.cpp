@@ -35,7 +35,7 @@ FemzipBuffer::FemzipBuffer(std::string _filepath)
 
   // Init vars
   this->filepath = _filepath;
-  if (!FileUtility::check_ExistanceAndAccess(this->filepath)) {
+  if (!check_ExistanceAndAccess(this->filepath)) {
     throw(std::invalid_argument("File \"" + this->filepath +
                                 "\" does not exist or is locked."));
   }

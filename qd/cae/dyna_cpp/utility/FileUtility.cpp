@@ -3,6 +3,7 @@
 #include <dyna_cpp/utility/TextUtility.hpp>
 
 #include <algorithm>
+#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -26,7 +27,7 @@ namespace qd {
  * throws an expection in case of an IO-Error.
  */
 std::vector<std::string>
-FileUtility::read_textFile(std::string filepath)
+read_textFile(std::string filepath)
 {
 
   // vars
@@ -56,11 +57,20 @@ FileUtility::read_textFile(std::string filepath)
   return filebuffer;
 }
 
+void
+delete_file(const std::string& _path)
+{
+
+  if (remove(_path.c_str()) != 0) {
+    throw(std::runtime_error("Deletion of file " + _path + " failed."));
+  }
+}
+
 /* === WINDOWS === */
 #ifdef _WIN32
 
 bool
-FileUtility::check_ExistanceAndAccess(std::string filepath)
+check_ExistanceAndAccess(std::string filepath)
 {
 
   WIN32_FIND_DATA FindFileData;
@@ -77,7 +87,7 @@ FileUtility::check_ExistanceAndAccess(std::string filepath)
 }
 
 std::vector<std::string>
-FileUtility::globVector(std::string pattern)
+globVector(std::string pattern)
 {
 
   // get file directory
@@ -108,7 +118,7 @@ FileUtility::globVector(std::string pattern)
  * @param std::string _base_filepath
  */
 std::vector<std::string>
-FileUtility::findDynaResultFiles(std::string _base_filepath)
+findDynaResultFiles(std::string _base_filepath)
 {
 
   // get file directory
@@ -155,14 +165,14 @@ FileUtility::findDynaResultFiles(std::string _base_filepath)
 #else
 
 bool
-FileUtility::check_ExistanceAndAccess(std::string filepath)
+check_ExistanceAndAccess(std::string filepath)
 {
   std::ifstream ifile(filepath.c_str());
   return ifile.good();
 }
 
 std::vector<std::string>
-FileUtility::globVector(std::string pattern)
+globVector(std::string pattern)
 {
 
   glob_t glob_result;
@@ -179,7 +189,7 @@ FileUtility::globVector(std::string pattern)
 }
 
 std::vector<std::string>
-FileUtility::findDynaResultFiles(std::string _base_filepath)
+findDynaResultFiles(std::string _base_filepath)
 {
 
   std::string pattern = std::string(_base_filepath + "*");

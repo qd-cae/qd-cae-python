@@ -21,12 +21,12 @@ D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t _wordSize)
 {
 
   // Check File
-  if (!FileUtility::check_ExistanceAndAccess(_d3plot_path)) {
+  if (!check_ExistanceAndAccess(_d3plot_path)) {
     throw(std::invalid_argument("File \"" + _d3plot_path +
                                 "\" does not exist or is locked."));
   }
 
-  this->d3plots = FileUtility::findDynaResultFiles(_d3plot_path);
+  this->d3plots = findDynaResultFiles(_d3plot_path);
 #ifdef QD_DEBUG
   std::cout << "Found result files:" << endl;
   for (size_t ii = 0; ii < this->d3plots.size(); ++ii) {
@@ -34,7 +34,7 @@ D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t _wordSize)
   }
   std::cout << "End of file list." << endl;
 #endif
-  // this->d3plots = FileUtility::globVector(_d3plot_path+"*");
+  // this->d3plots = globVector(_d3plot_path+"*");
 
   if (this->d3plots.size() < 1)
     throw(std::invalid_argument(

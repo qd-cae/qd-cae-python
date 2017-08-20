@@ -166,7 +166,9 @@ public:
   size_t get_nTimesteps() const;
   std::string get_title() const;
   std::vector<float> get_timesteps() const;
-  void save_hdf5(const std::string& _filepath) const;
+  void save_hdf5(const std::string& _filepath,
+                 bool _overwrite_run,
+                 const std::string& _run_name) const;
 
   bool displacement_is_read() const;
   bool is_d3plot() const { return true; };

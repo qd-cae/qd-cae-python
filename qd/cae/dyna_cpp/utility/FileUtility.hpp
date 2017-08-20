@@ -7,17 +7,18 @@
 
 namespace qd {
 
-/** Utility class for file related things.
- */
-class FileUtility
-{
+bool check_ExistanceAndAccess(std::string);
 
-public:
-  static bool check_ExistanceAndAccess(std::string);
-  static std::vector<std::string> globVector(std::string);
-  static std::vector<std::string> read_textFile(std::string _filepath);
-  static std::vector<std::string> findDynaResultFiles(std::string _base_file);
-};
+std::vector<std::string> globVector(std::string);
+
+std::vector<std::string>
+read_textFile(std::string _filepath);
+
+std::vector<std::string>
+findDynaResultFiles(std::string _base_file);
+
+void
+delete_file(const std::string& _path);
 
 } // namespace qd
 
