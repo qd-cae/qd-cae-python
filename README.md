@@ -13,6 +13,14 @@ We want to tackle this issue with this free library, in order to give engineerin
 
 # What's new?
 
+*Changelog 18.05.2017*
+Version 0.6.1
+
+Improved documentation.
+
+qd.cae.dyna
+ - fixed an issue, that occasionally the part ids were wrong
+
 *Changelog 28.07.2017*
 Version 0.6.0
 
@@ -39,11 +47,6 @@ qd.cae.dyna
     - `d3plot.get_nTimesteps`
     - `d3plot.get_title`
   
-
-*Changelog 18.05.2017*
-Version 0.5.7
-
-Internal stuff only
 
 # Descriptions
 

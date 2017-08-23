@@ -130,16 +130,21 @@ private:
 
   std::unique_ptr<AbstractBuffer> buffer;
 
-  // Functions
+  // header and metadata
   void read_header();
   void read_matsection();
+
+  // geometry reading
   void read_geometry();
   std::vector<std::vector<float>> read_geometry_nodes();
   std::vector<std::vector<int32_t>> read_geometry_elem8();
   std::vector<std::vector<int32_t>> read_geometry_elem4();
   std::vector<std::vector<int32_t>> read_geometry_elem2();
   std::vector<std::vector<int32_t>> read_geometry_numbering();
-  void read_geometry_parts();
+  std::vector<int32_t> read_part_ids();
+  void read_and_create_parts(std::vector<int32_t> _part_ids);
+
+  // state reading
   void read_states_init();
   void read_states_parse(std::vector<std::string>);
   int32_t read_states_parse_readMode(const std::string& _variable) const;
@@ -166,9 +171,11 @@ public:
   size_t get_nTimesteps() const;
   std::string get_title() const;
   std::vector<float> get_timesteps() const;
+  /*
   void save_hdf5(const std::string& _filepath,
                  bool _overwrite_run,
                  const std::string& _run_name) const;
+  */
 
   bool displacement_is_read() const;
   bool is_d3plot() const { return true; };

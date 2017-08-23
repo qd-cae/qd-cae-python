@@ -22,7 +22,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-version = "0.6.0"
+version = "0.6.1"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() == "Linux")
@@ -109,13 +109,14 @@ def setup_dyna_cpp_femzip(srcs, lib_dirs, libs, compiler_args):
     return srcs, lib_dirs, libs, compiler_args
 
 
-def setup_dyna_cpp_hdf5(srcs, libs, lib_dirs, include_dirs):
+def setup_dyna_cpp_hdf5(srcs, compiler_args, libs, lib_dirs, include_dirs):
     ''' Sets up the hdf5 compilation
     '''
 
     srcs.append("qd/cae/dyna_cpp/utility/HDF5_Utility.cpp")
 
     if is_linux:
+        compiler_args.append("-DQD_USE_HDF5")
         raise RuntimeError("Linux HDF5 compilation missing.")
 
     if is_windows:
@@ -127,8 +128,9 @@ def setup_dyna_cpp_hdf5(srcs, libs, lib_dirs, include_dirs):
 
         lib_dirs.append("libs/hdf5/windows/lib")
         include_dirs.append("libs/hdf5/windows/include")
+        compiler_args.append("/DQD_USE_HDF5")
 
-    return srcs, libs, lib_dirs, include_dirs
+    return srcs, compiler_args, libs, lib_dirs, include_dirs
 
 
 def my_test_suite():
@@ -147,10 +149,17 @@ srcs_dyna, include_dirs_dyna, compiler_args_dyna = setup_dyna_cpp()
 
 # setup hdf5
 # (MUST be before femzip, due to linking)
-srcs_dyna, libs_dyna, lib_dirs_dyna, include_dirs_dyna = setup_dyna_cpp_hdf5(srcs_dyna,
-                                                                             libs_dyna,
-                                                                             lib_dirs_dyna,
-                                                                             include_dirs_dyna)
+'''
+srcs_dyna, \
+compiler_args_dyna, \
+libs_dyna, \
+lib_dirs_dyna, \
+include_dirs_dyna = setup_dyna_cpp_hdf5(srcs_dyna,
+                                        compiler_args_dyna,
+                                        libs_dyna,
+                                        lib_dirs_dyna,
+                                        include_dirs_dyna)
+'''
 
 # setup femzip (if possible)
 srcs_dyna, lib_dirs_dyna, libs_dyna, compiler_args_dyna = setup_dyna_cpp_femzip(

@@ -2,8 +2,6 @@
 #include <cmath>
 #include <string>
 
-#include <H5Cpp.h>
-
 #include <dyna_cpp/db/DB_Elements.hpp>
 #include <dyna_cpp/db/DB_Nodes.hpp>
 #include <dyna_cpp/db/DB_Parts.hpp>
@@ -13,13 +11,18 @@
 #include <dyna_cpp/dyna/D3plot.hpp>
 #include <dyna_cpp/dyna/D3plotBuffer.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
-#include <dyna_cpp/utility/HDF5_Utility.hpp>
+
 #include <dyna_cpp/utility/MathUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 
 #ifdef QD_USE_FEMZIP
 #include "FemzipBuffer.hpp"
+#endif
+
+#ifdef QD_USE_HDF5
+#include <H5Cpp.h>
+#include <dyna_cpp/utility/HDF5_Utility.hpp>
 #endif
 
 namespace qd {
@@ -444,6 +447,8 @@ D3plot::read_geometry()
   std::vector<std::vector<int32_t>> buffer_numbering =
     this->read_geometry_numbering();
 
+  auto part_numbering = read_part_ids();
+
   if (!isFileEnding(wordPosition)) {
     throw(
       std::runtime_error("Anticipated file ending wrong in geometry section."));
@@ -451,12 +456,12 @@ D3plot::read_geometry()
   wordPosition++;
 
   /* === PARTS === */
-  // (+DB)
   this->buffer->free_geometryBuffer();
   this->buffer->read_partBuffer();
   if (this->useFemzip)
     wordPosition = 1; // don't ask me why not 0 ...
-  this->read_geometry_parts();
+
+  this->read_and_create_parts(part_numbering); // directly creates parts
 
   if (!isFileEnding(wordPosition)) {
     throw(std::runtime_error("Anticipated file ending wrong in part section."));
@@ -754,7 +759,7 @@ D3plot::read_geometry_numbering()
     return std::vector<std::vector<int32_t>>();
 
 #ifdef QD_DEBUG
-  std::cout << "Reading numbering ... ";
+  std::cout << "Reading mesh numbering ... ";
 #endif
 
   // pointer to nodes
@@ -804,9 +809,8 @@ D3plot::read_geometry_numbering()
   wordsToRead = dyna_numnp;
   std::vector<int32_t> nodeIDs(wordsToRead);
   size_t jj = 0;
-  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead; ii++) {
-    nodeIDs[jj] = buffer->read_int(ii);
-    jj++;
+  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead; ++ii) {
+    nodeIDs[jj++] = buffer->read_int(ii);
   }
   idvector[0] = nodeIDs;
 
@@ -815,9 +819,8 @@ D3plot::read_geometry_numbering()
   wordsToRead = dyna_nel8;
   std::vector<int32_t> solidIDs(wordsToRead);
   jj = 0;
-  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead; ii++) {
-    solidIDs[jj] = buffer->read_int(ii);
-    jj++;
+  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead; ++ii) {
+    solidIDs[jj++] = buffer->read_int(ii);
   }
   idvector[1] = solidIDs;
 
@@ -826,9 +829,8 @@ D3plot::read_geometry_numbering()
   wordsToRead = dyna_nel2;
   std::vector<int32_t> beamIDs(wordsToRead);
   jj = 0;
-  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead; ii++) {
-    beamIDs[jj] = buffer->read_int(ii);
-    jj++;
+  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead; ++ii) {
+    beamIDs[jj++] = buffer->read_int(ii);
   }
   idvector[2] = beamIDs;
 
@@ -837,53 +839,81 @@ D3plot::read_geometry_numbering()
   wordsToRead = dyna_nel4;
   std::vector<int32_t> shellIDs(wordsToRead);
   jj = 0;
-  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead; ii++) {
-    shellIDs[jj] = buffer->read_int(ii);
-    jj++;
+  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead; ++ii) {
+    shellIDs[jj++] = buffer->read_int(ii);
   }
   idvector[3] = shellIDs;
 
   // Thick Shell IDs
   wordPosition += wordsToRead;
   wordPosition += dyna_nelth;
-  // not read ...
+// not read ...
 
-  /*
+#ifdef QD_DEBUG
+  std::cout << "done." << std::endl;
+#endif
+
+  return std::move(idvector);
+}
+
+/** Read the numbering of the parts
+ *
+ * @return part_numbering : numbering of the parts
+ */
+std::vector<int32_t>
+D3plot::read_part_ids()
+{
+
+/*
 * Indeed this is a little complicated: usually the file should contain
 * as many materials as in the input but somehow dyna generates a few
 * ghost materials itself and those are appended with a 0 ID. Therefore
 * the length should be nMaterials but it's d3plot_nmmat with:
 * nMaterials < d3plot_nmmat. The difference are the ghost mats.
-* Took some time to find that out ...
+* Took some time to find that out ... and I don't know why ...
 */
 
-  std::vector<int32_t> internalPartIDs(nMaterials);
-  std::vector<int32_t> externalPartIDs(nMaterials);
+#ifdef QD_DEBUG
+  std::cout << "Reading part numbering ... ";
+#endif
+
+  std::vector<int32_t> part_numbering(dyna_nmmat);
+
+  // std::vector<int32_t> externalPartIDs(nMaterials);
   wordsToRead = 3 * dyna_nmmat;
 
+  int32_t jj = 0;
+  for (int32_t ii = wordPosition; ii < wordPosition + dyna_nmmat; ++ii) {
+    part_numbering[jj++] = buffer->read_int(ii);
+  }
+
+  /* sorted ids and sort indices are not needed
   jj = 0;
   for (int32_t ii = wordPosition + dyna_nmmat;
-       ii < wordPosition + dyna_nmmat + nMaterials;
-       ii++) {
-    externalPartIDs[jj] = buffer->read_int(ii);
+       ii < wordPosition + 2 * dyna_nmmat;
+       ++ii) {
+    part_numbering[1][jj++] = buffer->read_int(ii);
   }
+  std::cout << std::endl;
 
   jj = 0;
   for (int32_t ii = wordPosition + 2 * dyna_nmmat;
-       ii < wordPosition + 2 * dyna_nmmat + nMaterials;
-       ii++) {
-    internalPartIDs[jj] = buffer->read_int(ii);
+       ii < wordPosition + 3 * dyna_nmmat;
+       ++ii) {
+    part_numbering[2][jj++] = buffer->read_int(ii);
   }
+  std::cout << std::endl;
+  */
 
   // update position
-  wordPosition += wordsToRead;
+  // wordPosition += dyna_narbs;
   /*
    * the whole numbering section should have length narbs
    * but the procedure here should do the same ... hopefully
    */
-  // wordPosition += dyna_narbs;
+  wordPosition += wordsToRead;
 
-  // extra node elements
+  // extra node elements skipped
   // 10 node solids: 2 node conn
   if (own_nel10)
     wordPosition += 2 * abs(dyna_nel8);
@@ -893,21 +923,23 @@ D3plot::read_geometry_numbering()
   // 20 node solids: 12 node conn
   if ((dyna_extra > 0) && (dyna_nel20 > 0))
     wordPosition += 13 * dyna_nel20;
+
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
 
-  return std::move(idvector);
+  return part_numbering;
 }
 
-/*
- * Read the part names from the geometry section.
+/** Read the part names from the geometry section and create them.
+ *
+ * @param _part_ids : array of exernal part ids
  */
 void
-D3plot::read_geometry_parts()
+D3plot::read_and_create_parts(std::vector<int32_t> _part_ids)
 {
 #ifdef QD_DEBUG
-  std::cout << "Reading parts ... ";
+  std::cout << "Reading part info ... ";
 #endif
 
   int32_t ntype = this->buffer->read_int(wordPosition);
@@ -919,12 +951,19 @@ D3plot::read_geometry_parts()
   if (this->dyna_numprop < 0)
     throw(std::runtime_error(
       "negative number of parts in part section makes no sense."));
+
   for (int32_t ii = 0; ii < this->dyna_numprop; ii++) {
+
+    // start of the section of current part in the file
     int32_t start = (wordPosition + 1) + ii * 19 + 1;
-    int32_t partID = this->buffer->read_int(start);
+
+    // this id is wrong ... and don't ask me why
+    // int32_t partID = this->buffer->read_int(start);
+    int32_t part_id = _part_ids[ii];
     std::string partName = this->buffer->read_str(start + 1, 18);
 
-    this->get_db_parts()->add_partByID(partID)->set_name(partName);
+    // createpart
+    this->get_db_parts()->add_partByID(part_id)->set_name(partName);
   }
 
 #ifdef QD_DEBUG
@@ -2049,58 +2088,60 @@ D3plot::clear(const std::vector<std::string>& _variables)
 /**
  *
  */
+/*
 void
 D3plot::save_hdf5(const std::string& _filepath,
-                  bool _overwrite_run,
-                  const std::string& _run_name) const
+                 bool _overwrite_run,
+                 const std::string& _run_name) const
 {
 
-  // empty string means use run title
-  std::string run_folder = _run_name.empty() ? this->get_title() : _run_name;
+ // empty string means use run title
+ std::string run_folder = _run_name.empty() ? this->get_title() : _run_name;
 
-  // hard coded settings
-  H5::StrType strdatatype(H5::PredType::C_S1, 256);
-  auto attr_str_dataspace = H5::DataSpace(H5S_SCALAR);
+ // hard coded settings
+ H5::StrType strdatatype(H5::PredType::C_S1, 256);
+ auto attr_str_dataspace = H5::DataSpace(H5S_SCALAR);
 
-  const std::string qd_version_str(QD_VERSION);
+ const std::string qd_version_str(QD_VERSION);
 
-  const std::string info_folder("/info");
-  const std::string state_folder("/state_data");
-  const std::string elements_folder("/elements");
-  const std::string nodes_folder("/nodes");
+ const std::string info_folder("/info");
+ const std::string state_folder("/state_data");
+ const std::string elements_folder("/elements");
+ const std::string nodes_folder("/nodes");
 
-  try {
+ try {
 
-    H5::Exception::dontPrint();
+   H5::Exception::dontPrint();
 
-    // Open the file
-    auto file = open_hdf5(_filepath, _overwrite_run);
+   // Open the file
+   auto file = open_hdf5(_filepath, _overwrite_run);
 
-    // info
-    auto group = file.createGroup(info_folder);
-    group.createAttribute("QD_VERSION", strdatatype, attr_str_dataspace)
-      .write(strdatatype, qd_version_str.c_str());
+   // info
+   auto group = file.createGroup(info_folder);
+   group.createAttribute("QD_VERSION", strdatatype, attr_str_dataspace)
+     .write(strdatatype, qd_version_str.c_str());
 
-  } catch (H5::FileIException error) {
-    error.printError();
-    throw std::runtime_error("H5::FileIException");
-  }
-  // catch failure caused by the DataSet operations
-  catch (H5::DataSetIException error) {
-    error.printError();
-    throw std::runtime_error("H5::DataSetIException");
-  }
-  // catch failure caused by the DataSpace operations
-  catch (H5::DataSpaceIException error) {
-    error.printError();
-    throw std::runtime_error("H5::DataSpaceIException");
-  }
-  // catch failure caused by the DataSpace operations
-  catch (H5::DataTypeIException error) {
-    error.printError();
-    throw std::runtime_error("H5::DataTypeIException");
-  }
+ } catch (H5::FileIException error) {
+   error.printError();
+   throw std::runtime_error("H5::FileIException");
+ }
+ // catch failure caused by the DataSet operations
+ catch (H5::DataSetIException error) {
+   error.printError();
+   throw std::runtime_error("H5::DataSetIException");
+ }
+ // catch failure caused by the DataSpace operations
+ catch (H5::DataSpaceIException error) {
+   error.printError();
+   throw std::runtime_error("H5::DataSpaceIException");
+ }
+ // catch failure caused by the DataSpace operations
+ catch (H5::DataTypeIException error) {
+   error.printError();
+   throw std::runtime_error("H5::DataTypeIException");
+ }
 
 } // D3plot::save_hdf5
+*/
 
 } // namespace qd

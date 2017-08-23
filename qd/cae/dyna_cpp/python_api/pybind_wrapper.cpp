@@ -450,13 +450,15 @@ PYBIND11_PLUGIN(dyna_cpp)
     .def("get_title",
          &D3plot::get_title,
          pybind11::return_value_policy::take_ownership,
-         d3plot_get_title_docs)
-    .def("save_hdf5",
-         &D3plot::save_hdf5,
-         "filepath"_a,
-         "overwrite_run"_a = true,
-         "run_name"_a = "",
-         "docs missing");
+         d3plot_get_title_docs);
+  /*
+.def("save_hdf5",
+  &D3plot::save_hdf5,
+  "filepath"_a,
+  "overwrite_run"_a = true,
+  "run_name"_a = "",
+  "docs missing");
+  */
 
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
