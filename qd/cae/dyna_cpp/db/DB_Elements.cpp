@@ -63,20 +63,22 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
   }
 
   // Find nodes
+  std::set<int32_t> node_ids; // just for testing
   std::vector<std::shared_ptr<Node>> nodes;
   std::vector<size_t> node_indexes;
   for (size_t iNode = 0; iNode < _elementData.size() - 1;
        iNode++) { // last is mat
-    auto _node = this->db_nodes->get_nodeByIndex(
-      _elementData[iNode] -
-      1); // dyna starts at index 1 (fortran), this program at 0 of course
-    if (_node == nullptr)
-      throw(std::invalid_argument(
-        "A node with index:" + std::to_string(_elementData[iNode]) +
-        " does not exist and can not be added to an element."));
-    if (iNode > 0 && (_elementData[iNode] == _elementData[iNode - 1]))
-      break; // repeating an id means that there are just dummy ids
 
+    // dyna starts at index 1 (fortran), this program at 0 of course
+    auto _node = this->db_nodes->get_nodeByIndex(_elementData[iNode] - 1);
+
+    // check if duplicate
+    auto tmp = node_ids.size();
+    node_ids.insert(_elementData[iNode]);
+    if (node_ids.size() == tmp)
+      continue;
+
+    // add new node data
     nodes.push_back(_node);
     node_indexes.push_back(_elementData[iNode] - 1);
   }
@@ -121,6 +123,18 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
       std::pair<int32_t, size_t>(_elementID, this->elements8.size()));
     this->elements8.push_back(element);
 
+  } else if (_eType == Element::TSHELL) {
+    auto it = this->id2index_elements4th.find(_elementID);
+    if (it != this->id2index_elements4th.end()) {
+      throw(std::invalid_argument(
+        "Trying to insert an element with same id twice:" +
+        std::to_string(_elementID)));
+    }
+
+    this->id2index_elements4th.insert(
+      std::pair<int32_t, size_t>(_elementID, this->elements4th.size()));
+    this->elements4th.push_back(element);
+
   } else {
     throw(std::invalid_argument(
       "Element with unknown element type was tried to get inserted "
@@ -159,7 +173,7 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
     throw(std::invalid_argument("Element-ID may not be negative!"));
   }
 
-  // Find part
+  // Find part (inefficient)
   std::shared_ptr<Part> part = nullptr;
   try {
     part = this->db_parts->get_partByID(_partid);
@@ -168,16 +182,25 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   }
 
   // Find nodes
+  std::set<int32_t> node_ids;
   std::vector<std::shared_ptr<Node>> nodes;
   std::vector<size_t> node_indexes;
   for (size_t iNode = 0; iNode < _node_ids.size(); ++iNode) {
+
     auto _node = this->db_nodes->get_nodeByID(_node_ids[iNode]);
+
+    // check node existance
     if (_node == nullptr)
       _node =
         this->db_nodes->add_node(_node_ids[iNode], std::vector<float>(3, 0.0f));
-    if (iNode > 0)
-      if (_node_ids[iNode] == _node_ids[iNode - 1])
-        break; // dummy ids start
+
+    // check if duplicate
+    auto tmp = node_ids.size();
+    node_ids.insert(_node_ids[iNode]);
+    if (node_ids.size() == tmp)
+      continue;
+
+    // save node data
     nodes.push_back(_node);
     node_indexes.push_back(this->db_nodes->get_index_from_id(_node_ids[iNode]));
   }
@@ -221,6 +244,18 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
     this->id2index_elements8.insert(
       std::pair<int32_t, size_t>(_elementID, this->elements8.size()));
     this->elements8.push_back(element);
+
+  } else if (_eType == Element::TSHELL) {
+    auto it = this->id2index_elements4th.find(_elementID);
+    if (it != this->id2index_elements4th.end()) {
+      throw(std::invalid_argument(
+        "Trying to insert an element with same id twice:" +
+        std::to_string(_elementID)));
+    }
+
+    this->id2index_elements4th.insert(
+      std::pair<int32_t, size_t>(_elementID, this->elements4th.size()));
+    this->elements4th.push_back(element);
 
   } else {
     throw(std::invalid_argument(
@@ -270,6 +305,12 @@ DB_Elements::reserve(const Element::ElementType _type, const size_t _size)
     elements4.reserve(_size);
   } else if (_type == Element::SOLID) {
     elements8.reserve(_size);
+  } else if (_type == Element::TSHELL) {
+    elements4th.reserve(_size);
+  } else {
+    throw std::invalid_argument(
+      "Can not reverse memory for an unknown ElementType: " +
+      std::to_string(_type));
   }
 }
 
@@ -287,8 +328,11 @@ DB_Elements::get_nElements(const Element::ElementType _type) const
     return elements4.size();
   } else if (_type == Element::SOLID) {
     return elements8.size();
+  } else if (_type == Element::TSHELL) {
+    return elements4th.size();
   }
-  return elements4.size() + elements2.size() + elements8.size();
+  return elements4.size() + elements2.size() + elements8.size() +
+         elements4th.size();
 }
 
 /** Get the elements of the database of a certain type
@@ -306,6 +350,7 @@ DB_Elements::get_elements(const Element::ElementType _type)
     elems.insert(elems.end(), elements2.begin(), elements2.end());
     elems.insert(elems.end(), elements4.begin(), elements4.end());
     elems.insert(elems.end(), elements8.begin(), elements8.end());
+    elems.insert(elems.end(), elements4th.begin(), elements4th.end());
     return elems;
 
   } else if (_type == Element::BEAM) {
@@ -316,6 +361,9 @@ DB_Elements::get_elements(const Element::ElementType _type)
 
   } else if (_type == Element::SOLID) {
     return elements8;
+
+  } else if (_type == Element::TSHELL) {
+    return elements4th;
   }
 
   throw(std::invalid_argument("Unknown element type specified."));

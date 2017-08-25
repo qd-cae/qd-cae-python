@@ -38,6 +38,7 @@ D3plot::D3plot(std::string _filename,
                bool _useFemzip)
   : FEMFile(_filename)
   , dyna_ndim(-1)
+  , dyna_icode(-1)
   , dyna_numnp(-1)
   , dyna_mdlopt(-1)
   , dyna_mattyp(-1)
@@ -77,6 +78,14 @@ D3plot::D3plot(std::string _filename,
   , dyna_nmsph(-1)
   , dyna_ngpsph(-1)
   , dyna_ialemat(-1)
+  , dyna_npefg(-1)
+  , dyna_airbag_npartgas(-1)
+  , dyna_airbag_subver(-1)
+  , dyna_airbag_nchamber(-1)
+  , dyna_airbag_ngeom(-1)
+  , dyna_airbag_state_nvars(-1)
+  , dyna_airbag_nparticles(-1)
+  , dyna_airbag_state_geom(-1)
   , nStates(0)
   , own_nel10(false)
   , own_external_numbers_I8(false)
@@ -134,6 +143,7 @@ D3plot::D3plot(std::string _filename,
   // Header + Geometry
   this->read_header();
   this->read_matsection();
+  this->read_airbag_section();
   this->read_geometry();
 
   // States
@@ -221,13 +231,14 @@ D3plot::read_header()
     this->dyna_ndim = 3;
   } else if (this->dyna_ndim > 5) {
     throw(std::runtime_error(
-      "State data contains rigid road surface which can not be handled."));
+      "State data contains rigid road surface, which can not be handled."));
   } else {
     throw(std::runtime_error("Invalid parameter dyna_ndim=" +
                              std::to_string(this->dyna_ndim)));
   }
 
   this->dyna_numnp = this->buffer->read_int(16);
+  this->dyna_icode = this->buffer->read_int(17);
   this->dyna_nglbv = this->buffer->read_int(18);
 
   this->dyna_iu = this->buffer->read_int(20);
@@ -291,6 +302,7 @@ D3plot::read_header()
   this->dyna_nmsph = this->buffer->read_int(37);
   this->dyna_ngpsph = this->buffer->read_int(38);
   this->dyna_ialemat = this->buffer->read_int(47);
+  this->dyna_npefg = this->buffer->read_int(54);
 
   // Header extra!
   if (this->dyna_extra > 0) {
@@ -317,6 +329,10 @@ D3plot::read_header()
       }
     }
   }
+  // no value set? bug?
+  if (this->dyna_istrn < 0) {
+    this->dyna_istrn = 0;
+  }
 
 #ifdef QD_DEBUG
   this->info();
@@ -330,15 +346,15 @@ D3plot::read_header()
   if (this->dyna_ialemat != 0)
     throw(std::runtime_error("ALE can not be handled."));
   // thick shells not implemented
-  if (this->dyna_nelth > 0)
-    throw(std::runtime_error("Can not handle thick shell elements."));
+  // if (this->dyna_nelth > 0)
+  //  throw(std::runtime_error("Can not handle thick shell elements."));
   // no temps
   if (this->dyna_it != 0)
     throw(std::runtime_error("dyna_it != 0: Can not handle temperatures."));
   //
   if (own_external_numbers_I8)
     throw(
-      std::runtime_error("Can not handle external ids with double length."));
+      std::runtime_error("Can not handle external ids with 8 byte length."));
 
   // update position
   if (this->dyna_extra > 0) {
@@ -385,15 +401,32 @@ D3plot::info() const
   std::cout << "nVar2D: " << this->dyna_nv2d << '\n';
   std::cout << "nVar3D: " << this->dyna_nv3d << '\n';
   std::cout << "state-globals: " << this->dyna_nglbv << std::endl;
+#ifdef QD_DEBUG
+  std::cout << "icode: " << this->dyna_icode << " (solver code flag)\n"
+            << "neips: " << this->dyna_neips << " (additional solid vars)\n"
+            << "neiph: " << this->dyna_neiph << " (additional shell vars)\n"
+            << "mattyp: " << this->dyna_mattyp << "\n"
+            << "narbs: " << this->dyna_narbs << "\n"
+            << "idtdt: " << this->dyna_idtdt << "\n"
+            << "npefg: " << this->dyna_npefg << " (airbag particles)\n"
+            << "extra: " << this->dyna_extra << std::endl;
+#endif
 }
 
-/** Read the material section
+/** Read the rigid body material section.
  *
  * Does nothing if mattyp==0.
  */
 void
 D3plot::read_matsection()
 {
+
+#ifdef QD_DEBUG
+  std::cout << "> MATSECTION"
+            << "\n"
+            << "at word " << this->wordPosition << std::endl;
+#endif
+
   // Nothing to do
   if (this->dyna_mattyp == 0) {
     dyna_numrbe = 0;
@@ -402,8 +435,17 @@ D3plot::read_matsection()
 
   this->dyna_numrbe = this->buffer->read_int(wordPosition); // rigid shells
   int32_t tmp_nummat = this->buffer->read_int(wordPosition + 1);
-  if (tmp_nummat != dyna_nmmat)
+#ifdef QD_DEBUG
+  std::cout << "nummat=" << tmp_nummat << "\n"
+            << "numrbe=" << this->dyna_numrbe << std::endl;
+#endif
+
+  if (tmp_nummat != dyna_nmmat) {
+#ifdef QD_DEBUG
+    std::cout << "nmmat=" << this->dyna_nmmat << std::endl;
+#endif
     throw(std::runtime_error("dyna_nmmat != nummat in matsection!"));
+  }
 
   int32_t start = wordPosition + 2;
   int32_t end = start + tmp_nummat;
@@ -413,6 +455,58 @@ D3plot::read_matsection()
   }
 
   this->wordPosition += 2 + tmp_nummat;
+}
+
+/** Read the airbag section data
+ *
+ * If airbags are used, then we need to skip the airbag data blocks.
+ */
+void
+D3plot::read_airbag_section()
+{
+
+  // skip airbag particle section
+  if ((this->dyna_npefg > 0) && (this->dyna_npefg < 10000000)) {
+
+    this->dyna_airbag_npartgas = this->dyna_npefg % 1000; // nAirbags?!
+    this->dyna_airbag_subver = this->dyna_npefg / 1000;   // n
+
+    this->dyna_airbag_ngeom = this->buffer->read_int(wordPosition++);
+    this->dyna_airbag_state_nvars = this->buffer->read_int(wordPosition++);
+    this->dyna_airbag_nparticles = this->buffer->read_int(wordPosition++);
+    this->dyna_airbag_state_geom = this->buffer->read_int(wordPosition++);
+    this->dyna_airbag_nchamber = 0;
+    if (dyna_airbag_subver == 4) {
+      this->dyna_airbag_nchamber = this->buffer->read_int(wordPosition++);
+    }
+
+    int32_t dyna_airbag_nlist =
+      dyna_airbag_ngeom + dyna_airbag_state_nvars + dyna_airbag_state_geom;
+
+    wordPosition += dyna_airbag_nlist; // type of each variable (1=int, 2=float)
+    wordPosition += 8 * dyna_airbag_nlist; // 8 char variable names
+
+#ifdef QD_DEBUG
+    std::cout << "dyna_airbag_npartgas: " << this->dyna_airbag_npartgas << "\n"
+              << "dyna_airbag_subver: " << this->dyna_airbag_subver << "\n"
+              << "dyna_airbag_ngeom: " << this->dyna_airbag_ngeom << "\n"
+              << "dyna_airbag_nparticles: " << this->dyna_airbag_nparticles
+              << "\n"
+              << "dyna_airbag_state_nvars: " << this->dyna_airbag_state_nvars
+              << "\n"
+              << "dyna_airbag_state_geom: " << this->dyna_airbag_state_geom
+              << "\n"
+              << "dyna_airbag_nchamber: " << this->dyna_airbag_nchamber << "\n"
+              << "dyna_airbag_nlist: " << dyna_airbag_nlist << std::endl;
+#endif
+  } else {
+    this->dyna_airbag_npartgas = 0;
+    this->dyna_airbag_subver = 0;
+    this->dyna_airbag_ngeom = 0;
+    this->dyna_airbag_state_nvars = 0;
+    this->dyna_airbag_nparticles = 0;
+    this->dyna_airbag_state_geom = 0;
+  }
 }
 
 /** Read the geometry mesh (after the header)
@@ -425,31 +519,36 @@ D3plot::read_geometry()
 #endif
 
   /* === NODES === */
-  std::vector<std::vector<float>> buffer_nodes = this->read_geometry_nodes();
+  auto buffer_nodes = this->read_geometry_nodes();
 
   /* === ELEMENTS === */
   // Order MATTERS, do not swap routines.
 
   // 8-Node Solids
-  std::vector<std::vector<int32_t>> buffer_elems8 = this->read_geometry_elem8();
+  auto buffer_elems8 = this->read_geometry_elem8();
 
   // 8-Node Thick Shells
-  if (dyna_nelth > 0)
-    wordPosition += 9 * dyna_nelth;
+  auto buffer_elems4th = read_geometry_elem4th();
 
   // 2-Node Beams
-  std::vector<std::vector<int32_t>> buffer_elems2 = this->read_geometry_elem2();
+  auto buffer_elems2 = this->read_geometry_elem2();
 
   // 4-Node Elements
-  std::vector<std::vector<int32_t>> buffer_elems4 = this->read_geometry_elem4();
+  auto buffer_elems4 = this->read_geometry_elem4();
 
   /* === NUMBERING === */
-  std::vector<std::vector<int32_t>> buffer_numbering =
-    this->read_geometry_numbering();
+  auto buffer_numbering = this->read_geometry_numbering();
 
   auto part_numbering = read_part_ids();
 
+  /* === AIRBAGS === */
+  this->read_geometry_airbag();
+
+  // check for correct end of section
   if (!isFileEnding(wordPosition)) {
+#ifdef QD_DEBUG
+    std::cout << "At word position: " << wordPosition << std::endl;
+#endif
     throw(
       std::runtime_error("Anticipated file ending wrong in geometry section."));
   }
@@ -464,6 +563,9 @@ D3plot::read_geometry()
   this->read_and_create_parts(part_numbering); // directly creates parts
 
   if (!isFileEnding(wordPosition)) {
+#ifdef QD_DEBUG
+    std::cout << "At word position: " << wordPosition << std::endl;
+#endif
     throw(std::runtime_error("Anticipated file ending wrong in part section."));
   }
 
@@ -496,12 +598,9 @@ D3plot::read_geometry()
   for (size_t ii = 0; ii < buffer_elems2.size(); ++ii) {
     db_elems->add_element_byD3plot(
       Element::BEAM, buffer_numbering[2][ii], buffer_elems2[ii]);
-    if ((dyna_mattyp == 1) &&
-        (this->dyna_irbtyp[buffer_elems2[ii].back()] == 20)) {
-    }
   }
 #ifdef QD_DEBUG
-  std::cout << this->get_db_elements()->get_nElements(BEAM) << " done."
+  std::cout << this->get_db_elements()->get_nElements(Element::BEAM) << " done."
             << std::endl;
 #endif
 
@@ -524,8 +623,8 @@ D3plot::read_geometry()
     }
   }
 #ifdef QD_DEBUG
-  std::cout << this->get_db_elements()->get_nElements(SHELL) << " done."
-            << std::endl;
+  std::cout << this->get_db_elements()->get_nElements(Element::SHELL)
+            << " done." << std::endl;
 #endif
   if (nRigidShells != this->dyna_numrbe)
     throw(std::runtime_error(
@@ -540,12 +639,24 @@ D3plot::read_geometry()
   for (size_t ii = 0; ii < buffer_elems8.size(); ++ii) {
     db_elems->add_element_byD3plot(
       Element::SOLID, buffer_numbering[1][ii], buffer_elems8[ii]);
-    if ((dyna_mattyp == 1) &&
-        (this->dyna_irbtyp[buffer_elems8[ii].back()] == 20)) {
-    }
   }
 #ifdef QD_DEBUG
-  std::cout << get_db_elements()->get_nElements(SOLID) << " done." << std::endl;
+  std::cout << get_db_elements()->get_nElements(Element::SOLID) << " done."
+            << std::endl;
+#endif
+
+// Thick Shells
+#ifdef QD_DEBUG
+  std::cout << "Adding thick shells ... ";
+#endif
+  db_elems->reserve(Element::TSHELL, buffer_elems4th.size());
+  for (size_t ii = 0; ii < buffer_elems4th.size(); ++ii) {
+    db_elems->add_element_byD3plot(
+      Element::TSHELL, buffer_numbering[4][ii], buffer_elems4th[ii]);
+  }
+#ifdef QD_DEBUG
+  std::cout << get_db_elements()->get_nElements(Element::TSHELL) << " done."
+            << std::endl;
 #endif
 }
 
@@ -557,7 +668,7 @@ std::vector<std::vector<float>>
 D3plot::read_geometry_nodes()
 {
 #ifdef QD_DEBUG
-  std::cout << "Reading nodes ... ";
+  std::cout << "Reading nodes at word " << wordPosition << " ... ";
 #endif
 
   wordsToRead = dyna_numnp * dyna_ndim;
@@ -580,8 +691,9 @@ D3plot::read_geometry_nodes()
   return buffer_nodes;
 }
 
-/*
- * Read the 8 noded elements in the geometry section.
+/** Read the 8 noded elements in the geometry section.
+ *
+ * @return buffer_elems8 : element data buffer
  *
  */
 std::vector<std::vector<int32_t>>
@@ -592,7 +704,7 @@ D3plot::read_geometry_elem8()
     return std::vector<std::vector<int32_t>>();
 
 #ifdef QD_DEBUG
-  std::cout << "Reading elems8 ... ";
+  std::cout << "Reading solids at word " << wordPosition << " ... ";
 #endif
 
   // currently each element has 8 nodes-ids and 1 mat-id
@@ -642,7 +754,7 @@ D3plot::read_geometry_elem4()
     return std::vector<std::vector<int32_t>>();
 
 #ifdef QD_DEBUG
-  std::cout << "Reading elems4 ... ";
+  std::cout << "Reading shells at word " << wordPosition << " ... ";
 #endif
 
   const int32_t nVarsElem4 = 5;
@@ -688,7 +800,7 @@ D3plot::read_geometry_elem2()
     return std::vector<std::vector<int32_t>>();
 
 #ifdef QD_DEBUG
-  std::cout << "Reading elems2 ... ";
+  std::cout << "Reading beams at word " << wordPosition << " ... ";
 #endif
 
   const int32_t nVarsElem2 = 6;
@@ -728,14 +840,65 @@ D3plot::read_geometry_elem2()
   return std::move(buffer_elems2);
 }
 
-/*
+/** Read the thick shell data from the geometry section
+ *
+ * @return buffer_elems4th : element data buffer
+ *
+ */
+std::vector<std::vector<int32_t>>
+D3plot::read_geometry_elem4th()
+{
+  // Check
+  if (dyna_nelth == 0)
+    return std::vector<std::vector<int32_t>>();
+
+#ifdef QD_DEBUG
+  std::cout << "Reading thick shells at word " << wordPosition << " ... ";
+#endif
+
+  // 8 nodes and material id
+  const int32_t nVarsElem4th = 9;
+
+  // allocate
+  std::vector<std::vector<int32_t>> buffer_elems4th(
+    dyna_nelth, std::vector<int32_t>(nVarsElem4th));
+
+  wordsToRead = nVarsElem4th * dyna_nelth;
+  size_t iElement = 0;
+  size_t iData = 0;
+  // Loop over elements
+  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead;
+       ii += nVarsElem4th) {
+    // Loop over element data
+    iData = 0;
+    for (int32_t jj = ii; jj < ii + nVarsElem4th; jj++) {
+      buffer_elems4th[iElement][iData++] = buffer->read_int(jj);
+    }
+
+    ++iElement;
+  }
+
+  // Update word position
+  wordPosition += wordsToRead;
+
+#ifdef QD_DEBUG
+  std::cout << "done." << std::endl;
+#endif
+
+  return std::move(buffer_elems4th);
+}
+
+/** Read the numbering of nodes and elements
+ *
+ * @return idvector : vector of (external) ids
+ *
  * Read the numbering of the data into a 2d-vector.
  * numbering[iCategory][iIndex]
  * category: nodes  = 0
  *           solids = 1
  *           beams  = 2
  *           shells = 3
- *           (tshells= 4 - not implemented)
+ *           tshells= 4
  */
 std::vector<std::vector<int32_t>>
 D3plot::read_geometry_numbering()
@@ -755,21 +918,30 @@ D3plot::read_geometry_numbering()
   }
   */
 
-  if (dyna_narbs == 0)
+  if (this->dyna_narbs == 0)
     return std::vector<std::vector<int32_t>>();
 
 #ifdef QD_DEBUG
-  std::cout << "Reading mesh numbering ... ";
+  std::cout << "Reading mesh numbering at word " << wordPosition << " ... ";
 #endif
 
   // pointer to nodes
   int32_t nsort = buffer->read_int(wordPosition);
   // pointer to elem8 numbering
   int32_t nsrh = buffer->read_int(wordPosition + 1);
-  if (nsrh != dyna_numnp + abs(nsort))
+  if (nsrh != dyna_numnp + abs(nsort)) {
+#ifdef QD_DEBUG
+    std::cout << "\n"
+              << "iWord=" << wordPosition + 1 << "\n"
+              << nsrh << " != " << dyna_numnp + abs(nsort) << "\n"
+              << "dyna_numnp=" << dyna_numnp << "\n"
+              << "abs(nsort)=" << abs(nsort) << std::endl;
+    std::cout << "narbs=" << this->dyna_narbs << std::endl;
+#endif
     throw(std::runtime_error(
       "nsrh != nsort + numnp is inconsistent in dyna file. Your "
       "file might be using FEMZIP."));
+  }
   // pointer to elem2 numbering
   int32_t nsrb = buffer->read_int(wordPosition + 2);
   if (nsrb != nsrh + dyna_nel8)
@@ -788,7 +960,7 @@ D3plot::read_geometry_numbering()
   // nNode consistent?
   if (buffer->read_int(wordPosition + 5) != dyna_numnp)
     throw(std::runtime_error(
-      "Number of nodes is not defined consistent in d3plot geometry "
+      "Number of nodes is not defined consistently in d3plot geometry "
       "section."));
 
   int32_t nMaterials =
@@ -797,7 +969,7 @@ D3plot::read_geometry_numbering()
   /* === ID - ORDER === */
   // nodes,solids,beams,shells,tshells
 
-  std::vector<std::vector<int32_t>> idvector(4);
+  std::vector<std::vector<int32_t>> idvector(5);
 
   // Node IDs
   if (nsort < 0) {
@@ -846,8 +1018,14 @@ D3plot::read_geometry_numbering()
 
   // Thick Shell IDs
   wordPosition += wordsToRead;
-  wordPosition += dyna_nelth;
-// not read ...
+  wordsToRead = dyna_nelth;
+  std::vector<int32_t> thick_shell_ids(wordsToRead);
+  jj = 0;
+  for (int32_t ii = wordPosition; ii < wordPosition + wordsToRead; ++ii) {
+    thick_shell_ids[jj++] = buffer->read_int(ii);
+  }
+  idvector[4] = thick_shell_ids;
+  wordPosition += wordsToRead;
 
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
@@ -871,10 +1049,11 @@ D3plot::read_part_ids()
 * the length should be nMaterials but it's d3plot_nmmat with:
 * nMaterials < d3plot_nmmat. The difference are the ghost mats.
 * Took some time to find that out ... and I don't know why ...
+* oh and it is undocumented ...
 */
 
 #ifdef QD_DEBUG
-  std::cout << "Reading part numbering ... ";
+  std::cout << "Reading part numbering at word " << wordPosition << " ... ";
 #endif
 
   std::vector<int32_t> part_numbering(dyna_nmmat);
@@ -929,6 +1108,47 @@ D3plot::read_part_ids()
 #endif
 
   return part_numbering;
+}
+
+/** Read the geometry data for the airbags
+ *
+ */
+void
+D3plot::read_geometry_airbag()
+{
+
+  if (this->dyna_npefg > 0) {
+
+    // ?!?!?!?!
+    if (this->dyna_npefg / 10000000 == 1) {
+      int32_t dyna_airbag_des = this->dyna_npefg / 10000000;
+      wordPosition += dyna_airbag_des;
+    }
+
+    // skip airbag infos
+    if (this->dyna_airbag_ngeom == 5) {
+      wordPosition += 5 * this->dyna_airbag_npartgas;
+    } else {
+      wordPosition += 4 * this->dyna_airbag_npartgas;
+    }
+
+    /*
+for (auto iAirbag = 0; iAirbag < this->dyna_airbag_npartgas; ++iAirbag) {
+  // 1. particle id
+  ++wordPosition;
+  // 2. number of particles
+  ++wordPosition;
+  // 3. id for airbag
+  ++wordPosition;
+  // 4. number of gas mixtures
+  ++wordPosition;
+  if (this->dyna_airbag_ngeom == 5) {
+    // 5. nchambers
+    ++wordPosition;
+  }
+}
+*/
+  } // if dyna_npefg
 }
 
 /** Read the part names from the geometry section and create them.
@@ -1306,6 +1526,9 @@ D3plot::read_states(std::vector<std::string> _variables)
   int32_t nVarsElems = dyna_nel2 * dyna_nv1d +
                        (dyna_nel4 - dyna_numrbe) * dyna_nv2d +
                        dyna_nel8 * dyna_nv3d;
+  int32_t nAirbagVars =
+    this->dyna_airbag_npartgas * this->dyna_airbag_state_geom +
+    this->dyna_airbag_nparticles * this->dyna_airbag_state_nvars;
 
   // Variable Deletion table
   int32_t nDeletionVars = 0;
@@ -1396,8 +1619,12 @@ D3plot::read_states(std::vector<std::string> _variables)
         read_states_elem8(iState);
       }
 
+      // read_states_airbag(); // skips airbag section
+
       // update position
-      wordPosition += nVarsNodes + nVarsElems + nDeletionVars + dyna_nglbv + 1;
+      // +1 is just for time word
+      wordPosition +=
+        nAirbagVars + nVarsNodes + nVarsElems + nDeletionVars + dyna_nglbv + 1;
 
       iState++;
     }
@@ -1896,6 +2123,44 @@ D3plot::read_states_elem4(size_t iState)
 
     ii += dyna_nv2d;
   }
+}
+
+/** Read the airbag state data
+ *
+ * Airbag data and particle data (skipped currently)
+ */
+void
+D3plot::read_states_airbag()
+{
+
+  int32_t start =
+    this->wordPosition + 1 // time
+    + dyna_nglbv + (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+    dyna_nv3d * dyna_nel8 + dyna_nv1d * dyna_nel2 + dyna_nv2d * dyna_nel4;
+
+  // Airbag geometry data
+  // wordsToRead = this->dyna_airbag_npartgas * this->dyna_airbag_state_geom;
+  // for dyna_airbag_npartgas
+  // 1. number of active particles
+  // 2. current bag volume
+
+  // Particle state data
+  // wordsToRead = this->dyna_airbag_nparticles * this->dyna_airbag_state_nvars;
+  // for dyna_airbag_nparticles
+  // 1. gas id
+  // 2. chamber id
+  // 3. leakage (0 active, -1 fabric, -2 vent hole, -3 mistracked)
+  // 4. mass
+  // 5. radius
+  // 6. spin energy
+  // 7. translation energy
+  // 8. distance from particle to nearest segmen
+  // 9. x position
+  // 10. y position
+  // 11. z position
+  // 12. x velocity
+  // 13. y velocity
+  // 14. z velocity
 }
 
 /** Get the timestamps of the timesteps.

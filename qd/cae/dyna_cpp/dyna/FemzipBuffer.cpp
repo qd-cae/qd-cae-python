@@ -204,8 +204,8 @@ FemzipBuffer::read_nextState()
 {
 
 #ifdef QD_DEBUG
-  cout << "Loading state: " << this->iTimeStep << "/" << this->nTimeStep
-       << endl;
+  std::cout << "Loading state: " << this->iTimeStep << "/" << this->nTimeStep
+            << std::endl;
 #endif
 
   this->current_buffer = this->next_state_buffer.get();

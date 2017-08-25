@@ -28,11 +28,11 @@ D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t _wordSize)
 
   this->d3plots = findDynaResultFiles(_d3plot_path);
 #ifdef QD_DEBUG
-  std::cout << "Found result files:" << endl;
+  std::cout << "Found result files:" << std::endl;
   for (size_t ii = 0; ii < this->d3plots.size(); ++ii) {
-    std::cout << this->d3plots[ii] << endl;
+    std::cout << this->d3plots[ii] << std::endl;
   }
-  std::cout << "End of file list." << endl;
+  std::cout << "End of file list." << std::endl;
 #endif
   // this->d3plots = globVector(_d3plot_path+"*");
 
@@ -124,7 +124,7 @@ D3plotBuffer::init_nextState()
 
 // empty remaining data (prevents memory leak)
 #ifdef QD_DEBUG
-  std::cout << "Emptying previous IO-Buffers" << endl;
+  std::cout << "Emptying previous IO-Buffers" << std::endl;
 #endif
   while (state_buffers.size() != 0) {
     state_buffers.back().get();
@@ -159,7 +159,7 @@ D3plotBuffer::read_nextState()
   }
 
 #ifdef QD_DEBUG
-  std::cout << "Loading state-file:" << d3plots[iStateFile] << endl;
+  std::cout << "Loading state-file:" << d3plots[iStateFile] << std::endl;
 #endif
 
   this->current_buffer = state_buffers.back().get();

@@ -30,6 +30,7 @@ private:
   std::string dyna_datetime; // BUGGY
 
   int32_t dyna_ndim;   // dimension parameter
+  int32_t dyna_icode;  // finite element code, should be 6
   int32_t dyna_numnp;  // number of nodes
   int32_t dyna_mdlopt; // describes element deletion
   int32_t dyna_mattyp; // material types section is read
@@ -84,6 +85,16 @@ private:
   int32_t dyna_ngpsph;  // #mats of sph
   int32_t dyna_ialemat; // # some ale stuff .. it's late ...
 
+  // airbags
+  int32_t dyna_npefg;              // something about airbag particles
+  int32_t dyna_airbag_npartgas;    // number of airbags I think
+  int32_t dyna_airbag_subver;      // who knows ... never explictly explained
+  int32_t dyna_airbag_nchamber;    // number of chambers
+  int32_t dyna_airbag_ngeom;       // number of geometry vars
+  int32_t dyna_airbag_state_nvars; // number of state vars
+  int32_t dyna_airbag_nparticles;  // number of particles
+  int32_t dyna_airbag_state_geom;  // number of state geometry vars
+
   // Own Variables
   int32_t nStates;
   std::vector<float> timesteps;
@@ -133,15 +144,18 @@ private:
   // header and metadata
   void read_header();
   void read_matsection();
+  void read_airbag_section();
 
   // geometry reading
   void read_geometry();
   std::vector<std::vector<float>> read_geometry_nodes();
   std::vector<std::vector<int32_t>> read_geometry_elem8();
+  std::vector<std::vector<int32_t>> read_geometry_elem4th();
   std::vector<std::vector<int32_t>> read_geometry_elem4();
   std::vector<std::vector<int32_t>> read_geometry_elem2();
   std::vector<std::vector<int32_t>> read_geometry_numbering();
   std::vector<int32_t> read_part_ids();
+  void read_geometry_airbag();
   void read_and_create_parts(std::vector<int32_t> _part_ids);
 
   // state reading
@@ -153,6 +167,7 @@ private:
   void read_states_acceleration();
   void read_states_elem8(size_t iState);
   void read_states_elem4(size_t iState);
+  void read_states_airbag();
   bool isFileEnding(int32_t _iWord);
 
   // === P U B L I C === //

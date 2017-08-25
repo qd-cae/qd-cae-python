@@ -28,9 +28,11 @@ private:
 
   std::unordered_map<int32_t, size_t> id2index_elements2;
   std::unordered_map<int32_t, size_t> id2index_elements4;
+  std::unordered_map<int32_t, size_t> id2index_elements4th;
   std::unordered_map<int32_t, size_t> id2index_elements8;
   std::vector<std::shared_ptr<Element>> elements2;
   std::vector<std::shared_ptr<Element>> elements4;
+  std::vector<std::shared_ptr<Element>> elements4th;
   std::vector<std::shared_ptr<Element>> elements8;
 
 public:
@@ -156,6 +158,16 @@ DB_Elements::get_element_index_from_id(Element::ElementType _type, T _id)
       break;
     }
 
+    case Element::ElementType::TSHELL: {
+      const auto& it = this->id2index_elements4th.find(_id);
+      if (it == id2index_elements4th.end())
+        throw(
+          std::invalid_argument("Can not find thick shell element with id " +
+                                std::to_string(_id) + " in database"));
+      return it->second;
+      break;
+    }
+
     default:
       throw(std::invalid_argument("Can not get element with type:" +
                                   std::to_string(_type)));
@@ -253,6 +265,16 @@ DB_Elements::get_elementByIndex(Element::ElementType _type, T _index)
     case Element::ElementType::SOLID: {
       try {
         return this->elements8.at(_index);
+      } catch (const std::out_of_range&) {
+        throw(std::invalid_argument("Could not find solid element with index " +
+                                    std::to_string(_index)));
+      }
+      break;
+    }
+
+    case Element::ElementType::TSHELL: {
+      try {
+        return this->elements4th.at(_index);
       } catch (const std::out_of_range&) {
         throw(std::invalid_argument("Could not find solid element with index " +
                                     std::to_string(_index)));

@@ -388,10 +388,26 @@ Element::get_estimated_element_size() const
         "Unknown node number:" + std::to_string(this->nodes.size()) +
         " of element +" + std::to_string(this->elementID) + "+ for beams."));
     return sqrt(maxdist); // beam
+  } else if (this->elemType == TSHELL) {
+    // for the moment we take the solid computation since I dont know how the 8
+    // nodes are actually arranged.
+    if (this->nodes.size() == 4) {
+      return sqrt(maxdist); // tria
+    } else if (this->nodes.size() == 8) {
+      return sqrt(maxdist) / 1.73205080757f; // hexa
+    } else if (this->nodes.size() == 5) {
+      return sqrt(maxdist); // pyramid ... difficult to handle
+    } else if (this->nodes.size() == 6) {
+      return sqrt(maxdist) / 1.41421356237f; // penta
+    } else {
+      throw(std::invalid_argument(
+        "Unknown node number:" + std::to_string(this->nodes.size()) +
+        " of element +" + std::to_string(this->elementID) + "+ for solids."));
+    }
   }
 
-  throw(
-    std::invalid_argument("Unknown element type, expected BEAM/SHELL/SOLID."));
+  throw(std::invalid_argument(
+    "Unknown element type, expected BEAM/SHELL/SOLID/TSHELL."));
 }
 
 /*
@@ -443,25 +459,27 @@ void
 Element::check() const
 {
   if (this->elemType == SHELL) {
-    if ((this->nodes.size() < 3) | (this->nodes.size() > 4))
-      throw(
-        std::runtime_error("A shell element must have 3 or 4 nodes. You have " +
-                           std::to_string(this->nodes.size())));
-    return;
-  }
-
-  if (this->elemType == SOLID) {
-    if ((this->nodes.size() < 4) | (this->nodes.size() > 8) |
-        (this->nodes.size() == 7))
+    if ((this->nodes.size() < 3) || (this->nodes.size() > 4))
       throw(std::runtime_error(
-        "A solid element must have 4,5,6 or 8 nodes. You have " +
+        "A shell element must have 3 or 4 nodes. Element has " +
         std::to_string(this->nodes.size())));
     return;
-  }
-  if (this->elemType == BEAM) {
+  } else if (this->elemType == SOLID) {
+    if ((this->nodes.size() < 4) || (this->nodes.size() > 8) ||
+        (this->nodes.size() == 7))
+      throw(std::runtime_error(
+        "A solid element must have 4,5,6 or 8 nodes. Element has " +
+        std::to_string(this->nodes.size())));
+    return;
+  } else if (this->elemType == BEAM) {
     if (this->nodes.size() != 2)
       throw(std::runtime_error(
-        "A beam element must have exactly 2 nodes. You have " +
+        "A beam element must have exactly 2 nodes. Element has " +
+        std::to_string(this->nodes.size())));
+  } else if (this->elemType == TSHELL) {
+    if ((this->nodes.size() != 8) && (this->nodes.size() != 6))
+      throw(std::runtime_error(
+        "A thick shell element must have 6 or 8 nodes. Element has " +
         std::to_string(this->nodes.size())));
   }
 }

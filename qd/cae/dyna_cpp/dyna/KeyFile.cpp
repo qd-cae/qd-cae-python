@@ -70,7 +70,7 @@ KeyFile::read_mesh(std::string _filepath)
 
 // Read the lines
 #ifdef QD_DEBUG
-  std::cout << "Filling IO-Buffer ... " << flush;
+  std::cout << "Filling IO-Buffer ... " << std::flush;
 #endif
   std::vector<std::string> lines = read_textFile(_filepath);
 #ifdef QD_DEBUG
@@ -151,7 +151,7 @@ KeyFile::read_mesh(std::string _filepath)
                (line_has_keyword | line.empty())) {
       keyword = Keyword::NONE;
 #ifdef QD_DEBUG
-      std::cout << "*NODE finished in line: " << (iLine + 1) << std::std::endl;
+      std::cout << "*NODE finished in line: " << (iLine + 1) << std::endl;
 #endif
     }
 

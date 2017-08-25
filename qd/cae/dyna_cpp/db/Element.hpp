@@ -24,7 +24,8 @@ public:
     NONE,
     BEAM,
     SHELL,
-    SOLID
+    SOLID,
+    TSHELL
   };
 
 private:
