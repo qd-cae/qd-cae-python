@@ -4,6 +4,7 @@
 
 #include <algorithm> // sort
 #include <cmath>
+#include <numeric>
 #include <vector>
 
 namespace qd {
@@ -35,6 +36,14 @@ public:
                                 std::vector<T> b);
 
   // functions
+  template<typename T>
+  static T mean(const std::vector<T>& _vec);
+  template<typename T>
+  static T middle(const std::vector<T>& _vec);
+  template<typename T>
+  static T max(const std::vector<T>& _vec);
+  template<typename T>
+  static T min(const std::vector<T>& _vec);
   template<typename T>
   static T mises_stress(const std::vector<T>& _stress_vector);
 };
@@ -196,8 +205,75 @@ MathUtility::mv_mult(std::vector<std::vector<T>> a, std::vector<T> b)
   return res;
 }
 
+/** Compute the mean of a vector
+ *
+ * @param _vec : vector with data
+ */
+template<typename T>
+inline T
+MathUtility::mean(const std::vector<T>& _vec)
+{
+
+  // check
+  static_assert(std::is_arithmetic<T>::value, "Type must be a number");
+
+  T res = 0;
+  for (auto entry : _vec) {
+    res += entry;
+  }
+  return res / ((T)_vec.size());
+}
+
+/** Get the middle of a vector
+ *
+ * @param _vec : vector with data
+ */
+template<typename T>
+inline T
+MathUtility::middle(const std::vector<T>& _vec)
+{
+
+  // check
+  static_assert(std::is_arithmetic<T>::value, "Type must be a number");
+
+  auto mid = _vec.size() / 2;
+  auto rest = _vec.size() % 2;
+  return (_vec[mid] + _vec[mid + rest]) / ((T)2);
+}
+
+/** Compute the max of a vector
+ *
+ * @param _vec : vector with data
+ */
+template<typename T>
+inline T
+MathUtility::max(const std::vector<T>& _vec)
+{
+
+  // check
+  static_assert(std::is_arithmetic<T>::value, "Type must be a number");
+
+  return *std::max_element(std::begin(_vec), std::end(_vec));
+}
+
+/** Compute the max of a vector
+ *
+ * @param _vec : vector with data
+ */
+template<typename T>
+inline T
+MathUtility::min(const std::vector<T>& _vec)
+{
+
+  // check
+  static_assert(std::is_arithmetic<T>::value, "Type must be a number");
+
+  return *std::min_element(std::begin(_vec), std::end(_vec));
+}
+
 /** Mises stress from a stress vector (xx,yy,zz,xy,yz,xz)
  *
+ * @param _stress_vector : vector of stress components
  */
 template<typename T>
 inline T

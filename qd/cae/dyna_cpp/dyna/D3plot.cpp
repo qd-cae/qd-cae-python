@@ -10,8 +10,8 @@
 #include <dyna_cpp/db/Part.hpp>
 #include <dyna_cpp/dyna/D3plot.hpp>
 #include <dyna_cpp/dyna/D3plotBuffer.hpp>
+#include <dyna_cpp/utility/FEM_Utility.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
-
 #include <dyna_cpp/utility/MathUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
@@ -317,22 +317,32 @@ D3plot::read_header()
 
     // istrn needs to be calculated
   } else {
-    if (this->dyna_nv2d > 0) {
-      if (this->dyna_nv2d -
-            this->dyna_maxint *
-              (6 * this->dyna_ioshl1 + this->dyna_ioshl2 + this->dyna_neips) +
-            8 * this->dyna_ioshl3 + 4 * this->dyna_ioshl4 >
+    if (dyna_nv2d > 0) {
+      if (dyna_nv2d -
+            dyna_maxint * (6 * dyna_ioshl1 + dyna_ioshl2 + dyna_neips) +
+            8 * dyna_ioshl3 + 4 * dyna_ioshl4 >
           1) {
-        this->dyna_istrn = 1;
+        dyna_istrn = 1;
       } else {
-        this->dyna_istrn = 0;
+        dyna_istrn = 0;
+      }
+    } else if (dyna_nelth > 0) {
+      if (dyna_nv3dt -
+            dyna_maxint * (6 * dyna_ioshl1 + dyna_ioshl2 + dyna_neips) >
+          1) {
+        dyna_istrn = 1;
+      } else {
+        dyna_istrn = 0;
       }
     }
   }
-  // no value set? bug?
-  if (this->dyna_istrn < 0) {
-    this->dyna_istrn = 0;
-  }
+
+// no value set? bug?
+/*
+if (this->dyna_istrn < 0) {
+  this->dyna_istrn = 0;
+}
+*/
 
 #ifdef QD_DEBUG
   this->info();
@@ -395,11 +405,12 @@ D3plot::info() const
   std::cout << "shell-plstrn: " << this->dyna_ioshl2 << '\n';
   std::cout << "shell-forces: " << this->dyna_ioshl3 << '\n';
   std::cout << "shell-stuff : " << this->dyna_ioshl4 << '\n';
-  std::cout << "shell-strn  : " << this->dyna_istrn << '\n';
+  std::cout << "shell-strain: " << this->dyna_istrn << '\n';
   std::cout << "shell-nInteg: " << this->dyna_maxint << '\n';
-  std::cout << "nVar1D: " << this->dyna_nv1d << '\n';
-  std::cout << "nVar2D: " << this->dyna_nv2d << '\n';
-  std::cout << "nVar3D: " << this->dyna_nv3d << '\n';
+  std::cout << "nVar1D : " << this->dyna_nv1d << '\n';
+  std::cout << "nVar2D : " << this->dyna_nv2d << '\n';
+  std::cout << "nVar3D : " << this->dyna_nv3d << '\n';
+  std::cout << "nVar3DT: " << this->dyna_nv3dt << '\n';
   std::cout << "state-globals: " << this->dyna_nglbv << std::endl;
 #ifdef QD_DEBUG
   std::cout << "icode: " << this->dyna_icode << " (solver code flag)\n"
@@ -464,6 +475,10 @@ D3plot::read_matsection()
 void
 D3plot::read_airbag_section()
 {
+
+#ifdef QD_DEBUG
+  std::cout << "> AIRBAG (PARTICLES)" << std::endl;
+#endif
 
   // skip airbag particle section
   if ((this->dyna_npefg > 0) && (this->dyna_npefg < 10000000)) {
@@ -1201,9 +1216,21 @@ D3plot::read_and_create_parts(std::vector<int32_t> _part_ids)
 bool
 D3plot::isFileEnding(int32_t iWord)
 {
-  if (this->buffer->read_float(iWord) + 999999.0f == 0.)
+#ifdef QD_DEBUG
+  std::cout << "Checking end at word " << iWord << " ... ";
+#endif
+
+  if (this->buffer->read_float(iWord) + 999999.0f == 0.) {
+#ifdef QD_DEBUG
+    std::cout << "ok (true)" << std::endl;
+#endif
     return true;
-  return false;
+  } else {
+#ifdef QD_DEBUG
+    std::cout << "ok (false)" << std::endl;
+#endif
+    return false;
+  }
 }
 
 /*
@@ -1525,7 +1552,7 @@ D3plot::read_states(std::vector<std::string> _variables)
   int32_t nVarsNodes = dyna_ndim * (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp;
   int32_t nVarsElems = dyna_nel2 * dyna_nv1d +
                        (dyna_nel4 - dyna_numrbe) * dyna_nv2d +
-                       dyna_nel8 * dyna_nv3d;
+                       dyna_nel8 * dyna_nv3d + dyna_nelth * dyna_nv3dt;
   int32_t nAirbagVars =
     this->dyna_airbag_npartgas * this->dyna_airbag_state_geom +
     this->dyna_airbag_nparticles * this->dyna_airbag_state_nvars;
@@ -1585,6 +1612,7 @@ D3plot::read_states(std::vector<std::string> _variables)
 
     // Loop through states
     while (!this->isFileEnding(wordPosition)) {
+
       if (timesteps_read) {
         float state_time = buffer->read_float(wordPosition);
         this->timesteps.push_back(state_time);
@@ -1613,10 +1641,13 @@ D3plot::read_states(std::vector<std::string> _variables)
       if (this->stress_read || this->stress_mises_read || this->strain_read ||
           this->energy_read || this->plastic_strain_read ||
           this->history_shell_read.size() || this->history_solid_read.size()) {
-        // Element 4
-        read_states_elem4(iState);
-        // Element 8
+
+        // solids
         read_states_elem8(iState);
+        // thick shells
+        read_states_elem4th(iState);
+        // shells
+        read_states_elem4(iState);
       }
 
       // read_states_airbag(); // skips airbag section
@@ -1821,14 +1852,14 @@ D3plot::read_states_elem8(size_t iState)
   }
 }
 
-/*
- * Read the data of the 4 node solids.
- * > Strain Tensor
- * > Strain Mises
- * > Stress Tensor
- * > Stress Mises
- * > Eq. Plastic Strain (done)
+/* Read the state data of the shell elements
  *
+ * > strain tensor
+ * > strain mises
+ * > stress tensor
+ * > stress mises
+ * > eq. plastic strain
+ * > internal energy
  */
 void
 D3plot::read_states_elem4(size_t iState)
@@ -1837,10 +1868,10 @@ D3plot::read_states_elem4(size_t iState)
     return;
 
   // prepare looping
-  int32_t start = this->wordPosition + 1 // time
-                  + dyna_nglbv +
-                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
-                  dyna_nv3d * dyna_nel8 + dyna_nv1d * dyna_nel2;
+  int32_t start =
+    this->wordPosition + 1 // time
+    + dyna_nglbv + (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+    dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt + dyna_nv1d * dyna_nel2;
   wordsToRead = dyna_nv2d * (dyna_nel4 - dyna_numrbe);
 
   // offsets
@@ -2122,7 +2153,147 @@ D3plot::read_states_elem4(size_t iState)
     }
 
     ii += dyna_nv2d;
-  }
+  } // for elements
+}
+
+/** Read the state data of the thick shell elements
+ *
+ * @param iState : current state
+ */
+void
+D3plot::read_states_elem4th(size_t iState)
+{
+
+  if ((dyna_istrn != 1) && (dyna_nv3dt <= 0))
+    return;
+
+  // prepare looping
+  int32_t start = this->wordPosition + 1 // time
+                  + dyna_nglbv +
+                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+                  dyna_nv3d * dyna_nel8;
+
+  wordsToRead = dyna_nelth * dyna_nv3dt;
+
+  // offsets
+  int32_t iPlastStrainOffset = this->dyna_ioshl1 * 6; // stresses before?
+  int32_t iHistoryOffset =
+    iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
+  int32_t iLayerSize = dyna_neips + iHistoryOffset;
+
+  // helpful vars
+  bool has_strains = this->dyna_neiph >= 6;
+  // vectors
+  std::vector<float> tmp_vec6(6);
+  std::vector<float> layers_stress_mises(dyna_maxint);
+  std::vector<float> layers_plastic_strain(dyna_maxint);
+  // matrices
+  std::vector<std::vector<float>> layers_stress(
+    6, std::vector<float>(dyna_maxint));
+  std::vector<std::vector<float>> layers_strain(6, std::vector<float>(2));
+  std::vector<std::vector<float>> layers_history(
+    this->history_shell_read.size(), std::vector<float>(dyna_maxint));
+
+  // Do the thing ...
+  size_t iElement = 0;
+  for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
+
+    // get element
+    auto element =
+      this->get_db_elements()->get_elementByIndex(Element::TSHELL, iElement);
+
+    // LOOP: LAYERS
+    for (int32_t iLayer = 0; iLayer < dyna_maxint; ++iLayer) {
+      int32_t layerStart = ii + iLayer * iLayerSize;
+
+      // LAYER: PLASTIC_STRAIN
+      if ((this->plastic_strain_read) && (dyna_ioshl2)) {
+
+        // float _tmp = this->buffer->read_float(layerStart +
+        // iPlastStrainOffset);
+        layers_plastic_strain[iLayer] =
+          this->buffer->read_float(layerStart + iPlastStrainOffset);
+      }
+
+      // LAYER: STRESS TENSOR AND MISES
+      if ((this->stress_read || this->stress_mises_read) &&
+          (this->dyna_ioshl1)) {
+
+        layers_stress[0][iLayer] = this->buffer->read_float(layerStart);
+        layers_stress[1][iLayer] = this->buffer->read_float(layerStart + 1);
+        layers_stress[2][iLayer] = this->buffer->read_float(layerStart + 2);
+        layers_stress[3][iLayer] = this->buffer->read_float(layerStart + 3);
+        layers_stress[4][iLayer] = this->buffer->read_float(layerStart + 4);
+        layers_stress[5][iLayer] = this->buffer->read_float(layerStart + 5);
+
+        // stress mises calculation
+        if (this->stress_mises_read) {
+          tmp_vec6[0] = layers_stress[0][iLayer];
+          tmp_vec6[1] = layers_stress[1][iLayer];
+          tmp_vec6[2] = layers_stress[2][iLayer];
+          tmp_vec6[3] = layers_stress[3][iLayer];
+          tmp_vec6[4] = layers_stress[4][iLayer];
+          tmp_vec6[5] = layers_stress[5][iLayer];
+          layers_stress_mises[iLayer] = MathUtility::mises_stress(tmp_vec6);
+        }
+
+      } // end:stress
+
+      // LAYERS: HISTORY SHELL
+      for (size_t iHistoryVar = 0;
+           iHistoryVar < this->history_shell_read.size();
+           ++iHistoryVar) {
+
+        // history vars start with index 1 and not 0, thus the -1
+        layers_history[iHistoryVar][iLayer] = this->buffer->read_float(
+          iHistoryOffset + history_shell_read[iHistoryVar] - 1);
+
+      } // loop:history
+    }   // loop:layers
+
+    // add layer vars (if requested)
+    if (dyna_istrn && this->plastic_strain_read)
+      element->add_plastic_strain(compute_state_var_from_mode(
+        layers_plastic_strain, this->plastic_strain_read));
+    if (this->stress_read)
+      element->add_stress(
+        compute_state_var_from_mode(layers_stress, this->stress_read));
+    if (this->stress_mises_read)
+      element->add_stress_mises(compute_state_var_from_mode(
+        layers_stress_mises, this->plastic_strain_read));
+    if (this->history_shell_read.size())
+      element->add_history_vars(
+        compute_state_var_from_mode(layers_history, this->history_shell_read),
+        iState);
+
+    // STRAIN TENSOR
+    if ((dyna_istrn == 1) && this->strain_read && has_strains) {
+
+      std::vector<float> strain(6);
+      int32_t strainStart =
+        (dyna_nv2d >= 45) ? ii + dyna_nv2d - 13 : ii + dyna_nv2d - 12;
+
+      layers_strain[0][0] = this->buffer->read_float(strainStart);
+      layers_strain[1][0] = this->buffer->read_float(strainStart + 1);
+      layers_strain[2][0] = this->buffer->read_float(strainStart + 2);
+      layers_strain[3][0] = this->buffer->read_float(strainStart + 3);
+      layers_strain[4][0] = this->buffer->read_float(strainStart + 4);
+      layers_strain[5][0] = this->buffer->read_float(strainStart + 5);
+      layers_strain[0][1] = this->buffer->read_float(strainStart + 6);
+      layers_strain[1][1] = this->buffer->read_float(strainStart + 7);
+      layers_strain[2][1] = this->buffer->read_float(strainStart + 8);
+      layers_strain[3][1] = this->buffer->read_float(strainStart + 9);
+      layers_strain[4][1] = this->buffer->read_float(strainStart + 10);
+      layers_strain[5][1] = this->buffer->read_float(strainStart + 11);
+
+      element->add_strain(
+        compute_state_var_from_mode(layers_strain, this->strain_read));
+    }
+
+    // no internal energy for tshells?
+
+    ii += dyna_nv3dt;
+  } // for elements
 }
 
 /** Read the airbag state data
@@ -2133,10 +2304,11 @@ void
 D3plot::read_states_airbag()
 {
 
-  int32_t start =
-    this->wordPosition + 1 // time
-    + dyna_nglbv + (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
-    dyna_nv3d * dyna_nel8 + dyna_nv1d * dyna_nel2 + dyna_nv2d * dyna_nel4;
+  int32_t start = this->wordPosition + 1 // time
+                  + dyna_nglbv +
+                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+                  dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt +
+                  dyna_nv1d * dyna_nel2 + dyna_nv2d * dyna_nel4;
 
   // Airbag geometry data
   // wordsToRead = this->dyna_airbag_npartgas * this->dyna_airbag_state_geom;
@@ -2145,7 +2317,8 @@ D3plot::read_states_airbag()
   // 2. current bag volume
 
   // Particle state data
-  // wordsToRead = this->dyna_airbag_nparticles * this->dyna_airbag_state_nvars;
+  // wordsToRead = this->dyna_airbag_nparticles *
+  // this->dyna_airbag_state_nvars;
   // for dyna_airbag_nparticles
   // 1. gas id
   // 2. chamber id

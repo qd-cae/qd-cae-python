@@ -167,6 +167,7 @@ private:
   void read_states_acceleration();
   void read_states_elem8(size_t iState);
   void read_states_elem4(size_t iState);
+  void read_states_elem4th(size_t iState);
   void read_states_airbag();
   bool isFileEnding(int32_t _iWord);
 

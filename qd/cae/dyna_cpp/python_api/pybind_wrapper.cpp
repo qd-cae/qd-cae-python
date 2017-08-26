@@ -168,6 +168,7 @@ PYBIND11_PLUGIN(dyna_cpp)
     .value("beam", Element::ElementType::BEAM)
     .value("shell", Element::ElementType::SHELL)
     .value("solid", Element::ElementType::SOLID)
+    .value("tshell", Element::ElementType::TSHELL)
     .export_values();
 
   element_py
