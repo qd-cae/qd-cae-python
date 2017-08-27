@@ -31,6 +31,22 @@ const char* node_get_id_docs = R"qddoc(
         1
 )qddoc";
 
+const char* node_str_docs = R"qddoc(
+    __str__()
+
+    String representation of a node.
+
+    Returns
+    -------
+    ret : str
+        node as string
+
+    Examples
+    --------
+        >>> str(femfile.get_nodeByIndex(0))
+        '<Node id:463>'
+)qddoc";
+
 const char* node_get_coords_docs = R"qddoc(
     get_coords(iTimestep=0)
 
@@ -128,6 +144,7 @@ const char* element_description = R"qddoc(
     --------
         Get elements by
 
+        >>> from qd.cae.dyna import *
         >>> femfile = D3plot("path/to/d3plot")
         >>> element_list = femfile.get_elements()
         >>> shells = femfile.get_elements(Element.shell)
@@ -141,6 +158,7 @@ const char* element_type_docs = R"qddoc(
      - Element.type.beam
      - Element.type.shell
      - Element.type.solid
+     - Element.type.tshell
 )qddoc";
 
 const char* element_get_id_docs = R"qddoc(
@@ -157,6 +175,22 @@ const char* element_get_id_docs = R"qddoc(
     --------
         >>> d3plot.get_elementByID(Element.shell, 1).get_id()
         1
+)qddoc";
+
+const char* element_str_docs = R"qddoc(
+    __str__()
+
+    String representation of an element.
+
+    Returns
+    -------
+    ret : str
+        element as string
+
+    Examples
+    --------
+        >>> str(femfile.get_elementByIndex(Element.shell,0))
+        '<Element type:2 id:1>'
 )qddoc";
 
 const char* element_get_plastic_strain_docs = R"qddoc(
@@ -334,6 +368,8 @@ const char* element_get_type_docs = R"qddoc(
         type.shell
         >>> d3plot.get_elementByID(Element.solid, 1).get_type()
         type.solid
+        >>> d3plot.get_elementByID(Element.tshell, 1).get_type()
+        type.tshell
 )qddoc";
 
 const char* element_get_is_rigid_docs = R"qddoc(
@@ -651,10 +687,12 @@ const char* dbelems_get_elementByID_docs = R"qddoc(
         >>> elem = femfile.get_elementByID(Element.shell, 1)
         >>> # multiple elements
         >>> list_of_shells = femfile.get_elementByID(Element.shell, [1,2,3])
-        >>> # whoever had the great id of non unique ids ...
+        >>> # whoever had the great id of non unique ids for elements ...
         >>> femfile.get_elementByID(Element.beam, 1).get_type()
         type.beam
         >>> femfile.get_elementByID(Element.solid, 1).get_type()
+        type.solid
+        >>> femfile.get_elementByID(Element.tshell, 1).get_type()
         type.solid
 )qddoc";
 
@@ -690,6 +728,8 @@ const char* dbelems_get_elementByIndex_docs = R"qddoc(
         type.beam
         >>> femfile.get_elementByIndex(Element.solid, 1).get_type()
         type.solid
+        >>> femfile.get_elementByIndex(Element.tshell, 1).get_type()
+        type.tshell
 )qddoc";
 
 /* ----------------------- DB_PARTS ---------------------- */

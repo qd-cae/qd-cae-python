@@ -44,7 +44,7 @@ compute_state_var_from_mode(const std::vector<T>& _data, int32_t _mode)
       return _data[0];
       break;
     case 6: // mean
-      MathUtility::mean(_data);
+      return MathUtility::mean(_data);
       break;
   } // end:switch
 
@@ -76,8 +76,7 @@ compute_state_var_from_mode(const std::vector<std::vector<T>>& _data,
       "Can not compute state var from empty matrix vector.");
 #endif
 
-  std::vector<T> ret;
-  ret.reserve(_data.size());
+  std::vector<T> ret(_data.size());
 
   for (size_t ii = 0; ii < _data.size(); ++ii) {
     ret[ii] = compute_state_var_from_mode(_data[ii], _mode);
@@ -114,8 +113,7 @@ compute_state_var_from_mode(const std::vector<std::vector<T>>& _data,
       "Data and computation modes must ahve same shape.");
 #endif
 
-  std::vector<T> ret;
-  ret.reserve(_data.size());
+  std::vector<T> ret(_data.size());
 
   for (size_t ii = 0; ii < _data.size(); ++ii) {
     ret[ii] = compute_state_var_from_mode(_data[ii], _modes[ii]);

@@ -101,6 +101,7 @@ private:
 
   bool own_nel10;               // dunno anymore
   bool own_external_numbers_I8; // if 64bit integers written, not 32
+  bool own_has_internal_energy;
 
   int32_t wordPosition; // tracker of word position in file
   int32_t wordsToRead;

@@ -137,6 +137,10 @@ PYBIND11_PLUGIN(dyna_cpp)
          &Node::get_nodeID,
          pybind11::return_value_policy::take_ownership,
          node_get_id_docs)
+    .def("__str__",
+         &Node::str,
+         pybind11::return_value_policy::take_ownership,
+         node_str_docs)
     .def("get_coords",
          &Node::get_coords_py,
          "iTimestep"_a = 0,
@@ -176,6 +180,10 @@ PYBIND11_PLUGIN(dyna_cpp)
          &Element::get_elementID,
          pybind11::return_value_policy::take_ownership,
          element_get_id_docs)
+    .def("__str__",
+         &Element::str,
+         pybind11::return_value_policy::take_ownership,
+         element_str_docs)
     .def("get_coords",
          &Element::get_coords_py,
          "iTimestep"_a = 0,

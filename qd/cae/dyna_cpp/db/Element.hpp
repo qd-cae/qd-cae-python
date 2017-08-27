@@ -48,6 +48,11 @@ public:
           DB_Elements* db_elements);
   ~Element();
   bool operator<(const Element& other) const;
+  inline std::string str()
+  {
+    return "<Element type:" + std::to_string(elemType) +
+           " id:" + std::to_string(elementID) + ">";
+  };
   void check() const;
 
   // getter

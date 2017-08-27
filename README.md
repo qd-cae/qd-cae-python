@@ -17,9 +17,10 @@ We want to tackle this issue with this free library, in order to give engineerin
 Version 0.6.2
 
 qd.cae.dyna
- - D3plot can now read files with airbags (does not read the airbags itself!)
  - D3plot supports now thick shells
- - a few code improvements
+ - D3plot can now read files with airbags (does not read the airbags itself!)
+
+Improved code readibility.
 
 *Changelog 24.08.2017*
 Version 0.6.1

@@ -89,6 +89,7 @@ D3plot::D3plot(std::string _filename,
   , nStates(0)
   , own_nel10(false)
   , own_external_numbers_I8(false)
+  , own_has_internal_energy(false)
   , wordPosition(0)
   , wordsToRead(0)
   , wordPositionStates(0)
@@ -337,12 +338,29 @@ D3plot::read_header()
     }
   }
 
-// no value set? bug?
-/*
-if (this->dyna_istrn < 0) {
-  this->dyna_istrn = 0;
-}
-*/
+  // check for shell internal energy
+  int32_t shell_vars_behind_layers =
+    dyna_nv2d - dyna_maxint * (6 * dyna_ioshl1 + dyna_ioshl2 + dyna_neips) +
+    8 * dyna_ioshl3 + 4 * dyna_ioshl4;
+
+  if (dyna_istrn == 0) {
+
+    // no strain, but energy
+    if (shell_vars_behind_layers > 1 && shell_vars_behind_layers < 6) {
+      own_has_internal_energy = true;
+    } else {
+      own_has_internal_energy = false;
+    }
+
+  } else if (dyna_istrn == 1) {
+
+    // strain and energy
+    if (shell_vars_behind_layers > 12) {
+      own_has_internal_energy = true;
+    } else {
+      own_has_internal_energy = false;
+    }
+  }
 
 #ifdef QD_DEBUG
   this->info();
@@ -407,6 +425,7 @@ D3plot::info() const
   std::cout << "shell-stuff : " << this->dyna_ioshl4 << '\n';
   std::cout << "shell-strain: " << this->dyna_istrn << '\n';
   std::cout << "shell-nInteg: " << this->dyna_maxint << '\n';
+  std::cout << "shell-nHists: " << this->dyna_neiph << '\n';
   std::cout << "nVar1D : " << this->dyna_nv1d << '\n';
   std::cout << "nVar2D : " << this->dyna_nv2d << '\n';
   std::cout << "nVar3D : " << this->dyna_nv3d << '\n';
@@ -1412,12 +1431,14 @@ D3plot::read_states_parse(std::vector<std::string> _variables)
         for (size_t jj = 0; jj < hist_vars.size(); ++jj) {
           if (hist_vars[jj] < 1) {
             throw(std::invalid_argument(
-              "History variable index must be at least 1."));
+              "History variable index must be at least 1 and not " +
+              std::to_string(hist_vars[jj])));
           }
           if (hist_vars[jj] > this->dyna_neips) {
-            std::cout << "Warning: history variable " << hist_vars[jj]
-                      << " exceeds the limit for shells of " << this->dyna_neips
-                      << std::endl;
+            throw(std::invalid_argument("Warning: history variable " +
+                                        std::to_string(hist_vars[jj]) +
+                                        " exceeds the limit for shells of " +
+                                        std::to_string(this->dyna_neips)));
           }
         }
 
@@ -1465,9 +1486,10 @@ D3plot::read_states_parse(std::vector<std::string> _variables)
           }
 
           if (hist_vars[jj] > this->dyna_neiph) {
-            std::cout << "Warning: history variable " << hist_vars[jj]
-                      << " exceeds the limit for solids of " << this->dyna_neiph
-                      << std::endl;
+            throw(std::invalid_argument("Warning: history variable " +
+                                        std::to_string(hist_vars[jj]) +
+                                        " exceeds the limit for solids of " +
+                                        std::to_string(this->dyna_neiph)));
           }
         }
 
@@ -1881,12 +1903,16 @@ D3plot::read_states_elem4(size_t iState)
   int32_t iLayerSize = dyna_neips + iHistoryOffset;
 
   // helpful vars
-  float dyna_maxint_float = (float)dyna_maxint;
-  float stress_mises = 0.f;
-  float plastic_strain = 0.f;
-  std::vector<float> tmp_vec_stress(6);
+  // vectors
   std::vector<float> tmp_vec6(6);
-  std::vector<float> history_vars(this->history_shell_read.size());
+  std::vector<float> layers_stress_mises(dyna_maxint);
+  std::vector<float> layers_plastic_strain(dyna_maxint);
+  // matrices
+  std::vector<std::vector<float>> layers_stress(
+    6, std::vector<float>(dyna_maxint));
+  std::vector<std::vector<float>> layers_strain(6, std::vector<float>(2));
+  std::vector<std::vector<float>> layers_history(
+    this->history_shell_read.size(), std::vector<float>(dyna_maxint));
 
   // Do the thing ...
   size_t iElement = 0;
@@ -1899,258 +1925,110 @@ D3plot::read_states_elem4(size_t iState)
       continue;
     }
 
-    // preallocate layer vars
-    stress_mises = 0.f;
-    plastic_strain = 0.f;
-    if (this->history_shell_read.size()) {
-      history_vars.assign(this->history_shell_read.size(), 0.f);
-    }
-
     // LOOP: LAYERS
     for (int32_t iLayer = 0; iLayer < dyna_maxint; ++iLayer) {
       int32_t layerStart = ii + iLayer * iLayerSize;
 
       // LAYER: PLASTIC_STRAIN
       if ((this->plastic_strain_read) && (dyna_ioshl2)) {
-        float _tmp = this->buffer->read_float(layerStart + iPlastStrainOffset);
 
-        if (iLayer == 0) {
-          plastic_strain = _tmp;
-
-        } else {
-          switch (this->plastic_strain_read) {
-            case 1: // max
-              plastic_strain = (plastic_strain > _tmp) ? plastic_strain : _tmp;
-              break;
-            case 2: // min
-              plastic_strain = (plastic_strain < _tmp) ? plastic_strain : _tmp;
-              break;
-            case 3: // out
-              if (iLayer == dyna_maxint - 1)
-                plastic_strain = _tmp;
-              break;
-            case 4: // mid
-              if (iLayer == (int32_t)(dyna_maxint_float / 2.f))
-                plastic_strain = _tmp;
-              break;
-            case 5: // in
-              // already ok
-              break;
-            case 6: // mean
-              plastic_strain += _tmp;
-              if (iLayer == dyna_maxint - 1)
-                plastic_strain /= dyna_maxint_float;
-              break;
-            default:
-              break;
-          } // end:switch
-        }   // end:iLayer!=0
+        layers_plastic_strain[iLayer] =
+          this->buffer->read_float(layerStart + iPlastStrainOffset);
       }
 
       // LAYER: STRESS TENSOR AND MISES
       if ((this->stress_read || this->stress_mises_read) && (dyna_ioshl1)) {
-        // tmp_vec6.clear();
-        buffer->read_float_array(layerStart, 6, tmp_vec6);
+        layers_stress[0][iLayer] = this->buffer->read_float(layerStart);
+        layers_stress[1][iLayer] = this->buffer->read_float(layerStart + 1);
+        layers_stress[2][iLayer] = this->buffer->read_float(layerStart + 2);
+        layers_stress[3][iLayer] = this->buffer->read_float(layerStart + 3);
+        layers_stress[4][iLayer] = this->buffer->read_float(layerStart + 4);
+        layers_stress[5][iLayer] = this->buffer->read_float(layerStart + 5);
 
-        if (iLayer == 0) {
-          tmp_vec_stress = tmp_vec6;
-          stress_mises = MathUtility::mises_stress(tmp_vec6);
-        } else {
-          // stress tensor
-          switch (this->stress_read) {
-            case 1: // max
-              for (int32_t jj = 0; jj < 6; jj++)
-                tmp_vec_stress[jj] = tmp_vec6[jj] > tmp_vec_stress[jj]
-                                       ? tmp_vec6[jj]
-                                       : tmp_vec_stress[jj];
-              break;
-            case 2: // min
-              for (int32_t jj = 0; jj < 6; jj++)
-                tmp_vec_stress[jj] = tmp_vec6[jj] < tmp_vec_stress[jj]
-                                       ? tmp_vec6[jj]
-                                       : tmp_vec_stress[jj];
-              break;
-            case 3: // outer
-              if (iLayer == dyna_maxint - 1)
-                tmp_vec_stress = tmp_vec6;
-              break;
-            case 4: // mid
-              if (iLayer == (int32_t)(dyna_maxint_float / 2.f))
-                tmp_vec_stress = tmp_vec6;
-              break;
-            case 5: // inner
-              // nothing
-              break;
-            case 6: // mean
-              for (int32_t jj = 0; jj < 6; jj++)
-                tmp_vec_stress[jj] += tmp_vec6[jj];
+        // stress mises calculation
+        if (this->stress_mises_read) {
+          tmp_vec6[0] = layers_stress[0][iLayer];
+          tmp_vec6[1] = layers_stress[1][iLayer];
+          tmp_vec6[2] = layers_stress[2][iLayer];
+          tmp_vec6[3] = layers_stress[3][iLayer];
+          tmp_vec6[4] = layers_stress[4][iLayer];
+          tmp_vec6[5] = layers_stress[5][iLayer];
+          layers_stress_mises[iLayer] = MathUtility::mises_stress(tmp_vec6);
+        }
 
-              if (iLayer == dyna_maxint - 1)
-                for (int32_t jj = 0; jj < 6; jj++)
-                  tmp_vec_stress[jj] /= dyna_maxint_float;
-
-              break;
-            default: // none
-              break;
-          } // end:switch(stress_read)
-
-          // stress mises calculation
-          switch (this->stress_mises_read) {
-            case 1: { // max
-              float _tmp2 = MathUtility::mises_stress(tmp_vec6);
-              stress_mises = _tmp2 > stress_mises ? _tmp2 : stress_mises;
-              break;
-            }
-            case 2: { // min
-              float _tmp2 = MathUtility::mises_stress(tmp_vec6);
-              stress_mises = _tmp2 < stress_mises ? _tmp2 : stress_mises;
-              break;
-            }
-            case 3: // outer
-              if (iLayer == dyna_maxint - 1)
-                stress_mises = MathUtility::mises_stress(tmp_vec6);
-              break;
-            case 4: // mid
-              if (iLayer == (int32_t)(dyna_maxint_float / 2.f))
-                stress_mises = MathUtility::mises_stress(tmp_vec6);
-              break;
-            case 5: // inner
-              // nothing
-              break;
-            case 6: // mean
-              stress_mises += MathUtility::mises_stress(tmp_vec6);
-              if (iLayer == dyna_maxint - 1)
-                stress_mises /= dyna_maxint_float;
-              break;
-            default: // none
-              break;
-          } // end:switch(stress_mises_read)
-        }   // end:iLayer!=0
-      }     // end:stress
+      } // end:stress
 
       // LAYERS: HISTORY SHELL
-      for (size_t jj = 0; jj < this->history_shell_read.size(); ++jj) {
-        // Skip if over limit
-        if (this->history_shell_read[jj] > this->dyna_neips)
-          continue;
+      if (this->dyna_neips) {
+        int32_t iHistoryStart = layerStart + iHistoryOffset - 1;
 
-        // max
-        if (this->history_shell_mode[jj] == 1) {
-          float _tmp;
-          _tmp =
-            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
-          if (iLayer == 0) {
-            history_vars[jj] = _tmp;
-          } else {
-            history_vars[jj] =
-              (_tmp > history_vars[jj]) ? _tmp : history_vars[jj];
-          }
-          // min
-        } else if (this->history_shell_mode[jj] == 2) {
-          float _tmp;
-          _tmp =
-            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
-          if (iLayer == 0) {
-            history_vars[jj] = _tmp;
-          } else {
-            history_vars[jj] =
-              (_tmp < history_vars[jj]) ? _tmp : history_vars[jj];
-          }
-          // out
-        } else if ((this->history_shell_mode[jj] == 3) &&
-                   (iLayer == dyna_maxint - 1)) {
-          history_vars[jj] =
-            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
-          // mid
-        } else if ((this->history_shell_mode[jj] == 4) &&
-                   (iLayer == (int32_t)(dyna_maxint_float / 2.f))) {
-          history_vars[jj] =
-            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
-          // in
-        } else if ((this->history_shell_mode[jj] == 5) && (iLayer == 1)) {
-          history_vars[jj] =
-            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
-          // mean
-        } else if ((this->history_shell_mode[jj] == 6)) {
-          history_vars[jj] +=
-            this->buffer->read_float(layerStart + 6 + history_shell_read[jj]);
-          if (iLayer == dyna_maxint - 1) {
-            float _tmp = (float)dyna_maxint;
-            history_vars[jj] /= _tmp;
-          }
-        }
-      } // loop:history
-    }   // loop:layers
+        for (size_t iHistoryVar = 0;
+             iHistoryVar < this->history_shell_read.size();
+             ++iHistoryVar) {
+
+          // history vars start with index 1 and not 0, thus the -1
+          layers_history[iHistoryVar][iLayer] = this->buffer->read_float(
+            iHistoryStart + history_shell_read[iHistoryVar]);
+
+        } // loop:history
+      }   // if:history
+
+    } // loop:layers
 
     // add layer vars (if requested)
-    if (dyna_istrn && this->plastic_strain_read)
-      element->add_plastic_strain(plastic_strain);
-    if (this->stress_read)
-      element->add_stress(tmp_vec_stress);
-    if (this->stress_mises_read)
-      element->add_stress_mises(stress_mises);
+    if (dyna_ioshl2 && this->plastic_strain_read)
+      element->add_plastic_strain(compute_state_var_from_mode(
+        layers_plastic_strain, this->plastic_strain_read));
+    if (dyna_ioshl1 && this->stress_read)
+      element->add_stress(
+        compute_state_var_from_mode(layers_stress, this->stress_read));
+    if (dyna_ioshl1 && this->stress_mises_read)
+      element->add_stress_mises(compute_state_var_from_mode(
+        layers_stress_mises, this->stress_mises_read));
     if (this->history_shell_read.size())
-      element->add_history_vars(history_vars, iState);
+      element->add_history_vars(
+        compute_state_var_from_mode(layers_history, this->history_shell_mode),
+        iState);
 
     // STRAIN TENSOR
-    if ((dyna_istrn == 1) && this->strain_read) {
-      std::vector<float> strain(6);
-      int32_t strainStart =
-        (dyna_nv2d >= 45) ? ii + dyna_nv2d - 13 : ii + dyna_nv2d - 12;
+    if (dyna_istrn && this->strain_read) {
 
-      // max
-      if (this->strain_read == 1) {
-        float _tmp;
-        float _tmp2;
-        for (int32_t jj = 0; jj < 6; jj++) {
-          _tmp = this->buffer->read_float(strainStart + jj);
-          _tmp2 = this->buffer->read_float(strainStart + jj + 6);
-          strain[jj] = (_tmp > _tmp2) ? _tmp : _tmp2;
-        }
+      int32_t strainStart = this->own_has_internal_energy ? ii + dyna_nv2d - 13
+                                                          : ii + dyna_nv2d - 12;
 
-        // min
-      } else if (this->strain_read == 2) {
-        float _tmp;
-        float _tmp2;
-        for (int32_t jj = 0; jj < 6; jj++) {
-          _tmp = this->buffer->read_float(strainStart + jj);
-          _tmp2 = this->buffer->read_float(strainStart + jj + 6);
-          strain[jj] = (_tmp < _tmp2) ? _tmp : _tmp2;
-        }
+      layers_strain[0][0] = this->buffer->read_float(strainStart);
+      layers_strain[1][0] = this->buffer->read_float(strainStart + 1);
+      layers_strain[2][0] = this->buffer->read_float(strainStart + 2);
+      layers_strain[3][0] = this->buffer->read_float(strainStart + 3);
+      layers_strain[4][0] = this->buffer->read_float(strainStart + 4);
+      layers_strain[5][0] = this->buffer->read_float(strainStart + 5);
+      layers_strain[0][1] = this->buffer->read_float(strainStart + 6);
+      layers_strain[1][1] = this->buffer->read_float(strainStart + 7);
+      layers_strain[2][1] = this->buffer->read_float(strainStart + 8);
+      layers_strain[3][1] = this->buffer->read_float(strainStart + 9);
+      layers_strain[4][1] = this->buffer->read_float(strainStart + 10);
+      layers_strain[5][1] = this->buffer->read_float(strainStart + 11);
 
-        // out
-      } else if (this->strain_read == 3) {
-        for (int32_t jj = 0; jj < 6; jj++) {
-          strain[jj] = this->buffer->read_float(strainStart + 6 + jj);
-        }
-
-        // in
-      } else if (this->strain_read == 5) {
-        for (int32_t jj = 0; jj < 6; jj++) {
-          strain[jj] = this->buffer->read_float(strainStart + jj);
-        }
-
-        // mean/mid
-      } else if ((this->strain_read == 6) | (this->strain_read == 4)) {
-        for (int32_t jj = 0; jj < 6; jj++) {
-          strain[jj] = (this->buffer->read_float(strainStart + jj) +
-                        this->buffer->read_float(strainStart + jj + 6)) /
-                       2.f;
-        }
-      }
-
-      element->add_strain(strain);
+      element->add_strain(
+        compute_state_var_from_mode(layers_strain, this->strain_read));
     }
 
+    // INTERNAL ENERGY
+    if (this->energy_read && this->own_has_internal_energy) {
+      element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
+    }
+
+    /*
     // internal energy (a little complicated ... but that's dyna)
-    if (this->energy_read && (dyna_ioshl4)) {
-      if ((dyna_istrn == 1)) {
+    if (this->energy_read && dyna_ioshl4) {
+      if (dyna_istrn == 1) {
         if (dyna_nv2d >= 45)
           element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
       } else {
         element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
       }
     }
+    */
 
     ii += dyna_nv2d;
   } // for elements
@@ -2209,8 +2087,6 @@ D3plot::read_states_elem4th(size_t iState)
       // LAYER: PLASTIC_STRAIN
       if ((this->plastic_strain_read) && (dyna_ioshl2)) {
 
-        // float _tmp = this->buffer->read_float(layerStart +
-        // iPlastStrainOffset);
         layers_plastic_strain[iLayer] =
           this->buffer->read_float(layerStart + iPlastStrainOffset);
       }
@@ -2240,36 +2116,40 @@ D3plot::read_states_elem4th(size_t iState)
       } // end:stress
 
       // LAYERS: HISTORY SHELL
-      for (size_t iHistoryVar = 0;
-           iHistoryVar < this->history_shell_read.size();
-           ++iHistoryVar) {
+      if (this->dyna_neips) {
+        int32_t iHistoryStart = layerStart + iHistoryOffset - 1;
 
-        // history vars start with index 1 and not 0, thus the -1
-        layers_history[iHistoryVar][iLayer] = this->buffer->read_float(
-          iHistoryOffset + history_shell_read[iHistoryVar] - 1);
+        for (size_t iHistoryVar = 0;
+             iHistoryVar < this->history_shell_read.size();
+             ++iHistoryVar) {
 
-      } // loop:history
-    }   // loop:layers
+          // history vars start with index 1 and not 0, thus the -1
+          layers_history[iHistoryVar][iLayer] = this->buffer->read_float(
+            iHistoryStart + history_shell_read[iHistoryVar]);
+
+        } // loop:history
+      }   // if:history
+
+    } // loop:layers
 
     // add layer vars (if requested)
-    if (dyna_istrn && this->plastic_strain_read)
+    if (dyna_ioshl2 && this->plastic_strain_read)
       element->add_plastic_strain(compute_state_var_from_mode(
         layers_plastic_strain, this->plastic_strain_read));
-    if (this->stress_read)
+    if (dyna_ioshl1 && this->stress_read)
       element->add_stress(
         compute_state_var_from_mode(layers_stress, this->stress_read));
-    if (this->stress_mises_read)
+    if (dyna_ioshl1 && this->stress_mises_read)
       element->add_stress_mises(compute_state_var_from_mode(
         layers_stress_mises, this->plastic_strain_read));
     if (this->history_shell_read.size())
       element->add_history_vars(
-        compute_state_var_from_mode(layers_history, this->history_shell_read),
+        compute_state_var_from_mode(layers_history, this->history_shell_mode),
         iState);
 
     // STRAIN TENSOR
     if ((dyna_istrn == 1) && this->strain_read && has_strains) {
 
-      std::vector<float> strain(6);
       int32_t strainStart =
         (dyna_nv2d >= 45) ? ii + dyna_nv2d - 13 : ii + dyna_nv2d - 12;
 

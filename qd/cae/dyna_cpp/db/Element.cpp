@@ -166,10 +166,12 @@ Element::add_energy(float _energy)
 void
 Element::add_strain(std::vector<float> _strain)
 {
+#ifdef QD_DEBUG
   if (_strain.size() < 1)
     throw(std::invalid_argument("Element:" + std::to_string(this->elementID) +
                                 " tries to add strain vector of length:" +
                                 std::to_string(_strain.size()) + "!=6"));
+#endif
 
   this->strain.push_back(_strain);
 }
@@ -180,10 +182,12 @@ Element::add_strain(std::vector<float> _strain)
 void
 Element::add_stress(std::vector<float> _stress)
 {
+#ifdef QD_DEBUG
   if (_stress.size() != 6)
     throw(std::invalid_argument("Element:" + std::to_string(this->elementID) +
                                 " tries to add stress vector of length:" +
                                 std::to_string(_stress.size()) + "!=6"));
+#endif
 
   this->stress.push_back(_stress);
 }

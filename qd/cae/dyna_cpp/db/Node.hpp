@@ -29,10 +29,16 @@ public:
   Node(int32_t _nodeID, std::vector<float> _coords, DB_Nodes* db_nodes);
   ~Node();
   bool operator<(const Node& other) const;
+  inline std::string str()
+  {
+    return "<Node id:" + std::to_string(nodeID) + ">";
+  };
+
   std::shared_ptr<Element> add_element(std::shared_ptr<Element>);
   void add_disp(std::vector<float>);
   void add_vel(std::vector<float>);
   void add_accel(std::vector<float>);
+
   inline void clear_disp() { this->disp.clear(); }
   inline void clear_vel() { this->vel.clear(); }
   inline void clear_accel() { this->accel.clear(); }
