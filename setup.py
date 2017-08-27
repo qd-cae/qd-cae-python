@@ -54,7 +54,7 @@ def setup_dyna_cpp():
         compiler_args = ["-std=c++14",
                          "-O3",
                          "-fPIC",
-                         "-DQD_TIME=\"" + version + "\""]
+                         "-DQD_VERSION=\"" + version + "\""]
         if debugging_mode:
             compiler_args.append("-DQD_DEBUG")
         if measure_time:
