@@ -188,7 +188,8 @@
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Element</code><a class="headerlink" href="#qd.cae.dyna.Element" title="Permalink to this definition">¶</a></dt>
 <dd><p class="rubric">Examples</p>
 <p>Get elements by</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">element_list</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">shells</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">id</span> <span class="o">=</span> <span class="mi">1</span>
@@ -508,6 +509,8 @@ The stress vector contains the matrix components: [s_xx, s_yy, s_zz, s_xy, s_yz,
 <span class="go">type.shell</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">solid</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
 <span class="go">type.solid</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">tshell</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+<span class="go">type.tshell</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -555,6 +558,7 @@ Rigid shells have no state data!</p>
 <li>Element.type.beam</li>
 <li>Element.type.shell</li>
 <li>Element.type.solid</li>
+<li>Element.type.tshell</li>
 </ul>
 </dd>
 </dl>
