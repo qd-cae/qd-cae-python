@@ -2184,11 +2184,13 @@ void
 D3plot::read_states_airbag()
 {
 
+  /*
   int32_t start = this->wordPosition + 1 // time
                   + dyna_nglbv +
                   (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
                   dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt +
                   dyna_nv1d * dyna_nel2 + dyna_nv2d * dyna_nel4;
+  */
 
   // Airbag geometry data
   // wordsToRead = this->dyna_airbag_npartgas * this->dyna_airbag_state_geom;
