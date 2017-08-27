@@ -1,6 +1,11 @@
 
 #ifndef FEM_UTILITY_HPP
 
+#include <dyna_cpp/utility/MathUtility.hpp>
+#include <stdexcept>
+#include <vector>
+
+
 namespace qd {
 
 /** Compute a variable for states
