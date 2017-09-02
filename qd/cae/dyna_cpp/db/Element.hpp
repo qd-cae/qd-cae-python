@@ -87,36 +87,6 @@ public:
   void clear_stress_mises();
   void clear_strain();
   void clear_history_vars();
-
-  // Python API
-  pybind11::array_t<float> get_coords_py(int32_t iTimestep = 0) const
-  {
-    return qd::py::vector_to_nparray(this->get_coords(iTimestep));
-  };
-  pybind11::array_t<float> get_energy_py() const
-  {
-    return qd::py::vector_to_nparray(this->get_energy());
-  };
-  pybind11::array_t<float> get_stress_mises_py() const
-  {
-    return qd::py::vector_to_nparray(this->get_stress_mises());
-  };
-  pybind11::array_t<float> get_plastic_strain_py() const
-  {
-    return qd::py::vector_to_nparray(this->get_plastic_strain());
-  };
-  pybind11::array_t<float> get_strain_py() const
-  {
-    return qd::py::vector_to_nparray(this->get_strain());
-  };
-  pybind11::array_t<float> get_stress_py() const
-  {
-    return qd::py::vector_to_nparray(this->get_stress());
-  };
-  pybind11::array_t<float> get_history_vars_py() const
-  {
-    return qd::py::vector_to_nparray(this->get_history_vars());
-  };
 };
 
 } // namespace qd

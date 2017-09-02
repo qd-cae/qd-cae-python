@@ -75,48 +75,6 @@ public:
   std::vector<std::shared_ptr<Element>> get_elementByIndex(
     Element::ElementType _eType,
     const std::vector<T>& _indexes);
-
-  // Python API
-  template<typename T>
-  std::vector<std::shared_ptr<Element>> get_elementByID(
-    Element::ElementType _eType,
-    pybind11::list _list)
-  {
-    return this->get_elementByID(
-      _eType,
-      qd::py::container_to_vector<T>(
-        _list, "An entry of the id list was not an integer."));
-  };
-  template<typename T>
-  std::vector<std::shared_ptr<Element>> get_elementByID(
-    Element::ElementType _eType,
-    pybind11::tuple _tuple)
-  {
-    return this->get_elementByID(
-      _eType,
-      qd::py::container_to_vector<T>(
-        _tuple, "An entry of the id list was not an integer."));
-  };
-  template<typename T>
-  std::vector<std::shared_ptr<Element>> get_elementByIndex(
-    Element::ElementType _eType,
-    pybind11::list _list)
-  {
-    return this->get_elementByIndex(
-      _eType,
-      qd::py::container_to_vector<T>(
-        _list, "An entry of the index list was not an integer."));
-  };
-  template<typename T>
-  std::vector<std::shared_ptr<Element>> get_elementByIndex(
-    Element::ElementType _eType,
-    pybind11::tuple _tuple)
-  {
-    return this->get_elementByIndex(
-      _eType,
-      qd::py::container_to_vector<T>(
-        _tuple, "An entry of the index list was not an integer."));
-  };
 };
 
 /** Get the element idnex from an id

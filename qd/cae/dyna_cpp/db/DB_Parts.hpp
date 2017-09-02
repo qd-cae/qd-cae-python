@@ -48,24 +48,6 @@ public:
   std::shared_ptr<Part> get_partByIndex(T _index);
   template<typename T>
   std::vector<std::shared_ptr<Part>> get_partByIndex(std::vector<T> _indexes);
-
-  // Python Wrapper
-  std::vector<std::shared_ptr<Part>> get_partByID(pybind11::list _ids)
-  {
-    return this->get_partByID(qd::py::container_to_vector<int32_t>(_ids));
-  };
-  std::vector<std::shared_ptr<Part>> get_partByID(pybind11::tuple _ids)
-  {
-    return this->get_partByID(qd::py::container_to_vector<int32_t>(_ids));
-  };
-  std::vector<std::shared_ptr<Part>> get_partByIndex(pybind11::list _ids)
-  {
-    return this->get_partByIndex(qd::py::container_to_vector<int32_t>(_ids));
-  };
-  std::vector<std::shared_ptr<Part>> get_partByIndex(pybind11::tuple _ids)
-  {
-    return this->get_partByIndex(qd::py::container_to_vector<int32_t>(_ids));
-  };
 };
 
 template<typename T>

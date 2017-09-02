@@ -167,8 +167,14 @@ D3plot::D3plot(std::string _filename,
 D3plot::D3plot(std::string _filepath, std::string _variable, bool _use_femzip)
   : D3plot(_filepath,
            [_variable](std::string) -> std::vector<std::string> {
-             std::vector<std::string> vec = { _variable };
-             return vec;
+
+             if (_variable.empty()) {
+               return std::vector<std::string>();
+             } else {
+               std::vector<std::string> vec = { _variable };
+               return vec;
+             }
+
            }(_variable),
            _use_femzip)
 {

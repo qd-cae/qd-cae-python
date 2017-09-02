@@ -203,60 +203,6 @@ public:
     throw(std::invalid_argument(
       "You can not get a keyfile handle from a d3plot ... for now."));
   };
-
-  // Python Wrapper functions (dirty stuff)
-  D3plot(std::string _filepath, pybind11::list _variables, bool _use_femzip)
-    : D3plot(_filepath,
-             qd::py::container_to_vector<std::string>(
-               _variables,
-               "An entry of read_states was not of type str"),
-             _use_femzip){};
-  D3plot(std::string _filepath, pybind11::tuple _variables, bool _use_femzip)
-    : D3plot(_filepath,
-             qd::py::container_to_vector<std::string>(
-               _variables,
-               "An entry of read_states was not of type str"),
-             _use_femzip){};
-  void read_states(pybind11::list _variables)
-  {
-    this->read_states(qd::py::container_to_vector<std::string>(
-      _variables, "An entry of read_states was not of type str"));
-  };
-  void read_states(pybind11::tuple _variables)
-  {
-    this->read_states(qd::py::container_to_vector<std::string>(
-      _variables, "An entry of read_states was not of type str"));
-  };
-  void read_states(std::string _variable)
-  {
-    std::vector<std::string> vec = { _variable };
-    this->read_states(vec);
-  };
-  void clear(pybind11::list _variables = pybind11::list())
-  {
-    this->clear(qd::py::container_to_vector<std::string>(
-      _variables, "An entry of list was not of type str"));
-  };
-  void clear(pybind11::tuple _variables = pybind11::tuple())
-  {
-    this->clear(qd::py::container_to_vector<std::string>(
-      _variables, "An entry of tuple was not of type str"));
-  };
-  void clear(pybind11::str _variable)
-  {
-    // convert argument
-    std::vector<std::string> _variables;
-    std::string _variable_str = _variable.cast<std::string>();
-    if (!_variable_str.empty())
-      _variables.push_back(_variable_str);
-
-    // forward argument
-    this->clear(_variables);
-  };
-  pybind11::array_t<float> get_timesteps_py()
-  {
-    return qd::py::vector_to_nparray(this->get_timesteps());
-  };
 };
 
 /** Tells whether displacements were loaded.

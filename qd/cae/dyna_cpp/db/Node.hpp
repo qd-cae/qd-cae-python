@@ -53,24 +53,6 @@ public:
   inline std::vector<std::vector<float>> get_disp() { return this->disp; }
   inline std::vector<std::vector<float>> get_vel() { return this->vel; }
   inline std::vector<std::vector<float>> get_accel() { return this->accel; }
-
-  // Python API
-  inline pybind11::array_t<float> get_coords_py(int32_t iTimestep)
-  {
-    return qd::py::vector_to_nparray(this->get_coords(iTimestep));
-  }
-  inline pybind11::array_t<float> get_disp_py()
-  {
-    return qd::py::vector_to_nparray(this->get_disp());
-  }
-  inline pybind11::array_t<float> get_vel_py()
-  {
-    return qd::py::vector_to_nparray(this->get_vel());
-  }
-  inline pybind11::array_t<float> get_accel_py()
-  {
-    return qd::py::vector_to_nparray(this->get_accel());
-  }
 };
 
 } // namespace qd

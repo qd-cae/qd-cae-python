@@ -139,82 +139,82 @@ def my_test_suite():
     test_suite = test_loader.discover('test', pattern='test_*.py')
     return test_suite
 
+if __name__ == "__main__":
 
+    # setup basic extension
+    lib_dirs_dyna = []
+    libs_dyna = []
+    srcs_dyna, include_dirs_dyna, compiler_args_dyna = setup_dyna_cpp()
 
-# setup basic extension
-lib_dirs_dyna = []
-libs_dyna = []
-srcs_dyna, include_dirs_dyna, compiler_args_dyna = setup_dyna_cpp()
+    # setup hdf5
+    # (MUST be before femzip, due to linking)
+    '''
+    srcs_dyna, \
+    compiler_args_dyna, \
+    libs_dyna, \
+    lib_dirs_dyna, \
+    include_dirs_dyna = setup_dyna_cpp_hdf5(srcs_dyna,
+                                            compiler_args_dyna,
+                                            libs_dyna,
+                                            lib_dirs_dyna,
+                                            include_dirs_dyna)
+    '''
 
-# setup hdf5
-# (MUST be before femzip, due to linking)
-'''
-srcs_dyna, \
-compiler_args_dyna, \
-libs_dyna, \
-lib_dirs_dyna, \
-include_dirs_dyna = setup_dyna_cpp_hdf5(srcs_dyna,
-                                        compiler_args_dyna,
-                                        libs_dyna,
-                                        lib_dirs_dyna,
-                                        include_dirs_dyna)
-'''
+    # setup femzip (if possible)
+    srcs_dyna, lib_dirs_dyna, libs_dyna, compiler_args_dyna = setup_dyna_cpp_femzip(
+        srcs_dyna,
+        lib_dirs_dyna,
+        libs_dyna,
+        compiler_args_dyna)
 
-# setup femzip (if possible)
-srcs_dyna, lib_dirs_dyna, libs_dyna, compiler_args_dyna = setup_dyna_cpp_femzip(
-    srcs_dyna,
-    lib_dirs_dyna,
-    libs_dyna,
-    compiler_args_dyna)
+    # setup extension
+    dyna_extension = Extension("dyna_cpp", srcs_dyna,
+                               extra_compile_args=compiler_args_dyna,
+                               library_dirs=lib_dirs_dyna,
+                               libraries=libs_dyna,
+                               include_dirs=include_dirs_dyna,)
 
-# setup extension
-dyna_extension = Extension("dyna_cpp", srcs_dyna,
-                           extra_compile_args=compiler_args_dyna,
-                           library_dirs=lib_dirs_dyna,
-                           libraries=libs_dyna,
-                           include_dirs=include_dirs_dyna,)
-
-# (3) SETUP
-setup(name='qd',
-      version=version,
-      license='GNU GPL v3',
-      description='QD-Engineering Python Library for CAE',
-      author='C. Diez, D. Toewe',
-      url='http://www.qd-eng.de',
-      author_email='qd.eng.contact@gmail.com',
-      packages=(['qd',
-                 'qd.cae',
-                   'qd.cae.beta',
-                   'qd.cae.resources',
-                   'qd.numerics',
-                 ]),
-      package_dir={'qd': 'qd',
-                   'qd.cae': 'qd/cae',
-                   'qd.cae.beta': 'qd/cae/beta',
-                   'qd.cae.resources': 'qd/cae/resources',
-                   'qd.numerics': 'qd/numerics',
-                   },
-      package_data={
-          'qd.cae.resources': ['*.js', 'html.template'],
-          'qd.cae.beta': ['meta_remote_control', 'meta_remote_control.exe']
-      },
-      ext_package='qd.cae',  # where to place c extensions
-      ext_modules=[dyna_extension],
-      install_requires=['numpy>=1.8', 'diversipy', 'pybind11>2.1.0'],
-      keywords=['cae',
-                  'simulation',
-                  'engineering',
-                  'ls-dyna',
-                  'postprocessing',
-                  'preprocessing'],
-      classifiers=['Development Status :: 4 - Beta',
-                   'Programming Language :: C++',
-                   'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-                   'Topic :: Scientific/Engineering',
-                   'Intended Audience :: Science/Research',
-                   'Topic :: Utilities',
-                   'Operating System :: Microsoft :: Windows',
-                   'Operating System :: POSIX :: Linux',
-                   'Programming Language :: Python :: 3.5',
-                   'Programming Language :: Python :: 3.6'],
-      test_suite='setup.my_test_suite',)
+    # (3) SETUP
+    setup(name='qd',
+          version=version,
+          license='GNU GPL v3',
+          description='QD-Engineering Python Library for CAE',
+          author='C. Diez, D. Toewe',
+          url='http://www.qd-eng.de',
+          author_email='qd.eng.contact@gmail.com',
+          packages=(['qd',
+                     'qd.cae',
+                       'qd.cae.beta',
+                       'qd.cae.resources',
+                       'qd.numerics',
+                     ]),
+          package_dir={'qd': 'qd',
+                       'qd.cae': 'qd/cae',
+                       'qd.cae.beta': 'qd/cae/beta',
+                       'qd.cae.resources': 'qd/cae/resources',
+                       'qd.numerics': 'qd/numerics',
+                       },
+          package_data={
+              'qd.cae.resources': ['*.js', 'html.template'],
+              'qd.cae.beta': ['meta_remote_control', 'meta_remote_control.exe']
+          },
+          ext_package='qd.cae',  # where to place c extensions
+          ext_modules=[dyna_extension],
+          install_requires=['numpy>=1.8', 'diversipy', 'pybind11>2.1.0'],
+          keywords=['cae',
+                      'simulation',
+                      'engineering',
+                      'ls-dyna',
+                      'postprocessing',
+                      'preprocessing'],
+          classifiers=['Development Status :: 4 - Beta',
+                       'Programming Language :: C++',
+                       'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+                       'Topic :: Scientific/Engineering',
+                       'Intended Audience :: Science/Research',
+                       'Topic :: Utilities',
+                       'Operating System :: Microsoft :: Windows',
+                       'Operating System :: POSIX :: Linux',
+                       'Programming Language :: Python :: 3.5',
+                       'Programming Language :: Python :: 3.6'],
+          test_suite='setup.my_test_suite',)

@@ -84,4 +84,50 @@ group_exists(H5::H5File& _file, const std::string& _path)
   }
 }
 
+/** Check if a path is existing
+ *
+ * @return is_existing
+ */
+template<typename T>
+void
+QD_HDF5::write_vector(const std::string& _path, const std::vector<T> _data)
+{
+  static_assert(
+    std::is_same<T, int32_t>::value || std::is_same<T, int64_t>::value ||
+      std::is_same<T, float>::value || std::is_same<T, double>::value,
+    "can not write unknown vector type to HDF5 file.");
+
+  if (this->exists(_path)) {
+    throw std::invalid_argument("Data vector " + _path +
+                                " does already exist.");
+  }
+
+  // property list
+  int fillvalue = 0; /* Fill value for the dataset */
+  DSetCreatPropList plist;
+  plist.setFillValue(PredType::NATIVE_INT, &fillvalue);
+
+  // Create dataspace for the dataset in the file.
+  hsize_t fdim[] = { FSPACE_DIM1, FSPACE_DIM2 }; // dim sizes of ds (on disk)
+  DataSpace fspace(FSPACE_RANK, fdim);
+
+  // dataset
+  DataSet* dataset = new DataSet(
+    file->createDataSet(DATASET_NAME, PredType::NATIVE_INT, fspace, plist));
+
+  // make constexpr in c++17
+  if (std::is_same<T, int32_t>::value) {
+
+  } else if (std::is_same<T, int64_t>::value) {
+
+  } else if (std::is_same<T, float>::value) {
+
+  } else if (std::is_same<T, double>::value) {
+
+  } else {
+    throw(
+      std::invalid_argument("can not write unknown vector type to HDF5 file."));
+  }
+}
+
 } // namespace qd
