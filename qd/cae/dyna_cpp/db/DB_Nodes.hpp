@@ -30,7 +30,7 @@ private:
   std::vector<std::shared_ptr<Node>> nodes;
 
 public:
-  DB_Nodes(FEMFile* _femfile);
+  explicit DB_Nodes(FEMFile* _femfile);
   virtual ~DB_Nodes();
   size_t get_nNodes();
   void reserve(const size_t _size);

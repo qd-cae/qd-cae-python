@@ -23,7 +23,7 @@ private:
   std::vector<std::shared_ptr<Element>> elements;
 
 public:
-  Part(int32_t _partID, std::string _partName, FEMFile* _femfile);
+  explicit Part(int32_t _partID, std::string _partName, FEMFile* _femfile);
   ~Part();
   void set_name(std::string _partName);
   void add_element(std::shared_ptr<Element> _element);

@@ -35,13 +35,6 @@ Element::Element(const int32_t _elementID,
 }
 
 /*
- * Destructor.
- */
-Element::~Element()
-{
-}
-
-/*
  * Comparator.
  */
 bool

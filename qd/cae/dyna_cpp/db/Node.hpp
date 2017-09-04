@@ -26,7 +26,9 @@ private:
   DB_Nodes* db_nodes;
 
 public:
-  Node(int32_t _nodeID, std::vector<float> _coords, DB_Nodes* db_nodes);
+  explicit Node(int32_t _nodeID,
+                std::vector<float> _coords,
+                DB_Nodes* db_nodes);
   ~Node();
   bool operator<(const Node& other) const;
   inline std::string str()

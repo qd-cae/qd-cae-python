@@ -42,11 +42,10 @@ private:
   DB_Elements* db_elements;
 
 public:
-  Element(const int32_t _id,
-          const ElementType _etype,
-          const std::vector<size_t>& _nodes,
-          DB_Elements* db_elements);
-  ~Element();
+  explicit Element(const int32_t _id,
+                   const ElementType _etype,
+                   const std::vector<size_t>& _nodes,
+                   DB_Elements* db_elements);
   bool operator<(const Element& other) const;
   inline std::string str()
   {

@@ -174,13 +174,14 @@ private:
 
   // === P U B L I C === //
 public:
-  D3plot(std::string filepath,
-         std::vector<std::string> _variables = std::vector<std::string>(),
-         bool _use_femzip = false);
-  D3plot(std::string filepath,
-         std::string _variables = std::string(),
-         bool _use_femzip = false);
-  ~D3plot();
+  explicit D3plot(
+    std::string filepath,
+    std::vector<std::string> _variables = std::vector<std::string>(),
+    bool _use_femzip = false);
+  explicit D3plot(std::string filepath,
+                  std::string _variables = std::string(),
+                  bool _use_femzip = false);
+  virtual ~D3plot();
   void info() const;
   void read_states(std::vector<std::string> _variables);
   void clear(

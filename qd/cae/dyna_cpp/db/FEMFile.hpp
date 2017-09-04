@@ -24,8 +24,8 @@ private:
   std::string filepath;
 
 public:
-  FEMFile();
-  FEMFile(const std::string& filepath);
+  explicit FEMFile();
+  explicit FEMFile(const std::string& filepath);
   virtual ~FEMFile();
   void set_filepath(const std::string& filepath);
   std::string get_filepath();

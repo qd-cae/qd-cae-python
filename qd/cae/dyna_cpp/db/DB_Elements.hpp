@@ -36,7 +36,7 @@ private:
   std::vector<std::shared_ptr<Element>> elements8;
 
 public:
-  DB_Elements(FEMFile* _femfile);
+  explicit DB_Elements(FEMFile* _femfile);
   virtual ~DB_Elements();
   FEMFile* get_femfile();
   DB_Nodes* get_db_nodes();

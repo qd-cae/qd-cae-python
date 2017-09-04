@@ -118,10 +118,16 @@ class PyD3plot : public D3plot
 {
 public:
   // get methods from super class
-  using D3plot::D3plot;
-  using D3plot::read_states;
-  using D3plot::clear;
-
+  explicit PyD3plot(
+    std::string filepath,
+    std::vector<std::string> _variables = std::vector<std::string>(),
+    bool _use_femzip = false)
+    : D3plot(filepath, _variables, _use_femzip){};
+  explicit PyD3plot(std::string filepath,
+                    std::string _variables = std::string(),
+                    bool _use_femzip = false)
+    : D3plot(filepath, _variables, _use_femzip){};
+  // using D3plot::D3plot; // gcc sucks
   PyD3plot(std::string _filepath, pybind11::list _variables, bool _use_femzip)
     : D3plot(_filepath,
              qd::py::container_to_vector<std::string>(
@@ -134,6 +140,10 @@ public:
                _variables,
                "An entry of read_states was not of type str"),
              _use_femzip){};
+
+  using D3plot::read_states;
+  using D3plot::clear;
+
   void read_states(pybind11::list _variables)
   {
     this->read_states(qd::py::container_to_vector<std::string>(

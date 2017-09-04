@@ -26,7 +26,7 @@ private:
   std::unordered_map<int32_t, size_t> id2index_parts;
 
 public:
-  DB_Parts(FEMFile* _femfile);
+  explicit DB_Parts(FEMFile* _femfile);
   virtual ~DB_Parts();
 
   template<typename T>
