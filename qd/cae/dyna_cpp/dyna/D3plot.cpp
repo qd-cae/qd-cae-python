@@ -1546,6 +1546,17 @@ D3plot::read_states_parse_readMode(const std::string& _variable) const
 
 /** Read the state data.
  *
+ * @param _variable variable to load
+ */
+void
+D3plot::read_states(const std::string& _variable)
+{
+  std::vector<std::string> vec = { _variable };
+  this->read_states(vec);
+};
+
+/** Read the state data.
+ *
  * @param _variables std::vector of variables to read
  */
 void
@@ -2243,6 +2254,18 @@ D3plot::get_title() const
 {
   return this->dyna_title;
 }
+
+/** Clears a loaded result
+ *
+ * @param _variable variable to clear
+ *
+ */
+void
+D3plot::clear(const std::string& _variable)
+{
+  std::vector<std::string> _variables = { _variable };
+  this->clear(_variables);
+};
 
 /** Clears loaded result data loaded from the file
  *

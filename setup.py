@@ -132,12 +132,37 @@ def setup_dyna_cpp_hdf5(srcs, compiler_args, libs, lib_dirs, include_dirs):
     return srcs, compiler_args, libs, lib_dirs, include_dirs
 
 
+def use_vtk_if_possible(depency_packages):
+
+    # do nothing if missing
+    if not os.path.isdir('./libs/VTK'):
+        return []
+
+    # packages
+    depency_packages = ['autobahn', 'constantly', 'hyperlink',
+                        'incremental', 'Twisted', 'txaio', 'wslink', 'zope.interface']
+
+    ''' put in top of init
+    import os
+    import sys
+
+    # add runtime libraries to environment
+    dir_path = os.path.join(os.path.dirname(
+        os.path.realpath(__file__)), "shared")
+    if dir_path not in sys.path:
+        sys.path.insert(0, dir_path)
+    '''
+
+    return depency_packages
+
+
 def my_test_suite():
     ''' Sets up the testing
     '''
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('test', pattern='test_*.py')
     return test_suite
+
 
 if __name__ == "__main__":
 

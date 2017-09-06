@@ -184,8 +184,10 @@ public:
   virtual ~D3plot();
   void info() const;
   void read_states(std::vector<std::string> _variables);
+  void read_states(const std::string& _variable);
   void clear(
     const std::vector<std::string>& _variables = std::vector<std::string>());
+  void clear(const std::string& _variable);
   size_t get_nTimesteps() const;
   std::string get_title() const;
   std::vector<float> get_timesteps() const;
