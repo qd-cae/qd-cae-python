@@ -62,10 +62,10 @@ public:
   std::vector<std::shared_ptr<Node>> get_nodes() const;
   std::vector<int32_t> get_node_ids() const;
   std::vector<size_t> get_node_indexes() const;
-  std::vector<float> get_coords(int32_t iTimestep = 0) const;
   std::vector<float> get_energy() const;
   std::vector<float> get_stress_mises() const;
   std::vector<float> get_plastic_strain() const;
+  std::vector<std::vector<float>> get_coords() const;
   std::vector<std::vector<float>> get_strain() const;
   std::vector<std::vector<float>> get_stress() const;
   std::vector<std::vector<float>> get_history_vars() const;

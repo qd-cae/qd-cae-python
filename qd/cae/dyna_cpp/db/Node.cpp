@@ -111,57 +111,27 @@ Node::add_accel(std::vector<float> new_accel)
  * Get the coordinates of the node as an array
  * of length 3.
  */
-std::vector<float>
-Node::get_coords(int32_t iTimestep)
+std::vector<std::vector<float>>
+Node::get_coords() const
 {
-  // D3plot with iTimestep != 0
-  if (this->db_nodes->get_femfile()->is_d3plot()) {
-    D3plot* d3plot = this->db_nodes->get_femfile()->get_d3plot();
 
-    // Displacements iTimestep != 0
-    if (iTimestep != 0) {
-      if (d3plot->displacement_is_read()) {
-        if (iTimestep < 0)
-          iTimestep = static_cast<int32_t>(d3plot->get_timesteps().size()) +
-                      iTimestep; // Python array style
+  // check for displacements
+  if (this->disp.size() > 0) {
 
-        if ((iTimestep < 0))
-          throw(std::invalid_argument(
-            "Specified timestep exceeds real time step size."));
-
-        if (iTimestep >= static_cast<long>(this->disp.size()))
-          throw(std::invalid_argument(
-            "Specified timestep exceeds real time step size."));
-
-        std::vector<float> ret = this->coords; // copies
-        ret[0] += this->disp[iTimestep][0];
-        ret[1] += this->disp[iTimestep][1];
-        ret[2] += this->disp[iTimestep][2];
-
-        return ret;
-
-      } else {
-        throw(
-          std::invalid_argument("Displacements were not read yet. Please use "
-                                "read_states=\"disp\"."));
-      }
+    std::vector<std::vector<float>> ret(disp.size(), this->coords);
+    for (size_t iTimestep = 0; iTimestep < this->disp.size(); ++iTimestep) {
+      ret[iTimestep][0] += this->disp[iTimestep][0];
+      ret[iTimestep][1] += this->disp[iTimestep][1];
+      ret[iTimestep][2] += this->disp[iTimestep][2];
     }
 
-    // KeyFile with iTimestep != 0
-  } else if (this->db_nodes->get_femfile()->is_keyFile()) {
-    if (iTimestep != 0)
-      throw(std::invalid_argument(
-        "Since a KeyFile has no states, you can not use the iTimeStep "
-        "argument in node.get_coords."));
+    return ret;
 
-    // Unknown Filetype
+    // no displacements
   } else {
-    throw(std::runtime_error(
-      "FEMFile is neither a d3plot, nor a keyfile in node.get_coords"));
+    std::vector<std::vector<float>> ret = { this->coords };
+    return ret;
   }
-
-  // iTimestep == 0
-  return this->coords;
 }
 
 } // namespace qd

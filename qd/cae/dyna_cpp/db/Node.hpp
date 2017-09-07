@@ -51,7 +51,7 @@ public:
   {
     return this->elements;
   }
-  std::vector<float> get_coords(int32_t iTimestep = 0);
+  std::vector<std::vector<float>> get_coords() const;
   inline std::vector<std::vector<float>> get_disp() { return this->disp; }
   inline std::vector<std::vector<float>> get_vel() { return this->vel; }
   inline std::vector<std::vector<float>> get_accel() { return this->accel; }

@@ -14,6 +14,13 @@ We want to tackle this issue with this free library, in order to give engineerin
 
 # What's new?
 
+*Changelog 09.09.2017*
+Version 0.6.3
+
+qd.cae.dyna
+ - `Binout.read` is now able to read multiple binouts (see [here](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna_Binout.html#qd.cae.dyna.Binout))
+ - `Node.get_coords` and `Element.get_coords` don't take the timestep as argument anymore, but return a time series of coordinates, like all other functions do.
+
 *Changelog 27.08.2017*
 Version 0.6.2
 
@@ -22,41 +29,6 @@ qd.cae.dyna
  - D3plot can now read files with airbags (does not read the airbags itself!)
 
 Improved code readibility.
-
-*Changelog 24.08.2017*
-Version 0.6.1
-
-Improved documentation.
-
-qd.cae.dyna
- - fixed an issue, that occasionally the part ids were wrong
-
-*Changelog 28.07.2017*
-Version 0.6.0
-
-**The API changed a little bit (see below)**
-
-The whole C++ Python API was rewritten with pybind11 because the old interface took too much maintenance. This change makes it easier to implement further developmens. The code was also modernized to C++14. Speed is slightly better. 
-
-Note that the API changed a little bit, which may happen for a software with a version below 1.0.0! This will not be done often, so don't worry.
-
-[compilation](#Compilation) in general is now simpler:
-  - Boost as dependency was removed from the project (yay)
-  - pybind11 was added, but is installed via requirements.txt
-
-
-qd.cae.dyna
-  - The whole Python API was rewritten with pybind11
-  - **API Changes**:
-    - **Element type specifier is not a string anymore**, but uses `Element.type` (enumeration in C++). Use `Element.none`, `Element.beam`, `Element.shell` or `Element.solid` as replacement (might add string support in the future again).
-    - `Element.get_history` renamed to `Element.get_history_variables`
-  - **New functions** were added (already existed natively)
-    - `femfile.get_partByIndex`
-    - `femfile.get_partByName`
-    - `femfile.get_elementByIndex`
-    - `d3plot.get_nTimesteps`
-    - `d3plot.get_title`
-  
 
 # Descriptions
 

@@ -234,77 +234,39 @@ Element::get_energy() const
  * Get the coordinates of the element, which is
  * the average of all nodes.
  */
-std::vector<float>
-Element::get_coords(int32_t iTimestep) const
+std::vector<std::vector<float>>
+Element::get_coords() const
 {
-  if (this->nodes.size() < 1)
-    throw(std::invalid_argument("Element with id " +
-                                std::to_string(this->elementID) +
-                                " has no nodes and thus no coords."));
 
-  if (this->db_elements->get_femfile()->is_d3plot()) {
-    if ((iTimestep != 0) && (!this->db_elements->get_femfile()
-                                ->get_d3plot()
-                                ->displacement_is_read()))
-      throw(std::invalid_argument(
-        "Displacements were not read yet. Please use read_states=\"disp\"."));
-  } else if (this->db_elements->get_femfile()->is_keyFile()) {
-    if (iTimestep != 0)
-      throw(std::invalid_argument(
-        "Since a KeyFile has no states, you can not use the "
-        "iTimeStep argument in element.get_coords."));
-  } else {
-    throw(std::runtime_error(
-      "FEMFile is neither a d3plot, nor a keyfile in element.get_coords"));
-  }
+  std::vector<std::vector<float>> coords_elem;
+  if (this->nodes.size() > 0) {
 
-  if (iTimestep < 0)
-    iTimestep = static_cast<int32_t>(this->db_elements->get_femfile()
-                                       ->get_d3plot()
-                                       ->get_timesteps()
-                                       .size()) +
-                iTimestep; // Python array style
+    DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
 
-  if ((iTimestep < 0))
-    throw(
-      std::invalid_argument("Specified timestep exceeds real time step size."));
+    std::shared_ptr<Node> current_node =
+      db_nodes->get_nodeByIndex(this->nodes[0]);
+    coords_elem = current_node->get_coords();
 
-  DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
+    for (size_t iNode = 1; iNode < this->nodes.size(); ++iNode) {
 
-  std::shared_ptr<Node> current_node = nullptr;
-  std::vector<float> coords_elem(3, 0.);
-  std::vector<float> coords_node;
-  std::vector<std::vector<float>> disp_node;
+      auto node_coords =
+        db_nodes->get_nodeByIndex(this->nodes[iNode])->get_coords();
+      for (size_t iTimestep = 0; iTimestep < node_coords.size(); ++iTimestep) {
+        coords_elem[iTimestep][0] += node_coords[iTimestep][0];
+        coords_elem[iTimestep][1] += node_coords[iTimestep][1];
+        coords_elem[iTimestep][2] += node_coords[iTimestep][2];
+      }
+    }
 
-  for (const auto& node_index : this->nodes) {
-    current_node = db_nodes->get_nodeByIndex(node_index);
-    coords_node = current_node->get_coords();
-
-    coords_elem[0] += coords_node[0];
-    coords_elem[1] += coords_node[1];
-    coords_elem[2] += coords_node[2];
-
-    // Coords at different timestep
-    if (iTimestep != 0) {
-      disp_node = current_node->get_disp();
-
-      // Check correctness
-      if (iTimestep >= static_cast<long>(disp_node.size()))
-        throw(std::invalid_argument(
-          "Specified timestep exceeds real time step size."));
-
-      coords_elem[0] += disp_node[iTimestep][0];
-      coords_elem[1] += disp_node[iTimestep][1];
-      coords_elem[2] += disp_node[iTimestep][2];
+    float _nodes_size = (float)this->nodes.size();
+    for (size_t iTimestep = 0; iTimestep < coords_elem.size(); ++iTimestep) {
+      coords_elem[iTimestep][0] /= _nodes_size;
+      coords_elem[iTimestep][1] /= _nodes_size;
+      coords_elem[iTimestep][2] /= _nodes_size;
     }
   }
 
-  float _nodes_size = (float)this->nodes.size();
-  coords_elem[0] /= _nodes_size;
-  coords_elem[1] /= _nodes_size;
-  coords_elem[2] /= _nodes_size;
-
-  return std::move(coords_elem);
+  return coords_elem;
 }
 
 /*
@@ -328,23 +290,25 @@ Element::get_estimated_element_size() const
   if (current_node == nullptr) {
     throw(std::invalid_argument("Could not find node 0 of an element."));
   }
-  auto basis_coords = current_node->get_coords();
+  auto basis_coords = current_node->get_coords()[0];
 #else
-  auto basis_coords = db_nodes->get_nodeByIndex(this->nodes[0])->get_coords();
+  auto basis_coords =
+    db_nodes->get_nodeByIndex(this->nodes[0])->get_coords()[0];
 #endif
 
   float maxdist = -1.;
   std::vector<float> ncoords;
   for (size_t iNode = 1; iNode < this->nodes.size(); ++iNode) {
+
 #ifdef QD_DEBUG
     current_node = db_nodes->get_nodeByIndex(this->nodes[iNode]);
     if (current_node == nullptr) {
       throw(std::invalid_argument("Could not find node " +
                                   std::to_string(iNode) + " of an element."));
     }
-    ncoords = current_node->get_coords();
+    ncoords = current_node->get_coords()[0];
 #else
-    ncoords = db_nodes->get_nodeByIndex(this->nodes[iNode])->get_coords();
+    ncoords = db_nodes->get_nodeByIndex(this->nodes[iNode])->get_coords()[0];
 #endif
 
     ncoords = MathUtility::v_subtr(ncoords, basis_coords);

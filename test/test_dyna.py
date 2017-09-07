@@ -133,8 +133,7 @@ class TestDynaModule(unittest.TestCase):
         self.assertCountEqual([node.get_id()
                                for node in nodes_ids_v2], node_ids)
         for node in nodes_ids_v1:
-            self.assertEqual(len(node.get_coords()), 3)
-            self.assertEqual(len(node.get_coords(-1)), 3)
+            self.assertEqual(node.get_coords().shape, (1, 3))
             self.assertEqual(len(node.get_disp()), 1)
             self.assertEqual(len(node.get_vel()), 1)
             self.assertEqual(len(node.get_accel()), 1)
@@ -166,6 +165,7 @@ class TestDynaModule(unittest.TestCase):
         elem2 = element_ids_shell_v2[0]
         for element in element_ids_shell_v1:
             pass
+        self.assertEqual(elem1.get_coords().shape, (1, 3))
         self.assertEqual(elem1.get_plastic_strain().shape, (1,))
         self.assertEqual(elem1.get_stress().shape, (1, 6))
         self.assertEqual(elem1.get_stress_mises().shape, (1,))

@@ -124,45 +124,42 @@ class Binout:
         >>> binout = Binout("path/to/binout")
     '''
 
-    def __init__(self, filepath, load_single_file=False):
+    def __init__(self, filepath):
         '''Constructor for a binout
 
         Parameters
         ----------
         filepath : str
-            path to the binout
-        load_single_file : bool
-            enforce reading of only the binout with given filename
+            path to the binout or pattern
 
         Notes
         -----
-            The class by default loads all binout files with the same 
-            name, but an ending containing only numbers. If for example
-            we have the files `["binout","binout0002","binout0005"]`, giving 
-            the path `"binout"` or `"binout0002"` will both find all files.
+            The class loads the file given in the filepath. By giving a 
+            search pattern such as: "binout*", all files with that 
+            pattern will be loaded.
 
         Examples
         --------
-            >>> # reads all binouts
-            >>> binout = Binout("path/to/binout")
-            >>> # reads only a single binout (does not search more)
-            >>> binout = Binout("path/to/binout", load_single_file=True)
+            >>> # reads a single binout
+            >>> binout = Binout("path/to/binout0000")
+            >>> binout.filelist
+            ['path/to/binout0000']
+
+            >>> # reads multiple files
+            >>> binout = Binout("path/to/binout*")
+            >>> binout.filelist
+            ['path/to/binout0000','path/to/binout0001']
         '''
 
-        # get files
-        if load_single_file:
-            self.filelist = [filepath]
-        else:
-            self.filelist = self._remove_trailing_numbers(filepath)
+        self.filelist = glob.glob(filepath)
 
         # check file existance
-        if not filelist:
-            raise IOError("File was not found.")
+        if not self.filelist:
+            raise IOError("No file was found.")
 
-        # self.lsda =
-        #self.lsda_files = [Lsda(entry, "r") for entry in filelist]
-        #self.lsda_files_root = [lsda.root for lsda in lsda_files]
-        self.lsda = Lsda(filepath, "r")
+        # open lsda buffer
+        self.lsda = Lsda(self.filelist, "r")
+        self.lsda_root = self.lsda.root
 
         # if sys.version_info[0] < 3:
         #    self.lsda_root = self.lsda.root
@@ -548,41 +545,41 @@ class Binout:
         else:
             return string
 
+    def _remove_trailing_numbers(self, filepath):
+        '''Find the additional binouts belonging to a base binout
 
-def _remove_trailing_numbers(self, filepath):
-    '''Find the additional binouts belonging to a base binout
+        Parameters
+        ----------
+        filepath : str
+            path to the base binout
 
-    Parameters
-    ----------
-    filepath : str
-        path to the base binout
+        Returns
+        -------
+        binouts : list(str)
+            list of filepaths to the additional binouts
+        '''
 
-    Returns
-    -------
-    binouts : list(str)
-        list of filepaths to the additional binouts
-    '''
+        # filesystem variables
+        binout_dir = os.path.dirname(filepath)
+        binout_filename = ntpath.basename(filepath)
+        binout_filename_numberless = binout_filename.rstrip("0123456789")
+        filepath_numberless = os.path.join(
+            binout_dir, binout_filename_numberless)
 
-    # filesystem variables
-    binout_dir = os.path.dirname(filepath)
-    binout_filename = ntpath.basename(filepath)
-    binout_filename_numberless = binout_filename.rstrip("0123456789")
-    filepath_numberless = os.path.join(binout_dir, binout_filename_numberless)
+        return filepath_numberless
 
-    return filepath_numberless
+        # get all possible files
+        filelist = glob.glob(filepath_numberless + "*")
 
-    # get all possible files
-    filelist = glob.glob(filepath_numberless + "*")
+        # filter those with number at the end
+        cleaned_list = [entry.replace(filepath_numberless, "")
+                        for entry in filelist]
+        indexes = [ii for ii in range(len(cleaned_list))
+                   if cleaned_list[ii].isnumeric()]
+        filelist = [filelist[ii] for ii in indexes]
+        filelist.append(binout_filename_numberless)
 
-    # filter those with number at the end
-    cleaned_list = [entry.replace(filepath_numberless, "")
-                    for entry in filelist]
-    indexes = [ii for ii in range(len(cleaned_list))
-               if cleaned_list[ii].isnumeric()]
-    filelist = [filelist[ii] for ii in indexes]
-    filelist.append(binout_filename_numberless)
+        # throw out non-existing files
+        filelist = [entry for entry in filelist if os.path.isfile(entry)]
 
-    # throw out non-existing files
-    filelist = [entry for entry in filelist if os.path.isfile(entry)]
-
-    return filelist
+        return filelist

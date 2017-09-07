@@ -48,29 +48,25 @@ const char* node_str_docs = R"qddoc(
 )qddoc";
 
 const char* node_get_coords_docs = R"qddoc(
-    get_coords(iTimestep=0)
+    get_coords()
 
-    Get the geometric nodal coordinates at a timestep. One needs to load the displacements
-    before getting the coordinates at a different timestep.
-
-    Parameters
-    ----------
-    iTimestep : int
-        timestep at which to take the coordinates
+    Get the geometric nodal coordinates. One has to load the
+    displacements for getting the coordinates at all timesteps.
 
     Returns
     -------
     coords : np.ndarray
-        coordinate vector (x,z,y)
+        coordinate vector (nTimesteps x 3)
 
     Examples
     --------
         >>> d3plot = D3plot("path/to/d3plot")
         >>> node.get_coords().shape
-        (3L,)
+        (1L, 3L)
         >>> # load disp
         >>> d3plot.read_states("disp")
-        >>> node.get_coords(iTimestep=10)
+        >>> node.get_coords().shape
+        (34L, 3L)
 )qddoc";
 
 const char* node_get_disp_docs = R"qddoc(
@@ -291,25 +287,30 @@ const char* element_get_nodes_docs = R"qddoc(
 )qddoc";
 
 const char* element_get_coords_docs = R"qddoc(
-    get_coords(iTimestep=0)
+    get_coords()
 
     Get the elements coordinates (mean of nodes).
-
-    Parameters
-    ----------
-    iTimestep : int
-        timestep at which to take the coordinates
 
     Returns
     -------
     coords : np.ndarray
-        coordinate vector (x,z,y)
+        coordinate vector (nTimesteps x 3)
+
+    Notes
+    -----
+        Returns an empty vector, if the element has no
+        nodes.
 
     Examples
     --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> element = d3plot.get_elementByIndex(Element.shell, 1)
         >>> element.get_coords().shape
-        (3L,)
-        >>> some_coords = element.get_coords(iTimestep=10) # disps must be loaded
+        (1L, 3L)
+        >>> # load disp
+        >>> d3plot.read_states("disp")
+        >>> element.get_coords().shape
+        (34L, 3L)
 )qddoc";
 
 const char* element_get_history_docs = R"qddoc(

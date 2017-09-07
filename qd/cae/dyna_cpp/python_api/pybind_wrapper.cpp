@@ -113,169 +113,6 @@ struct type_caster<std::vector<std::shared_ptr<qd::Part>>> : ListCasterParts
 
 namespace qd {
 
-/* ========= WRAPPER CLASSES ========= */
-class PyD3plot : public D3plot
-{
-public:
-  // get methods from super class
-  explicit PyD3plot(
-    std::string filepath,
-    std::vector<std::string> _variables = std::vector<std::string>(),
-    bool _use_femzip = false)
-    : D3plot(filepath, _variables, _use_femzip){};
-  explicit PyD3plot(std::string filepath,
-                    std::string _variables = std::string(),
-                    bool _use_femzip = false)
-    : D3plot(filepath, _variables, _use_femzip){};
-  // using D3plot::D3plot; // gcc sucks
-  PyD3plot(std::string _filepath, pybind11::list _variables, bool _use_femzip)
-    : D3plot(_filepath,
-             qd::py::container_to_vector<std::string>(
-               _variables,
-               "An entry of read_states was not of type str"),
-             _use_femzip){};
-  PyD3plot(std::string _filepath, pybind11::tuple _variables, bool _use_femzip)
-    : D3plot(_filepath,
-             qd::py::container_to_vector<std::string>(
-               _variables,
-               "An entry of read_states was not of type str"),
-             _use_femzip){};
-
-  using D3plot::read_states;
-  using D3plot::clear;
-
-  void read_states(pybind11::list _variables)
-  {
-    this->read_states(qd::py::container_to_vector<std::string>(
-      _variables, "An entry of read_states was not of type str"));
-  };
-  void read_states(pybind11::tuple _variables)
-  {
-    this->read_states(qd::py::container_to_vector<std::string>(
-      _variables, "An entry of read_states was not of type str"));
-  };
-  void clear(pybind11::list _variables = pybind11::list())
-  {
-    this->clear(qd::py::container_to_vector<std::string>(
-      _variables, "An entry of list was not of type str"));
-  };
-  void clear(pybind11::tuple _variables = pybind11::tuple())
-  {
-    this->clear(qd::py::container_to_vector<std::string>(
-      _variables, "An entry of tuple was not of type str"));
-  };
-  pybind11::array_t<float> get_timesteps_py()
-  {
-    return qd::py::vector_to_nparray(this->get_timesteps());
-  };
-};
-
-// CLASS DB_Nodes
-class PyDB_Nodes : public DB_Nodes
-{
-
-public:
-  using DB_Nodes::get_nodeByID;
-  using DB_Nodes::get_nodeByIndex;
-
-  std::vector<std::shared_ptr<Node>> get_nodeByID(pybind11::list _ids)
-  {
-    return this->get_nodeByID(qd::py::container_to_vector<int32_t>(
-      _ids, "An entry of the list was not a fully fledged integer."));
-  }
-  std::vector<std::shared_ptr<Node>> get_nodeByID(pybind11::tuple _ids)
-  {
-    return this->get_nodeByID(qd::py::container_to_vector<int32_t>(
-      _ids, "An entry of the list was not a fully fledged integer."));
-  }
-  std::vector<std::shared_ptr<Node>> get_nodeByIndex(pybind11::list _ids)
-  {
-    return this->get_nodeByIndex(qd::py::container_to_vector<int32_t>(
-      _ids, "An entry of the list was not a fully fledged integer."));
-  }
-  std::vector<std::shared_ptr<Node>> get_nodeByIndex(pybind11::tuple _ids)
-  {
-    return this->get_nodeByIndex(qd::py::container_to_vector<int32_t>(
-      _ids, "An entry of the list was not a fully fledged integer."));
-  }
-};
-
-// CLASS DB_Elements
-class PyDB_Elements : public DB_Elements
-{
-
-public:
-  using DB_Elements::get_elementByID;
-  using DB_Elements::get_elementByIndex;
-
-  template<typename T>
-  std::vector<std::shared_ptr<Element>> get_elementByID(
-    Element::ElementType _eType,
-    pybind11::list _list)
-  {
-    return this->get_elementByID(
-      _eType,
-      qd::py::container_to_vector<T>(
-        _list, "An entry of the id list was not an integer."));
-  };
-  template<typename T>
-  std::vector<std::shared_ptr<Element>> get_elementByID(
-    Element::ElementType _eType,
-    pybind11::tuple _tuple)
-  {
-    return this->get_elementByID(
-      _eType,
-      qd::py::container_to_vector<T>(
-        _tuple, "An entry of the id list was not an integer."));
-  };
-  template<typename T>
-  std::vector<std::shared_ptr<Element>> get_elementByIndex(
-    Element::ElementType _eType,
-    pybind11::list _list)
-  {
-    return this->get_elementByIndex(
-      _eType,
-      qd::py::container_to_vector<T>(
-        _list, "An entry of the index list was not an integer."));
-  };
-  template<typename T>
-  std::vector<std::shared_ptr<Element>> get_elementByIndex(
-    Element::ElementType _eType,
-    pybind11::tuple _tuple)
-  {
-    return this->get_elementByIndex(
-      _eType,
-      qd::py::container_to_vector<T>(
-        _tuple, "An entry of the index list was not an integer."));
-  };
-};
-
-// CLASS DB_Parts
-class PyDB_Parts : public DB_Parts
-{
-
-public:
-  using DB_Parts::get_partByID;
-  using DB_Parts::get_partByIndex;
-
-  std::vector<std::shared_ptr<Part>> get_partByID(pybind11::list _ids)
-  {
-    return this->get_partByID(qd::py::container_to_vector<int32_t>(_ids));
-  };
-  std::vector<std::shared_ptr<Part>> get_partByID(pybind11::tuple _ids)
-  {
-    return this->get_partByID(qd::py::container_to_vector<int32_t>(_ids));
-  };
-  std::vector<std::shared_ptr<Part>> get_partByIndex(pybind11::list _ids)
-  {
-    return this->get_partByIndex(qd::py::container_to_vector<int32_t>(_ids));
-  };
-  std::vector<std::shared_ptr<Part>> get_partByIndex(pybind11::tuple _ids)
-  {
-    return this->get_partByIndex(qd::py::container_to_vector<int32_t>(_ids));
-  };
-};
-
 /*========= PLUGIN: dyna_cpp =========*/
 PYBIND11_PLUGIN(dyna_cpp)
 {
@@ -305,10 +142,9 @@ PYBIND11_PLUGIN(dyna_cpp)
          pybind11::return_value_policy::take_ownership,
          node_str_docs)
     .def("get_coords",
-         [](std::shared_ptr<Node> _node, int32_t iTimestep) {
-           return qd::py::vector_to_nparray(_node->get_coords(iTimestep));
+         [](std::shared_ptr<Node> _node) {
+           return qd::py::vector_to_nparray(_node->get_coords());
          },
-         "iTimestep"_a = 0,
          pybind11::return_value_policy::take_ownership,
          node_get_coords_docs)
     .def("get_disp",
@@ -356,10 +192,9 @@ PYBIND11_PLUGIN(dyna_cpp)
          pybind11::return_value_policy::take_ownership,
          element_str_docs)
     .def("get_coords",
-         [](std::shared_ptr<Element> _elem, int32_t iTimestep) {
-           return qd::py::vector_to_nparray(_elem->get_coords(iTimestep));
+         [](std::shared_ptr<Element> _elem) {
+           return qd::py::vector_to_nparray(_elem->get_coords());
          },
-         "iTimestep"_a = 0,
          pybind11::return_value_policy::take_ownership,
          element_get_coords_docs)
     .def("get_energy",
@@ -702,15 +537,31 @@ PYBIND11_PLUGIN(dyna_cpp)
          (void (D3plot::*)(const std::string&)) & D3plot::read_states,
          d3plot_read_states_docs)
     .def("read_states",
-         (void (D3plot::*)(pybind11::list)) & D3plot::read_states)
+         //(void (D3plot::*)(pybind11::list)) & D3plot::read_states)
+         [](std::shared_ptr<D3plot> _d3plot, pybind11::list _list) {
+           _d3plot->read_states(qd::py::container_to_vector<std::string>(
+             _list, "An entry of read_states was not of type str"));
+         })
     .def("read_states",
-         (void (D3plot::*)(pybind11::tuple)) & D3plot::read_states)
+         //(void (D3plot::*)(pybind11::tuple)) & D3plot::read_states)
+         [](std::shared_ptr<D3plot> _d3plot, pybind11::tuple _list) {
+           _d3plot->read_states(qd::py::container_to_vector<std::string>(
+             _list, "An entry of read_states was not of type str"));
+         })
     .def("clear",
-         (void (D3plot::*)(pybind11::list)) & D3plot::clear,
+         //(void (D3plot::*)(pybind11::list)) & D3plot::clear,
+         [](std::shared_ptr<D3plot> _d3plot, pybind11::list _list) {
+           _d3plot->clear(qd::py::container_to_vector<std::string>(
+             _list, "An entry of list was not of type str"));
+         },
          "variables"_a = pybind11::list(),
          d3plot_clear_docs)
     .def("clear",
-         (void (D3plot::*)(pybind11::tuple)) & D3plot::clear,
+         //(void (D3plot::*)(pybind11::tuple)) & D3plot::clear,
+         [](std::shared_ptr<D3plot> _d3plot, pybind11::tuple _list) {
+           _d3plot->clear(qd::py::container_to_vector<std::string>(
+             _list, "An entry of list was not of type str"));
+         },
          "variables"_a = pybind11::tuple())
     .def("clear",
          (void (D3plot::*)(const std::string&)) & D3plot::clear,
@@ -719,7 +570,7 @@ PYBIND11_PLUGIN(dyna_cpp)
          //&D3plot::get_timesteps_py,
          [](std::shared_ptr<D3plot> _d3plot) {
            return qd::py::vector_to_nparray(_d3plot->get_timesteps());
-         };
+         },
          pybind11::return_value_policy::take_ownership,
          d3plot_get_timesteps_docs)
     .def("get_nTimesteps",
