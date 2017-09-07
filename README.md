@@ -19,7 +19,7 @@ Version 0.6.3
 
 qd.cae.dyna
  - `Binout.read` is now able to read multiple binouts (see [here](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna_Binout.html#qd.cae.dyna.Binout))
- - `Node.get_coords` and `Element.get_coords` don't take the timestep as argument anymore, but return a time series of coordinates, like all other functions do.
+ - (**API-CHANGE**) `Node.get_coords` and `Element.get_coords` don't take the timestep as argument anymore, but return a time series of coordinates, just like all other functions do.
 
 *Changelog 27.08.2017*
 Version 0.6.2
