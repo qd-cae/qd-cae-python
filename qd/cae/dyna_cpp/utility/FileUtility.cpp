@@ -3,9 +3,12 @@
 #include <dyna_cpp/utility/TextUtility.hpp>
 
 #include <algorithm>
+#include <cmath>
+#include <cstdint>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <stdexcept>
 #include <stdlib.h>
 #include <string>
@@ -22,12 +25,12 @@
 namespace qd {
 
 /** Read the lines of a text file into a vector
- * @param string filepath : path of the text file
+ * @param filepath : path of the text file
  *
  * throws an expection in case of an IO-Error.
  */
 std::vector<std::string>
-read_textFile(std::string filepath)
+read_text_file(const std::string& filepath)
 {
 
   // vars
@@ -57,6 +60,38 @@ read_textFile(std::string filepath)
   return filebuffer;
 }
 
+/** Read a binary file into a memory buffer
+ *
+ * @param filepath : path of the text file
+ * @return data : memory buffer
+ */
+std::vector<char>
+read_binary_file(const std::string& filepath)
+{
+
+  // load file
+  std::ifstream ifs(filepath, std::ios::binary | std::ios::ate);
+  if (!ifs.is_open())
+    throw(std::invalid_argument("Error while opening file " + filepath));
+
+  auto pos = ifs.tellg();
+  size_t length = pos;
+
+  std::vector<char> data(length);
+  ifs.seekg(0, std::ios::beg);
+  ifs.read(&data[0], length);
+
+  // Check for Error
+  if (ifs.bad()) {
+    ifs.close();
+    throw(std::invalid_argument("Error during reading file " + filepath));
+  } else {
+    ifs.close();
+  }
+
+  return data;
+}
+
 void
 delete_file(const std::string& _path)
 {
@@ -66,11 +101,43 @@ delete_file(const std::string& _path)
   }
 }
 
+/** Compute the entropy of a file buffer
+ *
+ * @param _buffer : buffer which contains the lines of a text file
+ * @return entropy : entropy of the text file
+ *
+ * The entropy should be between 0 (ordered) and 8 (random).
+ */
+double
+get_entropy(const std::vector<char>& _buffer)
+{
+
+  // count bytes
+  std::map<char, long long> frequencies;
+  // for (const auto& line : _buffer) {
+  for (char c : _buffer) {
+    frequencies[c]++;
+    //++char_count;
+  }
+  //}
+
+  // calculate entropy
+  double nChars = static_cast<double>(_buffer.size());
+  double entropy = 0;
+  for (std::pair<char, long long> p : frequencies) {
+    double freq = static_cast<double>(p.second) / nChars;
+    if (freq > 0.)
+      entropy += freq * log2(freq);
+  }
+
+  return abs(entropy);
+}
+
 /* === WINDOWS === */
 #ifdef _WIN32
 
 bool
-check_ExistanceAndAccess(std::string filepath)
+check_ExistanceAndAccess(const std::string& filepath)
 {
 
   WIN32_FIND_DATA FindFileData;
@@ -87,7 +154,7 @@ check_ExistanceAndAccess(std::string filepath)
 }
 
 std::vector<std::string>
-globVector(std::string pattern)
+glob_vector(const std::string& pattern)
 {
 
   // get file directory
@@ -118,7 +185,7 @@ globVector(std::string pattern)
  * @param std::string _base_filepath
  */
 std::vector<std::string>
-findDynaResultFiles(std::string _base_filepath)
+find_dyna_result_files(const std::string& _base_filepath)
 {
 
   // get file directory
@@ -165,14 +232,14 @@ findDynaResultFiles(std::string _base_filepath)
 #else
 
 bool
-check_ExistanceAndAccess(std::string filepath)
+check_ExistanceAndAccess(const std::string& filepath)
 {
   std::ifstream ifile(filepath.c_str());
   return ifile.good();
 }
 
 std::vector<std::string>
-globVector(std::string pattern)
+glob_vector(std::string pattern)
 {
 
   glob_t glob_result;
@@ -189,7 +256,7 @@ globVector(std::string pattern)
 }
 
 std::vector<std::string>
-findDynaResultFiles(std::string _base_filepath)
+find_dyna_result_files(const std::string& _base_filepath)
 {
 
   std::string pattern = std::string(_base_filepath + "*");

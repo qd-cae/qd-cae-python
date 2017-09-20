@@ -1112,17 +1112,22 @@ const char* keyfile_description = R"qddoc(
 )qddoc";
 
 const char* keyfile_constructor = R"qddoc(
-    KeyFile(filepath)
+    KeyFile(filepath, load_includes=True, encryption_detection=0.7)
 
     Parameters
     ----------
     filepath : str
         path to the keyfile
+    load_includes : bool
+        load all includes within the file
+    encryption_detection : float
+        detection threshold for encrypted include files. 
+        Must be between 0 and 1.
 
     Raises
     ------
     ValueError
-        in case of a wrong filepath
+        in case of a wrong filepath or invalid encryption threshold
     RuntimeError
         if anything goes wrong during reading
 
@@ -1133,8 +1138,11 @@ const char* keyfile_constructor = R"qddoc(
 
     Notes
     -----
-        If the keyfile uses includes, then these
-        will also be read on the process
+        The argument `encryption_detection` is used to skip encrypted 
+        include files. It is simply tested against the entropy of every
+        include divided by 8 for normalization. Encrypted files usually
+        have a very high entropy. The entropy of a file can be obtained 
+        through the function `qd.cae.dyna.get_file_entropy`.
 
     Examples
     --------
@@ -1142,4 +1150,33 @@ const char* keyfile_constructor = R"qddoc(
         >>> # get mesh data similar to D3plot
         >>> node = keyfile.get_nodeByIndex(0)
 
+)qddoc";
+
+const char* module_get_file_entropy_description = R"qddoc(
+    get_file_entropy(filepath)
+
+    Parameters
+    ----------
+    filepath : str
+        path to the file
+
+    Returns
+    -------
+    entropy : float
+        entropy of the file
+
+    Notes
+    -----
+        The entropy of a file describes the 
+        randomness within its data. The value is
+        limited between 0 and 8, where 0 means 
+        entirely structured and 8 means the file 
+        is entirely random or encrypted.
+
+    Examples
+    --------
+        >>> get_file_entropy("path/to/encrypted_file")
+        7.64367
+        >>> get_file_entropy("path/to/text_file")
+        3.12390
 )qddoc";

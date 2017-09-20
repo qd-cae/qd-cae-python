@@ -6,8 +6,10 @@
 #include <dyna_cpp/db/FEMFile.hpp>
 #include <dyna_cpp/db/Node.hpp>
 #include <dyna_cpp/db/Part.hpp>
+#include <dyna_cpp/dyna/Binout.hpp>
 #include <dyna_cpp/dyna/D3plot.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
+#include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
 extern "C" {
@@ -593,8 +595,26 @@ PYBIND11_PLUGIN(dyna_cpp)
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
     m, "QD_KeyFile", keyfile_description);
-  keyfile_py.def(
-    pybind11::init<std::string>(), "filepath"_a, keyfile_constructor);
+  keyfile_py.def(pybind11::init<const std::string&, bool, double>(),
+                 "filepath"_a,
+                 "load_includes"_a = true,
+                 "encryption_detection"_a = 0.7,
+                 keyfile_constructor);
+
+  // Binout
+  const char* empty_description = { "\0" };
+  pybind11::class_<Binout, std::shared_ptr<Binout>> binout_py(
+    m, "QD_Binout", empty_description);
+  binout_py.def(pybind11::init<std::string>(), "filepath"_a, empty_description);
+
+  // module functions
+  m.def("get_file_entropy",
+        [](std::string _filepath) {
+          std::vector<char> buffer = read_binary_file(_filepath);
+          return get_entropy(buffer);
+        },
+        pybind11::return_value_policy::take_ownership,
+        module_get_file_entropy_description);
 
   return m.ptr();
 }

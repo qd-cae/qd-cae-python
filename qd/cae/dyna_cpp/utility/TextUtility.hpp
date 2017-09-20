@@ -160,18 +160,22 @@ extract_integers(const std::string& text)
 bool
 string_has_only_numbers(const std::string& _text, size_t start_pos);
 
-/** Preprocess a string for dyna.
- * @param string s : string to preprocess
- * @return string& s : string with removed comments
+/** Convert a char buffer to a buffer of lines
+ *
+ * @param _data : char buffer
+ * @return lines : line buffer
  */
-inline std::string
-preprocess_string_dyna(std::string _text)
+inline std::vector<std::string>
+convert_chars_to_lines(const std::vector<char>& _data)
 {
 
-  size_t pos = _text.find('$');
-  if (pos != std::string::npos)
-    return _text.substr(0, pos);
-  return _text;
+  std::stringstream st(std::string(_data.begin(), _data.end()));
+
+  std::vector<std::string> lines;
+  for (std::string line; std::getline(st, line);)
+    lines.push_back(line);
+
+  return lines;
 }
 
 } // namespace qd

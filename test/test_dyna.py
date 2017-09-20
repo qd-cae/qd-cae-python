@@ -239,6 +239,40 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual(binout.to_string(binout.read("swforc", "typenames")),
                          'constraint,weld,beam,solid,non nodal, ,solid assembly')
 
+    def test_keyfile(self):
+
+        # test encryption detection
+        np.testing.assert_almost_equal(get_file_entropy(
+            "test/keyfile.key"), 4.181828, decimal=6)
+        np.testing.assert_almost_equal(get_file_entropy(
+            "test/keyfile_include2.key"), 7.715498, decimal=6)
+
+        # load file
+        kf = KeyFile("test/keyfile.key")
+
+        # test node
+        node1, node2 = kf.get_nodeByID([1, 2])
+        np.testing.assert_array_almost_equal(node1.get_coords()[0],
+                                             [1, 1, 1],
+                                             decimal=1)
+        np.testing.assert_array_almost_equal(node2.get_coords()[0],
+                                             [2, 2, 2],
+                                             decimal=1)
+
+        # test include loading
+        kf = KeyFile("test/keyfile.key", load_includes=False)
+        with self.assertRaises(ValueError):
+            kf.get_nodeByID(2)
+
+        # test include loading
+        kf = KeyFile("test/keyfile.key", load_includes=True)
+        node = kf.get_nodeByID(2)
+        np.testing.assert_array_almost_equal(node.get_coords()[0],
+                                             [2, 2, 2],
+                                             decimal=1)
+
+        # test encryption detection
+
     def test_numerics_sampling(self):
         '''Testing qd.numerics'''
 

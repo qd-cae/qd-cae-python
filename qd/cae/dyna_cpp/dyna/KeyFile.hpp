@@ -20,11 +20,15 @@ namespace qd {
 class KeyFile : public FEMFile
 {
 private:
-  void read_mesh(std::string _filepath);
+  bool load_includes;
+  double encryption_detection_threshold;
+  void read_mesh(const std::string& _filepath);
 
 public:
   KeyFile();
-  KeyFile(std::string _filepath);
+  KeyFile(const std::string& _filepath,
+          bool _load_includes = true,
+          double _encryption_detection = 0.7);
   bool is_d3plot() const { return false; };
   bool is_keyFile() const { return true; };
   D3plot* get_d3plot()

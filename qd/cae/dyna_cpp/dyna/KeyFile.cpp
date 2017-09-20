@@ -41,9 +41,18 @@ KeyFile::KeyFile()
  *
  * @param string filepath : filepath of a key file to read
  */
-KeyFile::KeyFile(std::string _filepath)
-  : FEMFile(_filepath)
+KeyFile::KeyFile(const std::string& _filepath,
+                 bool _load_includes,
+                 double _encryption_detection)
+  : load_includes(_load_includes)
+  , encryption_detection_threshold(_encryption_detection)
+  , FEMFile(_filepath)
 {
+  // check encryption
+  if (encryption_detection_threshold < 0 || encryption_detection_threshold > 1)
+    throw(std::invalid_argument(
+      "Encryption detection threshold must be between 0 and 1."));
+
   // Read the mesh
   this->read_mesh(this->get_filepath());
 }
@@ -53,7 +62,7 @@ KeyFile::KeyFile(std::string _filepath)
  * @param string filepath : filepath of a key file to read
  */
 void
-KeyFile::read_mesh(std::string _filepath)
+KeyFile::read_mesh(const std::string& _filepath)
 {
 #ifdef QD_DEBUG
   std::cout << " === Parsing File: " << _filepath << std::endl;
@@ -72,10 +81,26 @@ KeyFile::read_mesh(std::string _filepath)
 #ifdef QD_DEBUG
   std::cout << "Filling IO-Buffer ... " << std::flush;
 #endif
-  std::vector<std::string> lines = read_textFile(_filepath);
+
+  // read file
+  std::vector<char> _buffer = read_binary_file(_filepath);
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
+
+  // test for encryption
+  if ((get_entropy(_buffer) / 8) > this->encryption_detection_threshold) {
+#ifdef QD_DEBUG
+    std::cout << "Skipping file " << _filepath << " with normalized entropy of "
+              << (get_entropy(_buffer) / 8) << std::endl;
+#endif
+    return;
+  }
+
+  // convert buffer and release memory
+  std::vector<std::string> lines = convert_chars_to_lines(_buffer);
+  _buffer.clear();
+  _buffer.shrink_to_fit();
 
   // Get databases
   auto db_parts = this->get_db_parts();
@@ -114,7 +139,7 @@ KeyFile::read_mesh(std::string _filepath)
 #ifdef QD_DEBUG
       std::cout << "*INCLUDE in line: " << (iLine + 1) << std::endl;
 #endif
-    } else if (keyword == Keyword::INCLUDE) {
+    } else if (keyword == Keyword::INCLUDE && this->load_includes) {
       this->read_mesh(directory +
                       line_trimmed); // basic directory is this file's
       keyword = Keyword::NONE;
@@ -330,7 +355,7 @@ KeyFile::read_mesh(std::string _filepath)
 
   } // for lines
 #ifdef QD_DEBUG
-  std::cout << "parsing of text-file done." << std::endl;
+  std::cout << "parsing of file " << _filepath << " done." << std::endl;
 #endif
 }
 

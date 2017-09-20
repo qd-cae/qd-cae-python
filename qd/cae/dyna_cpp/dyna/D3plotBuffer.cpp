@@ -26,7 +26,7 @@ D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t _wordSize)
                                 "\" does not exist or is locked."));
   }
 
-  this->d3plots = findDynaResultFiles(_d3plot_path);
+  this->d3plots = find_dyna_result_files(_d3plot_path);
 #ifdef QD_DEBUG
   std::cout << "Found result files:" << std::endl;
   for (size_t ii = 0; ii < this->d3plots.size(); ++ii) {

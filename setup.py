@@ -21,7 +21,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-version = "0.6.3"
+version = "0.6.4"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() == "Linux")
@@ -55,6 +55,7 @@ def setup_dyna_cpp():
                          "-O3",
                          "-fPIC",
                          "-DQD_VERSION=\"" + version + "\""]
+
         if debugging_mode:
             compiler_args.append("-DQD_DEBUG")
         if measure_time:
@@ -72,6 +73,22 @@ def setup_dyna_cpp():
         raise RuntimeError("Could not determine os (windows or linux)")
 
     return srcs, include_dirs, compiler_args
+
+
+def setup_dyna_cpp_binout(srcs, compiler_args):
+
+    srcs = ["qd/cae/dyna_cpp/dyna/Binout.cpp",
+            "qd/cae/dyna_cpp/dyna/lsda/lsda.c",
+            "qd/cae/dyna_cpp/dyna/lsda/btree.c",
+            "qd/cae/dyna_cpp/dyna/lsda/lsdatable.c",
+            "qd/cae/dyna_cpp/dyna/lsda/lsdatypes.c",
+            "qd/cae/dyna_cpp/dyna/lsda/trans.c",
+            "qd/cae/dyna_cpp/dyna/lsda/lsdaf2c.c"] + srcs
+
+    if is_linux:
+        compiler_args += ["-fpermissive"]
+
+    return srcs, compiler_args
 
 
 def setup_dyna_cpp_femzip(srcs, lib_dirs, libs, compiler_args):
@@ -171,6 +188,10 @@ if __name__ == "__main__":
     libs_dyna = []
     srcs_dyna, include_dirs_dyna, compiler_args_dyna = setup_dyna_cpp()
 
+    # compile binout
+    srcs_dyna, compiler_args_dyna = setup_dyna_cpp_binout(
+        srcs_dyna, compiler_args_dyna)
+
     # setup hdf5
     # (MUST be before femzip, due to linking)
     '''
@@ -225,7 +246,7 @@ if __name__ == "__main__":
           },
           ext_package='qd.cae',  # where to place c extensions
           ext_modules=[dyna_extension],
-          install_requires=['numpy>=1.8', 'diversipy', 'pybind11>=2.2.0'],
+          install_requires=['numpy>=1.12', 'diversipy', 'pybind11>=2.2.0'],
           keywords=['cae',
                       'simulation',
                       'engineering',
