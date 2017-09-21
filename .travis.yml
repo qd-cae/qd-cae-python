@@ -16,9 +16,9 @@ before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
   # python stuff
-  - sudo apt-get install python3-pip
-  - sudo apt-get install python3-numpy
-  - sudo apt-get install python3-scipy
+  #- sudo apt-get install python3-pip
+  #- sudo apt-get install python3-numpy
+  #- sudo apt-get install python3-scipy
   
 install:
   # new gcc
@@ -30,6 +30,7 @@ install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
+  - echo $TRAVIS_PYTHON_VERSION
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
       wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
     else
