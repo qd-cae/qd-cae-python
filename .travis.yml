@@ -46,7 +46,7 @@ install:
   - conda info -a
 
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy>=1.12
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy>=1.12 scipy
   - source activate test-environment
   #- python setup.py install
   
@@ -56,4 +56,4 @@ install:
   #- sudo CC=gcc-6 CXX=g++-6 python3 setup.py install
 
 script: 
-  - sudo python setup.py test
+  - python setup.py test
