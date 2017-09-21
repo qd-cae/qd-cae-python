@@ -189,8 +189,10 @@ if __name__ == "__main__":
     srcs_dyna, include_dirs_dyna, compiler_args_dyna = setup_dyna_cpp()
 
     # compile binout
+    '''
     srcs_dyna, compiler_args_dyna = setup_dyna_cpp_binout(
         srcs_dyna, compiler_args_dyna)
+    '''
 
     # setup hdf5
     # (MUST be before femzip, due to linking)

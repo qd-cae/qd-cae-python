@@ -6,7 +6,7 @@
 #include <dyna_cpp/db/FEMFile.hpp>
 #include <dyna_cpp/db/Node.hpp>
 #include <dyna_cpp/db/Part.hpp>
-#include <dyna_cpp/dyna/Binout.hpp>
+//#include <dyna_cpp/dyna/Binout.hpp>
 #include <dyna_cpp/dyna/D3plot.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
@@ -602,10 +602,12 @@ PYBIND11_PLUGIN(dyna_cpp)
                  keyfile_constructor);
 
   // Binout
+  /*
   const char* empty_description = { "\0" };
   pybind11::class_<Binout, std::shared_ptr<Binout>> binout_py(
     m, "QD_Binout", empty_description);
   binout_py.def(pybind11::init<std::string>(), "filepath"_a, empty_description);
+  */
 
   // module functions
   m.def("get_file_entropy",

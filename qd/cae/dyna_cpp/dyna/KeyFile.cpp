@@ -44,9 +44,9 @@ KeyFile::KeyFile()
 KeyFile::KeyFile(const std::string& _filepath,
                  bool _load_includes,
                  double _encryption_detection)
-  : load_includes(_load_includes)
+  : FEMFile(_filepath)
+  , load_includes(_load_includes)
   , encryption_detection_threshold(_encryption_detection)
-  , FEMFile(_filepath)
 {
   // check encryption
   if (encryption_detection_threshold < 0 || encryption_detection_threshold > 1)
