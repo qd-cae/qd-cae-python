@@ -46,12 +46,12 @@ install:
   - conda info -a
 
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy>=1.12 diversipy pybind11
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy>=1.12 pybind11
   - source activate test-environment
   #- python setup.py install
   
-  - sudo python -m pip install -r requirements.txt
-  - sudo CC=gcc-6 CXX=g++-6 python setup.py install
+  - python -m pip install -r requirements.txt
+  - CC=gcc-6 CXX=g++-6 python setup.py install
   #- sudo python3 -m pip install -r requirements.txt
   #- sudo CC=gcc-6 CXX=g++-6 python3 setup.py install
 
