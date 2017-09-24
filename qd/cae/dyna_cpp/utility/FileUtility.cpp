@@ -129,8 +129,8 @@ get_entropy(const std::vector<char>& _buffer)
     if (freq > 0.)
       entropy += freq * log2(freq);
   }
-
-  return abs(entropy);
+  
+  return std::abs(entropy);
 }
 
 /* === WINDOWS === */
