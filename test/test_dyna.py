@@ -243,7 +243,9 @@ class TestDynaModule(unittest.TestCase):
 
         # test encryption detection
         np.testing.assert_almost_equal(get_file_entropy(
-            "test/keyfile.key"), 4.181828, decimal=6)
+            "test/keyfile.key"), 4.104303, decimal=6)
+        np.testing.assert_almost_equal(get_file_entropy(
+            "test/keyfile_include1.key"), 2.095140, decimal=6)
         np.testing.assert_almost_equal(get_file_entropy(
             "test/keyfile_include2.key"), 7.715498, decimal=6)
 
