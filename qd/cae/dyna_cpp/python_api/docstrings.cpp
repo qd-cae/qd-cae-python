@@ -1146,8 +1146,11 @@ const char* keyfile_constructor = R"qddoc(
 
     Examples
     --------
+        >>> # load a keyfile
         >>> keyfile = KeyFile("path/to/keyfile")
-        >>> # get mesh data similar to D3plot
+        >>> # load keyfile without includes
+        >>> keyfile = KeyFile("path/to/keyfile", load_includes=False)
+        >>> # get some mesh data
         >>> node = keyfile.get_nodeByIndex(0)
 
 )qddoc";
@@ -1167,8 +1170,8 @@ const char* module_get_file_entropy_description = R"qddoc(
 
     Notes
     -----
-        The entropy of a file describes the 
-        randomness within its data. The value is
+        The shannon entropy of a file describes the 
+        randomness of the bytes in the file. The value is
         limited between 0 and 8, where 0 means 
         entirely structured and 8 means the file 
         is entirely random or encrypted.
