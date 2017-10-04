@@ -21,7 +21,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-version = "0.6.4"
+version = "0.6.5"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() == "Linux")
@@ -44,6 +44,7 @@ def setup_dyna_cpp():
         "qd/cae/dyna_cpp/db/Part.cpp",
         "qd/cae/dyna_cpp/dyna/D3plotBuffer.cpp",
         "qd/cae/dyna_cpp/dyna/D3plot.cpp",
+        "qd/cae/dyna_cpp/dyna/RawD3plot.cpp",
         "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
         "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
         "qd/cae/dyna_cpp/utility/FileUtility.cpp",

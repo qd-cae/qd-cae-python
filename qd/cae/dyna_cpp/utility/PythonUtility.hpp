@@ -19,6 +19,8 @@ extern "C" {
 #include <type_traits>
 #include <vector>
 
+#include <dyna_cpp/math/Tensor.hpp>
+
 // Python3
 #if PY_MAJOR_VERSION >= 3
 #define PyInt_Check(arg) PyLong_Check(arg)
@@ -210,6 +212,43 @@ vector_to_nparray(const std::vector<std::vector<T>>& _data)
   }
 
   return std::move(_array);
+}
+
+/** Convert an internal tensor to numpy
+ *
+ * @param _tensor : tensor
+ * @return ret : numpy array
+ */
+template<typename T>
+pybind11::array_t<T>
+tensor_to_nparray(qd::Tensor<T>& _tensor)
+{
+
+  if (_tensor.size() == 0) {
+    return std::move(create_empty_array<T>(1));
+  }
+
+  // array allocation
+  // pybind11::array_t<T, py::array::c_style> _array(tensor.get_shape());
+
+  // compute shape
+  // auto shape = tensor.get_shape();
+  auto data = _tensor.get_data();
+  // std::vector<size_t> strides(shape.size());
+  // strides[0] = sizeof(T);
+  // for (size_t ii = 1; ii < strides.size(); ++ii) {
+  //  strides[ii] = strides[ii - 1] * shape[ii - 1];
+  //}
+
+  pybind11::array_t<T, pybind11::array::c_style> ret;
+  ret.resize(_tensor.get_shape());
+  std::copy(data.begin(), data.end(), ret.mutable_data());
+
+  // do the thing
+  return ret;
+
+  // std::copy(
+  //  _data[iRow].begin(), _data[iRow].end(), (T*)_array.mutable_data() + pos);
 }
 
 } // end:namespace:py

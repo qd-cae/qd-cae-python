@@ -4,10 +4,10 @@
 
 #include <bitset>
 #include <cstdint>
+#include <cstring> // std::memcopy
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <cstring> // std::memcopy
 #include <vector>
 
 namespace qd {
@@ -46,6 +46,11 @@ public:
                                int32_t _length,
                                std::vector<float>& _buffer);
   inline std::string read_str(int32_t _iWord, int32_t _length);
+  template<typename T>
+  void read_array(int32_t _iWord,
+                  int32_t _length,
+                  std::vector<T>& _buffer,
+                  size_t _buffer_beginning = 0);
 };
 
 /*
@@ -90,6 +95,35 @@ AbstractBuffer::read_float(int32_t iWord)
   // float*>(&current_buffer[iWord*this->wordSize]);
   return ret;
   // return (float) this->buffer[iWord*this->wordSize];
+}
+
+template<typename T>
+void
+AbstractBuffer::read_array(int32_t _iWord,
+                           int32_t _length,
+                           std::vector<T>& _buffer,
+                           size_t _buffer_beginning)
+{
+
+#ifdef QD_DEBUG
+  if (_buffer.capacity() < _length)
+    throw(std::invalid_argument(
+      "Can not read array, container capacity too small."));
+  if (this->current_buffer.capacity() <= (_iWord + _length) * this->wordSize)
+    throw(std::invalid_argument(
+      "AbstractBuffer::read_array tries to read beyond the buffer size."));
+#endif
+
+  /*
+  BUGGY
+  int32_t pos = _iWord*this->wordSize;
+  std::copy(&current_buffer[pos],
+            &current_buffer[pos]+_length*sizeof(float),
+            &_buffer[0]);
+  */
+  std::memcpy(&_buffer[_buffer_beginning],
+              &current_buffer[_iWord * this->wordSize],
+              sizeof(T) * _length);
 }
 
 /*

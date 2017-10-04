@@ -9,6 +9,7 @@
 //#include <dyna_cpp/dyna/Binout.hpp>
 #include <dyna_cpp/dyna/D3plot.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
+#include <dyna_cpp/dyna/RawD3plot.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 
@@ -116,15 +117,16 @@ struct type_caster<std::vector<std::shared_ptr<qd::Part>>> : ListCasterParts
 namespace qd {
 
 /*========= PLUGIN: dyna_cpp =========*/
-PYBIND11_PLUGIN(dyna_cpp)
+PYBIND11_MODULE(dyna_cpp, m)
 {
-  pybind11::module m("dyna_cpp", "c++ python wrapper for ls-dyna module");
+  m.doc() = "c++ python wrapper for ls-dyna module";
+  // pybind11::module m("dyna_cpp", "c++ python wrapper for ls-dyna module");
 
   // load numpy
   if (_import_array() < 0) {
     PyErr_SetString(PyExc_ImportError,
                     "numpy.core.multiarray failed to import");
-    return nullptr;
+    return; // nullptr;
   };
 
   // disable sigantures for documentation
@@ -592,6 +594,19 @@ PYBIND11_PLUGIN(dyna_cpp)
   "docs missing");
   */
 
+  pybind11::class_<RawD3plot, std::shared_ptr<RawD3plot>> raw_d3plot_py(
+    m, "RawD3plot");
+  raw_d3plot_py
+    .def(
+      pybind11::init<std::string, bool>(), "filepath"_a, "use_femzip"_a = false)
+    .def("get_node_data",
+         [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
+           return qd::py::tensor_to_nparray(
+             _d3plot->get_node_data(_entry_name));
+         },
+         "variable_name"_a,
+         pybind11::return_value_policy::take_ownership);
+
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
     m, "QD_KeyFile", keyfile_description);
@@ -618,7 +633,7 @@ PYBIND11_PLUGIN(dyna_cpp)
         pybind11::return_value_policy::take_ownership,
         module_get_file_entropy_description);
 
-  return m.ptr();
+  // return m.ptr();
 }
 
 } //  namespace qd
