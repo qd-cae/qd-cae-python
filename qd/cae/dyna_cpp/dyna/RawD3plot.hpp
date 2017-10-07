@@ -51,6 +51,7 @@ private:
   int32_t dyna_istrn;  // indicates whether strain was written
   int32_t dyna_neiph;  // extra variables for solids
   int32_t dyna_neips;  // extra variables for shells
+  int32_t dyna_neipb;  // extra variables for beams
 
   int32_t dyna_iu; // Indicators for: disp/vel/accel/temp
   int32_t dyna_iv;
@@ -85,6 +86,7 @@ private:
   int32_t dyna_airbag_state_nvars; // number of state vars
   int32_t dyna_airbag_nparticles;  // number of particles
   int32_t dyna_airbag_state_geom;  // number of state geometry vars
+  std::vector<int32_t> dyna_airbag_nlist; // type of airbag var (1=int, 2=float)
 
   // Own Variables
   int32_t nStates;
@@ -93,6 +95,7 @@ private:
   bool own_nel10;               // dunno anymore
   bool own_external_numbers_I8; // if 64bit integers written, not 32
   bool own_has_internal_energy;
+  int32_t own_nDeletionVars;
 
   int32_t wordPosition; // tracker of word position in file
   int32_t wordsToRead;
@@ -104,19 +107,9 @@ private:
   std::unique_ptr<AbstractBuffer> buffer;
 
   // Data
-  Tensor<int32_t> node_ids;
-  Tensor<int32_t> elem_beam_nodes;
-  Tensor<int32_t> elem_beams_ids;
-  Tensor<int32_t> elem_shells_nodes;
-  Tensor<int32_t> elem_shells_ids;
-  Tensor<int32_t> elem_tshells_nodes;
-  Tensor<int32_t> elem_tshells_ids;
-  Tensor<int32_t> elem_solids_nodes;
-  Tensor<int32_t> elem_solids_ids;
-  Tensor<int32_t> part_ids;
-  std::vector<std::string> part_names;
-  std::map<std::string, Tensor<float>> node_data;
-  std::vector<Tensor<float>> elem_results;
+  std::map<std::string, Tensor<int32_t>> int_data;
+  std::map<std::string, Tensor<float>> float_data;
+  std::map<std::string, std::vector<std::string>> string_data;
   std::vector<int32_t> matsection;
 
   // header and metadata
@@ -138,14 +131,13 @@ private:
 
   // state reading
   void read_states_init();
-  void read_states_parse(std::vector<std::string>);
-  int32_t read_states_parse_readMode(const std::string& _variable) const;
   void read_states_displacement();
   void read_states_velocity();
   void read_states_acceleration();
-  void read_states_elem8(size_t iState);
-  void read_states_elem4(size_t iState);
-  void read_states_elem4th(size_t iState);
+  void read_states_elem8();
+  void read_states_elem4();
+  void read_states_elem4th();
+  void read_states_elem2();
   void read_states_airbag();
   bool isFileEnding(int32_t _iWord);
 
@@ -158,7 +150,13 @@ public:
   size_t get_nTimesteps() const;
   std::string get_title() const;
   std::vector<float> get_timesteps() const;
-  Tensor<float> get_node_data(const std::string& name);
+
+  Tensor<int32_t> get_int_data(const std::string& _name);
+  std::vector<std::string> get_int_names() const;
+  std::vector<std::string> get_string_data(const std::string& _name);
+  std::vector<std::string> get_string_names() const;
+  Tensor<float> get_float_data(const std::string& _name);
+  std::vector<std::string> get_float_names() const;
 };
 
 } // namespace std

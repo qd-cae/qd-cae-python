@@ -418,7 +418,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          //  DB_Elements::get_elementByIndex<long>,
          [](std::shared_ptr<DB_Elements> _db_elems,
             Element::ElementType _eType,
-            pybind11::tuple _list) {
+            pybind11::list _list) {
            return _db_elems->get_elementByIndex(
              _eType,
              qd::py::container_to_vector<long>(
@@ -594,17 +594,37 @@ PYBIND11_MODULE(dyna_cpp, m)
   "docs missing");
   */
 
+  // RawD3plot
   pybind11::class_<RawD3plot, std::shared_ptr<RawD3plot>> raw_d3plot_py(
     m, "RawD3plot");
   raw_d3plot_py
     .def(
       pybind11::init<std::string, bool>(), "filepath"_a, "use_femzip"_a = false)
-    .def("get_node_data",
+    .def("get_int_data",
+         [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
+           return qd::py::tensor_to_nparray(_d3plot->get_int_data(_entry_name));
+         },
+         "name"_a,
+         pybind11::return_value_policy::take_ownership)
+    .def("get_int_names",
+         &RawD3plot::get_int_names,
+         pybind11::return_value_policy::take_ownership)
+    .def("get_string_data",
+         &RawD3plot::get_string_data,
+         "name"_a,
+         pybind11::return_value_policy::take_ownership)
+    .def("get_string_names",
+         &RawD3plot::get_string_names,
+         pybind11::return_value_policy::take_ownership)
+    .def("get_float_data",
          [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
            return qd::py::tensor_to_nparray(
-             _d3plot->get_node_data(_entry_name));
+             _d3plot->get_float_data(_entry_name));
          },
-         "variable_name"_a,
+         "name"_a,
+         pybind11::return_value_policy::take_ownership)
+    .def("get_float_names",
+         &RawD3plot::get_float_names,
          pybind11::return_value_policy::take_ownership);
 
   // KeyFile

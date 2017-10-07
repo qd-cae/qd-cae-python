@@ -59,6 +59,7 @@ private:
   int32_t dyna_istrn;  // indicates whether strain was written
   int32_t dyna_neiph;  // extra variables for solids
   int32_t dyna_neips;  // extra variables for shells
+  int32_t dyna_neipb;  // extra variables for beams
 
   int32_t dyna_iu; // Indicators for: disp/vel/accel/temp
   int32_t dyna_iv;

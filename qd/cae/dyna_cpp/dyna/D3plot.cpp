@@ -62,6 +62,7 @@ D3plot::D3plot(std::string _filename,
   , dyna_istrn(-1)
   , dyna_neiph(-1)
   , dyna_neips(-1)
+  , dyna_neipb(-1)
   , dyna_iu(-1)
   , dyna_iv(-1)
   , dyna_ia(-1)
@@ -314,6 +315,7 @@ D3plot::read_header()
   // Header extra!
   if (this->dyna_extra > 0) {
     this->dyna_nel20 = this->buffer->read_int(64);
+    this->dyna_neipb = this->buffer->read_int(67);
   } else {
     this->dyna_nel20 = 0;
   }
@@ -2216,8 +2218,7 @@ D3plot::read_states_airbag()
   // 2. current bag volume
 
   // Particle state data
-  // wordsToRead = this->dyna_airbag_nparticles *
-  // this->dyna_airbag_state_nvars;
+  // wordsToRead = dyna_airbag_nparticles * dyna_airbag_state_nvars;
   // for dyna_airbag_nparticles
   // 1. gas id
   // 2. chamber id

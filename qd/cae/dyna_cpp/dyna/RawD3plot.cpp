@@ -47,6 +47,7 @@ RawD3plot::RawD3plot(std::string _filename, bool _useFemzip)
   , dyna_istrn(-1)
   , dyna_neiph(-1)
   , dyna_neips(-1)
+  , dyna_neipb(-1)
   , dyna_iu(-1)
   , dyna_iv(-1)
   , dyna_ia(-1)
@@ -75,6 +76,7 @@ RawD3plot::RawD3plot(std::string _filename, bool _useFemzip)
   , own_nel10(false)
   , own_external_numbers_I8(false)
   , own_has_internal_energy(false)
+  , own_nDeletionVars(0)
   , wordPosition(0)
   , wordsToRead(0)
   , wordPositionStates(0)
@@ -246,6 +248,7 @@ RawD3plot::read_header()
   // Header extra!
   if (this->dyna_extra > 0) {
     this->dyna_nel20 = this->buffer->read_int(64);
+    this->dyna_neipb = this->buffer->read_int(67);
   } else {
     this->dyna_nel20 = 0;
   }
@@ -426,25 +429,49 @@ RawD3plot::read_airbag_section()
 #endif
 
   // skip airbag particle section
-  if ((this->dyna_npefg > 0) && (this->dyna_npefg < 10000000)) {
+  if ((dyna_npefg > 0) && (dyna_npefg < 10000000)) {
 
-    this->dyna_airbag_npartgas = this->dyna_npefg % 1000; // nAirbags?!
-    this->dyna_airbag_subver = this->dyna_npefg / 1000;   // n
+    dyna_airbag_npartgas = dyna_npefg % 1000; // nAirbags?!
+    dyna_airbag_subver = dyna_npefg / 1000;   // n
 
-    this->dyna_airbag_ngeom = this->buffer->read_int(wordPosition++);
-    this->dyna_airbag_state_nvars = this->buffer->read_int(wordPosition++);
-    this->dyna_airbag_nparticles = this->buffer->read_int(wordPosition++);
-    this->dyna_airbag_state_geom = this->buffer->read_int(wordPosition++);
-    this->dyna_airbag_nchamber = 0;
+    dyna_airbag_ngeom = this->buffer->read_int(wordPosition++);
+    dyna_airbag_state_nvars = this->buffer->read_int(wordPosition++);
+    dyna_airbag_nparticles = this->buffer->read_int(wordPosition++);
+    dyna_airbag_state_geom = this->buffer->read_int(wordPosition++);
+    dyna_airbag_nchamber = 0;
     if (dyna_airbag_subver == 4) {
-      this->dyna_airbag_nchamber = this->buffer->read_int(wordPosition++);
+      dyna_airbag_nchamber = this->buffer->read_int(wordPosition++);
     }
 
-    int32_t dyna_airbag_nlist =
+    // read nlist (type of state vars)
+    int32_t dyna_airbag_nlist_size =
       dyna_airbag_ngeom + dyna_airbag_state_nvars + dyna_airbag_state_geom;
 
-    wordPosition += dyna_airbag_nlist; // type of each variable (1=int, 2=float)
-    wordPosition += 8 * dyna_airbag_nlist; // 8 char variable names
+    dyna_airbag_nlist.resize(dyna_airbag_nlist_size);
+    this->buffer->read_array(
+      wordPosition, dyna_airbag_nlist_size, dyna_airbag_nlist);
+
+    wordPosition +=
+      dyna_airbag_nlist_size; // type of each variable (1=int, 2=float)
+
+    // nlist variable names (1 Word is a char ... whoever had that idea ...)
+    auto& vec = string_data["airbag_all_variable_names"];
+    vec.resize(dyna_airbag_nlist_size);
+
+    std::vector<int32_t> char_buffer(8 * dyna_airbag_nlist_size);
+    this->buffer->read_array(
+      wordPosition, 8 * dyna_airbag_nlist_size, char_buffer);
+
+    std::string _tmp_string;
+    _tmp_string.resize(8);
+
+    for (size_t iString = 0; iString < dyna_airbag_nlist_size; ++iString) {
+      for (size_t iChar = 0; iChar < 8; ++iChar)
+        _tmp_string[iChar] = (char)char_buffer[iString * 8 + iChar];
+      vec[iString] = _tmp_string;
+    }
+
+    wordPosition += 8 * dyna_airbag_nlist_size; // 8 char variable names
 
 #ifdef QD_DEBUG
     std::cout << "dyna_airbag_npartgas: " << this->dyna_airbag_npartgas << "\n"
@@ -457,7 +484,8 @@ RawD3plot::read_airbag_section()
               << "dyna_airbag_state_geom: " << this->dyna_airbag_state_geom
               << "\n"
               << "dyna_airbag_nchamber: " << this->dyna_airbag_nchamber << "\n"
-              << "dyna_airbag_nlist: " << dyna_airbag_nlist << std::endl;
+              << "dyna_airbag_nlist_size: " << dyna_airbag_nlist_size
+              << std::endl;
 #endif
   } else {
     this->dyna_airbag_npartgas = 0;
@@ -472,27 +500,28 @@ RawD3plot::read_airbag_section()
 void
 RawD3plot::read_geometry()
 {
+
 #ifdef QD_DEBUG
   std::cout << "> GEOMETRY" << std::endl;
 #endif
 
   /* === NODES === */
-  this->node_data["coords"] = this->read_geometry_nodes();
+  this->float_data["node_coordinates"] = this->read_geometry_nodes();
 
   /* === ELEMENTS === */
   // Order MATTERS, do not swap routines.
 
   // 8-Node Solids
-  this->elem_solids_nodes = this->read_geometry_elem8();
+  this->int_data["elem_solid_data"] = this->read_geometry_elem8();
 
   // 8-Node Thick Shells
-  this->elem_tshells_nodes = read_geometry_elem4th();
+  this->int_data["elem_tshell_data"] = read_geometry_elem4th();
 
   // 2-Node Beams
-  this->elem_beam_nodes = this->read_geometry_elem2();
+  this->int_data["elem_beam_data"] = this->read_geometry_elem2();
 
   // 4-Node Elements
-  this->elem_shells_nodes = this->read_geometry_elem4();
+  this->int_data["elem_shell_data"] = this->read_geometry_elem4();
 
   /* === NUMBERING === */
   this->read_geometry_numbering();
@@ -763,37 +792,42 @@ RawD3plot::read_geometry_numbering()
   }
   // wordPosition += 16; // header length is 16
   wordsToRead = dyna_numnp;
-  this->node_ids.resize({ static_cast<size_t>(dyna_numnp) });
+  auto& node_ids = this->int_data["node_ids"];
+  node_ids.resize({ static_cast<size_t>(dyna_numnp) });
   this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, this->node_ids.get_data());
+    wordPosition, wordsToRead, node_ids.get_data());
 
   // Solid IDs
   wordPosition += wordsToRead;
   wordsToRead = dyna_nel8;
-  this->elem_solids_ids.resize({ static_cast<size_t>(dyna_nel8) });
+  auto& elem_solid_ids = this->int_data["elem_solid_ids"];
+  elem_solid_ids.resize({ static_cast<size_t>(dyna_nel8) });
   this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, this->elem_solids_ids.get_data());
+    wordPosition, wordsToRead, elem_solid_ids.get_data());
 
   // Beam IDs
   wordPosition += wordsToRead;
   wordsToRead = dyna_nel2;
-  this->elem_beams_ids.resize({ static_cast<size_t>(dyna_nel2) });
+  auto& elem_beam_ids = this->int_data["elem_beam_ids"];
+  elem_beam_ids.resize({ static_cast<size_t>(dyna_nel2) });
   this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, this->elem_beams_ids.get_data());
+    wordPosition, wordsToRead, elem_beam_ids.get_data());
 
   // Shell IDs
   wordPosition += wordsToRead;
   wordsToRead = dyna_nel4;
-  this->elem_shells_ids.resize({ static_cast<size_t>(dyna_nel4) });
+  auto& elem_shell_ids = this->int_data["elem_shell_ids"];
+  elem_shell_ids.resize({ static_cast<size_t>(dyna_nel4) });
   this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, this->elem_shells_ids.get_data());
+    wordPosition, wordsToRead, elem_shell_ids.get_data());
 
   // Thick Shell IDs
   wordPosition += wordsToRead;
   wordsToRead = dyna_nelth;
-  this->elem_tshells_ids.resize({ static_cast<size_t>(dyna_nelth) });
+  auto& elem_tshell_ids = this->int_data["elem_tshell_ids"];
+  elem_tshell_ids.resize({ static_cast<size_t>(dyna_nelth) });
   this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, this->elem_tshells_ids.get_data());
+    wordPosition, wordsToRead, elem_tshell_ids.get_data());
   wordPosition += wordsToRead;
 
 #ifdef QD_DEBUG
@@ -820,6 +854,7 @@ RawD3plot::read_part_ids()
 #endif
 
   // allocate
+  auto& part_ids = this->int_data["part_ids"];
   part_ids.resize({ static_cast<size_t>(dyna_nmmat) });
 
   // compute memory offset
@@ -852,6 +887,9 @@ RawD3plot::read_part_ids()
 #endif
 }
 
+/** Read the geometry airbag data
+ *
+ */
 void
 RawD3plot::read_geometry_airbag()
 {
@@ -863,6 +901,14 @@ RawD3plot::read_geometry_airbag()
       int32_t dyna_airbag_des = this->dyna_npefg / 10000000;
       wordPosition += dyna_airbag_des;
     }
+
+    auto& tensor = int_data["airbag_geometry"];
+    tensor.resize({ static_cast<size_t>(dyna_airbag_npartgas),
+                    static_cast<size_t>(dyna_airbag_ngeom) });
+
+    this->buffer->read_array(wordPosition,
+                             dyna_airbag_npartgas * dyna_airbag_ngeom,
+                             tensor.get_data());
 
     // skip airbag infos
     if (this->dyna_airbag_ngeom == 5) {
@@ -890,6 +936,9 @@ for (auto iAirbag = 0; iAirbag < this->dyna_airbag_npartgas; ++iAirbag) {
   } // if dyna_npefg
 }
 
+/** Read the part names from the d3plot
+ *
+ */
 void
 RawD3plot::read_part_names()
 {
@@ -907,6 +956,7 @@ RawD3plot::read_part_names()
     throw(std::runtime_error(
       "negative number of parts in part section makes no sense."));
 
+  auto& part_names = this->string_data["part_names"];
   for (int32_t ii = 0; ii < this->dyna_numprop; ii++) {
 
     // start of the section of current part in the file
@@ -915,13 +965,16 @@ RawD3plot::read_part_names()
     // this id is wrong ... and don't ask me why
     // int32_t partID = this->buffer->read_int(start);
     std::string part_name = this->buffer->read_str(start + 1, 18);
-    this->part_names.push_back(part_name);
+    part_names.push_back(part_name);
   }
 
   // update position
   wordPosition += 1 + (this->dyna_numprop + 1) * 19 + 1;
 }
 
+/** Read all states in the d3plot
+ *
+ */
 void
 RawD3plot::read_states()
 {
@@ -937,13 +990,12 @@ RawD3plot::read_states()
     this->dyna_airbag_nparticles * this->dyna_airbag_state_nvars;
 
   // Variable Deletion table
-  int32_t nDeletionVars = 0;
   if (dyna_mdlopt == 0) {
     // ok
   } else if (dyna_mdlopt == 1) {
-    nDeletionVars = dyna_numnp;
+    own_nDeletionVars = dyna_numnp;
   } else if (dyna_mdlopt == 2) {
-    nDeletionVars = dyna_nel2 + dyna_nel4 + dyna_nel8 + dyna_nelth;
+    own_nDeletionVars = dyna_nel2 + dyna_nel4 + dyna_nel8 + dyna_nelth;
   } else {
     throw(std::runtime_error("Parameter mdlopt:" + std::to_string(dyna_mdlopt) +
                              " makes no sense."));
@@ -1014,18 +1066,24 @@ RawD3plot::read_states()
         read_states_acceleration();
 
       // solids
-      // read_states_elem8(iState);
-      // thick shells
-      // read_states_elem4th(iState);
-      // shells
-      // read_states_elem4(iState);
+      read_states_elem8();
 
-      // read_states_airbag(); // skips airbag section
+      // thick shells
+      read_states_elem4th();
+
+      //  beams
+      read_states_elem2();
+
+      // shells
+      read_states_elem4();
+
+      // airbag
+      read_states_airbag();
 
       // update position
       // +1 is just for time word
-      wordPosition +=
-        nAirbagVars + nVarsNodes + nVarsElems + nDeletionVars + dyna_nglbv + 1;
+      wordPosition += nAirbagVars + nVarsNodes + nVarsElems +
+                      own_nDeletionVars + dyna_nglbv + 1;
 
       iState++;
     }
@@ -1036,6 +1094,9 @@ RawD3plot::read_states()
   this->buffer->end_nextState();
 }
 
+/** Read the nodal displacement in the state section
+ *
+ */
 void
 RawD3plot::read_states_displacement()
 {
@@ -1043,53 +1104,71 @@ RawD3plot::read_states_displacement()
   if (dyna_iu != 1)
     return;
 
-  const std::string var_name = "disp";
+  const std::string var_name = "node_displacement";
 
   // compute offsets
   int32_t start = wordPosition + dyna_nglbv + 1;
+
   wordsToRead = dyna_numnp * dyna_ndim;
 
+#ifdef QD_DEBUG
+  std::cout << "> read_states_displacement at " << start << std::endl;
+#endif
+
   // do the magic thing
-  auto& tensor = node_data[var_name];
+  auto& tensor = float_data[var_name];
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
-    shape = { static_cast<size_t>(dyna_numnp), 0, 3 };
+    shape = { 0, static_cast<size_t>(dyna_numnp), 3 };
   }
-  shape[1]++; // increase timestep count
+  shape[0]++; // increase timestep count
   auto offset = tensor.size();
   tensor.resize(shape);
 
   this->buffer->read_array(start, wordsToRead, tensor.get_data(), offset);
 }
 
+/** Read the nodal velocity in the state section
+ *
+ */
 void
 RawD3plot::read_states_velocity()
 {
-  const std::string var_name = "vel";
+
+  const std::string var_name = "node_velocity";
 
   if (dyna_iv != 1)
     return;
 
   int32_t start =
     1 + dyna_nglbv + (dyna_iu)*dyna_numnp * dyna_ndim + wordPosition;
+
   wordsToRead = dyna_numnp * dyna_ndim;
 
-  auto& tensor = node_data[var_name];
+#ifdef QD_DEBUG
+  std::cout << "> read_states_velocity at " << start << std::endl;
+#endif
+
+  auto& tensor = float_data[var_name];
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
-    shape = { static_cast<size_t>(dyna_numnp), 0, 3 };
+    shape = { 0, static_cast<size_t>(dyna_numnp), 3 };
   }
-  shape[1]++; // increase timestep count
+  shape[0]++; // increase timestep count
   auto offset = tensor.size();
   tensor.resize(shape);
 
   this->buffer->read_array(start, wordsToRead, tensor.get_data(), offset);
 }
 
+/** Read the nodal acceleration in the state section
+ *
+ */
 void
 RawD3plot::read_states_acceleration()
 {
-  const std::string var_name = "accel";
+
+  const std::string var_name = "node_acceleration";
 
   if (dyna_ia != 1)
     return;
@@ -1097,20 +1176,377 @@ RawD3plot::read_states_acceleration()
   int32_t start = 1 + dyna_nglbv +
                   (dyna_iu + dyna_iv) * dyna_numnp * dyna_ndim + wordPosition;
   wordsToRead = dyna_numnp * dyna_ndim;
-  int32_t iNode = 0;
 
-  auto& tensor = node_data[var_name];
+#ifdef QD_DEBUG
+  std::cout << "> read_states_acceleration at " << start << std::endl;
+#endif
+
+  auto& tensor = float_data[var_name];
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
-    shape = { static_cast<size_t>(dyna_numnp), 0, 3 };
+    shape = { 0, static_cast<size_t>(dyna_numnp), 3 };
   }
-  shape[1]++; // increase timestep count
+  shape[0]++; // increase timestep count
   auto offset = tensor.size();
   tensor.resize(shape);
 
   this->buffer->read_array(start, wordsToRead, tensor.get_data(), offset);
 }
 
+/** Read the state variables for solid elements
+ *
+ */
+void
+RawD3plot::read_states_elem8()
+{
+
+  if ((dyna_nv3d <= 0) && (dyna_nel8 <= 0))
+    return;
+
+  int32_t start = this->wordPosition + 1 // time
+                  + dyna_nglbv +
+                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim;
+
+  wordsToRead = dyna_nv3d * dyna_nel8;
+
+#ifdef QD_DEBUG
+  std::cout << "> read_states_elem8 at " << start << std::endl;
+#endif
+
+  // allocate
+  auto& tensor = float_data["elem_solid_results"];
+  auto shape = tensor.get_shape();
+  if (shape.size() == 0) {
+    shape = {
+      0, static_cast<size_t>(dyna_nel8), static_cast<size_t>(dyna_nv3d),
+    };
+  }
+  shape[0]++; // one more timestep
+  auto offset = tensor.size();
+  tensor.resize(shape);
+
+  // read
+  this->buffer->read_array(start, wordsToRead, tensor.get_data(), offset);
+}
+
+/** Read the state variables for shell elements
+ *
+ */
+void
+RawD3plot::read_states_elem4()
+{
+
+  if ((dyna_nv2d <= 0) || (dyna_nel4 - dyna_numrbe <= 0))
+    return;
+
+  // prepare looping
+  int32_t start =
+    this->wordPosition + 1 // time
+    + dyna_nglbv + (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+    dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt + dyna_nv1d * dyna_nel2;
+
+  wordsToRead = dyna_nv2d * (dyna_nel4 - dyna_numrbe);
+
+#ifdef QD_DEBUG
+  std::cout << "> read_states_elem4 at " << start << std::endl;
+#endif
+
+  // offsets
+  int32_t iPlastStrainOffset = this->dyna_ioshl1 * 6; // stresses before?
+  int32_t iHistoryOffset =
+    iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
+  int32_t iLayerSize = dyna_neips + iHistoryOffset;
+
+  int32_t nLayerVars = dyna_maxint * iLayerSize;
+  size_t nLayerVars_unsigned = static_cast<size_t>(nLayerVars);
+  int32_t nNormalVars = dyna_nv2d - dyna_maxint * iLayerSize;
+  size_t nNormalVars_unsigned = static_cast<size_t>(nNormalVars);
+
+  // allocate
+  auto& shell_layer_vars = float_data["elem_shell_results_layers"];
+  auto shape = shell_layer_vars.get_shape();
+  if (shape.size() == 0) {
+    shape = { 0,
+              static_cast<size_t>(dyna_nel4 - dyna_numrbe),
+              static_cast<size_t>(dyna_maxint),
+              static_cast<size_t>(iLayerSize) };
+  }
+  shape[0]++; // one more timestep
+  auto offset_shell_layer_vars = shell_layer_vars.size();
+  shell_layer_vars.resize(shape);
+
+  auto& shell_vars = float_data["elem_shell_results"];
+  auto shape2 = shell_vars.get_shape();
+  if (shape2.size() == 0) {
+    shape2 = {
+      0,
+      static_cast<size_t>(dyna_nel4 - dyna_numrbe),
+      static_cast<size_t>(nNormalVars),
+    };
+  }
+  shape2[0]++; // one more timestep
+  auto offset_shell_vars = shell_vars.size();
+  shell_vars.resize(shape2);
+
+  // Do the thing ...
+  for (int32_t ii = start; ii < start + wordsToRead; ii += dyna_nv2d) {
+
+    this->buffer->read_array(
+      ii, nLayerVars, shell_layer_vars.get_data(), offset_shell_layer_vars);
+    offset_shell_layer_vars += nLayerVars_unsigned;
+
+    this->buffer->read_array(
+      ii + nLayerVars, nNormalVars, shell_vars.get_data(), offset_shell_vars);
+    offset_shell_vars += nNormalVars_unsigned;
+
+  } // for elements
+}
+
+/** Read the state data of the thick shell elements
+ *
+ */
+void
+RawD3plot::read_states_elem4th()
+{
+
+  if (dyna_nv3dt <= 0)
+    return;
+
+  // prepare looping
+  int32_t start = this->wordPosition + 1 // time
+                  + dyna_nglbv +
+                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+                  dyna_nv3d * dyna_nel8;
+
+  wordsToRead = dyna_nelth * dyna_nv3dt;
+
+#ifdef QD_DEBUG
+  std::cout << "> read_states_elem4th at " << start << std::endl;
+#endif
+
+  // offsets
+  int32_t iPlastStrainOffset = this->dyna_ioshl1 * 6; // stresses before?
+  int32_t iHistoryOffset =
+    iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
+  int32_t iLayerSize = dyna_neips + iHistoryOffset;
+
+  int32_t nLayerVars = dyna_maxint * iLayerSize;
+  size_t nLayerVars_unsigned = static_cast<size_t>(nLayerVars);
+  int32_t nNormalVars = dyna_nv3dt - dyna_maxint * iLayerSize;
+  size_t nNormalVars_unsigned = static_cast<size_t>(nNormalVars);
+
+  // allocate
+  auto& tshell_layer_vars = float_data["elem_tshell_results_layers"];
+  auto shape = tshell_layer_vars.get_shape();
+  if (shape.size() == 0) {
+    shape = { 0,
+              static_cast<size_t>(dyna_nelth),
+              static_cast<size_t>(dyna_maxint),
+              static_cast<size_t>(iLayerSize) };
+  }
+  shape[0]++; // one more timestep
+  auto offset_tshell_layer_vars = tshell_layer_vars.size();
+  tshell_layer_vars.resize(shape);
+
+  auto& tshell_vars = float_data["elem_tshell_results"];
+  auto shape2 = tshell_vars.get_shape();
+  if (shape2.size() == 0) {
+    shape2 = {
+      0, static_cast<size_t>(dyna_nelth), static_cast<size_t>(nNormalVars),
+    };
+  }
+  shape2[0]++; // one more timestep
+  auto offset_tshell_vars = tshell_vars.size();
+  tshell_vars.resize(shape2);
+
+  // Do the thing ...
+  for (int32_t ii = start; ii < start + wordsToRead; ii += dyna_nv3dt) {
+
+    this->buffer->read_array(
+      ii, nLayerVars, tshell_layer_vars.get_data(), offset_tshell_layer_vars);
+    offset_tshell_layer_vars += nLayerVars_unsigned;
+
+    this->buffer->read_array(
+      ii + nLayerVars, nNormalVars, tshell_vars.get_data(), offset_tshell_vars);
+    offset_tshell_vars += nNormalVars_unsigned;
+
+  } // for elements
+}
+
+/** Read the state variables for beam elements
+ *
+ */
+void
+RawD3plot::read_states_elem2()
+{
+
+  if ((dyna_nv2d <= 0) || (dyna_nel2 <= 0))
+    return;
+
+  // prepare looping
+  int32_t start = this->wordPosition + 1 // time
+                  + dyna_nglbv +
+                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+                  dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt;
+
+  wordsToRead = dyna_nv1d * dyna_nel2;
+
+#ifdef QD_DEBUG
+  std::cout << "> read_states_elem2 at " << start << std::endl;
+#endif
+
+  // allocate
+  auto& tensor = float_data["elem_beam_results"];
+  auto shape = tensor.get_shape();
+  if (shape.size() == 0) {
+    shape = {
+      0, static_cast<size_t>(dyna_nel2), static_cast<size_t>(dyna_nv2d),
+    };
+  }
+  shape[0]++; // one more timestep
+  auto offset = tensor.size();
+  tensor.resize(shape);
+
+  // read
+  this->buffer->read_array(start, wordsToRead, tensor.get_data(), offset);
+}
+
+/** Read the state variables for airbags
+ *
+ * (currently disabled)
+ */
+void
+RawD3plot::read_states_airbag()
+{
+
+  if ((dyna_airbag_nparticles <= 0) || (dyna_airbag_state_nvars <= 0))
+    return;
+
+  int32_t start =
+    this->wordPosition + 1 // time
+    + dyna_nglbv + (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+    dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt + dyna_nv1d * dyna_nel2 +
+    dyna_nv2d * (dyna_nel4 - dyna_numrbe) + own_nDeletionVars;
+
+#ifdef QD_DEBUG
+  std::cout << "> read_states_airbag at " << start << std::endl;
+#endif
+
+  // Airbag geometry data
+  // wordsToRead = this->dyna_airbag_npartgas * this->dyna_airbag_state_geom;
+  // for dyna_airbag_npartgas
+  // 1. number of active particles
+  // 2. current bag volume
+
+  // Particle state data
+  wordsToRead = dyna_airbag_nparticles * dyna_airbag_state_nvars;
+
+  // airbag_all_variable_names true order is:
+  // geometry vars -> particle state vars -> airbag state vars
+  auto airbag_all_variable_names = string_data["airbag_all_variable_names"];
+
+  auto& airbag_particle_int_var_names =
+    string_data["airbag_particle_int_variable_names"];
+  auto& airbag_particle_float_var_names =
+    string_data["airbag_particle_float_variable_names"];
+
+  size_t nIntegerVars = 0;
+  size_t nFloatVars = 0;
+  // 2 airbag state vars offset
+  int32_t jj = 0;
+  for (int32_t ii = 2; ii < dyna_airbag_nlist.size(); ++ii) {
+    if (dyna_airbag_nlist[ii] == 1) {
+      airbag_particle_int_var_names.push_back(
+        airbag_all_variable_names[dyna_airbag_ngeom + (ii - 2)]);
+      ++nIntegerVars;
+    } else if (dyna_airbag_nlist[ii] == 2) {
+      airbag_particle_float_var_names.push_back(
+        airbag_all_variable_names[dyna_airbag_ngeom + (ii - 2)]);
+      ++nFloatVars;
+    } else {
+      throw(
+        std::runtime_error("dyna_airbag_nlist entry != 1 or 2 makes no sense"));
+    }
+  }
+
+  // allocate
+  auto& float_tensor = float_data["airbag_particle_float_results"];
+  auto shape = float_tensor.get_shape();
+  if (shape.size() == 0) {
+    shape = {
+      0,
+      static_cast<size_t>(dyna_airbag_nparticles),
+      static_cast<size_t>(nFloatVars),
+    };
+  }
+  shape[0]++; // one more timestep
+  auto float_offset = float_tensor.size();
+  float_tensor.resize(shape);
+  auto& float_tensor_vec = float_tensor.get_data();
+
+  auto& int_tensor = int_data["airbag_particle_int_results"];
+  auto shape2 = int_tensor.get_shape();
+  if (shape2.size() == 0) {
+    shape2 = {
+      0,
+      static_cast<size_t>(dyna_airbag_nparticles),
+      static_cast<size_t>(nIntegerVars),
+    };
+  }
+  shape2[0]++; // one more timestep
+  auto int_offset = int_tensor.size();
+  int_tensor.resize(shape2);
+  auto& int_tensor_vec = int_tensor.get_data();
+
+  // read
+
+  // int32_t dyna_airbag_nlist_size =
+  // dyna_airbag_ngeom + dyna_airbag_state_nvars + dyna_airbag_state_geom;
+
+  size_t iFloatVar = 0;
+  size_t iIntegerVar = 0;
+  for (int32_t ii = 0; ii < wordsToRead; ii += 1)
+    if (dyna_airbag_nlist[dyna_airbag_ngeom + ii % 8] ==
+        1) { // 2 airbag state vars offset
+      int_tensor_vec[int_offset + iIntegerVar] =
+        this->buffer->read_int(start + ii);
+      ++iIntegerVar;
+    } else {
+      float_tensor_vec[float_offset + iFloatVar] =
+        this->buffer->read_float(start + ii);
+      ++iFloatVar;
+    }
+  /*
+    this->buffer->read_array(start + dyna_npefg / 1000000 + // des control
+    word?!
+                               dyna_airbag_npartgas * dyna_airbag_state_geom,
+                             wordsToRead,
+                             tensor.get_data(),
+                             offset);
+  */
+
+  // for dyna_airbag_nparticles
+  // 1. gas id
+  // 2. chamber id
+  // 3. leakage (0 active, -1 fabric, -2 vent hole, -3 mistracked)
+  // 4. mass
+  // 5. radius
+  // 6. spin energy
+  // 7. translation energy
+  // 8. distance from particle to nearest segmen
+  // 9. x position
+  // 10. y position
+  // 11. z position
+  // 12. x velocity
+  // 13. y velocity
+  // 14. z velocity
+}
+
+/** Checks for the ending mark at a specific word
+ *
+ * @param iWord : word position to check
+ * @return is_ending
+ */
 bool
 RawD3plot::isFileEnding(int32_t iWord)
 {
@@ -1131,18 +1567,94 @@ RawD3plot::isFileEnding(int32_t iWord)
   }
 }
 
-Tensor<float>
-RawD3plot::get_node_data(const std::string& _name)
-{
-  return this->node_data[_name];
-}
-
-/*
+/** Get string data saved in the file
+ *
+ * @param _name : name of the variable
+ * @return ret : vector with string data
+ */
 std::vector<std::string>
-RawD3plot::get_variables(const std::string& _name)
+RawD3plot::get_string_data(const std::string& _name)
 {
-
+  auto it = this->string_data.find(_name);
+  if (it != this->string_data.end()) {
+    return it->second;
+  } else {
+    throw(std::invalid_argument("Can not find: " + _name));
+  }
 }
-*/
+
+/** Get the names of the string data buffer
+ *
+ * @return ret : vector of variable names available
+ */
+std::vector<std::string>
+RawD3plot::get_string_names() const
+{
+  std::vector<std::string> ret;
+  for (auto iter : this->string_data) {
+    ret.push_back(iter.first);
+  }
+  return ret;
+}
+
+/** Get id data from the file
+ *
+ * @param _name : variable name
+ * @return ret : tensor
+ */
+Tensor<int32_t>
+RawD3plot::get_int_data(const std::string& _name)
+{
+  auto it = this->int_data.find(_name);
+  if (it != this->int_data.end()) {
+    return it->second;
+  } else {
+    throw(std::invalid_argument("Can not find: " + _name));
+  }
+}
+
+/** Get id variable names available
+ *
+ * @param ret : vector of variable names available
+ */
+std::vector<std::string>
+RawD3plot::get_int_names() const
+{
+  std::vector<std::string> ret;
+  for (auto iter : this->int_data) {
+    ret.push_back(iter.first);
+  }
+  return ret;
+}
+
+/** Get float data from the file
+ *
+ * @param _name : variable name
+ * @return ret : tensor
+ */
+Tensor<float>
+RawD3plot::get_float_data(const std::string& _name)
+{
+  auto it = this->float_data.find(_name);
+  if (it != this->float_data.end()) {
+    return it->second;
+  } else {
+    throw(std::invalid_argument("Can not find: " + _name));
+  }
+}
+
+/** Get float data variables available
+ *
+ * @param ret : vector of variable names available
+ */
+std::vector<std::string>
+RawD3plot::get_float_names() const
+{
+  std::vector<std::string> ret;
+  for (auto iter : this->float_data) {
+    ret.push_back(iter.first);
+  }
+  return ret;
+}
 
 } // namespace qd
