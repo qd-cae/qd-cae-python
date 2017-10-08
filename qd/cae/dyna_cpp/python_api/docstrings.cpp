@@ -192,7 +192,7 @@ const char* element_str_docs = R"qddoc(
 const char* element_get_plastic_strain_docs = R"qddoc(
     get_plastic_strain()
 
-    Get the plastic strain of the element, if it was read with `d3plot.read_states`.
+    Get the plastic strain of the element, if it was read with ``d3plot.read_states``.
 
     Returns
     -------
@@ -208,7 +208,7 @@ const char* element_get_plastic_strain_docs = R"qddoc(
 const char* element_get_energy_docs = R"qddoc(
     get_energy()
 
-    Get the energy of the element, if it was read with `d3plot.read_states`.
+    Get the energy of the element, if it was read with ``d3plot.read_states``.
 
     Returns
     -------
@@ -224,7 +224,7 @@ const char* element_get_energy_docs = R"qddoc(
 const char* element_get_strain_docs = R"qddoc(
     get_strain()
 
-    Get the strain tensor of the element, if it was read with `d3plot.read_states`.
+    Get the strain tensor of the element, if it was read with ``d3plot.read_states``.
     The strain vector contains the matrix components: [e_xx, e_yy, e_zz, e_xy, e_yz, e_xz]
 
     Returns
@@ -241,7 +241,7 @@ const char* element_get_strain_docs = R"qddoc(
 const char* element_get_stress_docs = R"qddoc(
     get_strain()
 
-    Get the stress tensor of the element, if it was read with `d3plot.read_states`.
+    Get the stress tensor of the element, if it was read with ``d3plot.read_states``.
     The stress vector contains the matrix components: [s_xx, s_yy, s_zz, s_xy, s_yz, s_xz]
 
     Returns
@@ -258,7 +258,7 @@ const char* element_get_stress_docs = R"qddoc(
 const char* element_get_stress_mises_docs = R"qddoc(
     get_stress_mises()
 
-    Get the mises stress of the element, if it was read with `d3plot.read_states`.
+    Get the mises stress of the element, if it was read with ``d3plot.read_states``.
 
     Returns
     -------
@@ -510,7 +510,7 @@ const char* dbnodes_get_nodeByID_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if `id` does not exist.
+        if ``idx`` does not exist.
 
     Returns
     -------
@@ -536,7 +536,7 @@ const char* dbnodes_get_nodeByIndex_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if `index` larger `femfile.get_nNodes()`.
+        if ``index`` larger ``femfile.get_nNodes()``.
 
     Returns
     -------
@@ -546,7 +546,7 @@ const char* dbnodes_get_nodeByIndex_docs = R"qddoc(
     Notes
     -----
         The internal index starts at 0 and ends at
-        `femfile.get_nNodes()`.
+        ``femfile.get_nNodes()``.
 
     Examples
     --------
@@ -619,7 +619,7 @@ const char* get_elements_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if invalid `element_filter` is given.
+        if invalid ``element_filter`` is given.
 
     Notes
     -----
@@ -642,7 +642,7 @@ const char* dbelems_get_nElements_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if invalid `element_filter` is given.
+        if invalid ``element_filter`` is given.
 
     Returns
     -------
@@ -668,8 +668,8 @@ const char* dbelems_get_elementByID_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if invalid `element_type` is given
-        or an `id` does not exist.
+        if invalid ``element_type`` is given
+        or an ``id`` does not exist.
 
     Returns
     -------
@@ -710,8 +710,8 @@ const char* dbelems_get_elementByIndex_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if invalid `element_type` is given
-        or `index` does not exist
+        if invalid ``element_type`` is given
+        or ``index`` does not exist
 
     Returns
     -------
@@ -791,7 +791,7 @@ const char* dbparts_get_partByID_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if some `id` does not exist.
+        if some ``id`` does not exist.
 
     Returns
     -------
@@ -814,7 +814,7 @@ const char* dbparts_get_partByIndex_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if some `index` does not exist.
+        if some ``index`` does not exist.
 
     Returns
     -------
@@ -838,7 +838,7 @@ const char* dbparts_get_partByName_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if a part with `name` does not exist.
+        if a part with ``name`` does not exist.
 
     Returns
     -------
@@ -896,7 +896,7 @@ const char* d3plot_constructor = R"qddoc(
         whether to use femzip for decompression
     read_states : str or list of str
         read state information directly (saves time), 
-        see the function `read_states`
+        see the function ``read_states``
 
     Raises
     ------
@@ -1138,11 +1138,11 @@ const char* keyfile_constructor = R"qddoc(
 
     Notes
     -----
-        The argument `encryption_detection` is used to skip encrypted 
+        The argument ``encryption_detection`` is used to skip encrypted 
         include files. It is simply tested against the entropy of every
         include divided by 8 for normalization. Encrypted files usually
         have a very high entropy. The entropy of a file can be obtained 
-        through the function `qd.cae.dyna.get_file_entropy`.
+        through the function ``qd.cae.dyna.get_file_entropy``.
 
     Examples
     --------
@@ -1183,6 +1183,8 @@ const char* module_get_file_entropy_description = R"qddoc(
         >>> get_file_entropy("path/to/text_file")
         3.12390
 )qddoc";
+
+/* ----------------------- RAW D3PLOT ---------------------- */
 
 const char* rawd3plot_constructor_description = R"qddoc(
     RawD3plot(filepath, use_femzip=False)
@@ -1242,7 +1244,10 @@ const char* rawd3plot_get_int_names_docs = R"qddoc(
 const char* rawd3plot_get_int_data_docs = R"qddoc(
     get_int_data(name)
 
-    Parameter
+    This function is for reading any data, which is saved as an
+    integer value.
+
+    Parameters
     ---------
     name : str
         name of data array to request for
@@ -1280,7 +1285,10 @@ const char* rawd3plot_get_string_names_docs = R"qddoc(
 const char* rawd3plot_get_string_data_docs = R"qddoc(
     get_string_data(name)
 
-    Parameter
+    This function is for reading any data, which is saved as a
+    string in the d3plot.
+
+    Parameters
     ---------
     name : str
         name of data array to request for
@@ -1316,7 +1324,10 @@ const char* rawd3plot_get_float_names_docs = R"qddoc(
 const char* rawd3plot_get_float_data_docs = R"qddoc(
     get_float_data(name)
 
-    Parameter
+    This function is for reading any data, which is saved as a
+    floating point value.
+
+    Parameters
     ---------
     name : str
         name of data array to request for

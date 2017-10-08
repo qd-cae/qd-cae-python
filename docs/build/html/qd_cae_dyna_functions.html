@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Additional Functions &mdash; qd 0.6.4 documentation</title>
+  <title>Additional Functions &mdash; qd 0.6.5 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.6.4 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.6.5 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/>
         <link rel="next" title="qd.cae.beta" href="qd_cae_beta.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.6.4
+                0.6.5
               </div>
             
           
@@ -98,6 +98,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Binout.html">Binout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_D3plot.html">D3plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_RawD3plot.html">RawD3plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_KeyFile.html">KeyFile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_FEMFile.html">FEMFile (D3plot and KeyFile)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Element.html">Element</a></li>
@@ -204,11 +205,18 @@
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>The entropy of a file describes the 
-randomness within its data. The value is
+<p>The shannon entropy of a file describes the 
+randomness of the bytes in the file. The value is
 limited between 0 and 8, where 0 means 
 entirely structured and 8 means the file 
 is entirely random or encrypted.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_entropy</span><span class="p">(</span><span class="s2">&quot;path/to/encrypted_file&quot;</span><span class="p">)</span>
+<span class="go">7.64367</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_entropy</span><span class="p">(</span><span class="s2">&quot;path/to/text_file&quot;</span><span class="p">)</span>
+<span class="go">3.12390</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -255,7 +263,7 @@ is entirely random or encrypted.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.6.4',
+            VERSION:'0.6.5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
