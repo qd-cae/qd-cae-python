@@ -598,34 +598,43 @@ PYBIND11_MODULE(dyna_cpp, m)
   pybind11::class_<RawD3plot, std::shared_ptr<RawD3plot>> raw_d3plot_py(
     m, "RawD3plot");
   raw_d3plot_py
-    .def(
-      pybind11::init<std::string, bool>(), "filepath"_a, "use_femzip"_a = false)
+    .def(pybind11::init<std::string, bool>(),
+         "filepath"_a,
+         "use_femzip"_a = false,
+         rawd3plot_constructor_description)
+    .def("get_string_names",
+         &RawD3plot::get_string_names,
+         pybind11::return_value_policy::take_ownership,
+         rawd3plot_get_string_names_docs)
+    .def("get_string_data",
+         &RawD3plot::get_string_data,
+         "name"_a,
+         pybind11::return_value_policy::take_ownership,
+         rawd3plot_get_string_data_docs)
+    .def("get_int_names",
+         &RawD3plot::get_int_names,
+         pybind11::return_value_policy::take_ownership,
+         rawd3plot_get_int_names_docs)
     .def("get_int_data",
          [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
            return qd::py::tensor_to_nparray(_d3plot->get_int_data(_entry_name));
          },
          "name"_a,
-         pybind11::return_value_policy::take_ownership)
-    .def("get_int_names",
-         &RawD3plot::get_int_names,
-         pybind11::return_value_policy::take_ownership)
-    .def("get_string_data",
-         &RawD3plot::get_string_data,
-         "name"_a,
-         pybind11::return_value_policy::take_ownership)
-    .def("get_string_names",
-         &RawD3plot::get_string_names,
-         pybind11::return_value_policy::take_ownership)
+         pybind11::return_value_policy::take_ownership,
+         rawd3plot_get_int_data_docs)
+    .def("get_float_names",
+         &RawD3plot::get_float_names,
+         pybind11::return_value_policy::take_ownership,
+         rawd3plot_get_float_names_docs)
     .def("get_float_data",
          [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
            return qd::py::tensor_to_nparray(
              _d3plot->get_float_data(_entry_name));
          },
          "name"_a,
-         pybind11::return_value_policy::take_ownership)
-    .def("get_float_names",
-         &RawD3plot::get_float_names,
-         pybind11::return_value_policy::take_ownership);
+         pybind11::return_value_policy::take_ownership,
+         rawd3plot_get_float_data_docs)
+    .def("info", &RawD3plot::info);
 
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(

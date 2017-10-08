@@ -1183,3 +1183,167 @@ const char* module_get_file_entropy_description = R"qddoc(
         >>> get_file_entropy("path/to/text_file")
         3.12390
 )qddoc";
+
+const char* rawd3plot_constructor_description = R"qddoc(
+    RawD3plot(filepath, use_femzip=False)
+
+    Parameters
+    ----------
+    filepath : str
+        path to the file
+    use_femzip : bool
+        whether to use femzip decompression
+
+    Returns
+    -------
+    instance : RawD3plot
+
+    Raises
+    ------
+    ValueError
+        in case of an invalid filepath or locked file
+    RuntimeError
+        if anything goes wrong (internal checks) during reading
+
+    Notes
+    -----
+        If LS-Dyna writes multiple files (one for each timestep),
+        give the filepath to the first file. The library finds all
+        other files. The class automatically reads all data!
+
+    Examples
+    --------
+        >>> from qd.cae.dyna import RawD3plot
+        >>> # read an arbitrary d3plot
+        >>> raw_d3plot = RawD3plot("path/to/d3plot")
+        >>> #read femzip compressed file
+        >>> raw_d3plot = RawD3plot("path/to/d3plot.fz",use_femzip=True)
+)qddoc";
+
+const char* rawd3plot_get_int_names_docs = R"qddoc(
+    get_int_names()
+
+    Returns
+    -------
+    names : list of str
+        names of the integer variables in the d3plot
+
+    Notes
+    -----
+        The variable arrays themselves can be obtained by
+        the member function 'RawD3plot.get_int_data'.
+
+    Examples
+    --------
+        >>> raw_d3plot.get_int_names();
+        ['elem_beam_data', 'elem_beam_ids', 'elem_shell_data', 'elem_shell_ids', ...]
+)qddoc";
+
+const char* rawd3plot_get_int_data_docs = R"qddoc(
+    get_int_data(name)
+
+    Parameter
+    ---------
+    name : str
+        name of data array to request for
+
+    Returns
+    -------
+    data : numpy.ndarray
+        data array
+
+    Examples
+    --------
+        >>> # check which vars are available
+        >>> raw_d3plott.get_int_names();
+        ['elem_beam_data', 'elem_beam_ids', 'elem_shell_data', 'elem_shell_ids', ...]
+        >>> # request some data
+        >>> raw_d3plot.get_int_data("elem_shell_data").shape
+        (4969, 5)
+        >>> # 4969 shell elements, 4 node ids and 1 material index (not id!)
+)qddoc";
+
+const char* rawd3plot_get_string_names_docs = R"qddoc(
+    get_string_names()
+
+    Returns
+    -------
+    names : list of str
+        names of all string variables in the d3plot
+
+    Examples
+    --------
+        >>> raw_d3plot.get_string_names()
+        ['part_names']
+)qddoc";
+
+const char* rawd3plot_get_string_data_docs = R"qddoc(
+    get_string_data(name)
+
+    Parameter
+    ---------
+    name : str
+        name of data array to request for
+
+    Returns
+    -------
+    data : list of str
+        string data list
+
+    Examples
+    --------
+        >>> raw_d3plot.get_string_names()
+        ['part_names']
+        >>> # also the part names are raw (untrimmed)
+        >>> raw_d3plot.get_string_data("part_names")
+        ["SomePart                                                                ']
+)qddoc";
+
+const char* rawd3plot_get_float_names_docs = R"qddoc(
+    get_float_names()
+
+    Returns
+    -------
+    names : list of str
+        names of all float variables in the d3plot
+
+    Examples
+    --------
+        >>> raw_d3plot.get_float_names()
+        ['elem_shell_results', 'elem_shell_results_layers', 'elem_solid_results', ... ]
+)qddoc";
+
+const char* rawd3plot_get_float_data_docs = R"qddoc(
+    get_float_data(name)
+
+    Parameter
+    ---------
+    name : str
+        name of data array to request for
+
+    Returns
+    -------
+    data : numpy.ndarray
+        data array
+
+    Examples
+    --------
+    >>> raw_d3plot.get_float_names()
+    ['elem_shell_results', 'elem_shell_results_layers', 'elem_solid_results', ... ]
+    >>> raw_d3plot.get_float_data("elem_shell_results").shape
+    (12, 4696, 24)
+    >>> # 12 timesteps, 4969 elements and 24 variables
+)qddoc";
+
+const char* rawd3plot_info_docs = R"qddoc(
+    info()
+
+    Prints a summary of the header data of the d3plot, which
+    involves node info, element info, written state data and
+    so forth.
+
+    Examples
+    --------
+        >>> raw_d3plot = RawD3plot("path/to/d3plot")
+        >>> raw_d3plot.info()
+)qddoc";

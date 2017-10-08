@@ -413,9 +413,9 @@ RawD3plot::read_matsection()
 
   int32_t start = wordPosition + 2;
   int32_t end = start + tmp_nummat;
-  this->dyna_irbtyp.resize({ static_cast<size_t>(tmp_nummat) });
-  this->buffer->read_array<int32_t>(
-    start, end - start, this->dyna_irbtyp.get_data());
+  dyna_irbtyp.resize({ static_cast<size_t>(tmp_nummat) });
+  this->buffer->read_array<int32_t>(start, end - start, dyna_irbtyp.get_data());
+  int_data["material_type_numbers"] = dyna_irbtyp;
 
   this->wordPosition += 2 + tmp_nummat;
 }
@@ -451,12 +451,18 @@ RawD3plot::read_airbag_section()
     this->buffer->read_array(
       wordPosition, dyna_airbag_nlist_size, dyna_airbag_nlist);
 
+    auto& tensor_nlist = int_data["airbag_variable_type_flag"];
+    tensor_nlist.resize({ dyna_airbag_nlist.size() });
+    std::copy(dyna_airbag_nlist.begin(),
+              dyna_airbag_nlist.end(),
+              tensor_nlist.get_data().begin());
+
     wordPosition +=
       dyna_airbag_nlist_size; // type of each variable (1=int, 2=float)
 
     // nlist variable names (1 Word is a char ... whoever had that idea ...)
-    auto& vec = string_data["airbag_all_variable_names"];
-    vec.resize(dyna_airbag_nlist_size);
+    auto& airbag_all_variable_names = string_data["airbag_all_variable_names"];
+    airbag_all_variable_names.resize(dyna_airbag_nlist_size);
 
     std::vector<int32_t> char_buffer(8 * dyna_airbag_nlist_size);
     this->buffer->read_array(
@@ -468,10 +474,52 @@ RawD3plot::read_airbag_section()
     for (size_t iString = 0; iString < dyna_airbag_nlist_size; ++iString) {
       for (size_t iChar = 0; iChar < 8; ++iChar)
         _tmp_string[iChar] = (char)char_buffer[iString * 8 + iChar];
-      vec[iString] = _tmp_string;
+      airbag_all_variable_names[iString] = _tmp_string;
     }
 
     wordPosition += 8 * dyna_airbag_nlist_size; // 8 char variable names
+
+    // resort variable names into categories
+    auto& airbag_geom_names = string_data["airbag_geom_names"];
+    auto& airbag_geom_int_names = string_data["airbag_geom_state_int_names"];
+    auto& airbag_geom_float_names =
+      string_data["airbag_geom_state_float_names"];
+    auto& airbag_particle_int_var_names =
+      string_data["airbag_particle_int_names"];
+    auto& airbag_particle_float_var_names =
+      string_data["airbag_particle_float_names"];
+
+    // geometry var names
+    for (int32_t ii = 0; ii < dyna_airbag_ngeom; ++ii)
+      airbag_geom_names.push_back(airbag_all_variable_names[ii]);
+
+    // particle var names
+    for (size_t ii = static_cast<size_t>(dyna_airbag_ngeom);
+         ii < dyna_airbag_nlist.size() - dyna_airbag_state_geom;
+         ++ii) {
+      if (dyna_airbag_nlist[ii] == 1)
+        airbag_particle_int_var_names.push_back(airbag_all_variable_names[ii]);
+      else if (dyna_airbag_nlist[ii] == 2)
+        airbag_particle_float_var_names.push_back(
+          airbag_all_variable_names[ii]);
+      else
+        throw(
+          std::runtime_error("dyna_airbag_nlist != 1 or 2 makes no sense."));
+    }
+
+    // state geometry var names
+    for (int32_t ii = static_cast<size_t>(dyna_airbag_ngeom) +
+                      static_cast<size_t>(dyna_airbag_state_nvars);
+         ii < dyna_airbag_nlist.size();
+         ++ii) {
+      if (dyna_airbag_nlist[ii] == 1)
+        airbag_geom_int_names.push_back(airbag_all_variable_names[ii]);
+      else if (dyna_airbag_nlist[ii] == 2)
+        airbag_geom_float_names.push_back(airbag_all_variable_names[ii]);
+      else
+        throw(
+          std::runtime_error("dyna_airbag_nlist != 1 or 2 makes no sense."));
+    }
 
 #ifdef QD_DEBUG
     std::cout << "dyna_airbag_npartgas: " << this->dyna_airbag_npartgas << "\n"
@@ -1092,6 +1140,12 @@ RawD3plot::read_states()
   }
 
   this->buffer->end_nextState();
+
+  // save some state variable data
+  auto& timesteps_tensor = float_data["timesteps"];
+  timesteps_tensor.resize({ timesteps.size() });
+  std::copy(
+    timesteps.begin(), timesteps.end(), timesteps_tensor.get_data().begin());
 }
 
 /** Read the nodal displacement in the state section
@@ -1432,100 +1486,92 @@ RawD3plot::read_states_airbag()
   std::cout << "> read_states_airbag at " << start << std::endl;
 #endif
 
-  // Airbag geometry data
-  // wordsToRead = this->dyna_airbag_npartgas * this->dyna_airbag_state_geom;
+  // dyna_nlist and airbag_all_variable_names have the same length
+  // the order of variables should be:
+  //
+  // geometry vars -> particle state vars -> airbag state vars
+  //
+  // oh and this is not documented anywhere ...
+
+  // count ints and floats for geometry state vars
+  size_t nIntegerVars_state_geom = 0;
+  size_t nFloatVars_state_geom = 0;
+  for (size_t ii =
+         dyna_airbag_nlist.size() - static_cast<size_t>(dyna_airbag_state_geom);
+       ii < dyna_airbag_nlist.size();
+       ++ii) {
+    if (dyna_airbag_nlist[ii] == 1)
+      ++nIntegerVars_state_geom;
+    else
+      ++nFloatVars_state_geom;
+  }
+
+  // count ints and floats for particle state vars
+  size_t nIntegerVars_particles = 0;
+  size_t nFloatVars_particles = 0;
+  for (size_t ii = static_cast<size_t>(dyna_airbag_ngeom);
+       ii <
+       dyna_airbag_nlist.size() - static_cast<size_t>(dyna_airbag_state_geom);
+       ++ii) {
+    if (dyna_airbag_nlist[ii] == 1)
+      ++nIntegerVars_particles;
+    else
+      ++nFloatVars_particles;
+  }
+
+  // AIRBAG GEOMETRY STATE DATA
+
   // for dyna_airbag_npartgas
   // 1. number of active particles
   // 2. current bag volume
-
-  // Particle state data
-  wordsToRead = dyna_airbag_nparticles * dyna_airbag_state_nvars;
-
-  // airbag_all_variable_names true order is:
-  // geometry vars -> particle state vars -> airbag state vars
-  auto airbag_all_variable_names = string_data["airbag_all_variable_names"];
-
-  auto& airbag_particle_int_var_names =
-    string_data["airbag_particle_int_variable_names"];
-  auto& airbag_particle_float_var_names =
-    string_data["airbag_particle_float_variable_names"];
-
-  size_t nIntegerVars = 0;
-  size_t nFloatVars = 0;
-  // 2 airbag state vars offset
-  int32_t jj = 0;
-  for (int32_t ii = 2; ii < dyna_airbag_nlist.size(); ++ii) {
-    if (dyna_airbag_nlist[ii] == 1) {
-      airbag_particle_int_var_names.push_back(
-        airbag_all_variable_names[dyna_airbag_ngeom + (ii - 2)]);
-      ++nIntegerVars;
-    } else if (dyna_airbag_nlist[ii] == 2) {
-      airbag_particle_float_var_names.push_back(
-        airbag_all_variable_names[dyna_airbag_ngeom + (ii - 2)]);
-      ++nFloatVars;
-    } else {
-      throw(
-        std::runtime_error("dyna_airbag_nlist entry != 1 or 2 makes no sense"));
-    }
-  }
+  wordsToRead = dyna_airbag_npartgas * dyna_airbag_state_geom;
 
   // allocate
-  auto& float_tensor = float_data["airbag_particle_float_results"];
-  auto shape = float_tensor.get_shape();
+  auto& tensor_float = float_data["airbag_geom_state_float_results"];
+  auto shape = tensor_float.get_shape();
   if (shape.size() == 0) {
-    shape = {
-      0,
-      static_cast<size_t>(dyna_airbag_nparticles),
-      static_cast<size_t>(nFloatVars),
-    };
+    shape = { 0,
+              static_cast<size_t>(dyna_airbag_npartgas),
+              nFloatVars_state_geom };
   }
   shape[0]++; // one more timestep
-  auto float_offset = float_tensor.size();
-  float_tensor.resize(shape);
-  auto& float_tensor_vec = float_tensor.get_data();
+  auto float_offset = tensor_float.size();
+  tensor_float.resize(shape);
+  auto& tensor_float_vec = tensor_float.get_data();
 
-  auto& int_tensor = int_data["airbag_particle_int_results"];
-  auto shape2 = int_tensor.get_shape();
-  if (shape2.size() == 0) {
-    shape2 = {
-      0,
-      static_cast<size_t>(dyna_airbag_nparticles),
-      static_cast<size_t>(nIntegerVars),
-    };
+  auto& tensor_int = int_data["airbag_geom_state_int_results"];
+  shape = tensor_int.get_shape();
+  if (shape.size() == 0) {
+    shape = { 0,
+              static_cast<size_t>(dyna_airbag_npartgas),
+              nIntegerVars_state_geom };
   }
-  shape2[0]++; // one more timestep
-  auto int_offset = int_tensor.size();
-  int_tensor.resize(shape2);
-  auto& int_tensor_vec = int_tensor.get_data();
+  shape[0]++; // one more timestep
+  auto int_offset = tensor_int.size();
+  tensor_int.resize(shape);
+  auto& tensor_int_vec = tensor_int.get_data();
 
   // read
-
-  // int32_t dyna_airbag_nlist_size =
-  // dyna_airbag_ngeom + dyna_airbag_state_nvars + dyna_airbag_state_geom;
-
+  int32_t nlist_offset = dyna_airbag_ngeom + dyna_airbag_state_nvars;
   size_t iFloatVar = 0;
   size_t iIntegerVar = 0;
-  for (int32_t ii = 0; ii < wordsToRead; ii += 1)
-    if (dyna_airbag_nlist[dyna_airbag_ngeom + ii % 8] ==
-        1) { // 2 airbag state vars offset
-      int_tensor_vec[int_offset + iIntegerVar] =
+  for (int32_t ii = 0; ii < wordsToRead; ++ii) {
+    if (dyna_airbag_nlist[nlist_offset + ii % dyna_airbag_state_geom] == 1) {
+      tensor_int_vec[int_offset + iIntegerVar] =
         this->buffer->read_int(start + ii);
       ++iIntegerVar;
     } else {
-      float_tensor_vec[float_offset + iFloatVar] =
+      tensor_float_vec[float_offset + iFloatVar] =
         this->buffer->read_float(start + ii);
       ++iFloatVar;
     }
-  /*
-    this->buffer->read_array(start + dyna_npefg / 1000000 + // des control
-    word?!
-                               dyna_airbag_npartgas * dyna_airbag_state_geom,
-                             wordsToRead,
-                             tensor.get_data(),
-                             offset);
-  */
+  }
 
-  // for dyna_airbag_nparticles
+  // PARTICLE STATE DATA
+
+  start += wordsToRead;
+  wordsToRead = dyna_airbag_nparticles * dyna_airbag_state_nvars;
+
   // 1. gas id
   // 2. chamber id
   // 3. leakage (0 active, -1 fabric, -2 vent hole, -3 mistracked)
@@ -1540,6 +1586,51 @@ RawD3plot::read_states_airbag()
   // 12. x velocity
   // 13. y velocity
   // 14. z velocity
+
+  // allocate
+  auto& tensor_float2 = float_data["airbag_particle_float_results"];
+  shape = tensor_float2.get_shape();
+  if (shape.size() == 0) {
+    shape = {
+      0,
+      static_cast<size_t>(dyna_airbag_nparticles),
+      static_cast<size_t>(nFloatVars_particles),
+    };
+  }
+  shape[0]++; // one more timestep
+  float_offset = tensor_float2.size();
+  tensor_float2.resize(shape);
+  auto& tensor_float_vec2 = tensor_float2.get_data();
+
+  auto& tensor_int2 = int_data["airbag_particle_int_results"];
+  shape = tensor_int2.get_shape();
+  if (shape.size() == 0) {
+    shape = {
+      0,
+      static_cast<size_t>(dyna_airbag_nparticles),
+      static_cast<size_t>(nIntegerVars_particles),
+    };
+  }
+  shape[0]++; // one more timestep
+  int_offset = tensor_int2.size();
+  tensor_int2.resize(shape);
+  auto& tensor_int2_vec = tensor_int2.get_data();
+
+  // read particle results
+  iFloatVar = 0;
+  iIntegerVar = 0;
+  for (int32_t ii = 0; ii < wordsToRead; ++ii) {
+    if (dyna_airbag_nlist[dyna_airbag_ngeom + ii % dyna_airbag_state_nvars] ==
+        1) {
+      tensor_int2_vec[int_offset + iIntegerVar] =
+        this->buffer->read_int(start + ii);
+      ++iIntegerVar;
+    } else {
+      tensor_float_vec2[float_offset + iFloatVar] =
+        this->buffer->read_float(start + ii);
+      ++iFloatVar;
+    }
+  }
 }
 
 /** Checks for the ending mark at a specific word
@@ -1655,6 +1746,16 @@ RawD3plot::get_float_names() const
     ret.push_back(iter.first);
   }
   return ret;
+}
+
+/** Get the title of the d3plot
+ *
+ * @return title
+ */
+inline std::string
+RawD3plot::get_title() const
+{
+  return this->dyna_title;
 }
 
 } // namespace qd

@@ -130,7 +130,7 @@ private:
   void read_part_names();
 
   // state reading
-  void read_states_init();
+  void read_states();
   void read_states_displacement();
   void read_states_velocity();
   void read_states_acceleration();
@@ -146,10 +146,8 @@ public:
   explicit RawD3plot(std::string filepath, bool _use_femzip = false);
   virtual ~RawD3plot();
   void info() const;
-  void read_states();
-  size_t get_nTimesteps() const;
+
   std::string get_title() const;
-  std::vector<float> get_timesteps() const;
 
   Tensor<int32_t> get_int_data(const std::string& _name);
   std::vector<std::string> get_int_names() const;
