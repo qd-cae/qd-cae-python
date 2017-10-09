@@ -226,11 +226,11 @@ Must be between 0 and 1.</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>The argument <cite>encryption_detection</cite> is used to skip encrypted 
+<p>The argument <code class="docutils literal"><span class="pre">encryption_detection</span></code> is used to skip encrypted 
 include files. It is simply tested against the entropy of every
 include divided by 8 for normalization. Encrypted files usually
 have a very high entropy. The entropy of a file can be obtained 
-through the function <cite>qd.cae.dyna.get_file_entropy</cite>.</p>
+through the function <code class="docutils literal"><span class="pre">qd.cae.dyna.get_file_entropy</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># load a keyfile</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">)</span>
@@ -322,8 +322,8 @@ through the function <cite>qd.cae.dyna.get_file_entropy</cite>.</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if invalid <cite>element_type</cite> is given
-or <cite>index</cite> does not exist</p>
+<div><p>if invalid <code class="docutils literal"><span class="pre">element_type</span></code> is given
+or <code class="docutils literal"><span class="pre">index</span></code> does not exist</p>
 </div></blockquote>
 </td>
 </tr>
@@ -366,7 +366,7 @@ or <cite>index</cite> does not exist</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if invalid <cite>element_filter</cite> is given.</p>
+<div><p>if invalid <code class="docutils literal"><span class="pre">element_filter</span></code> is given.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -424,7 +424,7 @@ or <cite>index</cite> does not exist</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if invalid <cite>element_filter</cite> is given.</p>
+<div><p>if invalid <code class="docutils literal"><span class="pre">element_filter</span></code> is given.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -502,7 +502,7 @@ or <cite>index</cite> does not exist</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if <cite>id</cite> does not exist.</p>
+<div><p>if <code class="docutils literal"><span class="pre">idx</span></code> does not exist.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -538,7 +538,7 @@ or <cite>index</cite> does not exist</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if <cite>index</cite> larger <cite>femfile.get_nNodes()</cite>.</p>
+<div><p>if <code class="docutils literal"><span class="pre">index</span></code> larger <code class="docutils literal"><span class="pre">femfile.get_nNodes()</span></code>.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -546,7 +546,7 @@ or <cite>index</cite> does not exist</p>
 </table>
 <p class="rubric">Notes</p>
 <p>The internal index starts at 0 and ends at
-<cite>femfile.get_nNodes()</cite>.</p>
+<code class="docutils literal"><span class="pre">femfile.get_nNodes()</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># single index</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -598,7 +598,7 @@ or <cite>index</cite> does not exist</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if some <cite>id</cite> does not exist.</p>
+<div><p>if some <code class="docutils literal"><span class="pre">id</span></code> does not exist.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -631,7 +631,7 @@ or <cite>index</cite> does not exist</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if some <cite>index</cite> does not exist.</p>
+<div><p>if some <code class="docutils literal"><span class="pre">index</span></code> does not exist.</p>
 </div></blockquote>
 </td>
 </tr>
@@ -664,7 +664,7 @@ or <cite>index</cite> does not exist</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if a part with <cite>name</cite> does not exist.</p>
+<div><p>if a part with <code class="docutils literal"><span class="pre">name</span></code> does not exist.</p>
 </div></blockquote>
 </td>
 </tr>
