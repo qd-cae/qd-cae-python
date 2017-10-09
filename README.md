@@ -18,7 +18,7 @@ We want to tackle this issue with this free library, in order to give engineerin
 Version 0.6.5
 
 qd.cae.dyna
-  - `RawD3plot` is a new class to give access to the raw data of a d3plot (see [here](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna_RawD3plot.html)). Read the docs carefully and don't use this class without a specific purpose! 
+  - `RawD3plot` is a new class to give access to the raw data of a d3plot (see [here](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna_RawD3plot.html)). Read the docs carefully and don't use this class without a specific purpose! The access to the data array is given in a dict-like manner.
 
 
 *Changelog 26.09.2017*
