@@ -273,7 +273,41 @@ class TestDynaModule(unittest.TestCase):
                                              [2, 2, 2],
                                              decimal=1)
 
-        # test encryption detection
+    def test_raw_d3plot(self):
+
+        d3plot_filepath = "test/d3plot"
+
+        int_shapes = {'node_ids': (4915,), 'part_ids': (
+            1,), 'elem_shell_data': (4696, 5), 'elem_shell_ids': (4696,)}
+
+        int_names = sorted(int_shapes.keys())
+
+        float_shapes = {'elem_shell_results': (1, 4696, 24), 'timesteps': (1,), 'node_acceleration': (1, 4915, 3), 'elem_shell_results_layers': (
+            1, 4696, 3, 26),  'node_velocity': (1, 4915, 3), 'node_displacement': (1, 4915, 3), 'node_coordinates': (4915, 3)}
+
+        float_names = sorted(float_shapes.keys())
+
+        string_names = ['part_names']
+
+        string_data = {'part_names': [
+            'Zugprobe                                                                ']}
+
+        raw_d3plot = RawD3plot(d3plot_filepath)
+
+        # test names
+        self.assertEqual(sorted(raw_d3plot.get_int_names()), int_names)
+        self.assertEqual(sorted(raw_d3plot.get_float_names()), float_names)
+        self.assertEqual(raw_d3plot.get_string_names(), string_names)
+
+        # test shapes
+        for key, value in int_shapes.items():
+            self.assertEqual(value, raw_d3plot.get_int_data(key).shape)
+
+        for key, value in float_shapes.items():
+            self.assertEqual(value, raw_d3plot.get_float_data(key).shape)
+
+        for key, value in string_data.items():
+            self.assertEqual(value, raw_d3plot.get_string_data(key))
 
     def test_numerics_sampling(self):
         '''Testing qd.numerics'''

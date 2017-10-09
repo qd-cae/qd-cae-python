@@ -119,11 +119,11 @@ private:
 
   // geometry reading
   void read_geometry();
-  Tensor<float> read_geometry_nodes();
-  Tensor<int32_t> read_geometry_elem8();
-  Tensor<int32_t> read_geometry_elem4th();
-  Tensor<int32_t> read_geometry_elem4();
-  Tensor<int32_t> read_geometry_elem2();
+  void read_geometry_nodes();
+  void read_geometry_elem8();
+  void read_geometry_elem4th();
+  void read_geometry_elem4();
+  void read_geometry_elem2();
   void read_geometry_numbering();
   void read_geometry_airbag();
   void read_part_ids();
@@ -149,11 +149,11 @@ public:
 
   std::string get_title() const;
 
-  Tensor<int32_t> get_int_data(const std::string& _name);
+  Tensor<int32_t>& get_int_data(const std::string& _name);
   std::vector<std::string> get_int_names() const;
   std::vector<std::string> get_string_data(const std::string& _name);
   std::vector<std::string> get_string_names() const;
-  Tensor<float> get_float_data(const std::string& _name);
+  Tensor<float>& get_float_data(const std::string& _name);
   std::vector<std::string> get_float_names() const;
 };
 

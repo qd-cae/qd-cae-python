@@ -14,19 +14,19 @@ We want to tackle this issue with this free library, in order to give engineerin
 
 # What's new?
 
+*Changelog 9.10.2017*
+Version 0.6.5
+
+qd.cae.dyna
+  - `RawD3plot` is a new class to give access to the raw data of a d3plot (see [here](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna_RawD3plot.html)). Read the docs carefully and don't use this class without a specific purpose! 
+
+
 *Changelog 26.09.2017*
 Version 0.6.4
 
 qd.cae.dyna
  - `Keyfile` has now two new options: `load_includes` and `encryption_detection`. The first one can be used to prevent loading of includes and the secondary one is used for detection of encrypted include files (see [here](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna_KeyFile.html#qd.cae.dyna.KeyFile)).
 - Added function: `get_file_entropy` (see [here](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna_functions.html#qd.cae.dyna.get_file_entropy)), which is a helper function for the argument `encryption_detection` in the `KeyFile` constructor.
-
-*Changelog 09.09.2017*
-Version 0.6.3
-
-qd.cae.dyna
- - `Binout.read` is now able to read multiple binouts (see [here](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna_Binout.html#qd.cae.dyna.Binout))
- - (**API-CHANGE**) `Node.get_coords` and `Element.get_coords` don't take the timestep as argument anymore, but return a time series of coordinates, just like all other functions do.
 
 
 # Descriptions

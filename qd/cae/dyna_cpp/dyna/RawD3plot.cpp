@@ -554,22 +554,22 @@ RawD3plot::read_geometry()
 #endif
 
   /* === NODES === */
-  this->float_data["node_coordinates"] = this->read_geometry_nodes();
+  this->read_geometry_nodes();
 
   /* === ELEMENTS === */
   // Order MATTERS, do not swap routines.
 
   // 8-Node Solids
-  this->int_data["elem_solid_data"] = this->read_geometry_elem8();
+  this->read_geometry_elem8();
 
   // 8-Node Thick Shells
-  this->int_data["elem_tshell_data"] = read_geometry_elem4th();
+  this->read_geometry_elem4th();
 
   // 2-Node Beams
-  this->int_data["elem_beam_data"] = this->read_geometry_elem2();
+  this->read_geometry_elem2();
 
   // 4-Node Elements
-  this->int_data["elem_shell_data"] = this->read_geometry_elem4();
+  this->read_geometry_elem4();
 
   /* === NUMBERING === */
   this->read_geometry_numbering();
@@ -607,18 +607,22 @@ RawD3plot::read_geometry()
   this->buffer->free_partBuffer();
 }
 
-Tensor<float>
+void
 RawD3plot::read_geometry_nodes()
 {
 #ifdef QD_DEBUG
   std::cout << "Reading nodes at word " << wordPosition << " ... ";
 #endif
 
+  if (dyna_numnp < 1)
+    return;
+
   // memory to read
   wordsToRead = dyna_numnp * dyna_ndim;
 
   // init tensor
-  Tensor<float> tensor(
+  auto& tensor = float_data["node_coordinates"];
+  tensor.resize(
     { static_cast<size_t>(dyna_numnp), static_cast<size_t>(dyna_ndim) });
 
   // copy stuff into tensor
@@ -630,16 +634,14 @@ RawD3plot::read_geometry_nodes()
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
-
-  return std::move(tensor);
 }
 
-Tensor<int32_t>
+void
 RawD3plot::read_geometry_elem8()
 {
   // Check
   if (dyna_nel8 == 0)
-    return Tensor<int32_t>();
+    return;
 
 #ifdef QD_DEBUG
   std::cout << "Reading solids at word " << wordPosition << " ... ";
@@ -649,7 +651,8 @@ RawD3plot::read_geometry_elem8()
   const int32_t nVarsElem8 = 9;
 
   // allocate ids
-  Tensor<int32_t> elem8_nodes(
+  auto& elem8_nodes = int_data["elem_solid_data"];
+  elem8_nodes.resize(
     { static_cast<size_t>(dyna_nel8), static_cast<size_t>(nVarsElem8) });
 
   // do the copy stuff
@@ -665,16 +668,14 @@ RawD3plot::read_geometry_elem8()
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
-
-  return std::move(elem8_nodes);
 }
 
-Tensor<int32_t>
+void
 RawD3plot::read_geometry_elem4()
 {
   // Check
   if (dyna_nel4 == 0)
-    return Tensor<int32_t>();
+    return;
 
 #ifdef QD_DEBUG
   std::cout << "Reading shells at word " << wordPosition << " ... ";
@@ -683,7 +684,8 @@ RawD3plot::read_geometry_elem4()
   const int32_t nVarsElem4 = 5;
 
   // allocate
-  Tensor<int32_t> elem4_nodes(
+  auto& elem4_nodes = int_data["elem_shell_data"];
+  elem4_nodes.resize(
     { static_cast<size_t>(dyna_nel4), static_cast<size_t>(nVarsElem4) });
 
   // copy
@@ -697,16 +699,14 @@ RawD3plot::read_geometry_elem4()
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
-
-  return std::move(elem4_nodes);
 }
 
-Tensor<int32_t>
+void
 RawD3plot::read_geometry_elem2()
 {
   // Check
   if (dyna_nel2 == 0)
-    return Tensor<int32_t>();
+    return;
 
 #ifdef QD_DEBUG
   std::cout << "Reading beams at word " << wordPosition << " ... ";
@@ -715,7 +715,8 @@ RawD3plot::read_geometry_elem2()
   const int32_t nVarsElem2 = 6;
 
   // allocate
-  Tensor<int32_t> elem2_nodes(
+  auto& elem2_nodes = int_data["elem_beam_data"];
+  elem2_nodes.resize(
     { static_cast<size_t>(dyna_nel2), static_cast<size_t>(nVarsElem2) });
 
   // copy
@@ -729,16 +730,14 @@ RawD3plot::read_geometry_elem2()
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
-
-  return std::move(elem2_nodes);
 }
 
-Tensor<int32_t>
+void
 RawD3plot::read_geometry_elem4th()
 {
   // Check
   if (dyna_nelth == 0)
-    return Tensor<int32_t>();
+    return;
 
 #ifdef QD_DEBUG
   std::cout << "Reading thick shells at word " << wordPosition << " ... ";
@@ -748,7 +747,8 @@ RawD3plot::read_geometry_elem4th()
   const int32_t nVarsElem4th = 9;
 
   // allocate
-  Tensor<int32_t> elem4th_nodes(
+  auto& elem4th_nodes = int_data["elem_tshell_data"];
+  elem4th_nodes.resize(
     { static_cast<size_t>(dyna_nelth), static_cast<size_t>(nVarsElem4th) });
 
   // copy
@@ -762,8 +762,6 @@ RawD3plot::read_geometry_elem4th()
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
-
-  return std::move(elem4th_nodes);
 }
 
 void
@@ -840,42 +838,53 @@ RawD3plot::read_geometry_numbering()
   }
   // wordPosition += 16; // header length is 16
   wordsToRead = dyna_numnp;
-  auto& node_ids = this->int_data["node_ids"];
-  node_ids.resize({ static_cast<size_t>(dyna_numnp) });
-  this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, node_ids.get_data());
+  if (dyna_numnp > 0) {
+    auto& node_ids = this->int_data["node_ids"];
+    node_ids.resize({ static_cast<size_t>(dyna_numnp) });
+    this->buffer->read_array<int32_t>(
+      wordPosition, wordsToRead, node_ids.get_data());
+  }
 
   // Solid IDs
   wordPosition += wordsToRead;
   wordsToRead = dyna_nel8;
-  auto& elem_solid_ids = this->int_data["elem_solid_ids"];
-  elem_solid_ids.resize({ static_cast<size_t>(dyna_nel8) });
-  this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, elem_solid_ids.get_data());
+  if (dyna_nel8 > 0) {
+    auto& elem_solid_ids = this->int_data["elem_solid_ids"];
+    elem_solid_ids.resize({ static_cast<size_t>(dyna_nel8) });
+    this->buffer->read_array<int32_t>(
+      wordPosition, wordsToRead, elem_solid_ids.get_data());
+  }
 
   // Beam IDs
   wordPosition += wordsToRead;
   wordsToRead = dyna_nel2;
-  auto& elem_beam_ids = this->int_data["elem_beam_ids"];
-  elem_beam_ids.resize({ static_cast<size_t>(dyna_nel2) });
-  this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, elem_beam_ids.get_data());
+  if (dyna_nel2 > 0) {
+    auto& elem_beam_ids = this->int_data["elem_beam_ids"];
+    elem_beam_ids.resize({ static_cast<size_t>(dyna_nel2) });
+    this->buffer->read_array<int32_t>(
+      wordPosition, wordsToRead, elem_beam_ids.get_data());
+  }
 
   // Shell IDs
   wordPosition += wordsToRead;
   wordsToRead = dyna_nel4;
-  auto& elem_shell_ids = this->int_data["elem_shell_ids"];
-  elem_shell_ids.resize({ static_cast<size_t>(dyna_nel4) });
-  this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, elem_shell_ids.get_data());
+  if (dyna_nel4 > 0) {
+    auto& elem_shell_ids = this->int_data["elem_shell_ids"];
+    elem_shell_ids.resize({ static_cast<size_t>(dyna_nel4) });
+    this->buffer->read_array<int32_t>(
+      wordPosition, wordsToRead, elem_shell_ids.get_data());
+  }
 
   // Thick Shell IDs
   wordPosition += wordsToRead;
   wordsToRead = dyna_nelth;
-  auto& elem_tshell_ids = this->int_data["elem_tshell_ids"];
-  elem_tshell_ids.resize({ static_cast<size_t>(dyna_nelth) });
-  this->buffer->read_array<int32_t>(
-    wordPosition, wordsToRead, elem_tshell_ids.get_data());
+  if (dyna_nelth > 0) {
+    auto& elem_tshell_ids = this->int_data["elem_tshell_ids"];
+    elem_tshell_ids.resize({ static_cast<size_t>(dyna_nelth) });
+    this->buffer->read_array<int32_t>(
+      wordPosition, wordsToRead, elem_tshell_ids.get_data());
+  }
+
   wordPosition += wordsToRead;
 
 #ifdef QD_DEBUG
@@ -1254,7 +1263,7 @@ void
 RawD3plot::read_states_elem8()
 {
 
-  if ((dyna_nv3d <= 0) && (dyna_nel8 <= 0))
+  if ((dyna_nv3d <= 0) || (dyna_nel8 <= 0))
     return;
 
   int32_t start = this->wordPosition + 1 // time
@@ -1363,7 +1372,7 @@ void
 RawD3plot::read_states_elem4th()
 {
 
-  if (dyna_nv3dt <= 0)
+  if ((dyna_nv3dt <= 0) || (dyna_nelth <= 0))
     return;
 
   // prepare looping
@@ -1693,7 +1702,7 @@ RawD3plot::get_string_names() const
  * @param _name : variable name
  * @return ret : tensor
  */
-Tensor<int32_t>
+Tensor<int32_t>&
 RawD3plot::get_int_data(const std::string& _name)
 {
   auto it = this->int_data.find(_name);
@@ -1723,7 +1732,7 @@ RawD3plot::get_int_names() const
  * @param _name : variable name
  * @return ret : tensor
  */
-Tensor<float>
+Tensor<float>&
 RawD3plot::get_float_data(const std::string& _name)
 {
   auto it = this->float_data.find(_name);
