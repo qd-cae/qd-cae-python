@@ -2,6 +2,7 @@
 # add current module to search path
 import os
 import sys
+import math
 import numpy as np
 sys.path.append(os.path.join(os.path.realpath(__file__), ".."))
 
@@ -12,6 +13,13 @@ from qd.cae.dyna import *
 
 class TestDynaModule(unittest.TestCase):
     """Tests the dyna module."""
+
+    def is_almost_equal(self, val1, val2, tolerance):
+
+        if(np.abs(val1 - val2) < tolerance):
+            return True
+        else:
+            return False
 
     def assertCountEqual(self, *args, **kwargs):
         '''Redefine because it does not exist in python2 unittest'''
@@ -242,8 +250,12 @@ class TestDynaModule(unittest.TestCase):
     def test_keyfile(self):
 
         # test encryption detection
-        np.testing.assert_almost_equal(get_file_entropy(
-            "test/keyfile.key"), 4.019360, decimal=6)
+        # two values for windows or linux file endings ...
+        self.assertTrue(self.is_almost_equal(
+            get_file_entropy("test/keyfile.key"), 4.019002, 1E-6) or self.is_almost_equal(
+            get_file_entropy("test/keyfile.key"), 3.927457, 1E-6))
+        # np.testing.assert_almost_equal(get_file_entropy(
+        #    "test/keyfile.key"), 3.927457, decimal=6)
         np.testing.assert_almost_equal(get_file_entropy(
             "test/keyfile_include1.key"), 2.095140, decimal=6)
         np.testing.assert_almost_equal(get_file_entropy(
