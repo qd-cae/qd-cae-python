@@ -596,7 +596,7 @@ PYBIND11_MODULE(dyna_cpp, m)
 
   // RawD3plot
   pybind11::class_<RawD3plot, std::shared_ptr<RawD3plot>> raw_d3plot_py(
-    m, "RawD3plot");
+    m, "QD_RawD3plot");
   raw_d3plot_py
     .def(pybind11::init<std::string, bool>(),
          "filepath"_a,
