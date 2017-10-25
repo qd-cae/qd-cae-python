@@ -602,31 +602,31 @@ PYBIND11_MODULE(dyna_cpp, m)
          "filepath"_a,
          "use_femzip"_a = false,
          rawd3plot_constructor_description)
-    .def("get_string_names",
+    .def("_get_string_names",
          &RawD3plot::get_string_names,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_string_names_docs)
-    .def("get_string_data",
+    .def("_get_string_data",
          &RawD3plot::get_string_data,
          "name"_a,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_string_data_docs)
-    .def("get_int_names",
+    .def("_get_int_names",
          &RawD3plot::get_int_names,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_int_names_docs)
-    .def("get_int_data",
+    .def("_get_int_data",
          [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
            return qd::py::tensor_to_nparray(_d3plot->get_int_data(_entry_name));
          },
          "name"_a,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_int_data_docs)
-    .def("get_float_names",
+    .def("_get_float_names",
          &RawD3plot::get_float_names,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_float_names_docs)
-    .def("get_float_data",
+    .def("_get_float_data",
          [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
            return qd::py::tensor_to_nparray(
              _d3plot->get_float_data(_entry_name));
