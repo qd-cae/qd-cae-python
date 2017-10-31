@@ -1223,7 +1223,9 @@ const char* rawd3plot_constructor_description = R"qddoc(
 )qddoc";
 
 const char* rawd3plot_get_int_names_docs = R"qddoc(
-    get_int_names()
+    _get_int_names()
+
+    *For internal usage*
 
     Returns
     -------
@@ -1242,7 +1244,9 @@ const char* rawd3plot_get_int_names_docs = R"qddoc(
 )qddoc";
 
 const char* rawd3plot_get_int_data_docs = R"qddoc(
-    get_int_data(name)
+    _get_int_data(name)
+
+    *For internal usage*
 
     This function is for reading any data, which is saved as an
     integer value.
@@ -1269,7 +1273,9 @@ const char* rawd3plot_get_int_data_docs = R"qddoc(
 )qddoc";
 
 const char* rawd3plot_get_string_names_docs = R"qddoc(
-    get_string_names()
+    _get_string_names()
+
+    *For internal usage*
 
     Returns
     -------
@@ -1283,7 +1289,9 @@ const char* rawd3plot_get_string_names_docs = R"qddoc(
 )qddoc";
 
 const char* rawd3plot_get_string_data_docs = R"qddoc(
-    get_string_data(name)
+    _get_string_data(name)
+
+    *For internal usage*
 
     This function is for reading any data, which is saved as a
     string in the d3plot.
@@ -1308,7 +1316,7 @@ const char* rawd3plot_get_string_data_docs = R"qddoc(
 )qddoc";
 
 const char* rawd3plot_get_float_names_docs = R"qddoc(
-    get_float_names()
+    _get_float_names()
 
     Returns
     -------
@@ -1322,7 +1330,9 @@ const char* rawd3plot_get_float_names_docs = R"qddoc(
 )qddoc";
 
 const char* rawd3plot_get_float_data_docs = R"qddoc(
-    get_float_data(name)
+    _get_float_data(name)
+
+    *For internal usage*
 
     This function is for reading any data, which is saved as a
     floating point value.

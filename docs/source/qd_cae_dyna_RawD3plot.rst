@@ -14,7 +14,7 @@ The downside of the raw data access is the raw data itself. A d3plot has a very 
 
 ---------
 
-One can check oneself, which data arrays are actually loaded by the correspondingly named routine. Sometimes a data array is not written to the file, in which case it is also not available.
+These are all the data arrays available with their shape description. They are categorized according to the variable type.
 
 **Float Data**:
  - timesteps *(nTimesteps)*
@@ -34,13 +34,21 @@ One can check oneself, which data arrays are actually loaded by the correspondin
 **Integer Data**:
  - node_ids *(nNodes)*
  - elem_solid_ids *(nSolids)*
- - elem_solid_data *(nSolids x 9)* 
+ - elem_solid_nodes *(nSolids x 8)*
+ - elem_solid_material_ids *(nSolids)*
+ - elem_solid_data *(nSolids x 9)* (contains nodes and material)
  - elem_shell_ids *(nShells)*
- - elem_shell_data *(nShells x 5)* 
+ - elem_shell_nodes *(nShells x 4)*
+ - elem_shell_material_ids *(nShells)*
+ - elem_shell_data *(nShells x 5)* (contains nodes and materials)
  - elem_tshell_ids *(nTShells)*
- - elem_tshell_data *(nTShells x 9)*
+ - elem_tshell_nodes *(nTShells x 8)*
+ - elem_tshell_material_ids *(nTShells)*
+ - elem_tshell_data *(nTShells x 9)* (contains nodes and materials)
  - elem_beam_ids *(nBeams)*
- - elem_beam_data *(nBeams x 6)*
+ - elem_beam_nodes *(nBeams x 5)*
+ - elem_beam_material_ids *(nBeams)*
+ - elem_beam_data *(nBeams x 6)* (contains nodes and materials)
  - part_ids *(nParts)*
  - material_type_numbers *(nMaterials)*
  - airbag_geometry *(nAirbags x 4 or 5)*
@@ -62,6 +70,9 @@ One can check oneself, which data arrays are actually loaded by the correspondin
 .. autoclass:: qd.cae.dyna.RawD3plot
     :members:
     :inherited-members:
+    :special-members: __getitem__
+    :private-members:
 
     .. automethod:: __init__
+
     

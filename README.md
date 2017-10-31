@@ -80,8 +80,7 @@ If you are bold enough to compile it yourself, then follow the [compilation guid
 
 # License
 
-See the LICENSE file.
-For further licensing requests or questions don't hesitate to contact us.
+This project encourages open-source software and thus is published under the GNU GPL v3 (see the LICENSE file). If this library shall be used within a commercial software, please contact us for different licensing. 
 
 # Authors
 

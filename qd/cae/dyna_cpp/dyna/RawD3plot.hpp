@@ -110,7 +110,6 @@ private:
   std::map<std::string, Tensor<int32_t>> int_data;
   std::map<std::string, Tensor<float>> float_data;
   std::map<std::string, std::vector<std::string>> string_data;
-  // std::vector<int32_t> matsection;
 
   // header and metadata
   void read_header();
