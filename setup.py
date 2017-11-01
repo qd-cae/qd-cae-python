@@ -249,7 +249,8 @@ if __name__ == "__main__":
           },
           ext_package='qd.cae',  # where to place c extensions
           ext_modules=[dyna_extension],
-          install_requires=['numpy>=1.8', 'diversipy', 'pybind11>=2.2.0'],
+          install_requires=['numpy>=1.8',
+                            'diversipy', 'pybind11>=2.2.0', 'h5py'],
           keywords=['cae',
                       'simulation',
                       'engineering',

@@ -1,4 +1,7 @@
 
+import os
+import h5py
+import numpy as np
 from qd.cae.dyna import QD_RawD3plot
 
 
@@ -46,13 +49,19 @@ class RawD3plot(QD_RawD3plot):
         else:
             raise ValueError("Can not find key:" + str(key))
 
-
-    def save_hdf5(self):
+    def save_hdf5(self, filepath, overwrite=True):
         '''Save the raw d3plot to HDF5
+
+        Paramters
+        ---------
+        filepath : str
+            path for the hdf5 file
+        overwrite : bool
+            whether to overwrite an existing file
 
         Notes
         -----
-            Dumps the data arrays from a D3plot into an HDF5 file.
+            Saves the data arrays from a D3plot into an HDF5 file.
 
         Raises
         ------
@@ -64,105 +73,39 @@ class RawD3plot(QD_RawD3plot):
             >>> raw_d3plot = D3plot("path/to/d3plot")
             >>> raw_d3plot.save_hdf5("path/to/d3plot.h5)
         '''
-        pass
-        
 
-class ArrayD3plot(RawD3plot):
-    ''' Makes the data in a D3plot directly accessible via arrays
+        if os.path.isfile(filepath) and overwrite:
+            os.remove(filepath)
 
-    This class is a usability wrapper for the RawD3plot, which gives access
-    to the raw data arrays in a d3plot file. 
-    '''
+        # open file
+        fh = h5py.File(filepath, "w")
 
-    def keys(self):
-        '''Get the variable key names contained in this file
+        # int data
+        int_grp = fh.create_group("int_data")
+        for name in self._get_int_names():
+            data = self.get_raw_data(name)
+            dset = int_grp.create_dataset(
+                name, data.shape, dtype='i', data=data)
 
-        Returns
-        -------
-        variables : list of str
-            names of the variables in this file
+        # float data
+        float_grp = fh.create_group("float_data")
+        for name in self._get_float_names():
+            data = self.get_raw_data(name)
+            dset = float_grp.create_dataset(
+                name, data.shape, dtype='f', data=data)
+            #dset[...] = data
 
-        Notes
-        -----
-            The given variable names are not the pure data arrays from memory.
-            If one needs access to the pure, raw data, then use the RawD3plot
-            class and despair.
+        # string data
+        str_grp = fh.create_group("string_data")
+        for name in self._get_string_names():
+            data = self.get_raw_data(name)
 
-        Examples
-        --------
-            >>> raw_d3plot.get_keys()
-            ['elem_shell_results', 'elem_shell_results_layers', 'elem_solid_results', ... ]
-        '''
+            # convert utf8 to ascii
+            data = [entry.encode('ascii', 'ignore') for entry in data]
+            max_len = np.max([len(entry) for entry in data])
 
-        names = self.get_raw_keys()
+            dset = str_grp.create_dataset(
+                name, (len(data), 1), 'S' + str(max_len), data=data)
 
-        if "elem_beam_data" in names:
-            del names[names.index("elem_beam_data")]
-            names.append("elem_beam_nodes")
-            names.append("elem_beam_material_ids")
-        if "elem_shell_data" in names:
-            del names[names.index("elem_shell_data")]
-            names.append("elem_shell_nodes")
-            names.append("elem_shell_material_ids")
-        if "elem_tshell_data" in names:
-            del names[names.index("elem_tshell_data")]
-            names.append("elem_tshell_nodes")
-            names.append("elem_tshell_material_ids")
-        if "elem_solid_data" in names:
-            del names[names.index("elem_solid_data")]
-            names.append("elem_solids_nodes")
-            names.append("elem_solids_material_ids")
-
-        return names
-
-    
-    def __getitem__(self, key):
-        '''Get a variable from its name
-
-        Parameters
-        ----------
-        key : str
-            name of the variable to get
-
-        Returns
-        -------
-        data : np.ndarray or list
-            data array or list
-
-        Raises
-        ------
-        ValueError
-            In case that the key can not be found or the 
-            arugment is not a string.
-
-        Examples
-        --------
-            >>> shell_geom_data = raw_d3plot["elem_shell_data"]
-        '''
-
-        if not isinstance(key, str):
-            raise ValueError("The argument is not a string.")
-
-        # element nodes
-        if key == "elem_beam_nodes":
-            return self.get_raw_data("elem_beam_data")[:, :4]
-        elif key == "elem_shell_nodes":
-            return self.get_raw_data("elem_shell_data")[:, :4]
-        elif key == "elem_tshell_nodes":
-            return self.get_raw_data("elem_tshell_data")[:, :8]
-        elif key == "elem_solid_nodes":
-            return self.get_raw_data("elem_solid_data")[:, :8]
-
-        # element material ids
-        elif key == "elem_beam_material_ids":
-            return self.get_raw_data("elem_beam_data")[:, -1]
-        elif key == "elem_shell_material_ids":
-            return self.get_raw_data("elem_shell_data")[:, -1]
-        elif key == "elem_tshell_material_ids":
-            return self.get_raw_data("elem_tshell_data")[:, -1]
-        elif key == "elem_solid_material_ids":
-            return self.get_raw_data("elem_solid_data")[:, -1]
-
-        # search variable in maps
-        else:
-            return self.get_raw_data(key)
+        fh.flush()
+        fh.close()
