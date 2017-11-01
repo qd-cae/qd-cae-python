@@ -36,8 +36,7 @@ public:
  */
 template<typename T>
 Tensor<T>::Tensor()
-{
-}
+{}
 
 /** Create a tensor from an initializer list.
  *
@@ -50,8 +49,7 @@ Tensor<T>::Tensor(std::initializer_list<size_t> list)
                          end(list),
                          static_cast<size_t>(1),
                          std::multiplies<>()))
-{
-}
+{}
 
 /** Compute the array offset from indexes
  *

@@ -150,10 +150,19 @@ public:
 
   Tensor<int32_t>& get_int_data(const std::string& _name);
   std::vector<std::string> get_int_names() const;
+  void set_int_data(const std::string& _name, Tensor<int32_t> _data);
   std::vector<std::string> get_string_data(const std::string& _name);
   std::vector<std::string> get_string_names() const;
+  void set_string_data(const std::string& _name,
+                       std::vector<std::string>& _data);
   Tensor<float>& get_float_data(const std::string& _name);
   std::vector<std::string> get_float_names() const;
+  void set_float_data(const std::string& _name,
+                      std::vector<size_t> _shape,
+                      const float* _data_ptr);
+  void set_int_data(const std::string& _name,
+                    std::vector<size_t> _shape,
+                    const int* _data_ptr);
 };
 
 } // namespace std

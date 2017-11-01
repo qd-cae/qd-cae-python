@@ -525,8 +525,9 @@ PYBIND11_MODULE(dyna_cpp, m)
       "read_states"_a = pybind11::list(),
       "use_femzip"_a = false)
     .def( // pybind11::init<std::string, pybind11::tuple, bool>(),
-      pybind11::init([](
-        std::string _filepath, pybind11::tuple _variables, bool _use_femzip) {
+      pybind11::init([](std::string _filepath,
+                        pybind11::tuple _variables,
+                        bool _use_femzip) {
         return std::make_shared<D3plot>(
           _filepath,
           qd::py::container_to_vector<std::string>(
@@ -634,6 +635,36 @@ PYBIND11_MODULE(dyna_cpp, m)
          "name"_a,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_float_data_docs)
+    .def("_set_float_data",
+         [](std::shared_ptr<RawD3plot> _d3plot,
+            std::string _entry_name,
+            pybind11::array_t<float> _data) {
+
+           auto shape_sizet = std::vector<size_t>(_data.ndim());
+           for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
+             shape_sizet[ii] = _data.shape()[ii];
+
+           _d3plot->set_float_data(_entry_name, shape_sizet, _data.data());
+
+         },
+         "name"_a,
+         "array"_a,
+         pybind11::return_value_policy::take_ownership)
+    .def("_set_int_data",
+         [](std::shared_ptr<RawD3plot> _d3plot,
+            std::string _entry_name,
+            pybind11::array_t<int> _data) {
+
+           auto shape_sizet = std::vector<size_t>(_data.ndim());
+           for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
+             shape_sizet[ii] = _data.shape()[ii];
+
+           _d3plot->set_int_data(_entry_name, shape_sizet, _data.data());
+
+         },
+         "name"_a,
+         "array"_a,
+         pybind11::return_value_policy::take_ownership)
     .def("info", &RawD3plot::info);
 
   // KeyFile
