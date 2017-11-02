@@ -525,8 +525,9 @@ PYBIND11_MODULE(dyna_cpp, m)
       "read_states"_a = pybind11::list(),
       "use_femzip"_a = false)
     .def( // pybind11::init<std::string, pybind11::tuple, bool>(),
-      pybind11::init([](
-        std::string _filepath, pybind11::tuple _variables, bool _use_femzip) {
+      pybind11::init([](std::string _filepath,
+                        pybind11::tuple _variables,
+                        bool _use_femzip) {
         return std::make_shared<D3plot>(
           _filepath,
           qd::py::container_to_vector<std::string>(
@@ -596,37 +597,38 @@ PYBIND11_MODULE(dyna_cpp, m)
 
   // RawD3plot
   pybind11::class_<RawD3plot, std::shared_ptr<RawD3plot>> raw_d3plot_py(
-    m, "RawD3plot");
+    m, "QD_RawD3plot");
   raw_d3plot_py
     .def(pybind11::init<std::string, bool>(),
          "filepath"_a,
          "use_femzip"_a = false,
          rawd3plot_constructor_description)
-    .def("get_string_names",
+    .def(pybind11::init<>())
+    .def("_get_string_names",
          &RawD3plot::get_string_names,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_string_names_docs)
-    .def("get_string_data",
+    .def("_get_string_data",
          &RawD3plot::get_string_data,
          "name"_a,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_string_data_docs)
-    .def("get_int_names",
+    .def("_get_int_names",
          &RawD3plot::get_int_names,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_int_names_docs)
-    .def("get_int_data",
+    .def("_get_int_data",
          [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
            return qd::py::tensor_to_nparray(_d3plot->get_int_data(_entry_name));
          },
          "name"_a,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_int_data_docs)
-    .def("get_float_names",
+    .def("_get_float_names",
          &RawD3plot::get_float_names,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_float_names_docs)
-    .def("get_float_data",
+    .def("_get_float_data",
          [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
            return qd::py::tensor_to_nparray(
              _d3plot->get_float_data(_entry_name));
@@ -634,7 +636,55 @@ PYBIND11_MODULE(dyna_cpp, m)
          "name"_a,
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_float_data_docs)
-    .def("info", &RawD3plot::info);
+    .def("_set_float_data",
+         [](std::shared_ptr<RawD3plot> _d3plot,
+            std::string _entry_name,
+            pybind11::array_t<float> _data) {
+
+           auto shape_sizet = std::vector<size_t>(_data.ndim());
+           for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
+             shape_sizet[ii] = _data.shape()[ii];
+
+           _d3plot->set_float_data(_entry_name, shape_sizet, _data.data());
+
+         },
+         "name"_a,
+         "data"_a)
+    .def("_set_int_data",
+         [](std::shared_ptr<RawD3plot> _d3plot,
+            std::string _entry_name,
+            pybind11::array_t<int> _data) {
+
+           auto shape_sizet = std::vector<size_t>(_data.ndim());
+           for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
+             shape_sizet[ii] = _data.shape()[ii];
+
+           _d3plot->set_int_data(_entry_name, shape_sizet, _data.data());
+
+         },
+         "name"_a,
+         "data"_a)
+    .def("_set_string_data",
+         [](std::shared_ptr<RawD3plot> _d3plot,
+            std::string _entry_name,
+            pybind11::list _data) {
+
+           _d3plot->set_string_data(
+             _entry_name, qd::py::container_to_vector<std::string>(_data));
+         },
+         "name"_a,
+         "data"_a)
+    .def("_set_string_data",
+         [](std::shared_ptr<RawD3plot> _d3plot,
+            std::string _entry_name,
+            pybind11::tuple _data) {
+
+           _d3plot->set_string_data(
+             _entry_name, qd::py::container_to_vector<std::string>(_data));
+         },
+         "name"_a,
+         "data"_a)
+    .def("info", &RawD3plot::info, rawd3plot_info_docs);
 
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(

@@ -4,7 +4,7 @@ RawD3plot
 
 A ``RawD3plot`` is reading all of the raw data within a d3plot file. In contrast to the other ``D3plot`` class does it give access to the unprocessed data within the file.
 
-There are two purposes why this class was created. Firstly one can use and check the raw data oneself and do all kind of magic things with it. Secondly not using object orientation speeds up the reading process by avoiding many small allocations. 
+There are two purposes why this class was created. Firstly one can use and check the raw data oneself and do all kind of magic things with it. Secondly not using object orientation should speed up the reading process by avoiding many small allocations. 
 
 The downside of the raw data access is the raw data itself. A d3plot has a very confusing structure. The file sometimes omits certain array elements and builds arrays in a very strange manner. Because the raw data arrays can be very confusing, one should not use this class without the `official LS-Dyna database guide`_.
 
@@ -14,7 +14,7 @@ The downside of the raw data access is the raw data itself. A d3plot has a very 
 
 ---------
 
-One can check oneself, which data arrays are actually loaded by the correspondingly named routine. Sometimes a data array is not written to the file, in which case it is also not available.
+These are all the data arrays available with their shape description. They are categorized according to the variable type.
 
 **Float Data**:
  - timesteps *(nTimesteps)*
@@ -34,13 +34,13 @@ One can check oneself, which data arrays are actually loaded by the correspondin
 **Integer Data**:
  - node_ids *(nNodes)*
  - elem_solid_ids *(nSolids)*
- - elem_solid_data *(nSolids x 9)* 
+ - elem_solid_data *(nSolids x 9)* (contains nodes and material)
  - elem_shell_ids *(nShells)*
- - elem_shell_data *(nShells x 5)* 
+ - elem_shell_data *(nShells x 5)* (contains nodes and materials)
  - elem_tshell_ids *(nTShells)*
- - elem_tshell_data *(nTShells x 9)*
+ - elem_tshell_data *(nTShells x 9)* (contains nodes and materials)
  - elem_beam_ids *(nBeams)*
- - elem_beam_data *(nBeams x 6)*
+ - elem_beam_data *(nBeams x 6)* (contains nodes and materials)
  - part_ids *(nParts)*
  - material_type_numbers *(nMaterials)*
  - airbag_geometry *(nAirbags x 4 or 5)*
@@ -62,6 +62,8 @@ One can check oneself, which data arrays are actually loaded by the correspondin
 .. autoclass:: qd.cae.dyna.RawD3plot
     :members:
     :inherited-members:
+    :private-members: 
 
     .. automethod:: __init__
+
     

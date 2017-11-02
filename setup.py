@@ -21,7 +21,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-version = "0.6.5"
+version = "0.6.6"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() == "Linux")
@@ -249,7 +249,8 @@ if __name__ == "__main__":
           },
           ext_package='qd.cae',  # where to place c extensions
           ext_modules=[dyna_extension],
-          install_requires=['numpy>=1.8', 'diversipy', 'pybind11>=2.2.0'],
+          install_requires=['numpy>=1.8',
+                            'diversipy', 'pybind11>=2.2.0', 'h5py'],
           keywords=['cae',
                       'simulation',
                       'engineering',

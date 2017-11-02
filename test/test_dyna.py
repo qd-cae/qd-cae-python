@@ -289,37 +289,41 @@ class TestDynaModule(unittest.TestCase):
 
         d3plot_filepath = "test/d3plot"
 
-        int_shapes = {'node_ids': (4915,), 'part_ids': (
-            1,), 'elem_shell_data': (4696, 5), 'elem_shell_ids': (4696,)}
+        keys_data = {'part_names': ['Zugprobe                                                                '],
+                     'node_acceleration': (1, 4915, 3), 'elem_shell_results': (1, 4696, 24),
+                     'timesteps': (1,), 'elem_shell_data': (4696, 5), 'node_velocity': (1, 4915, 3),
+                     'node_coordinates': (4915, 3), 'elem_shell_ids': (4696,), 'node_ids': (4915,),
+                     'part_ids': (1,), 'node_displacement': (1, 4915, 3),
+                     'elem_shell_results_layers': (1, 4696, 3, 26)}
 
-        int_names = sorted(int_shapes.keys())
+        keys_names = sorted(keys_data.keys())
 
-        float_shapes = {'elem_shell_results': (1, 4696, 24), 'timesteps': (1,), 'node_acceleration': (1, 4915, 3), 'elem_shell_results_layers': (
-            1, 4696, 3, 26),  'node_velocity': (1, 4915, 3), 'node_displacement': (1, 4915, 3), 'node_coordinates': (4915, 3)}
-
-        float_names = sorted(float_shapes.keys())
-
-        string_names = ['part_names']
-
-        string_data = {'part_names': [
-            'Zugprobe                                                                ']}
-
+        # do the thing
         raw_d3plot = RawD3plot(d3plot_filepath)
 
-        # test names
-        self.assertEqual(sorted(raw_d3plot.get_int_names()), int_names)
-        self.assertEqual(sorted(raw_d3plot.get_float_names()), float_names)
-        self.assertEqual(raw_d3plot.get_string_names(), string_names)
+        # test
+        self.assertEqual(sorted(raw_d3plot.get_raw_keys()), keys_names)
+        for key in raw_d3plot.get_raw_keys():
+            data = raw_d3plot.get_raw_data(key)
+            if isinstance(data, np.ndarray):
+                self.assertEqual(data.shape, keys_data[key])
+            elif isinstance(data, str):
+                self.assertEqual(data, keys_data[key])
 
-        # test shapes
-        for key, value in int_shapes.items():
-            self.assertEqual(value, raw_d3plot.get_int_data(key).shape)
+        # saving hdf5
+        raw_d3plot.save_hdf5("./test.h5")
+        self.assertTrue(os.path.isfile("./test.h5"))
 
-        for key, value in float_shapes.items():
-            self.assertEqual(value, raw_d3plot.get_float_data(key).shape)
-
-        for key, value in string_data.items():
-            self.assertEqual(value, raw_d3plot.get_string_data(key))
+        # reading hdf5
+        raw_d3plot = RawD3plot("./test.h5")
+        os.remove("./test.h5")
+        self.assertEqual(sorted(raw_d3plot.get_raw_keys()), keys_names)
+        for key in raw_d3plot.get_raw_keys():
+            data = raw_d3plot.get_raw_data(key)
+            if isinstance(data, np.ndarray):
+                self.assertEqual(data.shape, keys_data[key])
+            elif isinstance(data, str):
+                self.assertEqual(data, keys_data[key])
 
     def test_numerics_sampling(self):
         '''Testing qd.numerics'''

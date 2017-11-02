@@ -21,6 +21,70 @@
 
 namespace qd {
 
+RawD3plot::RawD3plot()
+  : dyna_ndim(-1)
+  , dyna_icode(-1)
+  , dyna_numnp(-1)
+  , dyna_mdlopt(-1)
+  , dyna_mattyp(-1)
+  , dyna_nglbv(-1)
+  , dyna_nel2(-1)
+  , dyna_nel4(-1)
+  , dyna_nel48(-1)
+  , dyna_nel8(-1)
+  , dyna_nel20(-1)
+  , dyna_nelth(-1)
+  , dyna_nmmat(-1)
+  , dyna_nummat2(-1)
+  , dyna_nummat4(-1)
+  , dyna_nummat8(-1)
+  , dyna_nummatth(-1)
+  , dyna_nv1d(-1)
+  , dyna_nv2d(-1)
+  , dyna_nv3d(-1)
+  , dyna_nv3dt(-1)
+  , dyna_maxint(-1)
+  , dyna_istrn(-1)
+  , dyna_neiph(-1)
+  , dyna_neips(-1)
+  , dyna_neipb(-1)
+  , dyna_iu(-1)
+  , dyna_iv(-1)
+  , dyna_ia(-1)
+  , dyna_it(-1)
+  , dyna_idtdt(-1)
+  , dyna_narbs(-1)
+  , dyna_ioshl1(-1)
+  , dyna_ioshl2(-1)
+  , dyna_ioshl3(-1)
+  , dyna_ioshl4(-1)
+  , dyna_extra(-1)
+  , dyna_numprop(-1)
+  , dyna_numrbe(-1)
+  , dyna_nmsph(-1)
+  , dyna_ngpsph(-1)
+  , dyna_ialemat(-1)
+  , dyna_npefg(-1)
+  , dyna_airbag_npartgas(-1)
+  , dyna_airbag_subver(-1)
+  , dyna_airbag_nchamber(-1)
+  , dyna_airbag_ngeom(-1)
+  , dyna_airbag_state_nvars(-1)
+  , dyna_airbag_nparticles(-1)
+  , dyna_airbag_state_geom(-1)
+  , nStates(0)
+  , own_nel10(false)
+  , own_external_numbers_I8(false)
+  , own_has_internal_energy(false)
+  , own_nDeletionVars(0)
+  , wordPosition(0)
+  , wordsToRead(0)
+  , wordPositionStates(0)
+  , useFemzip(false)
+  , femzip_state_offset(0)
+  , buffer(nullptr)
+{}
+
 RawD3plot::RawD3plot(std::string _filename, bool _useFemzip)
   : dyna_ndim(-1)
   , dyna_icode(-1)
@@ -897,14 +961,14 @@ RawD3plot::read_part_ids()
 {
 
 /*
-* Indeed this is a little complicated: usually the file should contain
-* as many materials as in the input but somehow dyna generates a few
-* ghost materials itself and those are appended with a 0 ID. Therefore
-* the length should be nMaterials but it's d3plot_nmmat with:
-* nMaterials < d3plot_nmmat. The difference are the ghost mats.
-* Took some time to find that out ... and I don't know why ...
-* oh and it is undocumented ...
-*/
+ * Indeed this is a little complicated: usually the file should contain
+ * as many materials as in the input but somehow dyna generates a few
+ * ghost materials itself and those are appended with a 0 ID. Therefore
+ * the length should be nMaterials but it's d3plot_nmmat with:
+ * nMaterials < d3plot_nmmat. The difference are the ghost mats.
+ * Took some time to find that out ... and I don't know why ...
+ * oh and it is undocumented ...
+ */
 
 #ifdef QD_DEBUG
   std::cout << "Reading part ids at word " << wordPosition << " ... ";
@@ -1281,7 +1345,9 @@ RawD3plot::read_states_elem8()
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
     shape = {
-      0, static_cast<size_t>(dyna_nel8), static_cast<size_t>(dyna_nv3d),
+      0,
+      static_cast<size_t>(dyna_nel8),
+      static_cast<size_t>(dyna_nv3d),
     };
   }
   shape[0]++; // one more timestep
@@ -1415,7 +1481,9 @@ RawD3plot::read_states_elem4th()
   auto shape2 = tshell_vars.get_shape();
   if (shape2.size() == 0) {
     shape2 = {
-      0, static_cast<size_t>(dyna_nelth), static_cast<size_t>(nNormalVars),
+      0,
+      static_cast<size_t>(dyna_nelth),
+      static_cast<size_t>(nNormalVars),
     };
   }
   shape2[0]++; // one more timestep
@@ -1463,7 +1531,9 @@ RawD3plot::read_states_elem2()
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
     shape = {
-      0, static_cast<size_t>(dyna_nel2), static_cast<size_t>(dyna_nv2d),
+      0,
+      static_cast<size_t>(dyna_nel2),
+      static_cast<size_t>(dyna_nv2d),
     };
   }
   shape[0]++; // one more timestep
@@ -1727,6 +1797,17 @@ RawD3plot::get_int_names() const
   return ret;
 }
 
+/** Insert an integer memory array into the file buffer
+ *
+ * @param _name : name of the variable
+ * @param _data : data array
+ */
+void
+RawD3plot::set_int_data(const std::string& _name, Tensor<int32_t> _data)
+{
+  this->int_data[_name] = _data;
+}
+
 /** Get float data from the file
  *
  * @param _name : variable name
@@ -1755,6 +1836,69 @@ RawD3plot::get_float_names() const
     ret.push_back(iter.first);
   }
   return ret;
+}
+
+/** Insert an float memory array into the file buffer
+ *
+ * @param _name : name of the variable
+ * @param _shape : shape of the data tensor
+ * @param _data_ptr : pointer to the first data element for copy
+ */
+void
+RawD3plot::set_float_data(const std::string& _name,
+                          std::vector<size_t> _shape,
+                          const float* _data_ptr)
+{
+
+  auto& tensor = this->float_data[_name];
+
+  if (_shape.size() < 1)
+    return;
+
+  tensor.resize(_shape);
+  size_t offset = 1;
+  for (auto entry : _shape)
+    offset *= entry;
+
+  std::copy(_data_ptr, _data_ptr + offset, tensor.get_data().begin());
+}
+
+/** Insert an int memory array into the file buffer
+ *
+ * @param _name : name of the variable
+ * @param _shape : shape of the data tensor
+ * @param _data_ptr : pointer to the first data element for copy
+ */
+void
+RawD3plot::set_int_data(const std::string& _name,
+                        std::vector<size_t> _shape,
+                        const int* _data_ptr)
+{
+
+  auto& tensor = this->int_data[_name];
+
+  if (_shape.size() < 1)
+    return;
+
+  tensor.resize(_shape);
+  size_t offset = 1;
+  for (auto entry : _shape)
+    offset *= entry;
+
+  std::copy(_data_ptr, _data_ptr + offset, tensor.get_data().begin());
+}
+
+/** Insert a string memory vector into the file buffer
+ *
+ * @param _name : name of the variable
+ * @param _data : data array
+ */
+void
+RawD3plot::set_string_data(const std::string& _name,
+                           const std::vector<std::string>& _data)
+{
+
+  this->string_data[_name] = _data;
 }
 
 /** Get the title of the d3plot
