@@ -184,11 +184,11 @@
   <div class="section" id="rawd3plot">
 <h1>RawD3plot<a class="headerlink" href="#rawd3plot" title="Permalink to this headline">¶</a></h1>
 <p>A <code class="docutils literal"><span class="pre">RawD3plot</span></code> is reading all of the raw data within a d3plot file. In contrast to the other <code class="docutils literal"><span class="pre">D3plot</span></code> class does it give access to the unprocessed data within the file.</p>
-<p>There are two purposes why this class was created. Firstly one can use and check the raw data oneself and do all kind of magic things with it. Secondly not using object orientation speeds up the reading process by avoiding many small allocations.</p>
+<p>There are two purposes why this class was created. Firstly one can use and check the raw data oneself and do all kind of magic things with it. Secondly not using object orientation should speed up the reading process by avoiding many small allocations.</p>
 <p>The downside of the raw data access is the raw data itself. A d3plot has a very confusing structure. The file sometimes omits certain array elements and builds arrays in a very strange manner. Because the raw data arrays can be very confusing, one should not use this class without the <a class="reference external" href="https://github.com/qd-cae/qd-cae-python/tree/master/docs">official LS-Dyna database guide</a>.</p>
 <p><strong>This class is not finished and will change!</strong> The raw data arrays are simply too confusing and need a further utility layer.</p>
 <hr class="docutils" />
-<p>One can check oneself, which data arrays are actually loaded by the correspondingly named routine. Sometimes a data array is not written to the file, in which case it is also not available.</p>
+<p>These are all the data arrays available with their shape description. They are categorized according to the variable type.</p>
 <dl class="docutils">
 <dt><strong>Float Data</strong>:</dt>
 <dd><ul class="first last simple">
@@ -211,13 +211,13 @@
 <dd><ul class="first last simple">
 <li>node_ids <em>(nNodes)</em></li>
 <li>elem_solid_ids <em>(nSolids)</em></li>
-<li>elem_solid_data <em>(nSolids x 9)</em></li>
+<li>elem_solid_data <em>(nSolids x 9)</em> (contains nodes and material)</li>
 <li>elem_shell_ids <em>(nShells)</em></li>
-<li>elem_shell_data <em>(nShells x 5)</em></li>
+<li>elem_shell_data <em>(nShells x 5)</em> (contains nodes and materials)</li>
 <li>elem_tshell_ids <em>(nTShells)</em></li>
-<li>elem_tshell_data <em>(nTShells x 9)</em></li>
+<li>elem_tshell_data <em>(nTShells x 9)</em> (contains nodes and materials)</li>
 <li>elem_beam_ids <em>(nBeams)</em></li>
-<li>elem_beam_data <em>(nBeams x 6)</em></li>
+<li>elem_beam_data <em>(nBeams x 6)</em> (contains nodes and materials)</li>
 <li>part_ids <em>(nParts)</em></li>
 <li>material_type_numbers <em>(nMaterials)</em></li>
 <li>airbag_geometry <em>(nAirbags x 4 or 5)</em></li>
@@ -242,17 +242,18 @@
 <dl class="class">
 <dt id="qd.cae.dyna.RawD3plot">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">RawD3plot</code><span class="sig-paren">(</span><em>filepath</em>, <em>use_femzip=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>Create a RawD3plot file object</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
 <blockquote>
-<div><p>path to the file</p>
+<div><p>path to either the (first) d3plot or a d3plot in hdf5 format</p>
 </div></blockquote>
 <p><strong>use_femzip</strong> : bool</p>
 <blockquote>
-<div><p>whether to use femzip decompression</p>
+<div><p>use femzip decompression for a compressed d3plot</p>
 </div></blockquote>
 </td>
 </tr>
@@ -272,7 +273,9 @@
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>If LS-Dyna writes multiple files (one for each timestep),
+<p>The constructor first checks, if the file is a hdf5 file and
+then tries to open it as a casual D3plot.
+If LS-Dyna writes multiple files (one for each timestep),
 give the filepath to the first file. The library finds all
 other files. The class automatically reads all data!</p>
 <p class="rubric">Examples</p>
@@ -281,6 +284,10 @@ other files. The class automatically reads all data!</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1">#read femzip compressed file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span><span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># save file as HDF5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">save_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># open HDF5 d3plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="rubric">Methods</p>
@@ -290,33 +297,25 @@ other files. The class automatically reads all data!</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_float_data</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_raw_data</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_float_names</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_int_data</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_int_names</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_string_data</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_string_names</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_raw_keys</span></code></td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></td>
 <td></td>
 </tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_hdf5</span></code></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="qd.cae.dyna.RawD3plot.get_float_data">
-<code class="descname">get_float_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_float_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is for reading any data, which is saved as a
+<dt id="qd.cae.dyna.RawD3plot._get_float_data">
+<code class="descname">_get_float_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_float_data" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>For internal usage</em></p>
+<p>This function is for reading any data, which is saved as a
 floating point value.</p>
 <dl class="docutils">
 <dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
@@ -345,8 +344,8 @@ floating point value.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="qd.cae.dyna.RawD3plot.get_float_names">
-<code class="descname">get_float_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_float_names" title="Permalink to this definition">¶</a></dt>
+<dt id="qd.cae.dyna.RawD3plot._get_float_names">
+<code class="descname">_get_float_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_float_names" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -367,9 +366,10 @@ floating point value.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="qd.cae.dyna.RawD3plot.get_int_data">
-<code class="descname">get_int_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_int_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is for reading any data, which is saved as an
+<dt id="qd.cae.dyna.RawD3plot._get_int_data">
+<code class="descname">_get_int_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_int_data" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>For internal usage</em></p>
+<p>This function is for reading any data, which is saved as an
 integer value.</p>
 <dl class="docutils">
 <dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
@@ -400,9 +400,10 @@ integer value.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="qd.cae.dyna.RawD3plot.get_int_names">
-<code class="descname">get_int_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_int_names" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dt id="qd.cae.dyna.RawD3plot._get_int_names">
+<code class="descname">_get_int_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_int_names" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>For internal usage</em></p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -425,9 +426,10 @@ the member function ‘RawD3plot.get_int_data’.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="qd.cae.dyna.RawD3plot.get_string_data">
-<code class="descname">get_string_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_string_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is for reading any data, which is saved as a
+<dt id="qd.cae.dyna.RawD3plot._get_string_data">
+<code class="descname">_get_string_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_string_data" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>For internal usage</em></p>
+<p>This function is for reading any data, which is saved as a
 string in the d3plot.</p>
 <dl class="docutils">
 <dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
@@ -456,9 +458,10 @@ string in the d3plot.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="qd.cae.dyna.RawD3plot.get_string_names">
-<code class="descname">get_string_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_string_names" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dt id="qd.cae.dyna.RawD3plot._get_string_names">
+<code class="descname">_get_string_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_string_names" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>For internal usage</em></p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -473,6 +476,130 @@ string in the d3plot.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_string_names</span><span class="p">()</span>
 <span class="go">[&#39;part_names&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.RawD3plot._is_hdf5">
+<code class="descname">_is_hdf5</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._is_hdf5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a file is a HDF5 file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote>
+<div><p>path to the file</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>is_hdf5</strong> : bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.RawD3plot._load_hdf5">
+<code class="descname">_load_hdf5</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._load_hdf5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a d3plot, which was saved as an HDF5 file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>path to the d3plot in HDF5 format</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>In order to use this method, one has to create
+an empty <cite>RawD3plot</cite> first. This circumvents some
+implementation issues.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># create empty file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">load_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.RawD3plot.get_raw_data">
+<code class="descname">get_raw_data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_raw_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a variable from its name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
+<blockquote>
+<div><p>name of the array or variable to get</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> : np.ndarray or list</p>
+<blockquote>
+<div><p>data array or list</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>In case that the key can not be found or the 
+arugment is not a str.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">shell_geom_data</span> <span class="o">=</span> <span class="n">raw_d3plot</span><span class="p">[</span><span class="s2">&quot;elem_shell_data&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.RawD3plot.get_raw_keys">
+<code class="descname">get_raw_keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_raw_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the names of the raw data fields</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>names</strong> : list of str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.RawD3plot.save_hdf5">
+<code class="descname">save_hdf5</code><span class="sig-paren">(</span><em>filepath</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.save_hdf5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the raw d3plot to HDF5</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>IOError</strong></p>
+<blockquote class="last">
+<div><p>In case anything related to IO goes wrong.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Saves the data arrays from a D3plot into an HDF5 file.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">save_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5)</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -289,11 +289,11 @@ class TestDynaModule(unittest.TestCase):
 
         d3plot_filepath = "test/d3plot"
 
-        keys_data = {'part_names': ['Zugprobe                                                                '], 
-                     'node_acceleration': (1, 4915, 3), 'elem_shell_results': (1, 4696, 24), 
-                     'timesteps': (1,), 'elem_shell_nodes': (4696, 4), 'node_velocity': (1, 4915, 3), 
-                     'node_coordinates': (4915, 3), 'elem_shell_ids': (4696,), 'node_ids': (4915,), 'part_ids': (1,), 
-                     'elem_shell_material_ids': (4696,), 'node_displacement': (1, 4915, 3), 
+        keys_data = {'part_names': ['Zugprobe                                                                '],
+                     'node_acceleration': (1, 4915, 3), 'elem_shell_results': (1, 4696, 24),
+                     'timesteps': (1,), 'elem_shell_data': (4696, 5), 'node_velocity': (1, 4915, 3),
+                     'node_coordinates': (4915, 3), 'elem_shell_ids': (4696,), 'node_ids': (4915,),
+                     'part_ids': (1,), 'node_displacement': (1, 4915, 3),
                      'elem_shell_results_layers': (1, 4696, 3, 26)}
 
         keys_names = sorted(keys_data.keys())
@@ -301,10 +301,25 @@ class TestDynaModule(unittest.TestCase):
         # do the thing
         raw_d3plot = RawD3plot(d3plot_filepath)
 
-        # test 
-        self.assertEqual(sorted(raw_d3plot.keys()),keys_names)
-        for key in raw_d3plot.keys():
-            data = raw_d3plot[key]
+        # test
+        self.assertEqual(sorted(raw_d3plot.get_raw_keys()), keys_names)
+        for key in raw_d3plot.get_raw_keys():
+            data = raw_d3plot.get_raw_data(key)
+            if isinstance(data, np.ndarray):
+                self.assertEqual(data.shape, keys_data[key])
+            elif isinstance(data, str):
+                self.assertEqual(data, keys_data[key])
+
+        # saving hdf5
+        raw_d3plot.save_hdf5("./test.h5")
+        self.assertTrue(os.path.isfile("./test.h5"))
+
+        # reading hdf5
+        raw_d3plot = RawD3plot("./test.h5")
+        os.remove("./test.h5")
+        self.assertEqual(sorted(raw_d3plot.get_raw_keys()), keys_names)
+        for key in raw_d3plot.get_raw_keys():
+            data = raw_d3plot.get_raw_data(key)
             if isinstance(data, np.ndarray):
                 self.assertEqual(data.shape, keys_data[key])
             elif isinstance(data, str):

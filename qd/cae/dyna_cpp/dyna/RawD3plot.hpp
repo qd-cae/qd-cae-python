@@ -142,6 +142,7 @@ private:
 
   // === P U B L I C === //
 public:
+  explicit RawD3plot();
   explicit RawD3plot(std::string filepath, bool _use_femzip = false);
   virtual ~RawD3plot();
   void info() const;
@@ -153,8 +154,6 @@ public:
   void set_int_data(const std::string& _name, Tensor<int32_t> _data);
   std::vector<std::string> get_string_data(const std::string& _name);
   std::vector<std::string> get_string_names() const;
-  void set_string_data(const std::string& _name,
-                       std::vector<std::string>& _data);
   Tensor<float>& get_float_data(const std::string& _name);
   std::vector<std::string> get_float_names() const;
   void set_float_data(const std::string& _name,
@@ -163,6 +162,8 @@ public:
   void set_int_data(const std::string& _name,
                     std::vector<size_t> _shape,
                     const int* _data_ptr);
+  void set_string_data(const std::string& _name,
+                       const std::vector<std::string>& _data);
 };
 
 } // namespace std

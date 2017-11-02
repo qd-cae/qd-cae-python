@@ -21,6 +21,70 @@
 
 namespace qd {
 
+RawD3plot::RawD3plot()
+  : dyna_ndim(-1)
+  , dyna_icode(-1)
+  , dyna_numnp(-1)
+  , dyna_mdlopt(-1)
+  , dyna_mattyp(-1)
+  , dyna_nglbv(-1)
+  , dyna_nel2(-1)
+  , dyna_nel4(-1)
+  , dyna_nel48(-1)
+  , dyna_nel8(-1)
+  , dyna_nel20(-1)
+  , dyna_nelth(-1)
+  , dyna_nmmat(-1)
+  , dyna_nummat2(-1)
+  , dyna_nummat4(-1)
+  , dyna_nummat8(-1)
+  , dyna_nummatth(-1)
+  , dyna_nv1d(-1)
+  , dyna_nv2d(-1)
+  , dyna_nv3d(-1)
+  , dyna_nv3dt(-1)
+  , dyna_maxint(-1)
+  , dyna_istrn(-1)
+  , dyna_neiph(-1)
+  , dyna_neips(-1)
+  , dyna_neipb(-1)
+  , dyna_iu(-1)
+  , dyna_iv(-1)
+  , dyna_ia(-1)
+  , dyna_it(-1)
+  , dyna_idtdt(-1)
+  , dyna_narbs(-1)
+  , dyna_ioshl1(-1)
+  , dyna_ioshl2(-1)
+  , dyna_ioshl3(-1)
+  , dyna_ioshl4(-1)
+  , dyna_extra(-1)
+  , dyna_numprop(-1)
+  , dyna_numrbe(-1)
+  , dyna_nmsph(-1)
+  , dyna_ngpsph(-1)
+  , dyna_ialemat(-1)
+  , dyna_npefg(-1)
+  , dyna_airbag_npartgas(-1)
+  , dyna_airbag_subver(-1)
+  , dyna_airbag_nchamber(-1)
+  , dyna_airbag_ngeom(-1)
+  , dyna_airbag_state_nvars(-1)
+  , dyna_airbag_nparticles(-1)
+  , dyna_airbag_state_geom(-1)
+  , nStates(0)
+  , own_nel10(false)
+  , own_external_numbers_I8(false)
+  , own_has_internal_energy(false)
+  , own_nDeletionVars(0)
+  , wordPosition(0)
+  , wordsToRead(0)
+  , wordPositionStates(0)
+  , useFemzip(false)
+  , femzip_state_offset(0)
+  , buffer(nullptr)
+{}
+
 RawD3plot::RawD3plot(std::string _filename, bool _useFemzip)
   : dyna_ndim(-1)
   , dyna_icode(-1)
@@ -1703,18 +1767,6 @@ RawD3plot::get_string_names() const
   return ret;
 }
 
-/** Insert a string memory vector into the file buffer
- *
- * @param _name : name of the variable
- * @param _data : data vector
- */
-void
-RawD3plot::set_string_data(const std::string& _name,
-                           std::vector<std::string>& _data)
-{
-  this->string_data[_name] = _data;
-}
-
 /** Get id data from the file
  *
  * @param _name : variable name
@@ -1789,7 +1841,8 @@ RawD3plot::get_float_names() const
 /** Insert an float memory array into the file buffer
  *
  * @param _name : name of the variable
- * @param _data : data array
+ * @param _shape : shape of the data tensor
+ * @param _data_ptr : pointer to the first data element for copy
  */
 void
 RawD3plot::set_float_data(const std::string& _name,
@@ -1813,7 +1866,8 @@ RawD3plot::set_float_data(const std::string& _name,
 /** Insert an int memory array into the file buffer
  *
  * @param _name : name of the variable
- * @param _data : data array
+ * @param _shape : shape of the data tensor
+ * @param _data_ptr : pointer to the first data element for copy
  */
 void
 RawD3plot::set_int_data(const std::string& _name,
@@ -1832,6 +1886,19 @@ RawD3plot::set_int_data(const std::string& _name,
     offset *= entry;
 
   std::copy(_data_ptr, _data_ptr + offset, tensor.get_data().begin());
+}
+
+/** Insert a string memory vector into the file buffer
+ *
+ * @param _name : name of the variable
+ * @param _data : data array
+ */
+void
+RawD3plot::set_string_data(const std::string& _name,
+                           const std::vector<std::string>& _data)
+{
+
+  this->string_data[_name] = _data;
 }
 
 /** Get the title of the d3plot

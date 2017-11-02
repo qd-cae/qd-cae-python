@@ -603,6 +603,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          "filepath"_a,
          "use_femzip"_a = false,
          rawd3plot_constructor_description)
+    .def(pybind11::init<>())
     .def("_get_string_names",
          &RawD3plot::get_string_names,
          pybind11::return_value_policy::take_ownership,
@@ -648,8 +649,7 @@ PYBIND11_MODULE(dyna_cpp, m)
 
          },
          "name"_a,
-         "array"_a,
-         pybind11::return_value_policy::take_ownership)
+         "data"_a)
     .def("_set_int_data",
          [](std::shared_ptr<RawD3plot> _d3plot,
             std::string _entry_name,
@@ -663,9 +663,28 @@ PYBIND11_MODULE(dyna_cpp, m)
 
          },
          "name"_a,
-         "array"_a,
-         pybind11::return_value_policy::take_ownership)
-    .def("info", &RawD3plot::info);
+         "data"_a)
+    .def("_set_string_data",
+         [](std::shared_ptr<RawD3plot> _d3plot,
+            std::string _entry_name,
+            pybind11::list _data) {
+
+           _d3plot->set_string_data(
+             _entry_name, qd::py::container_to_vector<std::string>(_data));
+         },
+         "name"_a,
+         "data"_a)
+    .def("_set_string_data",
+         [](std::shared_ptr<RawD3plot> _d3plot,
+            std::string _entry_name,
+            pybind11::tuple _data) {
+
+           _d3plot->set_string_data(
+             _entry_name, qd::py::container_to_vector<std::string>(_data));
+         },
+         "name"_a,
+         "data"_a)
+    .def("info", &RawD3plot::info, rawd3plot_info_docs);
 
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
