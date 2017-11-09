@@ -1,6 +1,7 @@
 
 from .RawD3plot import RawD3plot
 
+
 class ArrayD3plot(RawD3plot):
     ''' Makes the data in a D3plot directly accessible via arrays
 
@@ -30,6 +31,7 @@ class ArrayD3plot(RawD3plot):
 
         names = self.get_raw_keys()
 
+        # elem data wrapper
         if "elem_beam_data" in names:
             del names[names.index("elem_beam_data")]
             names.append("elem_beam_nodes")
@@ -47,9 +49,22 @@ class ArrayD3plot(RawD3plot):
             names.append("elem_solids_nodes")
             names.append("elem_solids_material_ids")
 
+        # elem deletion wrapper
+        if "elem_beam_deletion_info" in names:
+            del names[names.index("elem_beam_deletion_info")]
+            names.append("elem_beam_is_alive")
+        if "elem_shell_deletion_info" in names:
+            del names[names.index("elem_shell_deletion_info")]
+            names.append("elem_shell_is_alive")
+        if "elem_tshell_deletion_info" in names:
+            del names[names.index("elem_tshell_deletion_info")]
+            names.append("elem_tshell_is_alive")
+        if "elem_solid_deletion_info" in names:
+            del names[names.index("elem_solid_deletion_info")]
+            names.append("elem_solid_is_alive")
+
         return names
 
-    
     def __getitem__(self, key):
         '''Get a variable from its name
 
@@ -96,6 +111,16 @@ class ArrayD3plot(RawD3plot):
             return self.get_raw_data("elem_tshell_data")[:, -1]
         elif key == "elem_solid_material_ids":
             return self.get_raw_data("elem_solid_data")[:, -1]
+
+        # element deletion
+        if key == "elem_beam_is_alive":
+            return np.array(self.get_raw_data("elem_beam_deletion_info"), dtype=bool)
+        if key == "elem_shell_is_alive":
+            return np.array(self.get_raw_data("elem_shell_deletion_info"), dtype=bool)
+        if key == "elem_tshell_is_alive":
+            return np.array(self.get_raw_data("elem_tshell_deletion_info"), dtype=bool)
+        if key == "elem_solid_is_alive":
+            return np.array(self.get_raw_data("elem_solid_deletion_info"), dtype=bool)
 
         # search variable in maps
         else:

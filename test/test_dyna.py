@@ -244,8 +244,13 @@ class TestDynaModule(unittest.TestCase):
                     len(binout.read(content_dir, content_subdir)), 0)
 
         # check string conversion
-        self.assertEqual(binout.to_string(binout.read("swforc", "typenames")),
+        self.assertEqual(binout.read("swforc", "typenames"),
                          'constraint,weld,beam,solid,non nodal, ,solid assembly')
+
+        # test saving
+        binout.save_hdf5("./binout.h5")
+        self.assertTrue(os.path.isfile("./binout.h5"))
+        os.remove("./binout.h5")
 
     def test_keyfile(self):
 
@@ -290,11 +295,12 @@ class TestDynaModule(unittest.TestCase):
         d3plot_filepath = "test/d3plot"
 
         keys_data = {'part_names': ['Zugprobe                                                                '],
-                     'node_acceleration': (1, 4915, 3), 'elem_shell_results': (1, 4696, 24),
-                     'timesteps': (1,), 'elem_shell_data': (4696, 5), 'node_velocity': (1, 4915, 3),
-                     'node_coordinates': (4915, 3), 'elem_shell_ids': (4696,), 'node_ids': (4915,),
-                     'part_ids': (1,), 'node_displacement': (1, 4915, 3),
-                     'elem_shell_results_layers': (1, 4696, 3, 26)}
+                     'elem_shell_results': (1, 4696, 24), 'node_ids': (4915,),
+                     'timesteps': (1,), 'node_coordinates': (4915, 3), 'node_acceleration': (1, 4915, 3),
+                     'elem_shell_data': (4696, 5), 'elem_shell_ids': (4696,),
+                     'node_displacement': (1, 4915, 3),  'part_ids': (1,),
+                     'node_velocity': (1, 4915, 3), 'elem_shell_results_layers': (1, 4696, 3, 26),
+                     'elem_shell_deletion_info': (1, 4696)}
 
         keys_names = sorted(keys_data.keys())
 

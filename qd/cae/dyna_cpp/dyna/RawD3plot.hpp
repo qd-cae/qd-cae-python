@@ -137,6 +137,7 @@ private:
   void read_states_elem4();
   void read_states_elem4th();
   void read_states_elem2();
+  void read_states_elem_deletion();
   void read_states_airbag();
   bool isFileEnding(int32_t _iWord);
 

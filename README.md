@@ -14,19 +14,21 @@ We want to tackle this issue with this free library, in order to give engineerin
 
 # What's new?
 
+*Changelog 8.11.2017*
+Version 0.6.7
+
+qd.cae.dyna
+ - `RawD3plot` now also reads the information, whether an element was deleted.
+ - `Binout` now automatically detects string data when performing `Binout.read`
+ - `Binout.save_hdf5` saves the binout to an HDF5 file  (yay)
+ - `RawD3plot.save_hdf5` and `Binout.save_hdf5` have now a compression argument, which is by default enabled (`"gzip"`).
+
 *Changelog 2.11.2017*
 Version 0.6.6
 
 qd.cae.dyna
  - `RawD3plot` has now a better API and can also read a d3plot in HDF5 format (see below)
  - Implemented `RawD3plot.save_hdf5` to save a d3plot as HDF5 file
-
-*Changelog 9.10.2017*
-Version 0.6.5
-
-qd.cae.dyna
-  - `RawD3plot` is a new class to give access to the raw data of a d3plot (see [here](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna_RawD3plot.html)). Read the docs carefully and don't use this class without a specific purpose! The access to the data array is given in a dict-like manner.
-
 
 # Descriptions
 

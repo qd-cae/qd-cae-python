@@ -108,7 +108,7 @@ class RawD3plot(QD_RawD3plot):
         else:
             raise ValueError("Can not find key:" + str(key))
 
-    def save_hdf5(self, filepath, overwrite=True):
+    def save_hdf5(self, filepath, overwrite=True, compression="gzip"):
         '''Save the raw d3plot to HDF5
 
         Paramters
@@ -117,6 +117,8 @@ class RawD3plot(QD_RawD3plot):
             path for the hdf5 file
         overwrite : bool
             whether to overwrite an existing file
+        compression : str
+            compression technique (see h5py docs)
 
         Notes
         -----
@@ -144,14 +146,14 @@ class RawD3plot(QD_RawD3plot):
             for name in self._get_int_names():
                 data = self.get_raw_data(name)
                 dset = int_grp.create_dataset(
-                    name, data.shape, dtype='i', data=data)
+                    name, data.shape, dtype='i', data=data, compression=compression)
 
             # float data
             float_grp = fh.create_group("float_data")
             for name in self._get_float_names():
                 data = self.get_raw_data(name)
                 dset = float_grp.create_dataset(
-                    name, data.shape, dtype='f', data=data)
+                    name, data.shape, dtype='f', data=data, compression=compression)
                 #dset[...] = data
 
             # string data
@@ -164,7 +166,7 @@ class RawD3plot(QD_RawD3plot):
                 max_len = np.max([len(entry) for entry in data])
 
                 dset = str_grp.create_dataset(
-                    name, (len(data), 1), 'S' + str(max_len), data=data)
+                    name, (len(data), 1), 'S' + str(max_len), data=data, compression=compression)
 
     def _is_hdf5(self, filepath):
         ''' Check if a file is a HDF5 file

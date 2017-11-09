@@ -6,6 +6,7 @@ import glob
 import struct
 import ntpath
 import numpy as np
+import h5py
 
 import sys
 # if sys.version_info[0] < 3:
@@ -17,7 +18,7 @@ from .lsda_py3 import Lsda
 
 
 '''
-## Recoded stuff from lsda from LSTC, but much more readable and quoted ...
+# Recoded stuff from lsda from LSTC, but much more readable and quoted ...
 #
 class Diskfile:
 
@@ -99,9 +100,9 @@ class Diskfile:
             for value in header:
                 s += struct.pack("B",value) # convert to unsigned char
             self.fp.write(s)
-            #self.writecommand(17,Lsda.SYMBOLTABLEOFFSET)
-            #self.writeoffset(17,0)
-            #self.lastoffset = 17
+            # self.writecommand(17,Lsda.SYMBOLTABLEOFFSET)
+            # self.writeoffset(17,0)
+            # self.lastoffset = 17
 
     # UNFINISHED
 '''
@@ -134,8 +135,8 @@ class Binout:
 
         Notes
         -----
-            The class loads the file given in the filepath. By giving a 
-            search pattern such as: "binout*", all files with that 
+            The class loads the file given in the filepath. By giving a
+            search pattern such as: "binout*", all files with that
             pattern will be loaded.
 
         Examples
@@ -165,7 +166,7 @@ class Binout:
         #    self.lsda_root = self.lsda.root
         # else:
         #    self.lsda_root = self.lsda.root.children[""]
-        #self.lsda_root = self.lsda.root
+        # self.lsda_root = self.lsda.root
 
     ##
     #
@@ -190,21 +191,21 @@ class Binout:
 
         Returns
         -------
-        ret : list(str) or np.ndarray
-            list of subdata within the folder or data itself
+        ret : list(str), np.ndarray or str
+            list of subdata within the folder or data itself (array or string)
 
         Notes
         -----
             This function is used to read any data from the binout. It has been used
-            to make the access to the data more comfortable. The return type depends 
+            to make the access to the data more comfortable. The return type depends
             on the given path:
 
              - `binout.read()` : list(str) names of directories (in binout)
              - `binout.read(dir)` : list(str) names of variables or subdirs
              - `binout.read(dir1, ..., variable)` : np.array(float/int) data
 
-            If you have multiple outputs with different ids (e.g. in nodout for 
-            multiple nodes) then don't forget to read the ids array for 
+            If you have multiple outputs with different ids (e.g. in nodout for
+            multiple nodes) then don't forget to read the ids array for
             identification or id-labels.
 
         Examples
@@ -222,25 +223,12 @@ class Binout:
             (26L,)
             >>> binout.read("swforc","ids")
             array([52890, 52891, 52892, ...])
-            >>> # strings are just numbers, see Binout.to_string
-            >>> binout.read("swforc","typenames")
-            array([99, 111, 110, ...]) 
+            >>> # read a string value
+            >>> binout.read("swforc","date")
+            '11/05/2013'
         '''
 
         return self._decode_path(path)
-
-        '''
-        iLevel = len(path)
-
-        if iLevel == 0:
-            return self._bstr_to_str(list(self.lsda_root.children.keys()))
-        elif ((path[0] == "jntforc")
-              or (path[0] == "rwforc")
-              or (path[0] == "elout")):
-            return self._decode_three_levels(path)
-        else:
-            return self._decode_two_levels(path)
-        '''
 
     def _decode_path(self, path):
         '''Decode a path and get whatever is inside.
@@ -286,93 +274,6 @@ class Binout:
             except ValueError as err:
 
                 return self._get_variable(path)
-
-    def _decode_two_levels(self, path):
-        '''Decode a path, which has depth 2 (default)
-
-        Parameters
-        ----------
-        path : list(str)
-
-        Returns
-        -------
-        ret : list(str)/np.array(int)/np.array(float)
-            either path children or data
-        '''
-
-        iLevel = len(path)
-
-        # LEVEL 0 : no args (top)
-        if iLevel == 0:
-            return self._bstr_to_str(list(self.lsda_root.children.keys()))
-
-        # LEVEL 1 : variable names
-        elif iLevel == 1:
-
-            # subdir
-            dir_symbol = self._get_symbol(self.lsda_root, path)
-
-            # collect variable names
-            return self._collect_variables(dir_symbol)
-
-        # LEVEL 2 : read variable data
-        elif iLevel == 2:
-            return self._get_variable(path)
-
-        # LEVEL 3+ : Error
-        else:
-            raise ValueError("Invalid path depth of %d > 2" % iLevel)
-
-    def _decode_three_levels(self, path):
-        '''Decode a path, which has depth 3 (default)
-
-        Parameters
-        ----------
-        path : list(str)
-
-        Returns
-        -------
-        ret : list(str)/np.array(int)/np.array(float)
-            either path children or data
-
-        Notes
-        -----
-            Level 3 Files are:
-             - rwforc
-             - jntforc
-        '''
-
-        iLevel = len(path)
-
-        # LEVEL 0 : no args (top)
-        if iLevel == 0:
-            return self._bstr_to_str(list(self.lsda_root.children.keys()))
-
-        # LEVEL 1 : categories
-        elif iLevel == 1:
-
-            # subdir
-            dir_symbol = self._get_symbol(self.lsda_root, path)
-
-            # search subsubdir vars (metadata + states)
-            return self._bstr_to_str(list(dir_symbol.children.keys()))
-
-        # LEVEL 2 : variable names
-        elif iLevel == 2:
-
-            # subdir
-            dir_symbol = self._get_symbol(self.lsda_root, path)
-
-            # collect variable names
-            return self._collect_variables(dir_symbol)
-
-        # LEVEL 3 : read variable data
-        elif iLevel == 3:
-            return self._get_variable(path)
-
-        # LEVEL 4+ : Error
-        else:
-            raise ValueError("Invalid path depth \"%d > 3\"." % len(iLevel))
 
     def _get_symbol(self, symbol, path):
         '''Get a symbol from a path via lsda
@@ -426,7 +327,16 @@ class Binout:
 
         # var in metadata
         if ("metadata" in dir_symbol.children) and (variable_name in dir_symbol.get("metadata").children):
-            return np.asarray(dir_symbol.get("metadata").get(variable_name).read())
+            var_symbol = dir_symbol.get("metadata").get(variable_name)
+            var_type = var_symbol.type
+
+            # symbol is a string
+            if var_type == 1:
+                return self._to_string(var_symbol.read())
+            # symbol is numeric data
+            else:
+                return np.asarray(var_symbol.read())
+
         # var in state data ... hopefully
         else:
 
@@ -446,7 +356,7 @@ class Binout:
                     else:  # more than one data entry
                         data.append(state_data)
                     time += subdir_symbol.get(b"time").read()
-                    #data += subdir_symbol.get(variable_name).read()
+                    # data += subdir_symbol.get(variable_name).read()
 
             # return sorted by time
             return np.array(data)[np.argsort(time)]
@@ -475,8 +385,7 @@ class Binout:
 
         return self._bstr_to_str(list(var_names))
 
-    @staticmethod
-    def to_string(data_array):
+    def _to_string(self, data_array):
         '''Convert a data series of numbers (usually ints) to a string
 
         Parameters
@@ -492,15 +401,7 @@ class Binout:
         Notes
         -----
             This is needed for the reason that sometimes the binary data
-            within the files are strings. 
-
-        Examples
-        --------
-            >>> # strings also are just plain numbers
-            >>> binout.read("swforc","typenames")
-            array([99, 111, 110, ...]) 
-            >>> Binout.to_string( binout.read("swforc","typenames") )
-            'constraint,weld,beam,solid,non nodal, ,solid assembly'
+            within the files are strings.
         '''
 
         return "".join([chr(entry) for entry in data_array])
@@ -545,41 +446,57 @@ class Binout:
         else:
             return string
 
-    def _remove_trailing_numbers(self, filepath):
-        '''Find the additional binouts belonging to a base binout
+    def save_hdf5(self, filepath, compression="gzip"):
+        ''' Save a binout as HDF5
 
         Parameters
         ----------
         filepath : str
-            path to the base binout
+            path where the HDF5 shall be saved
+        compression : str
+            compression technique (see h5py docs)
 
-        Returns
-        -------
-        binouts : list(str)
-            list of filepaths to the additional binouts
+        Examples
+        --------
+            >>> binout = Binout("path/to/binout")
+            >>> binout.save_hdf5("path/to/binout.h5")
         '''
 
-        # filesystem variables
-        binout_dir = os.path.dirname(filepath)
-        binout_filename = ntpath.basename(filepath)
-        binout_filename_numberless = binout_filename.rstrip("0123456789")
-        filepath_numberless = os.path.join(
-            binout_dir, binout_filename_numberless)
+        with h5py.File(filepath, "w") as fh:
+            self._save_all_variables(fh, compression)
 
-        return filepath_numberless
+    def _save_all_variables(self, hdf5_grp, compression, *path):
+        ''' Iterates through all variables in the Binout
 
-        # get all possible files
-        filelist = glob.glob(filepath_numberless + "*")
+        Parameters
+        ----------
+        hdf5_grp : Group
+            group object in the HDF5, where all the data
+            shall be saved into (of course in a tree like
+            manner) 
+        compression : str
+            compression technique (see h5py docs)
+        path : tuple(str)
+            entry path in the binout
+        '''
 
-        # filter those with number at the end
-        cleaned_list = [entry.replace(filepath_numberless, "")
-                        for entry in filelist]
-        indexes = [ii for ii in range(len(cleaned_list))
-                   if cleaned_list[ii].isnumeric()]
-        filelist = [filelist[ii] for ii in indexes]
-        filelist.append(binout_filename_numberless)
+        ret = self.read(*path)
+        path_str = "/".join(path)
 
-        # throw out non-existing files
-        filelist = [entry for entry in filelist if os.path.isfile(entry)]
+        # iterate through subdirs
+        if isinstance(ret, list):
 
-        return filelist
+            if path_str:
+                hdf5_grp = hdf5_grp.create_group(path_str)
+
+            for entry in ret:
+                path_child = path + (entry,)
+                self._save_all_variables(
+                    hdf5_grp, compression, *path_child)
+        # children are variables
+        else:
+            # can not save strings, only list of strings ...
+            if isinstance(ret, str):
+                ret = np.array([ret], dtype=np.dtype("S"))
+            hdf5_grp.create_dataset(
+                path[-1], data=ret, compression=compression)
