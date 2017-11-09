@@ -23,11 +23,15 @@ These are all the data arrays available with their shape description. They are c
  - node_velocity *(nTimesteps x nNodes x 3)*
  - node_acceleration *(nTimesteps x nNodes x 3)*
  - elem_solid_results *(nTimesteps x nSolids x nResults)*
+ - elem_solid_deletion_info *(nTimesteps x nSolids)*
  - elem_shell_results_layers *(nTimesteps x nShells x nLayers x nResults)*
  - elem_shell_results *(nTimesteps x nShells x nResults)*
+ - elem_shell_deletion_info *(nTimesteps x nShells)*
  - elem_tshell_results_layers *(nTimesteps x nTShells x nLayers x nResults)*
  - elem_tshell_results *(nTimesteps x nTShells x nResults)*
+ - elem_tshell_deletion_info *(nTimesteps x nTShells)*
  - elem_beam_results *(nTimesteps x nBeams x nResults)*
+ - elem_beam_deletion_info *(nTimesteps x nBeams)*
  - airbag_geom_state_float_results *(nTimesteps x nAirbags x nResults)*
  - airbag_particle_float_results *(nTimesteps x nParticles x nResults)*
 

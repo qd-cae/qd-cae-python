@@ -1198,6 +1198,9 @@ RawD3plot::read_states()
       // shells
       read_states_elem4();
 
+      // element deletion info
+      read_states_elem_deletion();
+
       // airbag
       read_states_airbag();
 
@@ -1542,6 +1545,79 @@ RawD3plot::read_states_elem2()
 
   // read
   this->buffer->read_array(start, wordsToRead, tensor.get_data(), offset);
+}
+
+/** Read the deletion variables for elements (or nodes)
+ *
+ */
+void
+RawD3plot::read_states_elem_deletion()
+{
+
+  int32_t start = this->wordPosition + 1 // time
+                  + dyna_nglbv +
+                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+                  dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt +
+                  dyna_nv1d * dyna_nel2 + dyna_nv2d * (dyna_nel4 - dyna_numrbe);
+
+  // Node deletion info
+  if (dyna_mdlopt == 1) {
+
+    auto& tensor = float_data["node_deletion_info"];
+
+    auto shape = tensor.get_shape();
+    if (shape.size() == 0)
+      shape = { 0, static_cast<size_t>(dyna_numnp) };
+
+    shape[0]++; // one more timestep
+    auto offset = tensor.size();
+    tensor.resize(shape);
+
+    // read
+    this->buffer->read_array(start, dyna_numnp, tensor.get_data(), offset);
+
+  }
+  // Element deletion info
+  else if (dyna_mdlopt == 2) {
+
+    // field names hard coded (yay)
+    const std::vector<std::string> var_names = { "elem_solid_deletion_info",
+                                                 "elem_tshell_deletion_info",
+                                                 "elem_shell_deletion_info",
+                                                 "elem_beam_deletion_info" };
+    const std::vector<int32_t> var_field_sizes = {
+      dyna_nel8, dyna_nelth, dyna_nel4, dyna_nel2
+    };
+
+    // read fields
+    for (size_t ii = 0; ii < var_names.size(); ++ii) {
+
+      auto field_name = var_names[ii];
+      wordsToRead = var_field_sizes[ii];
+      if (wordsToRead < 1)
+        continue;
+
+      auto& tensor = float_data[field_name];
+
+      auto shape = tensor.get_shape();
+      if (shape.size() == 0)
+        shape = { 0, static_cast<size_t>(wordsToRead) };
+
+      shape[0]++; // one more timestep
+      auto offset = tensor.size();
+      tensor.resize(shape);
+
+      // read
+      this->buffer->read_array(start, wordsToRead, tensor.get_data(), offset);
+      start += wordsToRead;
+    }
+
+  }
+  // Error
+  else {
+    throw(std::runtime_error("dyna_mdlopt=" + std::to_string(dyna_mdlopt) +
+                             " makes no sense and must be 1 or 2."));
+  }
 }
 
 /** Read the state variables for airbags
