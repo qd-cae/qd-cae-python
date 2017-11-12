@@ -6,7 +6,7 @@ class ArrayD3plot(RawD3plot):
     ''' Makes the data in a D3plot directly accessible via arrays
 
     This class is a usability wrapper for the RawD3plot, which gives access
-    to the raw data arrays in a d3plot file. 
+    to the raw data arrays in a d3plot file.
     '''
 
     def keys(self):
@@ -26,7 +26,8 @@ class ArrayD3plot(RawD3plot):
         Examples
         --------
             >>> raw_d3plot.get_keys()
-            ['elem_shell_results', 'elem_shell_results_layers', 'elem_solid_results', ... ]
+            ['elem_shell_results', 'elem_shell_results_layers',
+                'elem_solid_results', ... ]
         '''
 
         names = self.get_raw_keys()
@@ -64,8 +65,8 @@ class ArrayD3plot(RawD3plot):
             names.append("elem_solid_is_alive")
 
         # option to get elem results filled in with rigid shells
-        if "elem_shell_results" in names:
-            names.append("elem_shell_results_filled")
+        # if "elem_shell_results" in names:
+        #    names.append("elem_shell_results_filled")
 
         return names
 
@@ -85,7 +86,7 @@ class ArrayD3plot(RawD3plot):
         Raises
         ------
         ValueError
-            In case that the key can not be found or the 
+            In case that the key can not be found or the
             arugment is not a string.
 
         Examples
@@ -129,34 +130,32 @@ class ArrayD3plot(RawD3plot):
             return np.array(self.get_raw_data("elem_solid_deletion_info"), dtype=bool)
 
         # rigid shell treatment (fill zeros in)
-        if key == "elem_shell_results_filled":
-            if ("material_type_numbers" in raw_keys) \
-               and (20 in self["material_type_numbers"]):
+        if key == "elem_shell_results" \
+           and ("material_type_numbers" in raw_keys) \
+           and (20 in self["material_type_numbers"]):
 
-                # ids start at 1 not 0, thus -1
-                shell_material_ids = self["elem_shell_material_ids"] - 1
-                material_types = self["material_type_numbers"]
-                shell_ids = self["elem_shell_ids"]
+            # ids start at 1 not 0, thus -1
+            shell_material_ids = self["elem_shell_material_ids"] - 1
+            material_types = self["material_type_numbers"]
+            shell_ids = self["elem_shell_ids"]
 
-                # find rigid shells with mat20
-                rigid_shells = material_types[shell_material_ids] == 20
+            # find rigid shells with mat20
+            rigid_shells = material_types[shell_material_ids] == 20
 
-                # allocate new array
-                shell_results = self["elem_shell_results"]
-                shape = [shell_results.shape[0],
-                         shell_ids.shape[0],
-                         shell_results.shape[2]]
-                shell_results_filled = np.empty(shape, dtype=np.float32)
-                # shell_results_filled[:, :, :] = np.nan # debug
+            # allocate new array
+            shell_results = self["elem_shell_results"]
+            shape = [shell_results.shape[0],
+                     shell_ids.shape[0],
+                     shell_results.shape[2]]
+            shell_results_filled = np.empty(shape, dtype=np.float32)
+            # shell_results_filled[:, :, :] = np.nan # debug
 
-                # fill it
-                shell_results_filled[:, ~rigid_shells, :] = shell_results
-                del shell_results
-                shell_results_filled[:, rigid_shells, :] = 0.
+            # fill it
+            shell_results_filled[:, ~rigid_shells, :] = shell_results
+            del shell_results
+            shell_results_filled[:, rigid_shells, :] = 0.
 
-                return shell_results
-            else:
-                key = "elem_shell_results"
+            return shell_results
 
         # search variable in maps
         return self.get_raw_data(key)

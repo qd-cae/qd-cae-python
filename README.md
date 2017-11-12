@@ -12,9 +12,13 @@ CAE suffers greatly from expensive tools with bad or moderate scripting access a
 
 We want to tackle this issue with this free library, in order to give engineering a boost. Simple data access is crucial for further ideas to emerge! Use this library, build more awesome applications with it, share your projects too if not critical and please contribute to us or science in general.
 
+# Support us
+
+[![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/bePatron?u=8375141)
+
 # What's new?
 
-*Changelog 8.11.2017*
+*Changelog 12.11.2017*
 Version 0.6.7
 
 qd.cae.dyna
@@ -30,7 +34,7 @@ qd.cae.dyna
  - `RawD3plot` has now a better API and can also read a d3plot in HDF5 format (see below)
  - Implemented `RawD3plot.save_hdf5` to save a d3plot as HDF5 file
 
-# Descriptions
+# Documentation
 
 You can find the [full Documentation here](https://qd-cae.github.io/qd-cae-python/build/html/index.html). Brief module and feature list:
 
