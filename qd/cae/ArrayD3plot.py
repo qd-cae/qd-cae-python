@@ -63,6 +63,10 @@ class ArrayD3plot(RawD3plot):
             del names[names.index("elem_solid_deletion_info")]
             names.append("elem_solid_is_alive")
 
+        # option to get elem results filled in with rigid shells
+        if "elem_shell_results" in names:
+            names.append("elem_shell_results_filled")
+
         return names
 
     def __getitem__(self, key):
@@ -91,6 +95,8 @@ class ArrayD3plot(RawD3plot):
 
         if not isinstance(key, str):
             raise ValueError("The argument is not a string.")
+
+        raw_keys = self.get_raw_keys()
 
         # element nodes
         if key == "elem_beam_nodes":
@@ -122,6 +128,38 @@ class ArrayD3plot(RawD3plot):
         if key == "elem_solid_is_alive":
             return np.array(self.get_raw_data("elem_solid_deletion_info"), dtype=bool)
 
+        # rigid shell treatment (fill zeros in)
+        if key == "elem_shell_results_filled":
+            if ("material_type_numbers" in raw_keys) \
+               and (20 in self["material_type_numbers"]):
+
+                # ids start at 1 not 0, thus -1
+                shell_material_ids = self["elem_shell_material_ids"] - 1
+                material_types = self["material_type_numbers"]
+                shell_ids = self["elem_shell_ids"]
+
+                # find rigid shells with mat20
+                rigid_shells = material_types[shell_material_ids] == 20
+
+                # allocate new array
+                shell_results = self["elem_shell_results"]
+                shape = [shell_results.shape[0],
+                         shell_ids.shape[0],
+                         shell_results.shape[2]]
+                shell_results_filled = np.empty(shape, dtype=np.float32)
+                # shell_results_filled[:, :, :] = np.nan # debug
+
+                # fill it
+                shell_results_filled[:, ~rigid_shells, :] = shell_results
+                del shell_results
+                shell_results_filled[:, rigid_shells, :] = 0.
+
+                return shell_results
+            else:
+                key = "elem_shell_results"
+
         # search variable in maps
-        else:
-            return self.get_raw_data(key)
+        return self.get_raw_data(key)
+
+    def _fill_array(self, arr, arr2, fill_dim):
+        pass

@@ -38,13 +38,13 @@ These are all the data arrays available with their shape description. They are c
 **Integer Data**:
  - node_ids *(nNodes)*
  - elem_solid_ids *(nSolids)*
- - elem_solid_data *(nSolids x 9)* (contains nodes and material)
+ - elem_solid_data *(nSolids x 9)* (nodes and material)
  - elem_shell_ids *(nShells)*
- - elem_shell_data *(nShells x 5)* (contains nodes and materials)
+ - elem_shell_data *(nShells x 5)* (nodes and material)
  - elem_tshell_ids *(nTShells)*
- - elem_tshell_data *(nTShells x 9)* (contains nodes and materials)
+ - elem_tshell_data *(nTShells x 9)* (nodes and material)
  - elem_beam_ids *(nBeams)*
- - elem_beam_data *(nBeams x 6)* (contains nodes and materials)
+ - elem_beam_data *(nBeams x 6)* (nodes and material)
  - part_ids *(nParts)*
  - material_type_numbers *(nMaterials)*
  - airbag_geometry *(nAirbags x 4 or 5)*
