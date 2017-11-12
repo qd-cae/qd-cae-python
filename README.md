@@ -81,7 +81,7 @@ If you are bold enough to compile it yourself, then follow the [compilation guid
 
 # License
 
-This project encourages open-source software and thus is published under the GNU GPL v3 (see the LICENSE file). If this library shall be used within a commercial software, please contact us for different licensing. 
+*This library is a free gift to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share more code as a thank you back to the community. If one does not want to share ones code for commercial reasons, then there is also the possibility to provide a closed-source licensing scheme against financial compensation, so that this project can go on.*
 
 # Authors
 
