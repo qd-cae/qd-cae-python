@@ -65,8 +65,13 @@ class ArrayD3plot(RawD3plot):
             names.append("elem_solid_is_alive")
 
         # option to get elem results filled in with rigid shells
+<< << << < HEAD
          if "elem_shell_results" in names:
             names.append("elem_shell_results_filled")
+== == == =
+        # if "elem_shell_results" in names:
+        #    names.append("elem_shell_results_filled")
+>>>>>> > f9eddb0600d7b4e65b5fcfdf72aecb6eaa5744ad
 
         return names
 
