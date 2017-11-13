@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Binout &mdash; qd 0.6.5 documentation</title>
+  <title>Binout &mdash; qd 0.6.7 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.6.5 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.6.7 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/>
         <link rel="prev" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.6.5
+                0.6.7
               </div>
             
           
@@ -202,8 +202,8 @@
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>The class loads the file given in the filepath. By giving a 
-search pattern such as: “binout*”, all files with that 
+<p>The class loads the file given in the filepath. By giving a
+search pattern such as: “binout*”, all files with that
 pattern will be loaded.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads a single binout</span>
@@ -228,7 +228,7 @@ pattern will be loaded.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">read</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">to_string</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_hdf5</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -247,9 +247,9 @@ pattern will be loaded.</p>
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ret</strong> : list(str) or np.ndarray</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ret</strong> : list(str), np.ndarray or str</p>
 <blockquote class="last">
-<div><p>list of subdata within the folder or data itself</p>
+<div><p>list of subdata within the folder or data itself (array or string)</p>
 </div></blockquote>
 </td>
 </tr>
@@ -257,7 +257,7 @@ pattern will be loaded.</p>
 </table>
 <p class="rubric">Notes</p>
 <p>This function is used to read any data from the binout. It has been used
-to make the access to the data more comfortable. The return type depends 
+to make the access to the data more comfortable. The return type depends
 on the given path:</p>
 <blockquote>
 <div><ul class="simple">
@@ -266,8 +266,8 @@ on the given path:</p>
 <li><cite>binout.read(dir1, …, variable)</cite> : np.array(float/int) data</li>
 </ul>
 </div></blockquote>
-<p>If you have multiple outputs with different ids (e.g. in nodout for 
-multiple nodes) then don’t forget to read the ids array for 
+<p>If you have multiple outputs with different ids (e.g. in nodout for
+multiple nodes) then don’t forget to read the ids array for
 identification or id-labels.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">Binout</span>
@@ -283,44 +283,36 @@ identification or id-labels.</p>
 <span class="go">(26L,)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;ids&quot;</span><span class="p">)</span>
 <span class="go">array([52890, 52891, 52892, ...])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># strings are just numbers, see Binout.to_string</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;typenames&quot;</span><span class="p">)</span>
-<span class="go">array([99, 111, 110, ...]) </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># read a string value</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">)</span>
+<span class="go">&#39;11/05/2013&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="staticmethod">
-<dt id="qd.cae.dyna.Binout.to_string">
-<em class="property">static </em><code class="descname">to_string</code><span class="sig-paren">(</span><em>data_array</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.to_string" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a data series of numbers (usually ints) to a string</p>
+<dl class="method">
+<dt id="qd.cae.dyna.Binout.save_hdf5">
+<code class="descname">save_hdf5</code><span class="sig-paren">(</span><em>filepath</em>, <em>compression='gzip'</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.save_hdf5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a binout as HDF5</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : np.array of int</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
 <blockquote>
-<div><p>some data array</p>
+<div><p>path where the HDF5 shall be saved</p>
 </div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>string</strong> : str</p>
+<p><strong>compression</strong> : str</p>
 <blockquote class="last">
-<div><p>data array converted to characters</p>
+<div><p>compression technique (see h5py docs)</p>
 </div></blockquote>
 </td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Notes</p>
-<p>This is needed for the reason that sometimes the binary data
-within the files are strings.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># strings also are just plain numbers</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;typenames&quot;</span><span class="p">)</span>
-<span class="go">array([99, 111, 110, ...]) </span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Binout</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span> <span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;swforc&quot;</span><span class="p">,</span><span class="s2">&quot;typenames&quot;</span><span class="p">)</span> <span class="p">)</span>
-<span class="go">&#39;constraint,weld,beam,solid,non nodal, ,solid assembly&#39;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">save_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/binout.h5&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -371,7 +363,7 @@ within the files are strings.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.6.5',
+            VERSION:'0.6.7',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

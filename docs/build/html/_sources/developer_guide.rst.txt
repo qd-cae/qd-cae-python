@@ -137,7 +137,8 @@ Internal Data Structure
     FEMFile --|> DB_Parts
     D3plot  --|> FEMFile
     KeyFile --|> FEMFile
-    @enduml
+    ArrayD3plot --|> RawD3plot
+    @endum
 
 
 Documentation

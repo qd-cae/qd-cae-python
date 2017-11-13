@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>RawD3plot &mdash; qd 0.6.5 documentation</title>
+  <title>RawD3plot &mdash; qd 0.6.7 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.6.5 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.6.7 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.6.5
+                0.6.7
               </div>
             
           
@@ -198,11 +198,15 @@
 <li>node_velocity <em>(nTimesteps x nNodes x 3)</em></li>
 <li>node_acceleration <em>(nTimesteps x nNodes x 3)</em></li>
 <li>elem_solid_results <em>(nTimesteps x nSolids x nResults)</em></li>
+<li>elem_solid_deletion_info <em>(nTimesteps x nSolids)</em></li>
 <li>elem_shell_results_layers <em>(nTimesteps x nShells x nLayers x nResults)</em></li>
 <li>elem_shell_results <em>(nTimesteps x nShells x nResults)</em></li>
+<li>elem_shell_deletion_info <em>(nTimesteps x nShells)</em></li>
 <li>elem_tshell_results_layers <em>(nTimesteps x nTShells x nLayers x nResults)</em></li>
 <li>elem_tshell_results <em>(nTimesteps x nTShells x nResults)</em></li>
+<li>elem_tshell_deletion_info <em>(nTimesteps x nTShells)</em></li>
 <li>elem_beam_results <em>(nTimesteps x nBeams x nResults)</em></li>
+<li>elem_beam_deletion_info <em>(nTimesteps x nBeams)</em></li>
 <li>airbag_geom_state_float_results <em>(nTimesteps x nAirbags x nResults)</em></li>
 <li>airbag_particle_float_results <em>(nTimesteps x nParticles x nResults)</em></li>
 </ul>
@@ -211,13 +215,13 @@
 <dd><ul class="first last simple">
 <li>node_ids <em>(nNodes)</em></li>
 <li>elem_solid_ids <em>(nSolids)</em></li>
-<li>elem_solid_data <em>(nSolids x 9)</em> (contains nodes and material)</li>
+<li>elem_solid_data <em>(nSolids x 9)</em> (nodes and material)</li>
 <li>elem_shell_ids <em>(nShells)</em></li>
-<li>elem_shell_data <em>(nShells x 5)</em> (contains nodes and materials)</li>
+<li>elem_shell_data <em>(nShells x 5)</em> (nodes and material)</li>
 <li>elem_tshell_ids <em>(nTShells)</em></li>
-<li>elem_tshell_data <em>(nTShells x 9)</em> (contains nodes and materials)</li>
+<li>elem_tshell_data <em>(nTShells x 9)</em> (nodes and material)</li>
 <li>elem_beam_ids <em>(nBeams)</em></li>
-<li>elem_beam_data <em>(nBeams x 6)</em> (contains nodes and materials)</li>
+<li>elem_beam_data <em>(nBeams x 6)</em> (nodes and material)</li>
 <li>part_ids <em>(nParts)</em></li>
 <li>material_type_numbers <em>(nMaterials)</em></li>
 <li>airbag_geometry <em>(nAirbags x 4 or 5)</em></li>
@@ -517,17 +521,6 @@ string in the d3plot.</p>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Notes</p>
-<p>In order to use this method, one has to create
-an empty <cite>RawD3plot</cite> first. This circumvents some
-implementation issues.</p>
-<p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># create empty file</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">load_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -560,7 +553,7 @@ arugment is not a str.</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">shell_geom_data</span> <span class="o">=</span> <span class="n">raw_d3plot</span><span class="p">[</span><span class="s2">&quot;elem_shell_data&quot;</span><span class="p">]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">shell_geom_data</span> <span class="o">=</span> <span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_raw_data</span><span class="p">(</span><span class="s2">&quot;elem_shell_data&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -580,8 +573,21 @@ arugment is not a str.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="qd.cae.dyna.RawD3plot.info">
+<code class="descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a summary of the header data of the d3plot, which
+involves node info, element info, written state data and
+so forth.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="qd.cae.dyna.RawD3plot.save_hdf5">
-<code class="descname">save_hdf5</code><span class="sig-paren">(</span><em>filepath</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.save_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_hdf5</code><span class="sig-paren">(</span><em>filepath</em>, <em>overwrite=True</em>, <em>compression='gzip'</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.save_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the raw d3plot to HDF5</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -643,7 +649,7 @@ arugment is not a str.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.6.5',
+            VERSION:'0.6.7',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

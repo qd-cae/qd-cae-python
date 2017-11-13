@@ -12,7 +12,7 @@ CAE suffers greatly from expensive tools with bad or moderate scripting access a
 
 We want to tackle this issue with this free library, in order to give engineering a boost. Simple data access is crucial for further ideas to emerge! Use this library, build more awesome applications with it, share your projects too if not critical and please contribute to us or science in general.
 
-# Support us
+# Support this project
 
 [![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/bePatron?u=8375141)
 
@@ -24,6 +24,7 @@ Version 0.6.7
 qd.cae.dyna
  - `RawD3plot` now also reads the information, whether an element was deleted.
  - `Binout` now automatically detects string data when performing `Binout.read`
+ - `Binout.to_string` was made a private function (removed for users)
  - `Binout.save_hdf5` saves the binout to an HDF5 file  (yay)
  - `RawD3plot.save_hdf5` and `Binout.save_hdf5` have now a compression argument, which is by default enabled (`"gzip"`).
 
