@@ -65,13 +65,8 @@ class ArrayD3plot(RawD3plot):
             names.append("elem_solid_is_alive")
 
         # option to get elem results filled in with rigid shells
-<< << << < HEAD
          if "elem_shell_results" in names:
             names.append("elem_shell_results_filled")
-== == == =
-        # if "elem_shell_results" in names:
-        #    names.append("elem_shell_results_filled")
->>>>>> > f9eddb0600d7b4e65b5fcfdf72aecb6eaa5744ad
 
         return names
 
@@ -140,16 +135,11 @@ class ArrayD3plot(RawD3plot):
            and ("material_type_numbers" in raw_keys) \
            and (20 in self["material_type_numbers"]):
 
-            # ids start at 1 not 0, thus -1
-            shell_material_ids = self["elem_shell_material_ids"] - 1
-            material_types = self["material_type_numbers"]
-            shell_ids = self["elem_shell_ids"]
-
             # find rigid shells with mat20
-            rigid_shells = material_types[shell_material_ids] == 20
+            rigid_shells = self._get_rigid_shells()
 
             # allocate new array
-            if key == "elem_shell_results":
+            if key == "elem_shell_results_filled":
                 shell_results = self["elem_shell_results"]
                 shape = [shell_results.shape[0],
                         shell_ids.shape[0],
@@ -163,8 +153,22 @@ class ArrayD3plot(RawD3plot):
                 shell_results_filled[:, rigid_shells, :] = 0.
 
                 return shell_results
-            elif key == "elem_shell_results_layers_filled":
 
+            elif key == "elem_shell_results_layers_filled":
+                shell_results = self["elem_shell_results_layers"]
+                shape = [shell_results.shape[0],
+                        shell_ids.shape[0],
+                        shell_results.shape[2]
+                        shell_results.shape[3]]
+                shell_results_filled = np.empty(shape, dtype=np.float32)
+                # shell_results_filled[:, :, :] = np.nan # debug
+
+                # fill it
+                shell_results_filled[:, ~rigid_shells, :, :] = shell_results
+                del shell_results 
+                shell_results_filled[:, rigid_shells, :, :] = 0.
+
+                return shell_results
 
         else:
             key == "elem_shell_results"

@@ -10,7 +10,9 @@ The library is still young, so features drop in over time depending on the needs
 
 CAE suffers greatly from expensive tools with bad or moderate scripting access and utility. Also many algorithms developed in research never get published due to licensing or being very specific regarding a certain software environment. Engineering is lacking behind here in contrast to modern informatics.
 
-We want to tackle this issue with this free library, in order to give engineering a boost. Simple data access is crucial for further ideas to emerge! Use this library, build more awesome applications with it, share your projects too if not critical and please contribute to us or science in general.
+**"We don't want to provide another software solution, we want, that people can build their own solutions quickly"**
+
+We believe, that CAE can not evolve, if people do not get comfortable access to the raw data and start doing their own stuff, because creativity originates from freedom. This core idea keeps us pushing forward.
 
 # Support this project
 
@@ -86,7 +88,7 @@ If you are bold enough to compile it yourself, then follow the [compilation guid
 
 # License
 
-*This library is a free gift to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share more code as a thank you back to the community. If one does not want to share ones code for commercial reasons, then there is also the possibility to provide a closed-source licensing scheme against financial compensation, so that this project can go on.*
+*This library is a free gift to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share their code as a thank you back to the community. If one does not want to share ones code, then there is also the possibility to provide a closed-source licensing scheme against financial compensation, so that this project can go on.*
 
 # Authors
 
