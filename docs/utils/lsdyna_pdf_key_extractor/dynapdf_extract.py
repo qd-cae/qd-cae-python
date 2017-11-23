@@ -1,3 +1,15 @@
+#############################################################################
+#								QD Works									#
+#								2017										#
+#############################################################################
+
+# Description	: This is just an example to extract tables for LS Dyna Keywords from the LSDyna Manual (PDF)
+#				  The JSON file in res folder consists of keys only for Manual 1. One may modify or run the 
+#				  same script to obtain the keywords page_numbers JSON file for Manual 2.
+
+# Developed By	: N. Praba
+# Date			: 21 Nov, 2017
+
 import os
 from tabula import read_pdf
 import PyPDF2 as pdf
@@ -35,6 +47,7 @@ def get_pdf_dict(key_file_path, page_numbers, only_page_num_dict=False):
 	'''
 	@description		: returns a dictionary of keywords and corresponding tables and page numbers in lists
 
+	@key_file_path		: the path to the LS_Dyna Manual
 	@page_numbers		: list of page numbers for which keys and tables must be extracted; if "All" is given, all pages are analyzed
 	@only_page_num_dict	: (boolean; default:False) if this is set to True, only page numbers are written out for given key word manual
 	@returns			: returns a dictionary of keywords and corresponding tables and page numbers in lists
