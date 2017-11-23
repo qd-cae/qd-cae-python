@@ -103,10 +103,11 @@ def get_tables_lskeyword(ls_keyword):
 
 		with open('res/keyword_dict.txt', 'w') as outfile:
 			json.dump(ls_key_dict, outfile)
-
-	json_data = open(keyword_dict_path, 'r')
-	ls_key_dict = json.load(json_data)
-	json_data.close()
+		outfile.close()
+	else:
+		json_data = open(keyword_dict_path, 'r')
+		ls_key_dict = json.load(json_data)
+		json_data.close()
 
 	pages = ls_key_dict[ls_keyword]['page_numbers']
 
