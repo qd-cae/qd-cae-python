@@ -75,15 +75,35 @@ def get_pdf_dict(key_file_path, page_numbers, only_page_num_dict=False):
 	return ls_key_dict
 
 
-def main():
+def get_tables_lskeyword(ls_keyword):
+	'''
+	@description	: returns the appropriate tables for the given keyword
+
+	@ls_keyword		: ls dyna keyword (eg. *MAT_SPOTWELD_DAIMLERCHRYSLER)
+	@returns		: a dictionary consisting of two lists - {'page_numbers' : [], 'tables' : []}
+	'''
 	key_file_path = "res/LSDyna_Manual_1.pdf"
-	page_numbers = [1,2,3,4,5,6]
+	keyword_dict_path = "res/keyword_dict.txt"
 
-	ls_key_dict = get_pdf_dict(key_file_path, "All", True)
-	#print(ls_key_dict)
+	if not os.path.isfile(keyword_dict_path):
+		ls_key_dict = get_pdf_dict(key_file_path, "All", True)
 
-	with open('res/keyword_dict.txt', 'w') as outfile:
-		json.dump(ls_key_dict, outfile)
+		with open('res/keyword_dict.txt', 'w') as outfile:
+			json.dump(ls_key_dict, outfile)
 
+	json_data = open(keyword_dict_path, 'r')
+	ls_key_dict = json.load(json_data)
+	json_data.close()
+
+	pages = ls_key_dict[ls_keyword]['page_numbers']
+
+	if pages:
+		keyword_dict = get_pdf_dict(key_file_path, pages)
+
+	return keyword_dict
+
+def main():
+	keyword_dict = get_tables_lskeyword("*AIRBAG")
+	print(keyword_dict)
 
 main()
