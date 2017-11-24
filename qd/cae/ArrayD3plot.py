@@ -65,7 +65,7 @@ class ArrayD3plot(RawD3plot):
             names.append("elem_solid_is_alive")
 
         # option to get elem results filled in with rigid shells
-         if "elem_shell_results" in names:
+        if "elem_shell_results" in names:
             names.append("elem_shell_results_filled")
 
         return names
@@ -130,7 +130,7 @@ class ArrayD3plot(RawD3plot):
             return np.array(self.get_raw_data("elem_solid_deletion_info"), dtype=bool)
 
         # rigid shell treatment (fill zeros in)
-        if (key == "elem_shell_results_filled" \
+        if (key == "elem_shell_results_filled"
             or key == "elem_shell_results_layers_filled") \
            and ("material_type_numbers" in raw_keys) \
            and (20 in self["material_type_numbers"]):
@@ -142,8 +142,8 @@ class ArrayD3plot(RawD3plot):
             if key == "elem_shell_results_filled":
                 shell_results = self["elem_shell_results"]
                 shape = [shell_results.shape[0],
-                        shell_ids.shape[0],
-                        shell_results.shape[2]]
+                         shell_ids.shape[0],
+                         shell_results.shape[2]]
                 shell_results_filled = np.empty(shape, dtype=np.float32)
                 # shell_results_filled[:, :, :] = np.nan # debug
 
@@ -157,15 +157,15 @@ class ArrayD3plot(RawD3plot):
             elif key == "elem_shell_results_layers_filled":
                 shell_results = self["elem_shell_results_layers"]
                 shape = [shell_results.shape[0],
-                        shell_ids.shape[0],
-                        shell_results.shape[2]
-                        shell_results.shape[3]]
+                         shell_ids.shape[0],
+                         shell_results.shape[2]
+                         shell_results.shape[3]]
                 shell_results_filled = np.empty(shape, dtype=np.float32)
                 # shell_results_filled[:, :, :] = np.nan # debug
 
                 # fill it
                 shell_results_filled[:, ~rigid_shells, :, :] = shell_results
-                del shell_results 
+                del shell_results
                 shell_results_filled[:, rigid_shells, :, :] = 0.
 
                 return shell_results
@@ -187,16 +187,16 @@ class ArrayD3plot(RawD3plot):
         '''
 
         raw_keys = self.get_raw_keys()
-        
+
         # check requirements
         if "material_type_numbers" not in raw_keys \
            or "elem_shell_data" not in raw_keys:
-           return None
-        
+            return None
+
         shell_ids = self["elem_shell_ids"]
         # mat ids start at 1 not 0, thus -1
         shell_material_ids = self["elem_shell_material_ids"] - 1
         material_types = self["material_type_numbers"]
-        
+
         # find rigid shells with mat20
         return material_types[shell_material_ids] == 20
