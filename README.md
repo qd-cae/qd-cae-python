@@ -10,9 +10,14 @@ The library is still young, so features drop in over time depending on the needs
 
 CAE suffers greatly from expensive tools with bad or moderate scripting access and utility. Also many algorithms developed in research never get published due to licensing or being very specific regarding a certain software environment. Engineering is lacking behind here in contrast to modern informatics.
 
-**"We don't want to provide another software solution, we want, that people can build their own solutions quickly"**
+<p style="text-align: center;"><b>"We don't want to provide another software solution, 
+<br>we want, that people can build their own solutions quickly"</b></p>
 
-We believe, that CAE can not evolve, if people do not get comfortable access to the raw data and start doing their own stuff, because creativity originates from freedom. This core idea keeps us pushing forward.
+We believe, that CAE can not evolve, if people do not get comfortable access to the raw data and start doing their own stuff, because 
+
+<p style="text-align: center;"><b>"Creativity originates from freedom and thus simplicity."</b></p>
+
+This core idea keeps us pushing forward.
 
 # Support this project
 
@@ -20,22 +25,22 @@ We believe, that CAE can not evolve, if people do not get comfortable access to 
 
 # What's new?
 
+*Changelog 24.11.2017*
+Version 0.6.8
+
+qd.cae.dyna
+ - `D3plot.plot` and `Part.plot` function was fixed and works now again
+ - few minor improvements and changes in the background
+
 *Changelog 12.11.2017*
 Version 0.6.7
 
 qd.cae.dyna
  - `RawD3plot` now also reads the information, whether an element was deleted.
+ - `RawD3plot.save_hdf5` and `Binout.save_hdf5` have now a compression argument, which is by default enabled (`"gzip"`).
  - `Binout` now automatically detects string data when performing `Binout.read`
  - `Binout.to_string` was made a private function (removed for users)
  - `Binout.save_hdf5` saves the binout to an HDF5 file  (yay)
- - `RawD3plot.save_hdf5` and `Binout.save_hdf5` have now a compression argument, which is by default enabled (`"gzip"`).
-
-*Changelog 2.11.2017*
-Version 0.6.6
-
-qd.cae.dyna
- - `RawD3plot` has now a better API and can also read a d3plot in HDF5 format (see below)
- - Implemented `RawD3plot.save_hdf5` to save a d3plot as HDF5 file
 
 # Documentation
 

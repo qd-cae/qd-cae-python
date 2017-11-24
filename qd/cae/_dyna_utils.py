@@ -115,7 +115,7 @@ def _extract_elem_coords(parts, element_result=None, iTimestep=0, element_type=N
             element_result, iTimestep=iTimestep)
 
         def eval_elem(_elem):
-            coords.append(_elem.get_coords(iTimestep))
+            coords.append(_elem.get_coords()[iTimestep])
             elem_results.append(eval_function(_elem))
     else:
         def eval_elem(_elem):
@@ -230,15 +230,15 @@ def _extract_mesh_from_parts(parts, iTimestep=0, element_result=None):
 
             # extract nodal data
             for node in elem_nodes[:3]:
-                node_data.append(node.get_coords(iTimestep))
+                node_data.append(node.get_coords()[iTimestep])
                 node_fringe.append(elem_result)
 
             # add second tria for quad shells
             if len(elem_nodes) == 4:
                 element_texts.append(None)
-                node_data.append(elem_nodes[0].get_coords(iTimestep))
-                node_data.append(elem_nodes[2].get_coords(iTimestep))
-                node_data.append(elem_nodes[3].get_coords(iTimestep))
+                node_data.append(elem_nodes[0].get_coords()[iTimestep])
+                node_data.append(elem_nodes[2].get_coords()[iTimestep])
+                node_data.append(elem_nodes[3].get_coords()[iTimestep])
                 node_fringe.append(elem_result)
                 node_fringe.append(elem_result)
                 node_fringe.append(elem_result)
