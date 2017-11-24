@@ -2,7 +2,7 @@
 Compilation Guide
 =================
 
-Compilation of the package is quite simple (said the expert ...).
+Compilation of the package is quite simple (says an expert ...)
 
 
 Compilation on Windows
@@ -22,9 +22,9 @@ For compilation of python version 3.5 or 3.6 on Windows download `Visual Studio 
 Thereafter run the setup script, the code will automatically compile and install. 
 
 .. code-block:: bash
-    python3 -m pip install -r requirements.txt
-    python3 setup.py install
 
+    python -m pip install -r requirements.txt
+    python setup.py install
 
 
 Compilation on Linux
@@ -42,14 +42,14 @@ You will need **g++ version 4.9 or higher**. If your compiler is fine, just inst
 
     git clone https://github.com/qd-cae/qd-cae-python.git
     cd qd-cae-python
-    sudo python3 -m pip install -r requirements.txt
-    sudo python3 setup.py install
+    sudo python -m pip install -r requirements.txt
+    sudo python setup.py install
 
 As a little hint, if you want force python to take your modern compiler version (it may happen that you have multiple g++), simply overwrite the `CC` attribute before the running the setup script:
 
 .. code-block:: bash
 
-    sudo CC=g++-4.9 python3 setup.py install
+    sudo CC=g++-4.9 python setup.py install
 
 
 Compilation with FEMZIP support

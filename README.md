@@ -93,7 +93,7 @@ If you are bold enough to compile it yourself, then follow the [compilation guid
 
 # License
 
-*This library is a free gift to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share their code as a thank you back to the community. If one does not want to share ones code, then there is also the possibility to provide a closed-source licensing scheme against financial compensation, so that this project can go on.*
+*This library is a free gift from and to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share their code as a thank you back to the community. If one does not want to share ones code (usually due to commercial reasons), then there is also the possibility to provide a closed-source licensing scheme against financial compensation, so that this project can go on.*
 
 # Authors
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Compilation Guide &mdash; qd 0.6.7 documentation</title>
+  <title>Compilation Guide &mdash; qd 0.6.8 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.6.7 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.6.8 documentation" href="index.html"/>
         <link rel="next" title="Developer Guide" href="developer_guide.html"/>
         <link rel="prev" title="qd.numerics" href="qd_numerics.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.6.7
+                0.6.8
               </div>
             
           
@@ -174,7 +174,7 @@
             
   <div class="section" id="compilation-guide">
 <h1>Compilation Guide<a class="headerlink" href="#compilation-guide" title="Permalink to this headline">¶</a></h1>
-<p>Compilation of the package is quite simple (said the expert …).</p>
+<p>Compilation of the package is quite simple (says an expert …)</p>
 <div class="section" id="compilation-on-windows">
 <h2>Compilation on Windows<a class="headerlink" href="#compilation-on-windows" title="Permalink to this headline">¶</a></h2>
 <p>Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++14 (also the old compiler created 3x slower code).</p>
@@ -184,6 +184,10 @@
 </pre></div>
 </div>
 <p>Thereafter run the setup script, the code will automatically compile and install.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python -m pip install -r requirements.txt
+python setup.py install
+</pre></div>
+</div>
 </div>
 <div class="section" id="compilation-on-linux">
 <h2>Compilation on Linux<a class="headerlink" href="#compilation-on-linux" title="Permalink to this headline">¶</a></h2>
@@ -194,12 +198,12 @@
 <p>You will need <strong>g++ version 4.9 or higher</strong>. If your compiler is fine, just install as follows:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/qd-cae/qd-cae-python.git
 <span class="nb">cd</span> qd-cae-python
-sudo python3 -m pip install -r requirements.txt
-sudo python3 setup.py install
+sudo python -m pip install -r requirements.txt
+sudo python setup.py install
 </pre></div>
 </div>
 <p>As a little hint, if you want force python to take your modern compiler version (it may happen that you have multiple g++), simply overwrite the <cite>CC</cite> attribute before the running the setup script:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo <span class="nv">CC</span><span class="o">=</span>g++-4.9 python3 setup.py install
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo <span class="nv">CC</span><span class="o">=</span>g++-4.9 python setup.py install
 </pre></div>
 </div>
 </div>
@@ -265,7 +269,7 @@ sudo python3 setup.py install
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.6.7',
+            VERSION:'0.6.8',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
