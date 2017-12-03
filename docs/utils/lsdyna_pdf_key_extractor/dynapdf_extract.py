@@ -106,7 +106,7 @@ def get_tables_lskeyword(ls_keyword, pages_numbers_only=False):
 	@page_numbers_only	: (default:False) returns only the pages belonging to the given keyword irrespective of tables present or not
 	@returns			: a dictionary consisting of two lists - {'page_numbers' : [], 'tables' : []}
 	'''
-	lsdyna_manual_file_path = "res/LSDyna_Manual_1_2017.pdf"
+	lsdyna_manual_file_path = "LSDyna_Manual_1_2017.pdf"
 	keyword_dict_path = lsdyna_manual_file_path.replace(".pdf", ".json")
 
 	ls_key_dict = {}
