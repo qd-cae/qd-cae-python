@@ -3,7 +3,6 @@
 #define DB_PARTS_HPP
 
 #include <dyna_cpp/db/Part.hpp>
-#include <dyna_cpp/utility/PythonUtility.hpp>
 
 #include <cstdint>
 #include <memory>

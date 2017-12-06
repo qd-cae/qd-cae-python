@@ -4,7 +4,6 @@
 
 // includes
 #include <dyna_cpp/db/FEMFile.hpp>
-#include <dyna_cpp/utility/PythonUtility.hpp>
 
 #include <algorithm>
 #include <cstdint>

@@ -13,7 +13,6 @@
 #include <dyna_cpp/utility/FEM_Utility.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/MathUtility.hpp>
-#include <dyna_cpp/utility/PythonUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 
 #ifdef QD_USE_FEMZIP
@@ -178,8 +177,7 @@ D3plot::D3plot(std::string _filepath, std::string _variable, bool _use_femzip)
 
            }(_variable),
            _use_femzip)
-{
-}
+{}
 
 /*
  * Destructor
@@ -1085,14 +1083,14 @@ D3plot::read_part_ids()
 {
 
 /*
-* Indeed this is a little complicated: usually the file should contain
-* as many materials as in the input but somehow dyna generates a few
-* ghost materials itself and those are appended with a 0 ID. Therefore
-* the length should be nMaterials but it's d3plot_nmmat with:
-* nMaterials < d3plot_nmmat. The difference are the ghost mats.
-* Took some time to find that out ... and I don't know why ...
-* oh and it is undocumented ...
-*/
+ * Indeed this is a little complicated: usually the file should contain
+ * as many materials as in the input but somehow dyna generates a few
+ * ghost materials itself and those are appended with a 0 ID. Therefore
+ * the length should be nMaterials but it's d3plot_nmmat with:
+ * nMaterials < d3plot_nmmat. The difference are the ghost mats.
+ * Took some time to find that out ... and I don't know why ...
+ * oh and it is undocumented ...
+ */
 
 #ifdef QD_DEBUG
   std::cout << "Reading part numbering at word " << wordPosition << " ... ";

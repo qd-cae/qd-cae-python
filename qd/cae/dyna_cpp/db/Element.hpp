@@ -3,12 +3,11 @@
 #define ELEMENT_HPP
 
 // includes
-#include <dyna_cpp/utility/PythonUtility.hpp>
-
 #include <cstdint>
 #include <memory>
 #include <set>
 #include <vector>
+#include <string>
 
 namespace qd {
 

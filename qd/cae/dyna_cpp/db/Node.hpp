@@ -3,10 +3,9 @@
 #define NODE_HPP
 
 // includes
-#include <dyna_cpp/utility/PythonUtility.hpp>
-
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace qd {
 

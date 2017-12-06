@@ -5,7 +5,6 @@
 #include <dyna_cpp/db/Element.hpp>
 #include <dyna_cpp/db/Part.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
-#include <dyna_cpp/utility/BoostException.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 

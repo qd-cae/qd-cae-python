@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "Node.hpp"
-#include <dyna_cpp/utility/PythonUtility.hpp>
 
 namespace qd {
 

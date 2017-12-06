@@ -5,6 +5,7 @@
 #include <dyna_cpp/db/Part.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 
+#include <iterator>
 #include <set>
 
 namespace qd {

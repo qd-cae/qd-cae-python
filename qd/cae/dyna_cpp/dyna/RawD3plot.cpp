@@ -7,7 +7,6 @@
 #include <dyna_cpp/dyna/RawD3plot.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/MathUtility.hpp>
-//#include <dyna_cpp/utility/PythonUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 
 #ifdef QD_USE_FEMZIP
