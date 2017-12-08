@@ -21,24 +21,28 @@ enum class VariableType
 class CardEntryDefinition
 {
 private:
-  int64_t index;
+  int64_t _index;
   int64_t char_width;
   std::string name;
   VariableType var_type;
-  std::vector<char> default_value;
+  std::string default_value;
 
 public:
   CardEntryDefinition(int64_t _index,
                       int64_t width,
                       VariableType _var_type,
                       const std::string& _name = "");
-  void set_default_value(char* _data, size_t _size_to_copy);
+  void set_index(int64_t _index);
+  void set_char_width(int64_t _width);
+  void set_name(const std::string _name);
+  void set_variable_type(VariableType _type);
+  void set_default_value(const std::string& value);
 
   int64_t get_index() const;
   int64_t get_char_width() const;
   std::string get_name() const;
   VariableType get_variable_type() const;
-  std::vector<char> get_default_value() const;
+  std::string get_default_value() const;
 };
 
 } // namespace qd

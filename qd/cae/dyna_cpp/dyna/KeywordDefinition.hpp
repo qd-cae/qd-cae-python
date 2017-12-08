@@ -2,6 +2,8 @@
 #ifndef KEYWORDDEFINITION_HPP
 #define KEYWORDDEFINITION_HPP
 
+// includes
+#include <memory>
 #include <string>
 #include <vector>
 

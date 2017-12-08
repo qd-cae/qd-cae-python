@@ -14,7 +14,6 @@ namespace qd {
 class CardDefinition
 {
 private:
-  int64_t index;
   std::vector<CardEntryDefinition> card_entry_defs;
 
 public:
