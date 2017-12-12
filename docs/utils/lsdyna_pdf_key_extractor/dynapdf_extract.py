@@ -1,17 +1,17 @@
 #############################################################################
-#								QD Works									#
-#								2017										#
+#                               QD Works                                    #
+#                               2017                                        #
 #############################################################################
 
-# Description	: This is just an example to extract tables for LS Dyna Keywords from the LSDyna Manual (PDF)
-#				  The JSON file in res folder consists of keys only for Manual 1. One may modify or run the 
-#				  same script to obtain the keywords page_numbers JSON file for Manual 2.
+# Description   : This is just an example to extract tables for LS Dyna Keywords from the LSDyna Manual (PDF)
+#                 The JSON file in res folder consists of keys only for Manual 1. One may modify or run the 
+#                 same script to obtain the keywords page_numbers JSON file for Manual 2.
 
-# Developed By	: N. Praba
-# Date			: 21 Nov, 2017
+# Developed By  : N. Praba
+# Date          : 21 Nov, 2017
 
 import os
-from tabula import read_pdf
+import tabula
 import PyPDF2 as pdf
 import json
 
@@ -45,12 +45,12 @@ def get_page_key(page_num, ls_file_contents):
 
 def get_pdf_dict(lsdyna_manual_file_path, page_numbers, only_page_num_dict=False):
 	'''
-	@description		: returns a dictionary of keywords and corresponding tables and page numbers in lists
+	@description				: returns a dictionary of keywords and corresponding tables and page numbers in lists
 
-	@lsdyna_manual_file_path		: the path to the LS_Dyna Manual
-	@page_numbers		: list of page numbers for which keys and tables must be extracted; if "All" is given, all pages are analyzed
-	@only_page_num_dict	: (default:False) if this is set to True, only page numbers are written out for given key word manual
-	@returns			: returns a dictionary of keywords and corresponding tables and page numbers in lists
+	@lsdyna_manual_file_path	: the path to the LS_Dyna Manual
+	@page_numbers				: list of page numbers for which keys and tables must be extracted; if "All" is given, all pages are analyzed
+	@only_page_num_dict			: (default:False) if this is set to True, only page numbers are written out for given key word manual
+	@returns					: returns a dictionary of keywords and corresponding tables and page numbers in lists
 	'''
 	
 	ls_key_dict = {}
@@ -82,7 +82,7 @@ def get_pdf_dict(lsdyna_manual_file_path, page_numbers, only_page_num_dict=False
 		
 		#page nos. for this function start from 1
 		try:
-			page_tables = read_pdf(lsdyna_manual_file_path, pages=[page_num], multiple_tables=True)
+			page_tables = tabula.read_pdf(lsdyna_manual_file_path, pages=[page_num], multiple_tables=True)
 		except:
 			error_pages.append(page_num)
 			page_tables = None
@@ -90,7 +90,20 @@ def get_pdf_dict(lsdyna_manual_file_path, page_numbers, only_page_num_dict=False
 			ls_key_dict[page_key]['page_numbers'].pop(-1)
 			continue
 
-		ls_key_dict[page_key]['tables'].append(page_tables)
+		#collecting only LS Dyna key cards (the first cell in the table has the phrase "Card")
+		valid_page_tables = []
+		for table in page_tables:
+			try:
+				if "Card" in table[0][0]:
+					#TODO: this area is meant to cleanup tables; try the keycard *DEFINE_COORDINATE_SYSTEM and notice table on Page 1560
+					valid_page_tables.append(table)
+			except:
+				continue
+		
+		if valid_page_tables:
+			ls_key_dict[page_key]['tables'].append(valid_page_tables)
+		else:
+			ls_key_dict[page_key]['page_numbers'].pop(-1)
 
 	if error_pages:
 		print("There were errors while extracting tables from pages " + str(error_pages))
@@ -136,5 +149,6 @@ def get_tables_lskeyword(ls_keyword, pages_numbers_only=False):
 def main():
 	keyword_dict = get_tables_lskeyword("*AIRBAG_ADIABATIC_GAS_MODEL")
 	print(keyword_dict)
+	return keyword_dict
 
-main()
+kdict = main()
