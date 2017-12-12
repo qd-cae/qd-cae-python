@@ -4,7 +4,7 @@
 #############################################################################
 
 # Description   : This is just an example to extract tables for LS Dyna Keywords from the LSDyna Manual (PDF)
-#                 The JSON file in res folder consists of keys only for Manual 1. One may modify or run the 
+#                 The JSON file in res folder consists of keys only for Manual 1. One may modify or run the
 #                 same script to obtain the keywords page_numbers JSON file for Manual 2.
 
 # Developed By  : N. Praba
@@ -52,14 +52,14 @@ def get_pdf_dict(lsdyna_manual_file_path, page_numbers, only_page_num_dict=False
 	@only_page_num_dict			: (default:False) if this is set to True, only page numbers are written out for given key word manual
 	@returns					: returns a dictionary of keywords and corresponding tables and page numbers in lists
 	'''
-	
+
 	ls_key_dict = {}
 	ls_file = open(lsdyna_manual_file_path, 'rb')
 	ls_file_contents = pdf.PdfFileReader(ls_file)
 
 	if isinstance(page_numbers, int):
 		page_numbers = [page_numbers]
-	
+
 	if page_numbers == "All":
 		total_pages = ls_file_contents.getNumPages()
 		page_numbers = list(range(1, total_pages+1))
@@ -76,10 +76,10 @@ def get_pdf_dict(lsdyna_manual_file_path, page_numbers, only_page_num_dict=False
 			ls_key_dict[page_key]['page_numbers'].append(page_num)
 		else:
 			ls_key_dict[page_key] = {'tables' : [], 'page_numbers' : [page_num]}
-		
+
 		if only_page_num_dict:
 			continue
-		
+
 		#page nos. for this function start from 1
 		try:
 			page_tables = tabula.read_pdf(lsdyna_manual_file_path, pages=[page_num], multiple_tables=True)
@@ -99,7 +99,7 @@ def get_pdf_dict(lsdyna_manual_file_path, page_numbers, only_page_num_dict=False
 					valid_page_tables.append(table)
 			except:
 				continue
-		
+
 		if valid_page_tables:
 			ls_key_dict[page_key]['tables'].append(valid_page_tables)
 		else:
