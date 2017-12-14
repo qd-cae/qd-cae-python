@@ -291,6 +291,19 @@ MathUtility::mises_stress(const std::vector<T>& _stress_vector)
                    _stress_vector[5] * _stress_vector[5]));
 }
 
+template<typename T,
+         typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+inline T
+index_treatment(T _index, size_t _size)
+{
+  T size_converted = static_cast<T>(_size);
+
+  if (_index < 0)
+    _index = size_converted - _index;
+
+  return _index;
+}
+
 } // namespace qd
 
 #endif
