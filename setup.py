@@ -21,6 +21,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
+use_openmp = True
 version = "0.6.8"
 # =============================== #
 is_windows = (platform.system() == "Windows")
@@ -70,6 +71,8 @@ def setup_dyna_cpp():
             compiler_args.append("/DQD_DEBUG")
         if measure_time:
             compiler_args.append("/DQD_MEASURE_TIME")
+        if use_openmp:
+            compiler_args.append("/openmp")
     else:
         raise RuntimeError("Could not determine os (windows or linux)")
 
