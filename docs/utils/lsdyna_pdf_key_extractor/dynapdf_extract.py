@@ -148,7 +148,8 @@ def get_tables_lskeyword(ls_keyword, pages_numbers_only=False):
 
 def main():
 	keyword_dict = get_tables_lskeyword("*AIRBAG_ADIABATIC_GAS_MODEL")
-	print(keyword_dict)
 	return keyword_dict
 
-kdict = main()
+if __name__ == "__main__":
+	kdict = main()
+	print(kdict)
