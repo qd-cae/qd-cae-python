@@ -13,35 +13,6 @@
 
 namespace qd {
 
-/** Convert some type into a string.
- * @param T value : value to convert to string
- * @return string result
- */
-/*
-template<typename T>
-std::string
-to_string(T const& value)
-{
-  std::ostringstream os;
-  os << value;
-  return os.str();
-}
-*/
-
-/** Trim a string from left and copy it
- *
- * @param s : string getting trimmed
- * @return trimmed_s : string trimmed
- */
-inline std::string
-trim_left_copy(std::string s)
-{
-  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
-            return !std::isspace(ch);
-          }));
-  return s;
-}
-
 /** Trim a string from left
  *
  * @param s : string getting trimmed
@@ -113,9 +84,9 @@ trim_copy(std::string s)
 }
 
 /** Convert string into some type
-* @param T value : value to convert to string
-* @return string result
-*/
+ * @param T value : value to convert to string
+ * @return string result
+ */
 template<typename T>
 T
 string_to_type(std::string const& str)
@@ -176,6 +147,20 @@ convert_chars_to_lines(const std::vector<char>& _data)
     lines.push_back(line);
 
   return lines;
+}
+
+/** Check if a string ends with another string
+ *
+ * @param value value to check the ending of
+ * @param ending ending to check
+ * @return is_ending
+ */
+inline bool
+ends_with(std::string const& value, std::string const& ending)
+{
+  if (ending.size() > value.size())
+    return false;
+  return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
 } // namespace qd

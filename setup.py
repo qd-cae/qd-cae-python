@@ -22,10 +22,10 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 debugging_mode = False
 measure_time = False
 use_openmp = True
-version = "0.6.8"
+version = "0.6.9"
 # =============================== #
 is_windows = (platform.system() == "Windows")
-is_linux = (platform.system() == "Linux")
+is_linux = (platform.system() in ["Linux", "Darwin"])
 # =============================== #
 
 
