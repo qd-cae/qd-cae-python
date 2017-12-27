@@ -17,7 +17,10 @@ class KeyFile;
 
 /** Superclass for all FEM-Files
  */
-class FEMFile : public DB_Nodes, public DB_Parts, public DB_Elements
+class FEMFile
+  : public DB_Nodes
+  , public DB_Parts
+  , public DB_Elements
 {
 
 private:
@@ -36,10 +39,12 @@ public:
   {
     return static_cast<DB_Elements*>(this);
   }
+  /*
   virtual bool is_d3plot() const = 0;
   virtual bool is_keyFile() const = 0;
   virtual D3plot* get_d3plot() = 0;
   virtual KeyFile* get_keyFile() = 0;
+  */
 };
 
 } // namespace qd

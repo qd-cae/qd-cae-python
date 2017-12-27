@@ -198,6 +198,7 @@ public:
   */
 
   bool displacement_is_read() const;
+  /*
   bool is_d3plot() const { return true; };
   bool is_keyFile() const { return false; };
   D3plot* get_d3plot() { return this; };
@@ -206,6 +207,7 @@ public:
     throw(std::invalid_argument(
       "You can not get a keyfile handle from a d3plot ... for now."));
   };
+  */
 };
 
 /** Tells whether displacements were loaded.
