@@ -534,7 +534,9 @@ RawD3plot::read_airbag_section()
     std::string _tmp_string;
     _tmp_string.resize(8);
 
-    for (size_t iString = 0; iString < dyna_airbag_nlist_size; ++iString) {
+    for (size_t iString = 0;
+         iString < static_cast<size_t>(dyna_airbag_nlist_size);
+         ++iString) {
       for (size_t iChar = 0; iChar < 8; ++iChar)
         _tmp_string[iChar] = (char)char_buffer[iString * 8 + iChar];
       airbag_all_variable_names[iString] = _tmp_string;
@@ -571,8 +573,8 @@ RawD3plot::read_airbag_section()
     }
 
     // state geometry var names
-    for (int32_t ii = static_cast<size_t>(dyna_airbag_ngeom) +
-                      static_cast<size_t>(dyna_airbag_state_nvars);
+    for (size_t ii = static_cast<size_t>(dyna_airbag_ngeom) +
+                     static_cast<size_t>(dyna_airbag_state_nvars);
          ii < dyna_airbag_nlist.size();
          ++ii) {
       if (dyna_airbag_nlist[ii] == 1)

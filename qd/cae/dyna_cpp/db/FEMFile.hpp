@@ -39,12 +39,6 @@ public:
   {
     return static_cast<DB_Elements*>(this);
   }
-  /*
-  virtual bool is_d3plot() const = 0;
-  virtual bool is_keyFile() const = 0;
-  virtual D3plot* get_d3plot() = 0;
-  virtual KeyFile* get_keyFile() = 0;
-  */
 };
 
 } // namespace qd

@@ -6,6 +6,7 @@
 #include <dyna_cpp/db/FEMFile.hpp>
 #include <dyna_cpp/dyna/Keyword.hpp>
 
+#include <map>
 #include <stdexcept>
 #include <string>
 
@@ -29,12 +30,17 @@ public:
     ELEMENT_SHELL,
     ELEMENT_SOLID,
     PART,
-    INCLUDE
+    INCLUDE,
+    COMMENT,
+    GENERIC
   };
 
 private:
   bool load_includes;
   double encryption_detection_threshold;
+  std::vector<std::shared_ptr<KeyFile>> includes;
+  std::map<std::string, std::vector<std::shared_ptr<Keyword>>> keywords;
+
   void read_mesh(const std::string& _filepath);
   void parse_file(const std::string& _filepath);
 
@@ -43,15 +49,6 @@ public:
   KeyFile(const std::string& _filepath,
           bool _load_includes = true,
           double _encryption_detection = 0.7);
-  /*
-  bool is_d3plot() const { return false; };
-  bool is_keyFile() const { return true; };
-  D3plot* get_d3plot()
-  {
-    throw(std::runtime_error("A KeyFile can not be cast to a D3plot."));
-  };
-  KeyFile* get_keyFile() { return this; };
-  */
 };
 
 } // namespace qd

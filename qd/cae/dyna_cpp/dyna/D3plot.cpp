@@ -1003,9 +1003,6 @@ D3plot::read_geometry_numbering()
       "Number of nodes is not defined consistently in d3plot geometry "
       "section."));
 
-  int32_t nMaterials =
-    dyna_nummat2 + dyna_nummat4 + dyna_nummat8 + dyna_nummatth;
-
   /* === ID - ORDER === */
   // nodes,solids,beams,shells,tshells
 

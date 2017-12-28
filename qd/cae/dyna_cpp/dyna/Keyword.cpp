@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include <sstream>
+#include <regex>
 #include <stdexcept>
 
 #include <dyna_cpp/dyna/Keyword.hpp>
@@ -8,33 +8,147 @@
 
 namespace qd {
 
+// static vars
+char Keyword::comment_delimiter = '|';
+char Keyword::comment_spacer = '-';
+
 /** Construct a keyword from a definition
  *
  * @param _definition definition of the Keyword.
+ *
+ * This constructor is meant for fast creation while parsing.
+ * The data is redundant, since the keyword name should also be
+ * in the lines argument.
  */
-Keyword::Keyword(const std::string& _keyword_name,
-                 int64_t _line_number,
-                 const std::vector<std::string>& _lines)
-  : keyword_name(_keyword_name)
-  , line_number(_line_number)
+Keyword::Keyword(const std::vector<std::string>& _lines,
+                 const std::string& _keyword_name,
+                 int64_t _line_number)
+  : line_number(_line_number)
   , lines(_lines)
 {
   // field size
-  if (ends_with(_keyword_name, "+"))
+  if (ends_with(_keyword_name, "+")) {
     field_size = 20;
-  else
+  } else {
     field_size = 10;
+  }
 }
 
-/** Checks if a string is a comment
+/** Switches the field size between single and double size
  *
- * @param _line line to check
- * @return boolean whether the line is a comment
+ * Single size are 10 characters, Long is 20 characters.
+ * Beware: Also the first comment line above fields will
+ *         be translated. This should be the field names
+ *
  */
-inline bool
-Keyword::is_comment(const std::string& _line) const
+void
+Keyword::switch_field_size()
 {
-  return _line[0] == '$';
+
+  // new sizes
+  auto old_field_size = static_cast<size_t>(field_size);
+  field_size = old_field_size == 10 ? 20 : 10;
+
+  for (size_t iLine = 0; iLine < lines.size(); ++iLine) {
+    auto& line = lines[iLine];
+
+    // enlarge: add + at the end
+    if (is_keyword(line) && field_size > old_field_size) {
+      if (line[line.size() - 1] == ' ')
+        line[line.size() - 1] = '+';
+      else
+        line += '+';
+      continue;
+    }
+    // shorten: remove all +
+    else {
+      std::replace(line.begin(), line.end(), '+', ' ');
+    }
+
+    // is it a card?
+    if (!is_comment(line) && !is_keyword(line)) {
+      change_line_field_size(iLine, old_field_size, field_size);
+      if (is_comment(lines[iLine - 1]))
+        change_line_field_size(iLine - 1, old_field_size, field_size);
+    }
+  } // for iLine
+}
+
+/** Change the field size of the specified line
+ *
+ * @param iLine line to change the field size
+ * @param old_field_size old size of the fields
+ * @param new_field_size new size of the fields ... obviously
+ */
+void
+Keyword::change_line_field_size(size_t iLine,
+                                size_t old_field_size,
+                                size_t new_field_size)
+{
+
+  // checks
+  if (old_field_size == new_field_size)
+    return;
+
+  auto& line = lines[iLine];
+  auto _is_comment = is_comment(line);
+
+  // COPY: FIELDS
+  if (!_is_comment) {
+
+    // allocate new line
+    size_t new_size = static_cast<size_t>(static_cast<double>(new_field_size) /
+                                          static_cast<double>(old_field_size) *
+                                          static_cast<double>(line.size()));
+
+    auto new_line =
+      _is_comment ? std::string(new_size, '-') : std::string(new_size, ' ');
+
+    auto copy_size =
+      new_field_size > old_field_size ? old_field_size : new_field_size;
+
+    // copy full fields
+    size_t iField;
+    for (iField = 0; iField < line.size() / old_field_size; ++iField) {
+      auto start = line.begin() + iField * old_field_size;
+      auto end = start + copy_size;
+      std::copy(start, end, new_line.begin() + iField * new_field_size);
+    }
+    // copy rest
+    auto rest = line.size() % old_field_size;
+    if (rest != 0)
+      std::copy(line.end() - rest,
+                line.end(),
+                new_line.begin() + iField * new_field_size);
+
+    // assign
+    lines[iLine] = new_line;
+  }
+  // COPY: COMMENTS
+  else {
+
+    std::string old_line = line;
+
+    std::regex pattern("\\w+");
+    std::regex_iterator<std::string::iterator> it_end;
+
+    size_t iField;
+    for (iField = 0; iField < old_line.size() / old_field_size; ++iField) {
+
+      // search word pattern
+      auto start = old_line.begin() + iField * old_field_size;
+      auto end = start + old_field_size;
+      std::regex_iterator<std::string::iterator> it(start, end, pattern);
+
+      // Pattern found (take first only)
+      if (it != it_end)
+        set_comment_name_unchecked(iLine, iField, it->str());
+    }
+
+    // Reallocate line
+    if (line.size() > new_field_size * iField)
+      line.resize(new_field_size * iField);
+  }
 }
 
 /** Get the buffer of a keyword field
@@ -75,7 +189,7 @@ Keyword::get_field_indexes(const std::string& _keyword_name) const
 inline int64_t
 Keyword::iChar_to_iField(size_t _char_index) const
 {
-  return _char_index / field_size;
+  return static_cast<int64_t>(_char_index) / field_size;
 }
 
 /** Get the index of a card entry
@@ -109,13 +223,19 @@ Keyword::get_card_index(size_t iCard, bool auto_extend)
 std::string
 Keyword::get_keyword_name() const
 {
-  return this->keyword_name;
+  for (const auto& line : lines) {
+    if (line[0] == '*')
+      return line;
+  }
+  throw(
+    std::runtime_error("Can not find keyword name in the keyword buffer (must "
+                       "begin with * in first column)."));
 }
 
 /** Set a card value from its card and field index
  *
  * @param iCard card index (non comment lines)
- * @param iField field index (a field has 8/20 chars)
+ * @param iField field index (a field has 10/20 chars)
  * @param _value value to set
  *
  * The values not fitting into the field will be cut off.
@@ -140,129 +260,77 @@ Keyword::set_card_value_unchecked(int64_t line_index,
     line.replace(char_index, _value.size(), _value);
 }
 
-/** Set a card value from it's name
+/** Set the name of a field in the comments
  *
- * @param _field_name name of the variable field
- * @param value value to set
+ * @param iLine line in the buffer
+ * @param iField field index to set
+ * @param _name name to set
  *
- * The field name will be searched in the comment lines.
+ * Does not check for wrong line index.
+ * If the name is too large, it will be cropped.
+ * Throws if line is not a comment.
  */
 void
-Keyword::set_card_value(const std::string& _field_name,
-                        const std::string& _value)
+Keyword::set_comment_name_unchecked(size_t iLine,
+                                    size_t iField,
+                                    const std::string& _name)
 {
-  auto indexes = get_field_indexes(_field_name);
-  set_card_value_unchecked(indexes.first, indexes.second * field_size, _value);
+  auto& line = lines[iLine];
+  if (!is_comment(line))
+    throw(std::invalid_argument("The specified line is not a comment line"));
+
+  // compute offsets
+  constexpr size_t delimiter_size = 1;
+
+  size_t field_size_tmp = static_cast<size_t>(field_size);
+  size_t name_len = _name.size() > field_size_tmp - delimiter_size
+                      ? field_size_tmp - 1
+                      : _name.size();
+  size_t c_start = field_size_tmp * iField + field_size_tmp / 2 - name_len / 2;
+
+  // check string size
+  if (line.size() < c_start + field_size_tmp)
+    line.resize(c_start + field_size_tmp, ' ');
+
+  // empty field
+  clear_field(line, iField);
+
+  // assign value to field
+  if (_name.size() >= static_cast<size_t>(field_size_tmp))
+    line.replace(c_start, name_len, _name, 0, name_len);
+  else
+    line.replace(c_start, name_len, _name);
+
+  // delimiter
+  if (iField != 0)
+    line[field_size_tmp * iField] = '|';
 }
 
-/** Set a card value from it's name
+/** Clear a field
  *
- * @param _field_name name of the variable field
- * @param value value to set
- *
- * The field name will be searched in the comment lines.
+ * @param iLine line to be cleared
+ * @param iField field index to be cleared
  */
 void
-Keyword::set_card_value(const std::string& _field_name, int64_t _value)
+Keyword::clear_field(std::string& _line, size_t iField)
 {
-  set_card_value(_field_name, std::to_string(_value));
-}
+  auto is_comment_tmp = is_comment(_line);
 
-/** Set a card value from it's name
- *
- * @param _field_name name of the variable field
- * @param value value to set
- *
- * The field name will be searched in the comment lines.
- */
-void
-Keyword::set_card_value(const std::string& _field_name, double _value)
-{
-  set_card_value(_field_name, std::to_string(_value));
-}
+  char spacer = is_comment_tmp ? Keyword::comment_spacer : ' ';
 
-/** Set a card value from its card and field index
- *
- * @param iCard card index (non comment lines)
- * @param iField field index (a field has 10/20 chars)
- * @param _value value to set
- *
- * The values not fitting into the field will be cut off.
- */
-void
-Keyword::set_card_value(int64_t iCard,
-                        int64_t iField,
-                        const std::string& _value,
-                        const std::string& _comment_name)
-{
-  auto line_index = get_card_index(iCard);
-  set_card_value_unchecked(line_index, iField * field_size, _value);
-}
+  auto field_size_tmp = static_cast<size_t>(field_size);
+  auto start = iField * field_size_tmp;
+  auto end = start + field_size_tmp;
 
-/** Set a card value from its card and field index
- *
- * @param iCard card index (non comment lines)
- * @param iField field index (a field has 10/20 chars)
- * @param _value value to set
- *
- * The values not fitting into the field will be cut off.
- */
-void
-Keyword::set_card_value(int64_t iCard,
-                        int64_t iField,
-                        int64_t _value,
-                        const std::string& _comment_name)
-{
-  set_card_value(iCard, iField, std::to_string(_value));
-}
+  if (is_comment_tmp && iField == 0)
+    _line[start] = '$';
+  else if (is_comment_tmp)
+    _line[start] = Keyword::comment_delimiter;
+  else
+    _line[start] = ' ';
 
-/** Set a card value from its card and field index
- *
- * @param iCard card index (non comment lines)
- * @param iField field index (a field has 10/20 chars)
- * @param _value value to set
- *
- * The values not fitting into the field will be cut off.
- */
-void
-Keyword::set_card_value(int64_t iCard,
-                        int64_t iField,
-                        double _value,
-                        const std::string& _comment_name)
-{
-  std::stringstream ss;
-  ss.precision(9);
-  ss << _value;
-  set_card_value(iCard, iField, ss.str());
-}
-
-/** Insert a line into the buffer
- *
- * @param iLine line index where to insert
- * @param _line line to insert
- */
-void
-Keyword::insert(size_t iLine, const std::string& _line)
-{
-  if (iLine > lines.size()) {
-    lines.resize(iLine + 1);
-    lines[iLine] = _line;
-  } else {
-    lines.insert(lines.begin() + iLine, _line);
-  }
-}
-
-/** Remove a line in the buffer
- *
- * @param iLine line to remove
- */
-void
-Keyword::remove(size_t iLine)
-{
-  if (iLine > lines.size())
-    return;
-
-  lines.erase(lines.begin() + iLine);
+  for (size_t iChar = start + 1; iChar < end; ++iChar)
+    _line[iChar] = spacer;
 }
 
 /** Get the keyword as a string

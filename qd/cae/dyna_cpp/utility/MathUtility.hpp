@@ -296,10 +296,8 @@ template<typename T,
 inline T
 index_treatment(T _index, size_t _size)
 {
-  T size_converted = static_cast<T>(_size);
-
   if (_index < 0)
-    _index = size_converted - _index;
+    _index = static_cast<T>(_size) - _index;
 
   return _index;
 }
