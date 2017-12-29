@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 namespace qd {
@@ -37,7 +38,8 @@ KeyFile::KeyFile(const std::string& _filepath,
       "Encryption detection threshold must be between 0 and 1."));
 
   // Read the mesh
-  this->read_mesh(this->get_filepath());
+  // this->read_mesh(this->get_filepath());
+  this->parse_file(this->get_filepath());
 }
 
 void
@@ -54,34 +56,115 @@ KeyFile::parse_file(const std::string& _filepath)
 #endif
 
   // read file
-  std::vector<char> _buffer = read_binary_file(_filepath);
+  std::vector<char> char_buffer = read_binary_file(_filepath);
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
 
   // test for encryption
-  if ((get_entropy(_buffer) / 8.) > this->encryption_detection_threshold) {
+  if ((get_entropy(char_buffer) / 8.) > this->encryption_detection_threshold) {
 #ifdef QD_DEBUG
     std::cout << "Skipping file " << _filepath << " with normalized entropy of "
-              << (get_entropy(_buffer) / 8) << std::endl;
+              << (get_entropy(char_buffer) / 8) << std::endl;
 #endif
     return;
   }
 
-  // convert buffer and release memory
-  std::vector<std::string> lines = convert_chars_to_lines(_buffer);
-  _buffer.clear();
-  _buffer.shrink_to_fit();
+  // convert buffer into blocks
+  std::string last_keyword;
+  bool is_keyword = false;
+  size_t iLine = 0;
+  std::vector<std::string> line_buffer;
+  std::vector<std::string> line_buffer_tmp;
 
-  // Get databases
-  auto db_parts = this->get_db_parts();
-  auto db_nodes = this->get_db_nodes();
-  auto db_elements = this->get_db_elements();
+  std::stringstream st(std::string(char_buffer.begin(), char_buffer.end()));
+  for (std::string line; std::getline(st, line); ++iLine) {
 
-  bool is_keyword_block = false;
-  std::vector<std::string> _keyword_buffer;
-  for (const auto& line : lines) {
+    // some data is there
+    if (!line.empty()) {
+
+      // new keyword
+      if (line[0] == '*') {
+
+        // check for previous header comments
+        // wrongly assigned to previous block
+        // people usually never define comments
+        // at the end of a previous block:
+        //
+        // KEYWORD
+        // CARD
+        // ------- <- Comment belongs to lower not upper
+        // COMMENT
+        // KEYWORD
+        if (!line_buffer.empty()) {
+
+          // remove comment lines from previous block
+          line_buffer_tmp.clear();
+          while (line_buffer.size() > 0 && line_buffer.back()[0] == '$') {
+            line_buffer_tmp.push_back(line_buffer.back());
+            line_buffer.pop_back();
+          }
+
+          // create a new keyword from previous data
+          auto kw = std::make_shared<Keyword>(line_buffer,
+                                              last_keyword,
+                                              iLine - line_buffer.size() -
+                                                line_buffer_tmp.size());
+          if (kw->has_long_fields())
+            last_keyword = last_keyword.substr(0, last_keyword.size() - 1);
+          keywords[last_keyword].push_back(kw);
+
+          // transfer cropped data
+          line_buffer = line_buffer_tmp;
+        }
+
+        is_keyword = true;
+        trim_right(line);
+        last_keyword = line;
+      } // IF:line[0] == '*'
+
+      // we stupidly add every line to the buffer
+      line_buffer.push_back(line);
+    }
+    // line empty (is a block separator)
+    else {
+
+      // ADD: KEYWORD BLOCK
+      if (is_keyword) {
+        auto kw = std::make_shared<Keyword>(
+          line_buffer, last_keyword, iLine - line_buffer.size());
+        if (kw->has_long_fields())
+          last_keyword = last_keyword.substr(0, last_keyword.size() - 1);
+        keywords[last_keyword].push_back(kw);
+        is_keyword = false;
+        line_buffer.clear();
+      }
+      // ADD: COMMENT BLOCK
+      else {
+        // (!) create comment/text block
+      }
+    }
+  } // for:line
+}
+
+/** Resolve an include
+ *
+ * @param _filepath path of the include
+ * @return filepath resolved filepath
+ */
+std::string
+KeyFile::resolve_include(const std::string& _filepath)
+{
+
+  if (check_ExistanceAndAccess(_filepath))
+    return _filepath;
+
+  for (const auto& dir : base_dirs) {
+    if (check_ExistanceAndAccess(dir + _filepath))
+      return dir + _filepath;
   }
+
+  throw(std::runtime_error("Can not resolve include:" + _filepath));
 }
 
 /** Read the mesh from the file given in the filepath
@@ -178,7 +261,6 @@ KeyFile::read_mesh(const std::string& _filepath)
 #ifdef QD_DEBUG
       std::cout << "Starting *NODE in line: " << (iLine + 1) << std::endl;
 #endif
-
     } else if ((keyword == KeywordType::NODE) && !line_has_keyword &&
                (!line_trimmed.empty())) {
       try {
@@ -187,18 +269,15 @@ KeyFile::read_mesh(const std::string& _filepath)
         coords[2] = std::stof(line.substr(40, 16));
 
         db_nodes->add_node(std::stoi(line.substr(0, 8)), coords);
-
       } catch (const std::exception& ex) {
         std::cerr << "Error reading node in line " << (iLine + 1) << ": "
                   << ex.what() << std::endl;
         keyword = KeywordType::NODE;
-
       } catch (...) {
         std::cerr << "Error reading node in line " << (iLine + 1)
                   << ": Unknown error." << std::endl;
         keyword = KeywordType::NODE;
       }
-
     } else if ((keyword == KeywordType::NODE) &&
                (line_has_keyword | line.empty())) {
       keyword = KeywordType::NONE;
@@ -235,7 +314,6 @@ KeyFile::read_mesh(const std::string& _filepath)
                   << ": Unknown error." << std::endl;
         keyword = KeywordType::NONE;
       }
-
     } else if ((keyword == KeywordType::ELEMENT_SHELL) &&
                (line_has_keyword | line.empty())) {
       keyword = KeywordType::NONE;
@@ -260,7 +338,6 @@ KeyFile::read_mesh(const std::string& _filepath)
           id = std::stoi(line.substr(0, 8));
           partID = std::stoi(line.substr(8, 8));
           ++iCardLine;
-
         } else if (iCardLine == 1) {
           elemNodes_solid[0] = std::stoi(line.substr(0, 8));
           elemNodes_solid[1] = std::stoi(line.substr(8, 8));
@@ -274,7 +351,6 @@ KeyFile::read_mesh(const std::string& _filepath)
             Element::SOLID, id, partID, elemNodes_solid);
           iCardLine = 0;
         }
-
       } catch (const std::exception& ex) {
         std::cerr << "Error reading solid in line " << (iLine + 1) << ":"
                   << ex.what() << std::endl;
@@ -284,7 +360,6 @@ KeyFile::read_mesh(const std::string& _filepath)
                   << ": Unknown error." << std::endl;
         keyword = KeywordType::NONE;
       }
-
     } else if ((keyword == KeywordType::ELEMENT_SOLID) &&
                (line_has_keyword | line.empty())) {
       keyword = KeywordType::NONE;
@@ -314,11 +389,9 @@ KeyFile::read_mesh(const std::string& _filepath)
           db_elements->add_element_byKeyFile(
             Element::BEAM, id, partID, elemNodes_beam);
           ++iCardLine;
-
         } else if (iCardLine == 1) {
           iCardLine = 0;
         }
-
       } catch (const std::exception& ex) {
         std::cerr << "Error reading beam in line " << (iLine + 1) << ":"
                   << ex.what() << std::endl;
@@ -328,7 +401,6 @@ KeyFile::read_mesh(const std::string& _filepath)
                   << ": Unknown error." << std::endl;
         keyword = KeywordType::ELEMENT_BEAM;
       }
-
     } else if ((keyword == KeywordType::ELEMENT_BEAM) &&
                (line_has_keyword | line.empty())) {
       keyword = KeywordType::ELEMENT_BEAM;
@@ -345,7 +417,6 @@ KeyFile::read_mesh(const std::string& _filepath)
       std::cout << "Starting *PART in line: " << (iLine + 1) << std::endl;
 #endif
       iCardLine = 0;
-
     } else if ((keyword == KeywordType::PART) && !line_has_keyword &&
                (!line.empty())) {
 
@@ -364,13 +435,11 @@ KeyFile::read_mesh(const std::string& _filepath)
           }
 
           ++iCardLine;
-
         } catch (const std::exception& ex) {
           std::cerr << "Error reading part in line " << (iLine + 1) << ":"
                     << ex.what() << std::endl;
           keyword = KeywordType::NONE;
         }
-
       } else if ((keyword == KeywordType::PART) &&
                  (line_has_keyword | (iCardLine > 1))) {
         keyword = KeywordType::NONE;

@@ -12,9 +12,33 @@ namespace qd {
 char Keyword::comment_delimiter = '|';
 char Keyword::comment_spacer = '-';
 
-/** Construct a keyword from a definition
+/** Construct a keyword
  *
- * @param _definition definition of the Keyword.
+ * @param _lines lines of the buffer
+ * @param _line_number line index in the file for ordering
+ *
+ * This constructor is meant for fast creation while parsing.
+ * The data is redundant, since the keyword name should also be
+ * in the lines argument.
+ */
+Keyword::Keyword(const std::vector<std::string>& _lines, int64_t _line_number)
+  : line_number(_line_number)
+  , lines(_lines)
+{
+
+  // field size
+  if (ends_with(get_keyword_name(), "+")) {
+    field_size = 20;
+  } else {
+    field_size = 10;
+  }
+}
+
+/** Construct a keyword
+ *
+ * @param _lines lines of the buffer
+ * @param _keyword_name name of the keyword (redundant!)
+ * @param _line_number line index in the file for ordering
  *
  * This constructor is meant for fast creation while parsing.
  * The data is redundant, since the keyword name should also be
@@ -46,7 +70,7 @@ Keyword::switch_field_size()
 {
 
   // new sizes
-  auto old_field_size = static_cast<size_t>(field_size);
+  auto old_field_size = field_size;
   field_size = old_field_size == 10 ? 20 : 10;
 
   for (size_t iLine = 0; iLine < lines.size(); ++iLine) {
@@ -151,10 +175,30 @@ Keyword::change_line_field_size(size_t iLine,
   }
 }
 
+/** Set a new line buffer
+ *
+ * @param _new_lines
+ *
+ */
+void
+Keyword::set_lines(const std::vector<std::string>& _new_lines)
+{
+
+  // check if a keyword can be found
+  for (const auto& line : _new_lines)
+    if (is_keyword(line)) {
+      lines = _new_lines;
+      return;
+    }
+
+  throw(std::invalid_argument(
+    "Can not find a keyword beginning with * in new line buffer."));
+}
+
 /** Get the buffer of a keyword field
  *
  * @param _keyword_name name of the keyword to search from comments
- * @returns index buffer index, is negative if it can not be found
+ * @returns indexes first index is is the line, second is the field
  */
 std::pair<int64_t, int64_t>
 Keyword::get_field_indexes(const std::string& _keyword_name) const
@@ -179,41 +223,6 @@ Keyword::get_field_indexes(const std::string& _keyword_name) const
 
   throw(std::invalid_argument("Can not find field:" + _keyword_name +
                               " in comments."));
-}
-
-/** Get a field index from a char index
- *
- * @param char_index
- * @return field index
- */
-inline int64_t
-Keyword::iChar_to_iField(size_t _char_index) const
-{
-  return static_cast<int64_t>(_char_index) / field_size;
-}
-
-/** Get the index of a card entry
- *
- * @param iCard index of the card
- * @return index index in the lines buffer
- */
-int64_t
-Keyword::get_card_index(size_t iCard, bool auto_extend)
-{
-
-  // search index
-  size_t nCards = -1;
-  for (size_t index = 0; index < lines.size(); ++index) {
-    if (lines[index][0] != '$' && lines[index][0] != '*') {
-      ++nCards;
-      if (nCards == iCard)
-        return index;
-    }
-  }
-
-  // simply append more empty lines
-  lines.resize(lines.size() + iCard - nCards);
-  return static_cast<int64_t>(lines.size() - 1);
 }
 
 /** Get the name of the keyword
@@ -303,7 +312,7 @@ Keyword::set_comment_name_unchecked(size_t iLine,
 
   // delimiter
   if (iField != 0)
-    line[field_size_tmp * iField] = '|';
+    line[field_size_tmp * iField] = Keyword::comment_delimiter;
 }
 
 /** Clear a field

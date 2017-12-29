@@ -9,6 +9,7 @@
 //#include <dyna_cpp/dyna/Binout.hpp>
 #include <dyna_cpp/dyna/D3plot.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
+#include <dyna_cpp/dyna/Keyword.hpp>
 #include <dyna_cpp/dyna/RawD3plot.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
@@ -689,11 +690,54 @@ PYBIND11_MODULE(dyna_cpp, m)
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
     m, "QD_KeyFile", keyfile_description);
-  keyfile_py.def(pybind11::init<const std::string&, bool, double>(),
-                 "filepath"_a,
-                 "load_includes"_a = true,
-                 "encryption_detection"_a = 0.7,
-                 keyfile_constructor);
+  keyfile_py
+    .def(pybind11::init<const std::string&, bool, double>(),
+         "filepath"_a,
+         "load_includes"_a = true,
+         "encryption_detection"_a = 0.7,
+         keyfile_constructor)
+    .def("__getitem__", &KeyFile::get_keywordsByName)
+    .def("keys", &KeyFile::keys);
+
+  // Keyword
+  pybind11::class_<Keyword, std::shared_ptr<Keyword>> keyword_py(m,
+                                                                 "QD_Keyword");
+  keyword_py
+    .def(
+      "__str__", &Keyword::str, pybind11::return_value_policy::take_ownership)
+    .def("__iter__",
+         [](std::shared_ptr<Keyword> kw) {
+           auto& buffer = kw->get_line_buffer();
+           return pybind11::make_iterator(buffer.begin(), buffer.end());
+         },
+         pybind11::keep_alive<0, 1>())
+    .def("__getitem__",
+         &Keyword::operator[]<int64_t>,
+         pybind11::return_value_policy::take_ownership)
+    .def("__getitem__",
+         (std::string(Keyword::*)(const std::string&)) &
+           Keyword::get_card_value,
+         pybind11::return_value_policy::take_ownership)
+    .def(
+      "__len__", &Keyword::size, pybind11::return_value_policy::take_ownership)
+    .def("get_lines",
+         &Keyword::get_lines,
+         pybind11::return_value_policy::take_ownership)
+    .def("set_lines", &Keyword::set_lines, "lines"_a)
+    .def("set_line", &Keyword::set_line<int64_t>, "iLine"_a, "line"_a)
+    .def("insert_line", &Keyword::insert_line<int64_t>, "iLine"_a, "line"_a)
+    .def("remove_line", &Keyword::remove_line<int64_t>, "iLine"_a)
+    .def_property(
+      "line_number", &Keyword::get_line_number, &Keyword::set_line_number)
+    .def("switch_field_size", &Keyword::switch_field_size)
+    .def_property_static(
+      "field_delimiter",
+      [](pybind11::object) { return Keyword::get_comment_delimiter(); },
+      [](pybind11::object, char val) { Keyword::set_comment_delimiter(val); })
+    .def_property_static(
+      "field_spacer",
+      [](pybind11::object) { return Keyword::get_comment_spacer(); },
+      [](pybind11::object, char val) { Keyword::set_comment_spacer(val); });
 
   // Binout
   /*

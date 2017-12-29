@@ -38,18 +38,57 @@ public:
 private:
   bool load_includes;
   double encryption_detection_threshold;
+  std::vector<std::string> base_dirs;
   std::vector<std::shared_ptr<KeyFile>> includes;
   std::map<std::string, std::vector<std::shared_ptr<Keyword>>> keywords;
 
   void read_mesh(const std::string& _filepath);
   void parse_file(const std::string& _filepath);
+  std::string resolve_include(const std::string& _filepath);
 
 public:
   KeyFile();
   KeyFile(const std::string& _filepath,
           bool _load_includes = true,
           double _encryption_detection = 0.7);
+  inline std::vector<std::shared_ptr<Keyword>> get_keywordsByName(
+    const std::string& _keyword_name);
+  inline std::vector<std::string> keys();
 };
+
+/** Get all keywords with a specific name
+ *
+ * @param _keyword_name name of the keyword
+ * @return keywords vector of keywords
+ *
+ * Returns an empty vector if none where found.
+ */
+std::vector<std::shared_ptr<Keyword>>
+KeyFile::get_keywordsByName(const std::string& _keyword_name)
+{
+
+  // search and return
+  auto it = keywords.find(_keyword_name);
+  if (it != keywords.end())
+    return it->second;
+
+  // return empty vector if not found
+  // (prevents creation of an empty entry in map)
+  return std::vector<std::shared_ptr<Keyword>>();
+}
+
+/** Get a list of keywords in the file
+ *
+ * @return list list of keyword names loaded
+ */
+std::vector<std::string>
+KeyFile::keys()
+{
+  std::vector<std::string> list;
+  for (const auto& kv : keywords)
+    list.push_back(kv.first);
+  return list;
+}
 
 } // namespace qd
 
