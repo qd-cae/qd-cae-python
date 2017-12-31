@@ -97,6 +97,24 @@ string_to_type(std::string const& str)
   return value;
 }
 
+/** Enum for classifying the data in strings
+ *
+ */
+enum class StringType
+{
+  STRING,
+  FLOAT,
+  INTEGER
+};
+
+/** Get the type of a string
+ *
+ * @param _arg some string to test
+ * @return type
+ */
+StringType
+get_string_type(const std::string& _arg);
+
 /** Extract numbers from a string
  * @param std::string _text
  */
@@ -162,6 +180,27 @@ ends_with(std::string const& value, std::string const& ending)
     return false;
   return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
+
+/** Get a word from a string
+ *
+ * @param _begin begin iterator
+ * @param _end ending iterator
+ *
+ * Uses regex.
+ */
+std::string
+get_word(std::string::const_iterator _begin, std::string::const_iterator _end);
+
+/** Get a word from a string
+ *
+ * @param _begin begin iterator
+ * @param _end ending iterator
+ *
+ * Uses regex.
+ */
+ptrdiff_t
+get_word_position(const std::string& _str,
+                  const std::string& _pattern = "\\w+");
 
 } // namespace qd
 

@@ -81,50 +81,51 @@ KeyFile::parse_file(const std::string& _filepath)
   for (std::string line; std::getline(st, line); ++iLine) {
 
     // some data is there
-    if (!line.empty()) {
+    // if (!line.empty()) {
 
-      // new keyword
-      if (line[0] == '*') {
+    // new keyword
+    if (line[0] == '*') {
 
-        // check for previous header comments
-        // wrongly assigned to previous block
-        // people usually never define comments
-        // at the end of a previous block:
-        //
-        // KEYWORD
-        // CARD
-        // ------- <- Comment belongs to lower not upper
-        // COMMENT
-        // KEYWORD
-        if (!line_buffer.empty()) {
+      // check for previous header comments
+      // wrongly assigned to previous block
+      // people usually never define comments
+      // at the end of a previous block:
+      //
+      // KEYWORD
+      // CARD
+      // ------- <- Comment belongs to lower not upper
+      // COMMENT
+      // KEYWORD
+      if (!line_buffer.empty()) {
 
-          // remove comment lines from previous block
-          line_buffer_tmp.clear();
-          while (line_buffer.size() > 0 && line_buffer.back()[0] == '$') {
-            line_buffer_tmp.push_back(line_buffer.back());
-            line_buffer.pop_back();
-          }
-
-          // create a new keyword from previous data
-          auto kw = std::make_shared<Keyword>(line_buffer,
-                                              last_keyword,
-                                              iLine - line_buffer.size() -
-                                                line_buffer_tmp.size());
-          if (kw->has_long_fields())
-            last_keyword = last_keyword.substr(0, last_keyword.size() - 1);
-          keywords[last_keyword].push_back(kw);
-
-          // transfer cropped data
-          line_buffer = line_buffer_tmp;
+        // remove comment lines from previous block
+        line_buffer_tmp.clear();
+        while (line_buffer.size() > 0 && line_buffer.back()[0] == '$') {
+          line_buffer_tmp.push_back(line_buffer.back());
+          line_buffer.pop_back();
         }
 
-        is_keyword = true;
-        trim_right(line);
-        last_keyword = line;
-      } // IF:line[0] == '*'
+        // create a new keyword from previous data
+        auto kw = std::make_shared<Keyword>(line_buffer,
+                                            last_keyword,
+                                            iLine - line_buffer.size() -
+                                              line_buffer_tmp.size());
+        if (kw->has_long_fields())
+          last_keyword = last_keyword.substr(0, last_keyword.size() - 1);
+        keywords[last_keyword].push_back(kw);
 
-      // we stupidly add every line to the buffer
-      line_buffer.push_back(line);
+        // transfer cropped data
+        line_buffer = line_buffer_tmp;
+      }
+
+      is_keyword = true;
+      trim_right(line);
+      last_keyword = line;
+    } // IF:line[0] == '*'
+
+    // we stupidly add every line to the buffer
+    line_buffer.push_back(line);
+    /*
     }
     // line empty (is a block separator)
     else {
@@ -144,6 +145,7 @@ KeyFile::parse_file(const std::string& _filepath)
         // (!) create comment/text block
       }
     }
+    */
   } // for:line
 }
 

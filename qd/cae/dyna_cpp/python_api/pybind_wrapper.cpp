@@ -13,6 +13,7 @@
 #include <dyna_cpp/dyna/RawD3plot.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
+#include <dyna_cpp/utility/TextUtility.hpp>
 
 extern "C" {
 #include <pybind11/numpy.h>
@@ -700,8 +701,14 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("keys", &KeyFile::keys);
 
   // Keyword
-  pybind11::class_<Keyword, std::shared_ptr<Keyword>> keyword_py(m,
-                                                                 "QD_Keyword");
+  pybind11::class_<Keyword, std::shared_ptr<Keyword>> keyword_py(m, "Keyword");
+
+  pybind11::enum_<Keyword::Align>(keyword_py, "align")
+    .value("left", Keyword::Align::LEFT)
+    .value("middle", Keyword::Align::MIDDLE)
+    .value("right", Keyword::Align::RIGHT)
+    .export_values();
+
   keyword_py
     .def(
       "__str__", &Keyword::str, pybind11::return_value_policy::take_ownership)
@@ -712,16 +719,124 @@ PYBIND11_MODULE(dyna_cpp, m)
          },
          pybind11::keep_alive<0, 1>())
     .def("__getitem__",
-         &Keyword::operator[]<int64_t>,
+         [](std::shared_ptr<Keyword> kw, const std::string& _field_name) {
+           return py::try_number_conversion(kw->get_card_value(_field_name));
+         },
          pybind11::return_value_policy::take_ownership)
     .def("__getitem__",
-         (std::string(Keyword::*)(const std::string&)) &
-           Keyword::get_card_value,
+         [](std::shared_ptr<Keyword> self, std::tuple<int64_t, int64_t> arg) {
+           return py::try_number_conversion(
+             self->get_card_value(std::get<0>(arg), std::get<1>(arg)));
+         },
          pybind11::return_value_policy::take_ownership)
+    .def("__getitem__",
+         [](std::shared_ptr<Keyword> self,
+            std::tuple<int64_t, int64_t, size_t> arg) {
+           return py::try_number_conversion(self->get_card_value(
+             std::get<0>(arg), std::get<1>(arg), std::get<2>(arg)));
+         },
+         pybind11::return_value_policy::take_ownership)
+    .def("get_card_value",
+         [](std::shared_ptr<Keyword> self,
+            int64_t iCard,
+            int64_t iField,
+            size_t field_size) {
+           return py::try_number_conversion(
+             self->get_card_value(iCard, iField, field_size));
+         },
+         "iCard"_a,
+         "iField"_a,
+         "field_size"_a = 0,
+         pybind11::return_value_policy::take_ownership)
+    .def("__setitem__",
+         [](std::shared_ptr<Keyword> self,
+            const std::string& _field_name,
+            pybind11::object _value) {
+           self->set_card_value(
+             _field_name, pybind11::cast<std::string>(pybind11::str(_value)));
+         },
+         pybind11::return_value_policy::take_ownership)
+    .def("__setitem__",
+         [](std::shared_ptr<Keyword> self,
+            const std::string& _field_name,
+            pybind11::object _value) {
+           self->set_card_value(
+             _field_name, pybind11::cast<std::string>(pybind11::str(_value)));
+         },
+         pybind11::return_value_policy::take_ownership)
+    .def("set_card_value",
+         [](std::shared_ptr<Keyword> self,
+            int64_t iCard,
+            int64_t iField,
+            pybind11::object value,
+            const std::string& name,
+            size_t field_size) {
+           self->set_card_value(
+             iCard,
+             iField,
+             pybind11::cast<std::string>(pybind11::str(value)),
+             name,
+             field_size);
+         },
+         "iCard"_a,
+         "iField"_a,
+         "value"_a,
+         "name"_a = "",
+         "field_size"_a = 0)
+    .def("set_card_value",
+         [](std::shared_ptr<Keyword> self,
+            const std::string& field_name,
+            pybind11::object value,
+            size_t field_size) {
+           self->set_card_value(
+             field_name,
+             pybind11::cast<std::string>(pybind11::str(value)),
+             field_size);
+         },
+         "name"_a,
+         "value"_a,
+         "field_size"_a = 0)
+    .def("set_card_value",
+         [](std::shared_ptr<Keyword> self,
+            pybind11::dict fields,
+            size_t field_size) {
+           for (auto& item : fields) {
+
+             if (pybind11::isinstance<pybind11::str>(item.first))
+               self->set_card_value(
+                 pybind11::cast<std::string>(item.first),
+                 pybind11::cast<std::string>(pybind11::str(item.second)),
+                 field_size);
+
+             else if (pybind11::isinstance<pybind11::tuple>(item.first)) {
+               auto tmp_tuple = pybind11::cast<pybind11::tuple>(item.first);
+               if (tmp_tuple.size() < 2)
+                 throw(std::invalid_argument(
+                   "Setting a card value from a tuple requires at least two "
+                   "indexes: iCard and iField."));
+               auto iField = pybind11::cast<int64_t>(tmp_tuple[0]);
+               auto iCard = pybind11::cast<int64_t>(tmp_tuple[1]);
+               auto field_size = tmp_tuple.size() > 2
+                                   ? pybind11::cast<size_t>(tmp_tuple[2])
+                                   : 0;
+               self->set_card_value(
+                 iField,
+                 iCard,
+                 pybind11::cast<std::string>(pybind11::str(item.second)),
+                 "",
+                 field_size);
+             }
+           }
+         },
+         "fields"_a,
+         "field_size"_a = 0)
     .def(
       "__len__", &Keyword::size, pybind11::return_value_policy::take_ownership)
     .def("get_lines",
          &Keyword::get_lines,
+         pybind11::return_value_policy::take_ownership)
+    .def("get_line",
+         &Keyword::get_line<int64_t>,
          pybind11::return_value_policy::take_ownership)
     .def("set_lines", &Keyword::set_lines, "lines"_a)
     .def("set_line", &Keyword::set_line<int64_t>, "iLine"_a, "line"_a)
@@ -732,12 +847,28 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("switch_field_size", &Keyword::switch_field_size)
     .def_property_static(
       "field_delimiter",
-      [](pybind11::object) { return Keyword::get_comment_delimiter(); },
-      [](pybind11::object, char val) { Keyword::set_comment_delimiter(val); })
+      [](pybind11::object) { return Keyword::name_delimiter; },
+      [](pybind11::object, char val) { Keyword::name_delimiter = val; })
     .def_property_static(
       "field_spacer",
-      [](pybind11::object) { return Keyword::get_comment_spacer(); },
-      [](pybind11::object, char val) { Keyword::set_comment_spacer(val); });
+      [](pybind11::object) { return Keyword::name_spacer; },
+      [](pybind11::object, char val) { Keyword::name_spacer = val; })
+    .def_property_static(
+      "field_alignment",
+      [](pybind11::object) { return Keyword::field_alignment; },
+      [](pybind11::object, Keyword::Align _align) {
+        Keyword::field_alignment = _align;
+      })
+    .def_property_static(
+      "name_alignment",
+      [](pybind11::object) { return Keyword::name_alignment; },
+      [](pybind11::object, Keyword::Align _align) {
+        Keyword::name_alignment = _align;
+      })
+    .def_property_static(
+      "name_delimiter_used",
+      [](pybind11::object) { return Keyword::name_delimiter_used; },
+      [](pybind11::object, bool _arg) { Keyword::name_delimiter_used = _arg; });
 
   // Binout
   /*

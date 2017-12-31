@@ -3,6 +3,7 @@
 #define KEYWORD_HPP
 
 // includes
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <sstream>
@@ -12,16 +13,30 @@
 #include <vector>
 
 #include <dyna_cpp/utility/MathUtility.hpp>
+#include <dyna_cpp/utility/TextUtility.hpp>
 
 namespace qd {
 
 class Keyword
 {
-private:
-  static char comment_delimiter;
-  static char comment_spacer;
 
-  int64_t field_size;             // size of the fields (8 or 20)
+public:
+  enum class Align
+  {
+    LEFT,
+    MIDDLE,
+    RIGHT
+  };
+
+  // Static settings
+  static bool name_delimiter_used;
+  static char name_delimiter;
+  static char name_spacer;
+  static Align name_alignment;
+  static Align field_alignment;
+
+private:
+  size_t field_size;              // size of the fields (8 or 20)
   int64_t line_number;            // line index in file (keeps order)
   std::vector<std::string> lines; // line buffer
 
@@ -32,24 +47,29 @@ private:
   size_t iCard_to_iLine(T _iCard, bool _auto_extend = true);
   template<typename T>
   inline size_t iChar_to_iField(T _iChar) const;
-  /*
   template<typename T>
-  std::string get_iField(T iField) const;
-  */
+  std::string get_field(const std::string& _line,
+                        T _iField,
+                        size_t _field_size = 0) const;
 
-  std::pair<int64_t, int64_t> get_field_indexes(
+  std::pair<size_t, size_t> get_field_indexes(
     const std::string& _field_name) const;
 
-  void set_card_value_unchecked(int64_t line_index,
-                                int64_t char_index,
-                                const std::string& _value);
-  void set_comment_name_unchecked(size_t iLine,
-                                  size_t iField,
-                                  const std::string& _name);
+  void set_card_value_unchecked(size_t _iLine,
+                                size_t _iField,
+                                const std::string& _value,
+                                size_t _field_size = 0);
+  void set_comment_name_unchecked(size_t _iLine,
+                                  size_t _iField,
+                                  const std::string& _name,
+                                  size_t _field_size = 0);
+  inline std::string get_card_value_unchecked(size_t _iLine,
+                                              size_t _iField,
+                                              size_t _field_size = 0);
   void change_line_field_size(size_t iLine,
                               size_t old_field_size,
                               size_t new_field_size);
-  void clear_field(std::string& _line, size_t iField);
+  void clear_field(std::string& _line, size_t iField, size_t _field_size = 0);
 
 public:
   explicit Keyword(const std::vector<std::string>& _lines,
@@ -59,21 +79,16 @@ public:
                    int64_t _line_number = 0);
 
   // getters
-  template<typename T>
-  const std::string& operator[](T _iLine) const;
-  /*
-  template<typename T>
-  const std::string& operator[](std::pair<T, T> _indexes) const;
-  */
-  inline const std::string& operator[](const std::string& _field_name);
   std::string get_keyword_name() const;
   inline std::vector<std::string> get_lines() const;
   inline std::vector<std::string>& get_line_buffer();
-  inline std::string get_card_value(const std::string& _field_name);
-  /*
   template<typename T>
-  inline std::string get_card_value(std::pair<T, T> _indexes);
-  */
+  inline const std::string& get_line(T _iLine) const;
+  inline std::string get_card_value(const std::string& _field_name);
+  template<typename T>
+  inline std::string get_card_value(T _iCard,
+                                    T _iField,
+                                    size_t _field_size = 0);
   inline bool has_long_fields() const;
   inline size_t size();
   inline int64_t get_line_number();
@@ -86,23 +101,34 @@ public:
   // setters
   void switch_field_size();
   inline void set_card_value(const std::string& _field_name,
-                             const std::string& _value);
-  inline void set_card_value(const std::string& _field_name, int64_t _value);
-  inline void set_card_value(const std::string& _field_name, double _value);
+                             const std::string& _value,
+                             size_t _field_size = 0);
+  inline void set_card_value(const std::string& _field_name,
+                             int64_t _value,
+                             size_t _field_size = 0);
+  inline void set_card_value(const std::string& _field_name,
+                             double _value,
+                             size_t _field_size = 0);
 
   // card values by indexes
-  inline void set_card_value(int64_t iCard,
-                             int64_t iField,
+  template<typename T>
+  inline void set_card_value(T iCard,
+                             T iField,
                              const std::string& _value,
-                             const std::string& _comment_name = "");
-  inline void set_card_value(int64_t iCard,
-                             int64_t iField,
+                             const std::string& _comment_name = "",
+                             size_t _field_size = 0);
+  template<typename T>
+  inline void set_card_value(T iCard,
+                             T iField,
                              int64_t _value,
-                             const std::string& _comment_name = "");
-  inline void set_card_value(int64_t iCard,
-                             int64_t iField,
+                             const std::string& _comment_name = "",
+                             size_t _field_size = 0);
+  template<typename T>
+  inline void set_card_value(T iCard,
+                             T iField,
                              double _value,
-                             const std::string& _comment_name = "");
+                             const std::string& _comment_name = "",
+                             size_t _field_size = 0);
   void set_lines(const std::vector<std::string>& _new_lines);
   template<typename T>
   void set_line(T iLine, const std::string& _line);
@@ -111,18 +137,6 @@ public:
   template<typename T>
   void remove_line(T iLine);
   inline void set_line_number(int64_t _iLine);
-
-  // static functions
-  static void set_comment_delimiter(char new_delimiter)
-  {
-    Keyword::comment_delimiter = new_delimiter;
-  };
-  static void set_comment_spacer(char new_spacer)
-  {
-    Keyword::comment_spacer = new_spacer;
-  };
-  static char get_comment_delimiter() { return Keyword::comment_delimiter; };
-  static char get_comment_spacer() { return Keyword::comment_spacer; };
 };
 
 /** Get a specific line in the keyword
@@ -132,7 +146,8 @@ public:
  * the index may also be negative (python style)
  */
 template<typename T>
-const std::string& Keyword::operator[](T _iLine) const
+const std::string&
+Keyword::get_line(T _iLine) const
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
@@ -148,32 +163,48 @@ const std::string& Keyword::operator[](T _iLine) const
   return lines[_iLine];
 }
 
+/** Get a card value from a specific line and field
+ *
+ * @param _iLine line to get a field from
+ * @param _iField field to get data from
+ * @param _field_size optional field size
+ * @return data string
+ */
+std::string
+Keyword::get_card_value_unchecked(size_t _iLine,
+                                  size_t _iField,
+                                  size_t _field_size)
+{
+  return trim(get_field(lines[_iLine], _iField, _field_size));
+}
+
 /** Get a card value from an index pair
  *
- * @param indexes, first is card index, second is field index
+ * @param _iCard card index
+ * @param _iField field index
+ * @param _field_size size of the field
+ * @return field, is empty if field does not exist
  */
-/*
 template<typename T>
 std::string
-get_card_value(std::pair<T, T> _indexes)
+Keyword::get_card_value(T _iCard, T _iField, size_t _field_size)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  auto iLine = iCard_to_iLine(_indexes.first);
-  //auto iChar =
-  // TODO
+  auto iLine = iCard_to_iLine(_iCard, false);
+  return get_card_value_unchecked(iLine, _iField, _field_size);
 }
-*/
 
 /** Get a card value by its name in the comments
  *
  * @param _field_name name of the field
+ * @return field, is empty if field does not exist
  */
 std::string
 Keyword::get_card_value(const std::string& _field_name)
 {
   auto indexes = get_field_indexes(_field_name);
-  return lines[indexes.first].substr(indexes.second * field_size, field_size);
+  return get_card_value_unchecked(indexes.first, indexes.second);
 }
 
 /** Get the number of lines in the line buffer
@@ -257,7 +288,8 @@ Keyword::iCard_to_iLine(T _iCard, bool _auto_extend)
   // search index
   size_t nCards = -1;
   for (size_t index = 0; index < lines.size(); ++index) {
-    if (lines[index][0] != '$' && lines[index][0] != '*') {
+    if (lines[index].size() > 0 && lines[index][0] != '$' &&
+        lines[index][0] != '*') {
       ++nCards;
       if (nCards == iCard_u)
         return index;
@@ -270,9 +302,9 @@ Keyword::iCard_to_iLine(T _iCard, bool _auto_extend)
     return lines.size() - 1;
   }
 
-  throw(
-    std::invalid_argument("card index:" + std::to_string(iCard_u) +
-                          " >= number of cards:" + std::to_string(++nCards)));
+  throw(std::invalid_argument("card index " + std::to_string(iCard_u) +
+                              " >= number of cards " +
+                              std::to_string(++nCards)));
 }
 
 /** Get a field index from a char index
@@ -287,6 +319,35 @@ Keyword::iChar_to_iField(T _iChar) const
   static_assert(std::is_integral<T>::value, "Integer number required.");
   static_assert(std::is_unsigned<T>::value, "Unsigned number required.");
   return static_cast<size_t>(_iChar) / field_size;
+}
+
+/** Get a specific field from a line
+ *
+ * @param _line line to get the field from
+ * @param _iField field index
+ * @return field data of the field, empty if field exeeds line bounds
+ */
+template<typename T>
+std::string
+Keyword::get_field(const std::string& _line,
+                   T _iField,
+                   size_t _field_size) const
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  // field handling
+  _iField = index_treatment(_iField, iChar_to_iField(_line.size()));
+  auto iField_u = static_cast<size_t>(_iField);
+
+  // use individual field_size?
+  _field_size = _field_size != 0 ? _field_size : field_size;
+
+  // do the thing
+  auto start = iField_u * _field_size < _line.size() ? iField_u * _field_size
+                                                     : _line.size();
+
+  // pewpew results
+  return _line.substr(start, _field_size);
 }
 
 /** Get a copy of the line buffer of the keyword
@@ -318,10 +379,11 @@ Keyword::get_line_buffer()
  */
 void
 Keyword::set_card_value(const std::string& _field_name,
-                        const std::string& _value)
+                        const std::string& _value,
+                        size_t _field_size)
 {
   auto indexes = get_field_indexes(_field_name);
-  set_card_value_unchecked(indexes.first, indexes.second * field_size, _value);
+  set_card_value_unchecked(indexes.first, indexes.second, _value, _field_size);
 }
 
 /** Set a card value from it's name
@@ -332,9 +394,11 @@ Keyword::set_card_value(const std::string& _field_name,
  * The field name will be searched in the comment lines.
  */
 void
-Keyword::set_card_value(const std::string& _field_name, int64_t _value)
+Keyword::set_card_value(const std::string& _field_name,
+                        int64_t _value,
+                        size_t _field_size_)
 {
-  set_card_value(_field_name, std::to_string(_value));
+  set_card_value(_field_name, std::to_string(_value), _field_size_);
 }
 
 /** Set a card value from it's name
@@ -345,12 +409,14 @@ Keyword::set_card_value(const std::string& _field_name, int64_t _value)
  * The field name will be searched in the comment lines.
  */
 void
-Keyword::set_card_value(const std::string& _field_name, double _value)
+Keyword::set_card_value(const std::string& _field_name,
+                        double _value,
+                        size_t _field_size_)
 {
   std::stringstream ss;
   ss.precision(field_size - 1);
   ss << _value;
-  set_card_value(_field_name, ss.str());
+  set_card_value(_field_name, ss.str(), _field_size_);
 }
 
 /** Set a card value from its card and field index
@@ -362,28 +428,37 @@ Keyword::set_card_value(const std::string& _field_name, double _value)
  *
  * The values not fitting into the field will be cut off.
  */
+template<typename T>
 void
-Keyword::set_card_value(int64_t iCard,
-                        int64_t iField,
+Keyword::set_card_value(T _iCard,
+                        T _iField,
                         const std::string& _value,
-                        const std::string& _comment_name)
+                        const std::string& _comment_name,
+                        size_t _field_size_)
 {
-  auto line_index = iCard_to_iLine(iCard);
+  static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  // comment treatment
+  if (_iField < 0)
+    throw(std::invalid_argument("field index may not be negative!"));
+
+  auto iLine = iCard_to_iLine(_iCard, true);
+  auto iField_u = static_cast<size_t>(_iField);
+
+  // set comment name
   if (!_comment_name.empty()) {
 
     // create a comment line if neccessary
-    if (line_index == 0 || !is_comment(lines[line_index - 1])) {
-      insert_line(line_index, "$");
-      ++line_index;
+    if (iLine == 0 || !is_comment(lines[iLine - 1])) {
+      insert_line(iLine++, "$");
     }
 
     // do the thing
-    set_comment_name_unchecked(line_index - 1, iField, _comment_name);
+    set_comment_name_unchecked(
+      iLine - 1, iField_u, _comment_name, _field_size_);
   }
 
-  set_card_value_unchecked(line_index, iField * field_size, _value);
+  // set value
+  set_card_value_unchecked(iLine, iField_u, _value, _field_size_);
 }
 
 /** Set a card value from its card and field index
@@ -395,13 +470,18 @@ Keyword::set_card_value(int64_t iCard,
  *
  * The values not fitting into the field will be cut off.
  */
+template<typename T>
 void
-Keyword::set_card_value(int64_t iCard,
-                        int64_t iField,
+Keyword::set_card_value(T iCard,
+                        T iField,
                         int64_t _value,
-                        const std::string& _comment_name)
+                        const std::string& _comment_name,
+                        size_t _field_size)
 {
-  set_card_value(iCard, iField, std::to_string(_value), _comment_name);
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  set_card_value(
+    iCard, iField, std::to_string(_value), _comment_name, _field_size);
 }
 
 /** Set a card value from its card and field index
@@ -413,16 +493,21 @@ Keyword::set_card_value(int64_t iCard,
  *
  * The values not fitting into the field will be cut off.
  */
+template<typename T>
 void
-Keyword::set_card_value(int64_t iCard,
-                        int64_t iField,
+Keyword::set_card_value(T iCard,
+                        T iField,
                         double _value,
-                        const std::string& _comment_name)
+                        const std::string& _comment_name,
+                        size_t _field_size)
 {
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+  _field_size = _field_size != 0 ? _field_size : field_size;
+
   std::stringstream ss;
-  ss.precision(field_size - 1);
+  ss.precision(_field_size - 1);
   ss << _value;
-  set_card_value(iCard, iField, ss.str(), _comment_name);
+  set_card_value(iCard, iField, ss.str(), _comment_name, _field_size);
 }
 
 /** Set the text of a specific line
