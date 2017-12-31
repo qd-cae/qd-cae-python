@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+
 namespace qd {
 
 /** Trim a string from left
@@ -81,6 +83,30 @@ trim_copy(std::string s)
 {
   trim_right(s);
   return trim_left(s);
+}
+
+/** Convert a string into a vector of lines
+ *
+ * @param _buffer string which has the lines
+ * @return lines
+ */
+inline std::vector<std::string>
+string_to_lines(const std::string& _buffer, bool ignore_trailing_lines = false)
+{
+  std::string line;
+  std::vector<std::string> lines;
+  std::stringstream ss(_buffer, std::ios_base::in);
+
+  if (ignore_trailing_lines) {
+    while (std::getline(ss, line) && line.size() == 0)
+      continue;
+    if (!line.empty())
+      lines.push_back(line);
+  }
+
+  while (getline(ss, line))
+    lines.push_back(line);
+  return lines;
 }
 
 /** Convert string into some type
@@ -158,7 +184,8 @@ inline std::vector<std::string>
 convert_chars_to_lines(const std::vector<char>& _data)
 {
 
-  std::stringstream st(std::string(_data.begin(), _data.end()));
+  std::stringstream st(std::string(_data.begin(), _data.end()),
+                       std::ios_base::in);
 
   std::vector<std::string> lines;
   for (std::string line; std::getline(st, line);)

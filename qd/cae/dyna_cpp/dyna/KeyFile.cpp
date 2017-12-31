@@ -38,8 +38,8 @@ KeyFile::KeyFile(const std::string& _filepath,
       "Encryption detection threshold must be between 0 and 1."));
 
   // Read the mesh
-  // this->read_mesh(this->get_filepath());
-  this->parse_file(this->get_filepath());
+  this->read_mesh(this->get_filepath());
+  // this->parse_file(this->get_filepath());
 }
 
 void

@@ -18,14 +18,11 @@ Keyword::Align Keyword::field_alignment = Keyword::Align::LEFT;
 /** Construct a keyword
  *
  * @param _lines lines of the buffer
- * @param _line_number line index in the file for ordering
+ * @param _line_index line index for keeping order
  *
- * This constructor is meant for fast creation while parsing.
- * The data is redundant, since the keyword name should also be
- * in the lines argument.
  */
-Keyword::Keyword(const std::vector<std::string>& _lines, int64_t _line_number)
-  : line_number(_line_number)
+Keyword::Keyword(const std::vector<std::string>& _lines, int64_t _line_index)
+  : line_index(_line_index)
   , lines(_lines)
 {
 
@@ -39,9 +36,22 @@ Keyword::Keyword(const std::vector<std::string>& _lines, int64_t _line_number)
 
 /** Construct a keyword
  *
+ * @param _lines the data of the keyword as a single string
+ * @param _line_index line index for keeping order
+ */
+Keyword::Keyword(const std::string& _lines, int64_t _line_index)
+  : Keyword(
+      [](const std::string& _lines) {
+        return string_to_lines(_lines, true);
+      }(_lines),
+      _line_index)
+{}
+
+/** Construct a keyword
+ *
  * @param _lines lines of the buffer
  * @param _keyword_name name of the keyword (redundant!)
- * @param _line_number line index in the file for ordering
+ * @param _line_index line index in the file for ordering
  *
  * This constructor is meant for fast creation while parsing.
  * The data is redundant, since the keyword name should also be
@@ -49,8 +59,8 @@ Keyword::Keyword(const std::vector<std::string>& _lines, int64_t _line_number)
  */
 Keyword::Keyword(const std::vector<std::string>& _lines,
                  const std::string& _keyword_name,
-                 int64_t _line_number)
-  : line_number(_line_number)
+                 int64_t _line_index)
+  : line_index(_line_index)
   , lines(_lines)
 {
   // field size
@@ -69,13 +79,14 @@ Keyword::Keyword(const std::vector<std::string>& _lines,
  *
  */
 void
-Keyword::switch_field_size()
+Keyword::switch_field_size(const std::vector<size_t> _cards_to_skip)
 {
 
   // new sizes
   auto old_field_size = field_size;
   field_size = old_field_size == 10 ? 20 : 10;
 
+  size_t iCard = 0;
   for (size_t iLine = 0; iLine < lines.size(); ++iLine) {
     auto& line = lines[iLine];
 
@@ -94,9 +105,15 @@ Keyword::switch_field_size()
 
     // is it a card?
     if (!is_comment(line) && !is_keyword(line)) {
-      change_line_field_size(iLine, old_field_size, field_size);
+
+      if (std::find(_cards_to_skip.begin(), _cards_to_skip.end(), iCard) !=
+          _cards_to_skip.end())
+        continue;
+
+      change_field_size_byLine(iLine, old_field_size, field_size);
       if (is_comment(lines[iLine - 1]))
-        change_line_field_size(iLine - 1, old_field_size, field_size);
+        change_field_size_byLine(iLine - 1, old_field_size, field_size);
+      ++iCard;
     }
   } // for iLine
 }
@@ -108,9 +125,9 @@ Keyword::switch_field_size()
  * @param new_field_size new size of the fields ... obviously
  */
 void
-Keyword::change_line_field_size(size_t _iLine,
-                                size_t old_field_size,
-                                size_t new_field_size)
+Keyword::change_field_size_byLine(size_t _iLine,
+                                  size_t old_field_size,
+                                  size_t new_field_size)
 {
 
   // checks
@@ -165,7 +182,7 @@ Keyword::change_line_field_size(size_t _iLine,
 
       // Pattern found (take first only)
       if (!comment_name.empty())
-        set_comment_name_unchecked(_iLine, iField, comment_name);
+        set_card_name_byLine(_iLine, iField, comment_name);
     }
 
     // Reallocate line
@@ -232,8 +249,12 @@ std::string
 Keyword::get_keyword_name() const
 {
   for (const auto& line : lines) {
-    if (line[0] == '*')
-      return line;
+    if (line[0] == '*') {
+      if (line[line.size() - 1] == '+')
+        return line.substr(0, line.size() - 1);
+      else
+        return line;
+    }
   }
   throw(
     std::runtime_error("Can not find keyword name in the keyword buffer (must "
@@ -250,10 +271,10 @@ Keyword::get_keyword_name() const
  * Index checks will not be performed!
  */
 void
-Keyword::set_card_value_unchecked(size_t _iLine,
-                                  size_t _iField,
-                                  const std::string& _value,
-                                  size_t _field_size)
+Keyword::set_card_value_byLine(size_t _iLine,
+                               size_t _iField,
+                               const std::string& _value,
+                               size_t _field_size)
 {
   auto& line = lines[_iLine];
 
@@ -295,10 +316,10 @@ Keyword::set_card_value_unchecked(size_t _iLine,
  * Throws if line is not a comment.
  */
 void
-Keyword::set_comment_name_unchecked(size_t _iLine,
-                                    size_t _iField,
-                                    const std::string& _name,
-                                    size_t _field_size)
+Keyword::set_card_name_byLine(size_t _iLine,
+                              size_t _iField,
+                              const std::string& _name,
+                              size_t _field_size)
 {
   auto& line = lines[_iLine];
   if (!is_comment(line))

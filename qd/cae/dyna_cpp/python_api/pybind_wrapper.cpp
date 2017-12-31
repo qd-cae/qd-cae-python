@@ -710,6 +710,10 @@ PYBIND11_MODULE(dyna_cpp, m)
     .export_values();
 
   keyword_py
+    .def(pybind11::init<std::string, int64_t>(), "lines"_a, "line_index"_a = 0)
+    .def(pybind11::init<std::vector<std::string>, int64_t>(),
+         "lines"_a,
+         "line_index"_a = 0)
     .def(
       "__str__", &Keyword::str, pybind11::return_value_policy::take_ownership)
     .def("__iter__",
@@ -843,8 +847,12 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("insert_line", &Keyword::insert_line<int64_t>, "iLine"_a, "line"_a)
     .def("remove_line", &Keyword::remove_line<int64_t>, "iLine"_a)
     .def_property(
-      "line_number", &Keyword::get_line_number, &Keyword::set_line_number)
-    .def("switch_field_size", &Keyword::switch_field_size)
+      "line_index", &Keyword::get_line_index, &Keyword::set_line_index)
+    .def("switch_field_size",
+         &Keyword::switch_field_size,
+         "cards_to_skip"_a = pybind11::list())
+    .def("has_long_fields", &Keyword::has_long_fields)
+    .def("get_keyword_name", &Keyword::get_keyword_name)
     .def_property_static(
       "field_delimiter",
       [](pybind11::object) { return Keyword::name_delimiter; },
