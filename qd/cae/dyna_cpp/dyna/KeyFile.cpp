@@ -38,8 +38,8 @@ KeyFile::KeyFile(const std::string& _filepath,
       "Encryption detection threshold must be between 0 and 1."));
 
   // Read the mesh
-  this->read_mesh(this->get_filepath());
-  // this->parse_file(this->get_filepath());
+  // this->read_mesh(this->get_filepath());
+  this->parse_file(this->get_filepath());
 }
 
 void
@@ -80,9 +80,6 @@ KeyFile::parse_file(const std::string& _filepath)
   std::stringstream st(std::string(char_buffer.begin(), char_buffer.end()));
   for (std::string line; std::getline(st, line); ++iLine) {
 
-    // some data is there
-    // if (!line.empty()) {
-
     // new keyword
     if (line[0] == '*') {
 
@@ -91,11 +88,22 @@ KeyFile::parse_file(const std::string& _filepath)
       // people usually never define comments
       // at the end of a previous block:
       //
-      // KEYWORD
-      // CARD
-      // ------- <- Comment belongs to lower not upper
-      // COMMENT
-      // KEYWORD
+      // *PART
+      // name
+      // $# title
+      // engine part number one
+      // $#     pid     secid       mid
+      //    2000001   2000001   2000017
+      // $-----------------------------------------------
+      // $ I belong to the lower keyword, not the upper!
+      // $-----------------------------------------------
+      // *PART
+      // name
+      // $# title
+      // engine part number one
+      // $#     pid     secid       mid
+      //    2000001   2000001   2000017
+
       if (!line_buffer.empty()) {
 
         // remove comment lines from previous block
@@ -125,28 +133,54 @@ KeyFile::parse_file(const std::string& _filepath)
 
     // we stupidly add every line to the buffer
     line_buffer.push_back(line);
-    /*
-    }
-    // line empty (is a block separator)
-    else {
 
-      // ADD: KEYWORD BLOCK
-      if (is_keyword) {
-        auto kw = std::make_shared<Keyword>(
-          line_buffer, last_keyword, iLine - line_buffer.size());
-        if (kw->has_long_fields())
-          last_keyword = last_keyword.substr(0, last_keyword.size() - 1);
-        keywords[last_keyword].push_back(kw);
-        is_keyword = false;
-        line_buffer.clear();
-      }
-      // ADD: COMMENT BLOCK
-      else {
-        // (!) create comment/text block
-      }
-    }
-    */
   } // for:line
+}
+
+void
+KeyFile::parse_node_block(std::shared_ptr<Keyword> _kw)
+{
+
+  auto name = _kw->get_keyword_name();
+  std::transform(name.begin(), name.end(), name.begin(), std::tolower);
+
+  // these keywords actually have node data
+  if (name != "*node" && name != "*node_scalar_value" &&
+      name != "*node_rigid_surface" && name != "*node_merge")
+    return;
+
+  // do the thing
+  auto& lines = _kw->get_lines();
+
+  // find beginning
+  size_t iLine;
+  for (iLine = 0; iLine < lines.size(); ++iLine)
+    if (!lines[iLine].empty() && lines[iLine][0] == '*')
+      break;
+
+  // ok wird empty data block
+  if (iLine == lines.size() - 1)
+    return;
+
+  // do the thing
+  while (lines.size() > 0) {
+    auto& line = lines.back();
+
+    if (!line.empty() && line[0] != '$') {
+
+      // line_view substr is actually much faster
+      const auto line_view = absl::string_view(line.data(), line.size());
+
+      // TODO magic
+      int32_t node_id = std::stoi(line_view.substr(0, 8));
+      float x = std::stof(line_view.substr(8, 16));
+      float y = std::stof(line_view.substr(24, 16));
+      float z = std::stof(line_view.substr(40, 16));
+    }
+
+    // remove last line
+    lines.pop_back();
+  }
 }
 
 /** Resolve an include

@@ -55,20 +55,25 @@ private:
   std::pair<size_t, size_t> get_field_indexes(
     const std::string& _field_name) const;
 
-  void set_card_value_byLine(size_t _iLine,
+  void set_card_value_byLine(std::string& _line,
                              size_t _iField,
                              const std::string& _value,
                              size_t _field_size = 0);
-  void set_card_name_byLine(size_t _iLine,
+  void set_card_name_byLine(std::string& _line,
                             size_t _iField,
                             const std::string& _name,
                             size_t _field_size = 0);
-  inline std::string get_card_value_byLine(size_t _iLine,
+  inline std::string get_card_value_byLine(const std::string& _line,
                                            size_t _iField,
                                            size_t _field_size = 0);
   void change_field_size_byLine(size_t iLine,
                                 size_t old_field_size,
                                 size_t new_field_size);
+  template<typename T>
+  void reformat_field_byLine(std::string& _line,
+                             T _iField,
+                             size_t _field_size = 0);
+  void reformat_line(std::string& _line, size_t _field_size = 0);
   void clear_field(std::string& _line, size_t iField, size_t _field_size = 0);
 
 public:
@@ -82,7 +87,7 @@ public:
   // getters
   std::string get_keyword_name() const;
   inline std::vector<std::string> get_lines() const;
-  inline std::vector<std::string>& get_line_buffer();
+  inline std::vector<std::string>& get_lines();
   template<typename T>
   inline const std::string& get_line(T _iLine) const;
   inline std::string get_card_value(const std::string& _field_name);
@@ -100,7 +105,8 @@ public:
   void print();
 
   // setters
-  void switch_field_size(const std::vector<size_t> _cards_to_skip);
+  template<typename T>
+  void switch_field_size(const std::vector<T> _skip_cards);
   inline void set_card_value(const std::string& _field_name,
                              const std::string& _value,
                              size_t _field_size = 0);
@@ -138,6 +144,14 @@ public:
   template<typename T>
   void remove_line(T iLine);
   inline void set_line_index(int64_t _iLine);
+  template<typename T>
+  void reformat_all(std::vector<T> _skip_cards);
+  template<typename T>
+  void reformat_card_value(T _iCard,
+                           T _iField,
+                           size_t _field_size = 0,
+                           bool _format_field = true,
+                           bool _format_name = true);
 };
 
 /** Get a specific line in the keyword
@@ -172,11 +186,11 @@ Keyword::get_line(T _iLine) const
  * @return data string
  */
 std::string
-Keyword::get_card_value_byLine(size_t _iLine,
+Keyword::get_card_value_byLine(const std::string& _line,
                                size_t _iField,
                                size_t _field_size)
 {
-  return trim(get_field_byLine(lines[_iLine], _iField, _field_size));
+  return trim(get_field_byLine(_line, _iField, _field_size));
 }
 
 /** Get a card value from an index pair
@@ -193,7 +207,7 @@ Keyword::get_card_value(T _iCard, T _iField, size_t _field_size)
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   auto iLine = iCard_to_iLine(_iCard, false);
-  return get_card_value_byLine(iLine, _iField, _field_size);
+  return get_card_value_byLine(lines[iLine], _iField, _field_size);
 }
 
 /** Get a card value by its name in the comments
@@ -205,7 +219,7 @@ std::string
 Keyword::get_card_value(const std::string& _field_name)
 {
   auto indexes = get_field_indexes(_field_name);
-  return get_card_value_byLine(indexes.first, indexes.second);
+  return get_card_value_byLine(lines[indexes.first], indexes.second);
 }
 
 /** Get the number of lines in the line buffer
@@ -249,7 +263,7 @@ Keyword::set_line_index(int64_t _iLine)
 bool
 Keyword::is_comment(const std::string& _line) const
 {
-  return _line[0] == '$';
+  return _line.empty() ? false : _line[0] == '$';
 }
 
 /** Query whether the fields are twice as long
@@ -269,7 +283,7 @@ Keyword::has_long_fields() const
 bool
 Keyword::is_keyword(const std::string& _line) const
 {
-  return _line[0] == '*';
+  return _line.empty() ? false : _line[0] == '*';
 }
 
 /** Get the index of a card entry
@@ -289,7 +303,7 @@ Keyword::iCard_to_iLine(T _iCard, bool _auto_extend)
   // search index
   size_t nCards = -1;
   for (size_t index = 0; index < lines.size(); ++index) {
-    if (lines[index].size() > 0 && lines[index][0] != '$' &&
+    if (!lines[index].empty() > 0 && lines[index][0] != '$' &&
         lines[index][0] != '*') {
       ++nCards;
       if (nCards == iCard_u)
@@ -312,6 +326,8 @@ Keyword::iCard_to_iLine(T _iCard, bool _auto_extend)
  *
  * @param char_index
  * @return field index
+ *
+ * TODO: make field_size an argument
  */
 template<typename T>
 size_t
@@ -348,7 +364,7 @@ Keyword::get_field_byLine(const std::string& _line,
                                                      : _line.size();
 
   // pewpew results
-  return _line.substr(start, _field_size);
+  return std::move(_line.substr(start, _field_size));
 }
 
 /** Get a copy of the line buffer of the keyword
@@ -366,9 +382,59 @@ Keyword::get_lines() const
  * @return lines line buffer
  */
 std::vector<std::string>&
-Keyword::get_line_buffer()
+Keyword::get_lines()
 {
   return lines;
+}
+
+/** Switches the field size between single and double size
+ *
+ * Single size are 10 characters, Long is 20 characters.
+ * Beware: Also the first comment line above fields will
+ *         be translated. This should be the field names
+ *
+ */
+template<typename T>
+void
+Keyword::switch_field_size(const std::vector<T> _skip_cards)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+  static_assert(std::is_unsigned<T>::value, "Unsigned number required.");
+
+  // new sizes
+  auto old_field_size = field_size;
+  field_size = old_field_size == 10 ? 20 : 10;
+
+  T iCard = 0;
+  for (size_t iLine = 0; iLine < lines.size(); ++iLine) {
+    auto& line = lines[iLine];
+
+    // enlarge: add + at the end
+    if (is_keyword(line) && field_size > old_field_size) {
+      if (line[line.size() - 1] == ' ')
+        line[line.size() - 1] = '+';
+      else
+        line += '+';
+      continue;
+    }
+    // shorten: remove all +
+    else {
+      std::replace(line.begin(), line.end(), '+', ' ');
+    }
+
+    // is it a card?
+    if (!is_comment(line) && !is_keyword(line)) {
+
+      if (std::find(_skip_cards.begin(), _skip_cards.end(), iCard++) !=
+          _skip_cards.end()) {
+        continue;
+      }
+
+      change_field_size_byLine(iLine, old_field_size, field_size);
+      if (is_comment(lines[iLine - 1]))
+        change_field_size_byLine(iLine - 1, old_field_size, field_size);
+    }
+  } // for iLine
 }
 
 /** Set a card value from it's name
@@ -384,7 +450,8 @@ Keyword::set_card_value(const std::string& _field_name,
                         size_t _field_size)
 {
   auto indexes = get_field_indexes(_field_name);
-  set_card_value_byLine(indexes.first, indexes.second, _value, _field_size);
+  set_card_value_byLine(
+    lines[indexes.first], indexes.second, _value, _field_size);
 }
 
 /** Set a card value from it's name
@@ -449,16 +516,17 @@ Keyword::set_card_value(T _iCard,
   if (!_comment_name.empty()) {
 
     // create a comment line if neccessary
-    if (iLine == 0 || !is_comment(lines[iLine - 1])) {
+    if (iLine != 0 && !is_comment(lines[iLine - 1])) {
       insert_line(iLine++, "$");
     }
 
     // do the thing
-    set_card_name_byLine(iLine - 1, iField_u, _comment_name, _field_size_);
+    set_card_name_byLine(
+      lines[iLine - 1], iField_u, _comment_name, _field_size_);
   }
 
   // set value
-  set_card_value_byLine(iLine, iField_u, _value, _field_size_);
+  set_card_value_byLine(lines[iLine], iField_u, _value, _field_size_);
 }
 
 /** Set a card value from its card and field index
@@ -560,6 +628,96 @@ Keyword::remove_line(T iLine)
     return;
 
   lines.erase(lines.begin() + iLine);
+}
+
+/** Reformat the whole card according to the formatting rules
+ *
+ * @param _skip_cards indexes of cards to skip
+ *
+ * // TODO: skip_cards argument
+ */
+template<typename T>
+void
+Keyword::reformat_all(std::vector<T> _skip_cards)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+  static_assert(std::is_unsigned<T>::value, "Unsigned number required.");
+
+  T iCard = 0;
+  for (size_t iLine = 0; iLine < lines.size(); ++iLine) {
+    auto& line = lines[iLine];
+
+    // is it a card?
+    if (!is_comment(line) && !is_keyword(line)) {
+
+      if (std::find(_skip_cards.begin(), _skip_cards.end(), iCard++) !=
+          _skip_cards.end())
+        continue;
+
+      reformat_line(line);
+
+      // has the card a comment header?
+      if (iLine > 0 && is_comment(lines[iLine - 1]))
+        reformat_line(lines[iLine - 1]);
+    }
+  } // FOR:iLine
+}
+
+/** Reformat a specific field of a line
+ *
+ * @param _line line to format
+ * @param _iField field index
+ * @param _field_size size of the field
+ */
+template<typename T>
+void
+Keyword::reformat_field_byLine(std::string& _line,
+                               T _iField,
+                               size_t _field_size)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+  static_assert(std::is_unsigned<T>::value, "Unsigned number required.");
+
+  // COMMENTS
+  if (is_comment(_line)) {
+    auto val = get_word(_line.begin() + _iField * _field_size,
+                        _line.begin() + (_iField + 1) * _field_size);
+    // if (!val.empty())
+    set_card_name_byLine(_line, _iField, val, _field_size);
+  }
+  // KEYWORD
+  else {
+    auto val = get_card_value_byLine(_line, _iField, _field_size);
+    // if (!val.empty())
+    set_card_value_byLine(_line, _iField, val, _field_size);
+  }
+}
+
+/** Reformat a field of a specific line
+ *
+ * @param _iLine index of line to format
+ * @param _iField index of field to reformat
+ * @param _field_size size of the field to reformat
+ */
+template<typename T>
+void
+Keyword::reformat_card_value(T _iCard,
+                             T _iField,
+                             size_t _field_size,
+                             bool format_field,
+                             bool format_name)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  auto iLine = iCard_to_iLine(_iCard, true);
+
+  // card
+  if (format_field)
+    reformat_field_byLine(lines[iLine], _iField, _field_size);
+
+  // name
+  if (format_name && iLine > 0 && is_comment(lines[iLine - 1]))
+    reformat_field_byLine(lines[iLine - 1], _iField, _field_size);
 }
 
 } // namespace qd

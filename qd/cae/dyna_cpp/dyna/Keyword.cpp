@@ -71,53 +71,6 @@ Keyword::Keyword(const std::vector<std::string>& _lines,
   }
 }
 
-/** Switches the field size between single and double size
- *
- * Single size are 10 characters, Long is 20 characters.
- * Beware: Also the first comment line above fields will
- *         be translated. This should be the field names
- *
- */
-void
-Keyword::switch_field_size(const std::vector<size_t> _cards_to_skip)
-{
-
-  // new sizes
-  auto old_field_size = field_size;
-  field_size = old_field_size == 10 ? 20 : 10;
-
-  size_t iCard = 0;
-  for (size_t iLine = 0; iLine < lines.size(); ++iLine) {
-    auto& line = lines[iLine];
-
-    // enlarge: add + at the end
-    if (is_keyword(line) && field_size > old_field_size) {
-      if (line[line.size() - 1] == ' ')
-        line[line.size() - 1] = '+';
-      else
-        line += '+';
-      continue;
-    }
-    // shorten: remove all +
-    else {
-      std::replace(line.begin(), line.end(), '+', ' ');
-    }
-
-    // is it a card?
-    if (!is_comment(line) && !is_keyword(line)) {
-
-      if (std::find(_cards_to_skip.begin(), _cards_to_skip.end(), iCard) !=
-          _cards_to_skip.end())
-        continue;
-
-      change_field_size_byLine(iLine, old_field_size, field_size);
-      if (is_comment(lines[iLine - 1]))
-        change_field_size_byLine(iLine - 1, old_field_size, field_size);
-      ++iCard;
-    }
-  } // for iLine
-}
-
 /** Change the field size of the specified line
  *
  * @param iLine line to change the field size
@@ -135,10 +88,9 @@ Keyword::change_field_size_byLine(size_t _iLine,
     return;
 
   auto& line = lines[_iLine];
-  auto _is_comment = is_comment(line);
 
   // COPY: FIELDS
-  if (!_is_comment) {
+  if (!is_comment(line)) {
 
     // allocate new line
     size_t new_size = static_cast<size_t>(static_cast<double>(new_field_size) /
@@ -152,10 +104,13 @@ Keyword::change_field_size_byLine(size_t _iLine,
 
     // copy full fields
     size_t iField;
-    for (iField = 0; iField < line.size() / old_field_size; ++iField) {
-      auto start = line.begin() + iField * old_field_size;
-      auto end = start + copy_size;
-      std::copy(start, end, new_line.begin() + iField * new_field_size);
+    size_t nFields = line.size() / old_field_size;
+    for (iField = 0; iField < nFields; ++iField) {
+      auto val = get_card_value_byLine(line, iField, old_field_size);
+      set_card_value_byLine(new_line, iField, val, new_field_size);
+      // auto start = line.begin() + iField * old_field_size;
+      // auto end = start + copy_size;
+      // std::copy(start, end, new_line.begin() + iField * new_field_size);
     }
     // copy rest
     auto rest = line.size() % old_field_size;
@@ -173,7 +128,9 @@ Keyword::change_field_size_byLine(size_t _iLine,
     std::string old_line = line;
 
     size_t iField;
-    for (iField = 0; iField < old_line.size() / old_field_size; ++iField) {
+    size_t nFields = old_line.size() / old_field_size;
+    size_t rest = old_line.size() % old_field_size;
+    for (iField = 0; iField < nFields; ++iField) {
 
       // search word pattern
       auto start = old_line.begin() + iField * old_field_size;
@@ -182,7 +139,15 @@ Keyword::change_field_size_byLine(size_t _iLine,
 
       // Pattern found (take first only)
       if (!comment_name.empty())
-        set_card_name_byLine(_iLine, iField, comment_name);
+        set_card_name_byLine(line, iField, comment_name, new_field_size);
+    }
+
+    // is there any rest?
+    if (rest != 0) {
+      auto comment_name =
+        get_word(old_line.begin() + iField * old_field_size, old_line.end());
+      if (!comment_name.empty())
+        set_card_name_byLine(line, iField++, comment_name, new_field_size);
     }
 
     // Reallocate line
@@ -191,10 +156,33 @@ Keyword::change_field_size_byLine(size_t _iLine,
   }
 }
 
+/** Reformat a specific line
+ *
+ * @param _line line to reformat
+ *
+ * The formatting uses the global formatting settings
+ */
+void
+Keyword::reformat_line(std::string& _line, size_t _field_size)
+{
+
+  // auto line_is_comment = is_comment(_line);
+  _field_size = _field_size != 0 ? _field_size : field_size;
+  auto nFields = _line.size() / field_size;
+  auto rest = _line.size() % _field_size;
+
+  for (size_t iField = 0; iField < nFields; ++iField) {
+    reformat_field_byLine(_line, iField, _field_size);
+  }
+
+  if (rest != 0) {
+    reformat_field_byLine(_line, nFields, _field_size);
+  }
+}
+
 /** Set a new line buffer
  *
  * @param _new_lines
- *
  */
 void
 Keyword::set_lines(const std::vector<std::string>& _new_lines)
@@ -249,16 +237,14 @@ std::string
 Keyword::get_keyword_name() const
 {
   for (const auto& line : lines) {
-    if (line[0] == '*') {
+    if (is_keyword(line)) {
       if (line[line.size() - 1] == '+')
         return line.substr(0, line.size() - 1);
       else
         return line;
     }
   }
-  throw(
-    std::runtime_error("Can not find keyword name in the keyword buffer (must "
-                       "begin with * in first column)."));
+  return std::string();
 }
 
 /** Set a card value from its card and field index
@@ -271,18 +257,17 @@ Keyword::get_keyword_name() const
  * Index checks will not be performed!
  */
 void
-Keyword::set_card_value_byLine(size_t _iLine,
+Keyword::set_card_value_byLine(std::string& _line,
                                size_t _iField,
                                const std::string& _value,
                                size_t _field_size)
 {
-  auto& line = lines[_iLine];
 
   // check for user-specific field size
   _field_size = _field_size != 0 ? _field_size : field_size;
 
   // clear field or allocate
-  clear_field(line, _iField, _field_size);
+  clear_field(_line, _iField, _field_size);
 
   // copy range
   auto len = std::min(_field_size, _value.size());
@@ -302,7 +287,7 @@ Keyword::set_card_value_byLine(size_t _iLine,
   }
 
   // assign value to field
-  line.replace(start, len, _value, 0, len);
+  _line.replace(start, len, _value, 0, len);
 }
 
 /** Set the name of a field in the comments
@@ -316,13 +301,12 @@ Keyword::set_card_value_byLine(size_t _iLine,
  * Throws if line is not a comment.
  */
 void
-Keyword::set_card_name_byLine(size_t _iLine,
+Keyword::set_card_name_byLine(std::string& _line,
                               size_t _iField,
                               const std::string& _name,
                               size_t _field_size)
 {
-  auto& line = lines[_iLine];
-  if (!is_comment(line))
+  if (!is_comment(_line))
     throw(std::invalid_argument("The specified line is not a comment line"));
 
   // check for user-specific field size
@@ -339,8 +323,7 @@ Keyword::set_card_name_byLine(size_t _iLine,
   size_t c_start;
   switch (Keyword::name_alignment) {
     case (Keyword::Align::LEFT):
-      c_start = _field_size * _iField + delimiter_size; // first is separator
-
+      c_start = _field_size * _iField + delimiter_size;
       break;
     case (Keyword::Align::MIDDLE):
       c_start = _field_size * _iField + _field_size / 2 - name_len / 2;
@@ -351,10 +334,10 @@ Keyword::set_card_name_byLine(size_t _iLine,
   }
 
   // empty field
-  clear_field(line, _iField, _field_size);
+  clear_field(_line, _iField, _field_size);
 
   // assign value to field
-  line.replace(c_start, name_len, _name, 0, name_len);
+  _line.replace(c_start, name_len, _name, 0, name_len);
 }
 
 /** Clear a field

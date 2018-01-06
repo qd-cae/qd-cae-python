@@ -716,6 +716,11 @@ PYBIND11_MODULE(dyna_cpp, m)
          "line_index"_a = 0)
     .def(
       "__str__", &Keyword::str, pybind11::return_value_policy::take_ownership)
+    .def("__repr__",
+         [](std::shared_ptr<Keyword> self) {
+           return std::string("<Keyword: " + self->get_keyword_name() + ">");
+         },
+         pybind11::return_value_policy::take_ownership)
     .def("__iter__",
          [](std::shared_ptr<Keyword> kw) {
            auto& buffer = kw->get_line_buffer();
@@ -849,16 +854,36 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def_property(
       "line_index", &Keyword::get_line_index, &Keyword::set_line_index)
     .def("switch_field_size",
-         &Keyword::switch_field_size,
-         "cards_to_skip"_a = pybind11::list())
+         &Keyword::switch_field_size<size_t>,
+         "skip_cards"_a = pybind11::list())
+    .def("switch_field_size",
+         &Keyword::switch_field_size<size_t>,
+         "skip_cards"_a = pybind11::tuple())
+    .def("reformat_all",
+         &Keyword::reformat_all<size_t>,
+         "skip_cards"_a = pybind11::list())
+    .def("reformat_all",
+         &Keyword::reformat_all<size_t>,
+         "skip_cards"_a = pybind11::tuple())
+    .def("reformat_field",
+         &Keyword::reformat_card_value<size_t>,
+         "iCard"_a,
+         "iField"_a,
+         "field_size"_a = 0,
+         "format_field"_a = true,
+         "format_name"_a = true)
     .def("has_long_fields", &Keyword::has_long_fields)
     .def("get_keyword_name", &Keyword::get_keyword_name)
     .def_property_static(
-      "field_delimiter",
+      "name_delimiter",
       [](pybind11::object) { return Keyword::name_delimiter; },
       [](pybind11::object, char val) { Keyword::name_delimiter = val; })
     .def_property_static(
-      "field_spacer",
+      "name_delimiter_used",
+      [](pybind11::object) { return Keyword::name_delimiter_used; },
+      [](pybind11::object, bool _arg) { Keyword::name_delimiter_used = _arg; })
+    .def_property_static(
+      "name_spacer",
       [](pybind11::object) { return Keyword::name_spacer; },
       [](pybind11::object, char val) { Keyword::name_spacer = val; })
     .def_property_static(
@@ -872,11 +897,7 @@ PYBIND11_MODULE(dyna_cpp, m)
       [](pybind11::object) { return Keyword::name_alignment; },
       [](pybind11::object, Keyword::Align _align) {
         Keyword::name_alignment = _align;
-      })
-    .def_property_static(
-      "name_delimiter_used",
-      [](pybind11::object) { return Keyword::name_delimiter_used; },
-      [](pybind11::object, bool _arg) { Keyword::name_delimiter_used = _arg; });
+      });
 
   // Binout
   /*
