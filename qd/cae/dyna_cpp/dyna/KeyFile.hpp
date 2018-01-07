@@ -44,6 +44,9 @@ private:
 
   void read_mesh(const std::string& _filepath);
   void parse_file(const std::string& _filepath);
+  void create_keyword(const std::vector<std::string>& _lines,
+                      const std::string& _keyword_name,
+                      size_t _iLine);
   std::string resolve_include(const std::string& _filepath);
 
 public:
@@ -54,6 +57,9 @@ public:
   inline std::vector<std::shared_ptr<Keyword>> get_keywordsByName(
     const std::string& _keyword_name);
   inline std::vector<std::string> keys();
+  void save_keyfile(const std::string& _filepath,
+                    bool _save_includes = true,
+                    bool _save_all_in_one = false);
 };
 
 /** Get all keywords with a specific name

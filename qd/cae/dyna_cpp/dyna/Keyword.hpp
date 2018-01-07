@@ -35,7 +35,7 @@ public:
   static Align name_alignment;
   static Align field_alignment;
 
-private:
+protected:
   size_t field_size;              // size of the fields (8 or 20)
   int64_t line_index;             // line index in file (keeps order)
   std::vector<std::string> lines; // line buffer

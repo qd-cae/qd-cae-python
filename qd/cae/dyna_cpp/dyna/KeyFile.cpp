@@ -1,18 +1,19 @@
 
+#include <cstdint>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+
 #include <dyna_cpp/db/DB_Elements.hpp>
 #include <dyna_cpp/db/DB_Nodes.hpp>
 #include <dyna_cpp/db/DB_Parts.hpp>
 #include <dyna_cpp/db/Element.hpp>
 #include <dyna_cpp/db/Part.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
+#include <dyna_cpp/dyna/NodeKeyword.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
-
-#include <cstdint>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
 
 namespace qd {
 
@@ -114,13 +115,9 @@ KeyFile::parse_file(const std::string& _filepath)
         }
 
         // create a new keyword from previous data
-        auto kw = std::make_shared<Keyword>(line_buffer,
-                                            last_keyword,
-                                            iLine - line_buffer.size() -
-                                              line_buffer_tmp.size());
-        if (kw->has_long_fields())
-          last_keyword = last_keyword.substr(0, last_keyword.size() - 1);
-        keywords[last_keyword].push_back(kw);
+        create_keyword(line_buffer,
+                       last_keyword,
+                       iLine - line_buffer.size() - line_buffer_tmp.size());
 
         // transfer cropped data
         line_buffer = line_buffer_tmp;
@@ -137,50 +134,35 @@ KeyFile::parse_file(const std::string& _filepath)
   } // for:line
 }
 
+/** Create a keyword from it's line buffer
+ *
+ * @param _lines buffer
+ * @param _keyword_name name flag
+ * @param _iLine line index of the block
+ */
 void
-KeyFile::parse_node_block(std::shared_ptr<Keyword> _kw)
+KeyFile::create_keyword(const std::vector<std::string>& _lines,
+                        const std::string& _keyword_name,
+                        size_t _iLine)
 {
 
-  auto name = _kw->get_keyword_name();
-  std::transform(name.begin(), name.end(), name.begin(), std::tolower);
+  // get stripped name for the dictionary
+  const auto key = _keyword_name[_keyword_name.size() - 1] == '+'
+                     ? _keyword_name.substr(0, _keyword_name.size() - 1)
+                     : _keyword_name;
 
-  // these keywords actually have node data
-  if (name != "*node" && name != "*node_scalar_value" &&
-      name != "*node_rigid_surface" && name != "*node_merge")
-    return;
+  std::shared_ptr<Keyword> kw = nullptr;
 
-  // do the thing
-  auto& lines = _kw->get_lines();
+  // node keyword
+  if (_keyword_name != "*node" && _keyword_name != "*node_scalar_value" &&
+      _keyword_name != "*node_rigid_surface" && _keyword_name != "*node_merge")
+    kw = std::make_shared<NodeKeyword>(this->get_db_nodes(), _lines, _iLine);
+  // generic keyword
+  else
+    kw = std::make_shared<Keyword>(_lines, _keyword_name, _iLine);
 
-  // find beginning
-  size_t iLine;
-  for (iLine = 0; iLine < lines.size(); ++iLine)
-    if (!lines[iLine].empty() && lines[iLine][0] == '*')
-      break;
-
-  // ok wird empty data block
-  if (iLine == lines.size() - 1)
-    return;
-
-  // do the thing
-  while (lines.size() > 0) {
-    auto& line = lines.back();
-
-    if (!line.empty() && line[0] != '$') {
-
-      // line_view substr is actually much faster
-      const auto line_view = absl::string_view(line.data(), line.size());
-
-      // TODO magic
-      int32_t node_id = std::stoi(line_view.substr(0, 8));
-      float x = std::stof(line_view.substr(8, 16));
-      float y = std::stof(line_view.substr(24, 16));
-      float z = std::stof(line_view.substr(40, 16));
-    }
-
-    // remove last line
-    lines.pop_back();
-  }
+  // save keyword
+  keywords[_keyword_name].push_back(kw);
 }
 
 /** Resolve an include

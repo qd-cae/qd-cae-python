@@ -723,7 +723,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::take_ownership)
     .def("__iter__",
          [](std::shared_ptr<Keyword> kw) {
-           auto& buffer = kw->get_line_buffer();
+           auto& buffer = kw->get_lines();
            return pybind11::make_iterator(buffer.begin(), buffer.end());
          },
          pybind11::keep_alive<0, 1>())
