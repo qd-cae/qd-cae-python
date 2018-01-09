@@ -14,8 +14,7 @@ namespace qd {
  */
 DB_Nodes::DB_Nodes(FEMFile* _femfile)
   : femfile(_femfile)
-{
-}
+{}
 
 /*
  * Destructor.
@@ -27,16 +26,16 @@ DB_Nodes::~DB_Nodes()
 #endif
 }
 
-/** Add a node to the db by node-ID and it's
+/** Add a node to the db by node-ID and it's coordinates
  *
- * @param int32_t _nodeID : id of the node
- * @param std::vector<float> coords : coordinates of the node
- * @return std::shared_ptr<Node> node : pointer to created instance
+ * @param _nodeID : id of the node
+ * @param  coords : coordinates of the node
+ * @return node : pointer to created instance
  *
  * Returns a pointer to the new node.
  */
 std::shared_ptr<Node>
-DB_Nodes::add_node(int32_t _nodeID, std::vector<float> coords)
+DB_Nodes::add_node(int32_t _nodeID, const std::vector<float>& coords)
 {
   if (coords.size() != 3) {
     throw(std::invalid_argument(
@@ -61,6 +60,37 @@ DB_Nodes::add_node(int32_t _nodeID, std::vector<float> coords)
   return std::move(node);
 }
 
+/** Add a node to the db by node-ID and it's coordinates
+ *
+ * @param _nodeID : id of the node
+ * @param  coords : coordinates of the node
+ * @return node : pointer to created instance
+ *
+ * Returns a pointer to the new node.
+ */
+std::shared_ptr<Node>
+DB_Nodes::add_node(int32_t _nodeID, float _x, float _y, float _z)
+{
+  if (_nodeID < 0) {
+    throw(std::invalid_argument("Node-ID may not be negative!"));
+  }
+
+  // Check if node already is in map
+  if (this->id2index_nodes.count(_nodeID) != 0)
+    throw(std::invalid_argument("Trying to insert a node with same id twice: " +
+                                std::to_string(_nodeID)));
+
+  // Create and add new node
+  std::shared_ptr<Node> node =
+    std::make_shared<Node>(_nodeID, _x, _y, _z, this);
+
+  id2index_nodes.insert(
+    std::pair<int32_t, size_t>(_nodeID, this->nodes.size()));
+  this->nodes.push_back(node);
+
+  return std::move(node);
+}
+
 /*
  * Get the owning d3plot of the db.
  */
@@ -70,11 +100,12 @@ DB_Nodes::get_femfile()
   return this->femfile;
 }
 
-/*
- * Get the number of nodes in the db.
+/**Get the number of nodes in the db.
+ *
+ * @return nNodes
  */
 size_t
-DB_Nodes::get_nNodes()
+DB_Nodes::get_nNodes() const
 {
   if (this->id2index_nodes.size() != this->nodes.size())
     throw(std::runtime_error("Node database encountered error: "

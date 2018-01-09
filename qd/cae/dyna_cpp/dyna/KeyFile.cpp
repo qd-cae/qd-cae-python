@@ -78,8 +78,9 @@ KeyFile::parse_file(const std::string& _filepath)
   std::vector<std::string> line_buffer;
   std::vector<std::string> line_buffer_tmp;
 
+  std::string line;
   std::stringstream st(std::string(char_buffer.begin(), char_buffer.end()));
-  for (std::string line; std::getline(st, line); ++iLine) {
+  for (; std::getline(st, line); ++iLine) {
 
     // new keyword
     if (line[0] == '*') {
@@ -153,10 +154,22 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
 
   std::shared_ptr<Keyword> kw = nullptr;
 
+  auto db_nodes = this->get_db_nodes();
+
+  // lowercase name
+  auto keyword_name_low = _keyword_name;
+  std::transform(keyword_name_low.begin(),
+                 keyword_name_low.end(),
+                 keyword_name_low.begin(),
+                 ::tolower);
+
   // node keyword
-  if (_keyword_name != "*node" && _keyword_name != "*node_scalar_value" &&
-      _keyword_name != "*node_rigid_surface" && _keyword_name != "*node_merge")
-    kw = std::make_shared<NodeKeyword>(this->get_db_nodes(), _lines, _iLine);
+  if (keyword_name_low == "*node" || keyword_name_low == "*node_scalar_value" ||
+      keyword_name_low == "*node_rigid_surface" ||
+      keyword_name_low == "*node_merge") {
+    kw = std::make_shared<NodeKeyword>(
+      db_nodes, _lines, static_cast<int64_t>(_iLine));
+  }
   // generic keyword
   else
     kw = std::make_shared<Keyword>(_lines, _keyword_name, _iLine);
@@ -471,6 +484,32 @@ KeyFile::read_mesh(const std::string& _filepath)
 #ifdef QD_DEBUG
   std::cout << "parsing of file " << _filepath << " done." << std::endl;
 #endif
+}
+
+/** Save a keyfile again
+ *
+ * @param _filepath : path to new file
+ * @param _save_includes : save also include files in same dir
+ * @param _save_all_in_one : save all include data in the master file
+ */
+void
+KeyFile::save_keyfile(const std::string& _filepath,
+                      bool _save_includes,
+                      bool _save_all_in_one)
+{
+
+  std::map<int64_t, std::shared_ptr<Keyword>> kwrds_sorted;
+  for (auto& kv : keywords) {
+    for (auto kw : kv.second) {
+      kwrds_sorted.insert(std::make_pair(kw->get_line_index(), kw));
+    }
+  }
+
+  std::stringstream ss;
+  for (auto kv : kwrds_sorted)
+    ss << kv.second->str();
+
+  std::cout << ss.str() << std::endl;
 }
 
 } // namespace qd

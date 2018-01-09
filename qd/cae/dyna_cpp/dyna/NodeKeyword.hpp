@@ -17,20 +17,22 @@ namespace qd {
 class NodeKeyword : public Keyword
 {
 private:
-  std::map<size_t, std::string> comments_in_node_block;
   DB_Nodes* db_nodes;
-  std::vector<int32_t> node_indexes_in_card;
+  std::vector<size_t> node_indexes_in_card;
+  std::vector<std::string> trailing_lines;
 
 public:
-  NodeKeyword(DB_Nodes* _db_nodes,
-              std::vector<std::string> _lines,
-              int64_t _iLine = 0);
+  explicit NodeKeyword(DB_Nodes* _db_nodes,
+                       const std::vector<std::string>& _lines,
+                       int64_t _iLine = 0);
   template<typename T>
   std::shared_ptr<Node> add_node(T _id, float _x, float _y, float _z);
   template<typename T>
   std::shared_ptr<Node> get_nodeByIndex(T _index);
-  std::vector<std::shared_ptr<Node>> get_nodes();
-  inline std::vector<int32_t> get_node_indexes();
+  inline std::vector<std::shared_ptr<Node>> get_nodes();
+  inline std::vector<size_t> get_node_indexes();
+  inline size_t get_nNodes() const;
+  std::string str() override;
 };
 
 /** Add a node to the card
@@ -47,7 +49,7 @@ NodeKeyword::add_node(T _id, float _x, float _y, float _z)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  node_indexes_in_card.append(db_nodes.size());
+  node_indexes_in_card.push_back(db_nodes->get_nNodes());
   return db_nodes->add_node(static_cast<int32_t>(_id), _x, _y, _z);
 }
 
@@ -58,17 +60,17 @@ NodeKeyword::add_node(T _id, float _x, float _y, float _z)
  */
 template<typename T>
 std::shared_ptr<Node>
-get_nodeByIndex(T _index)
+NodeKeyword::get_nodeByIndex(T _index)
 {
   _index = index_treatment(_index, node_indexes_in_card.size());
-  this->db_nodes->get_nodeByIndex(_index);
+  return this->db_nodes->get_nodeByIndex(_index);
 }
 
-/** Get the indexes of the nodes in the card
+/** Get the indexes of the nodes of this card in the database
  *
  * @return node_indexes_in_card indexes of nodes in node database
  */
-inline std::vector<int32_t>
+inline std::vector<size_t>
 NodeKeyword::get_node_indexes()
 {
   return node_indexes_in_card;
@@ -84,7 +86,16 @@ NodeKeyword::get_nodes()
   std::vector<std::shared_ptr<Node>> res;
   for (auto index : node_indexes_in_card)
     res.push_back(this->db_nodes->get_nodeByIndex(index));
-  return res;
+  return std::move(res);
+}
+
+/** Get the number of nodes in the card
+ * @return nNodes
+ */
+size_t
+NodeKeyword::get_nNodes() const
+{
+  return this->node_indexes_in_card.size();
 }
 
 } // NAMESPACE:qd

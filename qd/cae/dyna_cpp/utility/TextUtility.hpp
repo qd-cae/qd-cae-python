@@ -20,7 +20,7 @@ namespace qd {
  * @param s : string getting trimmed
  * @return trimmed_s : string trimmed
  */
-inline std::string
+inline std::string&
 trim_left(std::string& s)
 {
   s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
@@ -42,7 +42,7 @@ trim_right_copy(std::string s)
                        [](unsigned char ch) { return !std::isspace(ch); })
             .base(),
           s.end());
-  return s;
+  return std::move(s);
 }
 
 /** Trim a string from right
@@ -50,7 +50,7 @@ trim_right_copy(std::string s)
  * @param s : string getting trimmed
  * @return trimmed_s : string trimmed
  */
-inline std::string
+inline std::string&
 trim_right(std::string& s)
 {
   s.erase(std::find_if(s.rbegin(),
@@ -66,7 +66,7 @@ trim_right(std::string& s)
  * @param s : string getting trimmed
  * @return trimmed_s : string trimmed
  */
-inline std::string
+inline std::string&
 trim(std::string& s)
 {
   trim_right(s);
@@ -104,7 +104,7 @@ string_to_lines(const std::string& _buffer, bool ignore_trailing_lines = false)
       lines.push_back(line);
   }
 
-  while (getline(ss, line))
+  while (std::getline(ss, line))
     lines.push_back(line);
   return lines;
 }
@@ -187,8 +187,9 @@ convert_chars_to_lines(const std::vector<char>& _data)
   std::stringstream st(std::string(_data.begin(), _data.end()),
                        std::ios_base::in);
 
+  std::string line;
   std::vector<std::string> lines;
-  for (std::string line; std::getline(st, line);)
+  while (std::getline(st, line))
     lines.push_back(line);
 
   return lines;
@@ -225,7 +226,7 @@ get_word(std::string::const_iterator _begin, std::string::const_iterator _end);
  *
  * Uses regex.
  */
-ptrdiff_t
+std::ptrdiff_t
 get_word_position(const std::string& _str,
                   const std::string& _pattern = "\\w+");
 

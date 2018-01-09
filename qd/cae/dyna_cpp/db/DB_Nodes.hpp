@@ -31,10 +31,12 @@ private:
 public:
   explicit DB_Nodes(FEMFile* _femfile);
   virtual ~DB_Nodes();
-  size_t get_nNodes();
+  size_t get_nNodes() const;
   void reserve(const size_t _size);
   FEMFile* get_femfile();
-  std::shared_ptr<Node> add_node(int32_t _id, std::vector<float> _coords);
+  std::shared_ptr<Node> add_node(int32_t _id,
+                                 const std::vector<float>& _coords);
+  std::shared_ptr<Node> add_node(int32_t _id, float _x, float _y, float _z);
 
   template<typename T>
   T get_id_from_index(size_t _id);

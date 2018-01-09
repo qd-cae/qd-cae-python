@@ -48,6 +48,7 @@ def setup_dyna_cpp():
         "qd/cae/dyna_cpp/dyna/RawD3plot.cpp",
         "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
         "qd/cae/dyna_cpp/dyna/Keyword.cpp",
+        "qd/cae/dyna_cpp/dyna/NodeKeyword.cpp",
         "qd/cae/dyna_cpp/utility/FileUtility.cpp",
         "qd/cae/dyna_cpp/utility/TextUtility.cpp"]
 
@@ -73,6 +74,7 @@ def setup_dyna_cpp():
             compiler_args.append("/DQD_MEASURE_TIME")
         if use_openmp:
             compiler_args.append("/openmp")
+
     else:
         raise RuntimeError("Could not determine os (windows or linux)")
 

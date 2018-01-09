@@ -10,6 +10,7 @@
 #include <dyna_cpp/dyna/D3plot.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
 #include <dyna_cpp/dyna/Keyword.hpp>
+#include <dyna_cpp/dyna/NodeKeyword.hpp>
 #include <dyna_cpp/dyna/RawD3plot.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
@@ -688,20 +689,10 @@ PYBIND11_MODULE(dyna_cpp, m)
          "data"_a)
     .def("info", &RawD3plot::info, rawd3plot_info_docs);
 
-  // KeyFile
-  pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
-    m, "QD_KeyFile", keyfile_description);
-  keyfile_py
-    .def(pybind11::init<const std::string&, bool, double>(),
-         "filepath"_a,
-         "load_includes"_a = true,
-         "encryption_detection"_a = 0.7,
-         keyfile_constructor)
-    .def("__getitem__", &KeyFile::get_keywordsByName)
-    .def("keys", &KeyFile::keys);
-
   // Keyword
   pybind11::class_<Keyword, std::shared_ptr<Keyword>> keyword_py(m, "Keyword");
+  pybind11::class_<NodeKeyword, Keyword, std::shared_ptr<NodeKeyword>>
+    node_keyword_py(m, "NodeKeyword");
 
   pybind11::enum_<Keyword::Align>(keyword_py, "align")
     .value("left", Keyword::Align::LEFT)
@@ -842,7 +833,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def(
       "__len__", &Keyword::size, pybind11::return_value_policy::take_ownership)
     .def("get_lines",
-         &Keyword::get_lines,
+         (std::vector<std::string> & (Keyword::*)()) & Keyword::get_lines,
          pybind11::return_value_policy::take_ownership)
     .def("get_line",
          &Keyword::get_line<int64_t>,
@@ -898,6 +889,49 @@ PYBIND11_MODULE(dyna_cpp, m)
       [](pybind11::object, Keyword::Align _align) {
         Keyword::name_alignment = _align;
       });
+
+  node_keyword_py.def("add_node", &NodeKeyword::add_node<int64_t>)
+    .def("get_nNodes", &NodeKeyword::get_nNodes)
+    .def("get_nodes", &NodeKeyword::get_nodes)
+    .def("get_node_indexes", &NodeKeyword::get_node_indexes);
+
+  // KeyFile
+  pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
+    m, "QD_KeyFile", keyfile_description);
+  keyfile_py
+    .def(pybind11::init<const std::string&, bool, double>(),
+         "filepath"_a,
+         "load_includes"_a = true,
+         "encryption_detection"_a = 0.7,
+         keyfile_constructor)
+    .def("__getitem__",
+         [](std::shared_ptr<KeyFile> self, std::string key) {
+           auto kwrds = self->get_keywordsByName(key);
+
+           // safe sex
+           if (kwrds.empty())
+             return pybind11::cast(kwrds);
+
+           // node kw?
+           std::shared_ptr<NodeKeyword> is_node_kw =
+             std::static_pointer_cast<NodeKeyword>(kwrds[0]);
+           if (is_node_kw) {
+             std::vector<std::shared_ptr<NodeKeyword>> ret(kwrds.size());
+             for (size_t ii = 0; ii < kwrds.size(); ++ii)
+               ret[ii] = std::static_pointer_cast<NodeKeyword>(kwrds[ii]);
+             return pybind11::cast(ret);
+
+           }
+           // generic kw?
+           else
+             return pybind11::cast(kwrds);
+         })
+    .def("keys", &KeyFile::keys)
+    .def("save_keyfile",
+         &KeyFile::save_keyfile,
+         "filepath"_a,
+         "save_includes"_a = true,
+         "save_all_in_one"_a = false);
 
   // Binout
   /*

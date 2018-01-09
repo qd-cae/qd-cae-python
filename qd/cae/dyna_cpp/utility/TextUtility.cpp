@@ -99,7 +99,7 @@ get_word(std::string::const_iterator _begin, std::string::const_iterator _end)
   return std::string();
 }
 
-ptrdiff_t
+std::ptrdiff_t
 get_word_position(const std::string& _str, const std::string& _pattern)
 {
 

@@ -15,25 +15,35 @@
 
 namespace qd {
 
-/*
- * Constructor.
+/** Constructor of a node
+ * @param _nodeID : id of the node
+ * @param _coords : coordinate vector, must have length 3
+ * @param _db_nodes : parent database
  */
-Node::Node(int32_t _nodeID, std::vector<float> _coords, DB_Nodes* _db_nodes)
+Node::Node(int32_t _nodeID,
+           const std::vector<float>& _coords,
+           DB_Nodes* _db_nodes)
   : nodeID(_nodeID)
   , coords(_coords)
   , db_nodes(_db_nodes)
-{
-}
+{}
 
-/*
- * Destructor.
+/** Constructor of a node
+ * @param _x
+ * @param _y
+ * @param _z
+ * @param _db_nodes : pointer to owning database
  */
-Node::~Node()
-{
-}
+Node::Node(int32_t _nodeID, float _x, float _y, float _z, DB_Nodes* _db_nodes)
+  : nodeID(_nodeID)
+  , coords([](float _x, float _y, float _z) {
+    return std::move(std::vector<float>{ _x, _y, _z });
+  }(_x, _y, _z))
+  , db_nodes(_db_nodes)
+{}
 
-/*
- * Comparator.
+/** Comparator.
+ * Used for maps ... somwhere ... can not remember
  */
 bool
 Node::operator<(const Node& other) const
@@ -41,8 +51,9 @@ Node::operator<(const Node& other) const
   return (this->nodeID < other.nodeID);
 }
 
-/*
- * Add an element to the node.
+/** Add an element to the node.
+ * @param _element : element to add to the node
+ * @return _element : returns argument element
  */
 std::shared_ptr<Element>
 Node::add_element(std::shared_ptr<Element> _element)
@@ -57,59 +68,64 @@ Node::add_element(std::shared_ptr<Element> _element)
   return _element;
 }
 
-/*
- * Add a new displacement state to the node.
+/** Add a new displacement state to the node.
+ *
+ * @param _new_disp : new displacement vector
  */
 void
-Node::add_disp(std::vector<float> new_disp)
-{
-  if (new_disp.size() != 3)
-    throw(std::invalid_argument(
-      "Wrong length of displacement vector:" + std::to_string(new_disp.size()) +
-      " in node:" + std::to_string(this->nodeID)));
-
-  new_disp[0] -= coords[0];
-  new_disp[1] -= coords[1];
-  new_disp[2] -= coords[2];
-
-  this->disp.push_back(new_disp);
-}
-
-/*
- * Add a new velocity state to the node.
- */
-void
-Node::add_vel(std::vector<float> new_vel)
+Node::add_disp(std::vector<float> _new_disp)
 {
 #ifdef QD_DEBUG
-  if (new_vel.size() != 3)
+  if (_new_disp.size() != 3)
+    throw(std::invalid_argument("Wrong length of displacement vector:" +
+                                std::to_string(_new_disp.size()) +
+                                " in node:" + std::to_string(this->nodeID)));
+#endif
+
+  _new_disp[0] -= coords[0];
+  _new_disp[1] -= coords[1];
+  _new_disp[2] -= coords[2];
+
+  this->disp.push_back(_new_disp);
+}
+
+/** Add a new velocity state to the node.
+ *
+ * @param _new_vel : new vector
+ */
+void
+Node::add_vel(std::vector<float> _new_vel)
+{
+#ifdef QD_DEBUG
+  if (_new_vel.size() != 3)
     throw(std::invalid_argument(
-      "Wrong length of velocity vector:" + std::to_string(new_vel.size()) +
+      "Wrong length of velocity vector:" + std::to_string(_new_vel.size()) +
       " in node:" + std::to_string(this->nodeID)));
 #endif
 
-  this->vel.push_back(new_vel);
+  this->vel.push_back(_new_vel);
 }
 
-/*
- * Add a new velocity state to the node.
+/** Add a new velocity state to the node.
+ *
+ * @param _new_accel : new vector
  */
 void
-Node::add_accel(std::vector<float> new_accel)
+Node::add_accel(std::vector<float> _new_accel)
 {
 #ifdef QD_DEBUG
-  if (new_accel.size() != 3)
+  if (_new_accel.size() != 3)
     throw(std::invalid_argument(
-      "Wrong length of velocity vector:" + std::to_string(new_accel.size()) +
+      "Wrong length of velocity vector:" + std::to_string(_new_accel.size()) +
       " in node:" + std::to_string(this->nodeID)));
 #endif
 
-  this->accel.push_back(new_accel);
+  this->accel.push_back(_new_accel);
 }
 
-/*
- * Get the coordinates of the node as an array
- * of length 3.
+/** Get the coordinates of the node over time
+ *
+ * @return ret : time series of coordinates
  */
 std::vector<std::vector<float>>
 Node::get_coords() const
@@ -134,4 +150,4 @@ Node::get_coords() const
   }
 }
 
-} // namespace qd
+} // NAMESPACE:qd

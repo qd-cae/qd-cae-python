@@ -77,9 +77,9 @@ protected:
   void clear_field(std::string& _line, size_t iField, size_t _field_size = 0);
 
 public:
+  explicit Keyword(const std::string& _lines, int64_t _line_index = 0);
   explicit Keyword(const std::vector<std::string>& _lines,
                    int64_t _line_index = 0);
-  explicit Keyword(const std::string& _lines, int64_t _line_index = 0);
   explicit Keyword(const std::vector<std::string>& _lines,
                    const std::string& _keyword_name,
                    int64_t _line_index = 0);
@@ -101,7 +101,7 @@ public:
   /*
   bool contains_field(const std::string& _name) const;
   */
-  std::string str();
+  virtual std::string str();
   void print();
 
   // setters
@@ -190,7 +190,7 @@ Keyword::get_card_value_byLine(const std::string& _line,
                                size_t _iField,
                                size_t _field_size)
 {
-  return trim(get_field_byLine(_line, _iField, _field_size));
+  return trim_copy(get_field_byLine(_line, _iField, _field_size));
 }
 
 /** Get a card value from an index pair

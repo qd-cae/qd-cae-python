@@ -4,8 +4,8 @@
 
 // includes
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace qd {
 
@@ -26,9 +26,13 @@ private:
 
 public:
   explicit Node(int32_t _nodeID,
-                std::vector<float> _coords,
+                const std::vector<float>& _coords,
                 DB_Nodes* db_nodes);
-  ~Node();
+  explicit Node(int32_t _nodeID,
+                float _x,
+                float _y,
+                float _z,
+                DB_Nodes* db_nodes);
   bool operator<(const Node& other) const;
   inline std::string str()
   {
