@@ -719,6 +719,11 @@ PYBIND11_MODULE(dyna_cpp, m)
          },
          pybind11::keep_alive<0, 1>())
     .def("__getitem__",
+         [](std::shared_ptr<Keyword> self, int64_t iCard) {
+           return self->get_card(iCard);
+         },
+         pybind11::return_value_policy::take_ownership)
+    .def("__getitem__",
          [](std::shared_ptr<Keyword> kw, const std::string& _field_name) {
            return py::try_number_conversion(kw->get_card_value(_field_name));
          },
@@ -754,16 +759,18 @@ PYBIND11_MODULE(dyna_cpp, m)
             pybind11::object _value) {
            self->set_card_value(
              _field_name, pybind11::cast<std::string>(pybind11::str(_value)));
-         },
-         pybind11::return_value_policy::take_ownership)
+         })
     .def("__setitem__",
          [](std::shared_ptr<Keyword> self,
             const std::string& _field_name,
             pybind11::object _value) {
            self->set_card_value(
              _field_name, pybind11::cast<std::string>(pybind11::str(_value)));
-         },
-         pybind11::return_value_policy::take_ownership)
+         })
+    .def("__setitem__",
+         [](std::shared_ptr<Keyword> self,
+            int64_t iCard,
+            const std::string& data) { self->set_card(iCard, data); })
     .def("set_card_value",
          [](std::shared_ptr<Keyword> self,
             int64_t iCard,
@@ -904,6 +911,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          "load_includes"_a = true,
          "encryption_detection"_a = 0.7,
          keyfile_constructor)
+    .def("__str__", &KeyFile::str)
     .def("__getitem__",
          [](std::shared_ptr<KeyFile> self, std::string key) {
            auto kwrds = self->get_keywordsByName(key);
@@ -927,8 +935,8 @@ PYBIND11_MODULE(dyna_cpp, m)
              return pybind11::cast(kwrds);
          })
     .def("keys", &KeyFile::keys)
-    .def("save_keyfile",
-         &KeyFile::save_keyfile,
+    .def("save_txt",
+         &KeyFile::save_txt,
          "filepath"_a,
          "save_includes"_a = true,
          "save_all_in_one"_a = false);

@@ -92,6 +92,10 @@ read_binary_file(const std::string& filepath)
   return data;
 }
 
+/** Delete a file
+ *
+ * @param _path : path to file to delete
+ */
 void
 delete_file(const std::string& _path)
 {
@@ -99,6 +103,20 @@ delete_file(const std::string& _path)
   if (remove(_path.c_str()) != 0) {
     throw(std::runtime_error("Deletion of file " + _path + " failed."));
   }
+}
+
+/** Save data to a file
+ * @param _filepath
+ * @param _data
+ */
+void
+save_file(const std::string& _filepath, const std::string& _data)
+{
+
+  std::ofstream fs;
+  fs.open(_filepath);
+  fs << _data;
+  fs.close();
 }
 
 /** Compute the entropy of a file buffer
@@ -129,7 +147,7 @@ get_entropy(const std::vector<char>& _buffer)
     if (freq > 0.)
       entropy += freq * log2(freq);
   }
-  
+
   return std::abs(entropy);
 }
 
@@ -212,9 +230,8 @@ find_dyna_result_files(const std::string& _base_filepath)
     std::string fname(FindFileData.cFileName);
     if ((fname.substr(0, base_filename.size()) ==
          base_filename) // case sensitivity check
-        &&
-        string_has_only_numbers(fname,
-                                base_filename.size())) // number ending only
+        && string_has_only_numbers(fname,
+                                   base_filename.size())) // number ending only
       files.push_back(directory + fname);
 
   } while (FindNextFile(hFind, &FindFileData) != 0);

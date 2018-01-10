@@ -57,9 +57,10 @@ public:
   inline std::vector<std::shared_ptr<Keyword>> get_keywordsByName(
     const std::string& _keyword_name);
   inline std::vector<std::string> keys();
-  void save_keyfile(const std::string& _filepath,
-                    bool _save_includes = true,
-                    bool _save_all_in_one = false);
+  std::string str() const;
+  void save_txt(const std::string& _filepath,
+                bool _save_includes = true,
+                bool _save_all_in_one = false);
 };
 
 /** Get all keywords with a specific name

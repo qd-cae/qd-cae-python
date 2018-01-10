@@ -73,7 +73,6 @@ KeyFile::parse_file(const std::string& _filepath)
 
   // convert buffer into blocks
   std::string last_keyword;
-  bool is_keyword = false;
   size_t iLine = 0;
   std::vector<std::string> line_buffer;
   std::vector<std::string> line_buffer_tmp;
@@ -124,7 +123,6 @@ KeyFile::parse_file(const std::string& _filepath)
         line_buffer = line_buffer_tmp;
       }
 
-      is_keyword = true;
       trim_right(line);
       last_keyword = line;
     } // IF:line[0] == '*'
@@ -133,6 +131,21 @@ KeyFile::parse_file(const std::string& _filepath)
     line_buffer.push_back(line);
 
   } // for:line
+
+  // allocate last block
+  if (!line_buffer.empty()) {
+
+    // remove comment lines from previous block
+    line_buffer_tmp.clear();
+    while (line_buffer.size() > 0 && line_buffer.back()[0] == '$') {
+      line_buffer_tmp.push_back(line_buffer.back());
+      line_buffer.pop_back();
+    }
+
+    create_keyword(line_buffer,
+                   last_keyword,
+                   iLine - line_buffer.size() - line_buffer_tmp.size());
+  }
 }
 
 /** Create a keyword from it's line buffer
@@ -486,16 +499,12 @@ KeyFile::read_mesh(const std::string& _filepath)
 #endif
 }
 
-/** Save a keyfile again
+/** Convert the keyfile to a string
  *
- * @param _filepath : path to new file
- * @param _save_includes : save also include files in same dir
- * @param _save_all_in_one : save all include data in the master file
+ * @return str : keyfile as string
  */
-void
-KeyFile::save_keyfile(const std::string& _filepath,
-                      bool _save_includes,
-                      bool _save_all_in_one)
+std::string
+KeyFile::str() const
 {
 
   std::map<int64_t, std::shared_ptr<Keyword>> kwrds_sorted;
@@ -509,7 +518,21 @@ KeyFile::save_keyfile(const std::string& _filepath,
   for (auto kv : kwrds_sorted)
     ss << kv.second->str();
 
-  std::cout << ss.str() << std::endl;
+  return std::move(ss.str());
+}
+
+/** Save a keyfile again
+ *
+ * @param _filepath : path to new file
+ * @param _save_includes : save also include files in same dir
+ * @param _save_all_in_one : save all include data in the master file
+ */
+void
+KeyFile::save_txt(const std::string& _filepath,
+                  bool _save_includes,
+                  bool _save_all_in_one)
+{
+  save_file(_filepath, str());
 }
 
 } // namespace qd

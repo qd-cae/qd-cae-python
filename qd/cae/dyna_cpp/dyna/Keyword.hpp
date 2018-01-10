@@ -90,6 +90,8 @@ public:
   inline std::vector<std::string>& get_lines();
   template<typename T>
   inline const std::string& get_line(T _iLine) const;
+  template<typename T>
+  inline std::string get_card(T _iCard);
   inline std::string get_card_value(const std::string& _field_name);
   template<typename T>
   inline std::string get_card_value(T _iCard,
@@ -107,6 +109,8 @@ public:
   // setters
   template<typename T>
   void switch_field_size(const std::vector<T> _skip_cards);
+  template<typename T>
+  inline void set_card(T _iCard, const std::string& _data);
   inline void set_card_value(const std::string& _field_name,
                              const std::string& _value,
                              size_t _field_size = 0);
@@ -191,6 +195,20 @@ Keyword::get_card_value_byLine(const std::string& _line,
                                size_t _field_size)
 {
   return trim_copy(get_field_byLine(_line, _iField, _field_size));
+}
+
+/** Get an entire card from a card index
+ *
+ * @oaram _iCard : card index
+ * @return line : card as string
+ */
+template<typename T>
+std::string
+Keyword::get_card(T _iCard)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  return lines[iCard_to_iLine(_iCard, false)];
 }
 
 /** Get a card value from an index pair
@@ -435,6 +453,18 @@ Keyword::switch_field_size(const std::vector<T> _skip_cards)
         change_field_size_byLine(iLine - 1, old_field_size, field_size);
     }
   } // for iLine
+}
+
+/** Set a card/line
+ *
+ * @param _iCard : index of card
+ * @param _data : string data to set
+ */
+template<typename T>
+void
+Keyword::set_card(T _iCard, const std::string& _data)
+{
+  set_line(iCard_to_iLine(_iCard), _data);
 }
 
 /** Set a card value from it's name

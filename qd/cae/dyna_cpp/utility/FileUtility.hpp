@@ -28,6 +28,9 @@ get_entropy(const std::vector<char>& _buffer);
 void
 delete_file(const std::string& _path);
 
+void
+save_file(const std::string& _filepath, const std::string& _data);
+
 } // namespace qd
 
 #endif
