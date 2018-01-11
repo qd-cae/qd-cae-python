@@ -109,6 +109,28 @@ string_to_lines(const std::string& _buffer, bool ignore_trailing_lines = false)
   return lines;
 }
 
+/** Convert a string to lower-case (by reference)
+ *
+ * @param _txt
+ */
+std::string&
+to_lower(std::string& _txt)
+{
+  std::transform(_txt.begin(), _txt.end(), _txt.begin(), ::tolower);
+  return _txt;
+}
+
+/** Convert a string to lower-case (creates copy)
+ *
+ * @param _txt
+ */
+std::string
+to_lower_copy(std::string _txt)
+{
+  std::transform(_txt.begin(), _txt.end(), _txt.begin(), ::tolower);
+  return std::move(_txt);
+}
+
 /** Convert string into some type
  * @param T value : value to convert to string
  * @return string result

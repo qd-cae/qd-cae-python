@@ -77,12 +77,16 @@ protected:
   void clear_field(std::string& _line, size_t iField, size_t _field_size = 0);
 
 public:
-  explicit Keyword(const std::string& _lines, int64_t _line_index = 0);
+  explicit Keyword(const std::string& _lines,
+                   int64_t _line_index = 0,
+                   size_t _field_size = 0);
   explicit Keyword(const std::vector<std::string>& _lines,
-                   int64_t _line_index = 0);
+                   int64_t _line_index = 0,
+                   size_t _field_size = 0);
   explicit Keyword(const std::vector<std::string>& _lines,
                    const std::string& _keyword_name,
-                   int64_t _line_index = 0);
+                   int64_t _line_index = 0,
+                   size_t _field_size = 0);
 
   // getters
   std::string get_keyword_name() const;
@@ -290,7 +294,7 @@ Keyword::is_comment(const std::string& _line) const
 bool
 Keyword::has_long_fields() const
 {
-  return field_size == 20;
+  return get_keyword_name().find('+') != std::string::npos;
 }
 
 /** Checks if a string is a keyword
@@ -421,7 +425,7 @@ Keyword::switch_field_size(const std::vector<T> _skip_cards)
 
   // new sizes
   auto old_field_size = field_size;
-  field_size = old_field_size == 10 ? 20 : 10;
+  field_size = old_field_size <= 10 ? old_field_size * 2 : old_field_size / 2;
 
   T iCard = 0;
   for (size_t iLine = 0; iLine < lines.size(); ++iLine) {

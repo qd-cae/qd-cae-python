@@ -170,11 +170,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
   auto db_nodes = this->get_db_nodes();
 
   // lowercase name
-  auto keyword_name_low = _keyword_name;
-  std::transform(keyword_name_low.begin(),
-                 keyword_name_low.end(),
-                 keyword_name_low.begin(),
-                 ::tolower);
+  auto keyword_name_low = to_lower_copy(_keyword_name);
 
   // node keyword
   if (keyword_name_low == "*node" || keyword_name_low == "*node_scalar_value" ||

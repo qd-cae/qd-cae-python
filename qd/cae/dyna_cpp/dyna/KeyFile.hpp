@@ -53,7 +53,8 @@ public:
   KeyFile();
   KeyFile(const std::string& _filepath,
           bool _load_includes = true,
-          double _encryption_detection = 0.7);
+          double _encryption_detection = 0.7,
+          bool _parse_mesh = true);
   inline std::vector<std::shared_ptr<Keyword>> get_keywordsByName(
     const std::string& _keyword_name);
   inline std::vector<std::string> keys();

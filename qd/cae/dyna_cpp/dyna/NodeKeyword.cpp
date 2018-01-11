@@ -1,11 +1,6 @@
 
 #include <iomanip>
 
-#ifdef QD_USE_ABSL
-#include <absl/strings/numbers.h>
-#include <absl/strings/string_view.h>
-#endif
-
 #include <dyna_cpp/dyna/KeyFile.hpp>
 #include <dyna_cpp/dyna/NodeKeyword.hpp>
 
@@ -39,24 +34,7 @@ NodeKeyword::NodeKeyword(DB_Nodes* _db_nodes,
     if (line_trimmed.empty() || is_keyword(line) || is_comment(line))
       break;
 
-// parse line
-#ifdef QD_USE_ABSL
-    bool is_ok = true;
-    auto line_view = absl::string_view(line);
-    is_ok &= absl::SimpleAtoi(line_view.substr(0, field_size_nodes), &node_id);
-    is_ok &= absl::SimpleAtof(
-      line_view.substr(field_size_nodes, field_size_nodes_x2), &coords[0]);
-    is_ok &= absl::SimpleAtof(
-      line_view.substr(field_size_nodes_x3, field_size_nodes_x2), &coords[1]);
-    is_ok &= absl::SimpleAtof(
-      line_view.substr(field_size_nodes_x5, field_size_nodes_x2), &coords[2]);
-    if (is_ok) {
-      db_nodes->add_node(node_id, coords);
-      node_indexes_in_card.push_back(db_nodes->get_nNodes() - 1);
-    } else
-      std::cout << "Failed to parse node in line: "
-                << (static_cast<size_t>(line_index) + iLine) << '\n';
-#else
+    // parse line
     try {
       node_id = std::stoi(line.substr(0, field_size_nodes));
       coords[0] = std::stof(line.substr(field_size_nodes, field_size_nodes_x2));
@@ -71,7 +49,6 @@ NodeKeyword::NodeKeyword(DB_Nodes* _db_nodes,
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }
-#endif
   }
 
   // push the gear in the rear :P

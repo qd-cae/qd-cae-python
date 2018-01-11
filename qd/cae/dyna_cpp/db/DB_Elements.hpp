@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <dyna_cpp/db/Element.hpp>
+#include <dyna_cpp/db/Part.hpp>
 
 namespace qd {
 
@@ -35,6 +36,11 @@ private:
   std::vector<std::shared_ptr<Element>> elements4th;
   std::vector<std::shared_ptr<Element>> elements8;
 
+  std::shared_ptr<Element> create_element_unchecked(
+    Element::ElementType _eType,
+    int32_t _id,
+    const std::vector<size_t>& _node_indexes);
+
 public:
   explicit DB_Elements(FEMFile* _femfile);
   virtual ~DB_Elements();
@@ -43,6 +49,16 @@ public:
 
   // memory stuff
   void reserve(const Element::ElementType _type, const size_t _size);
+  std::shared_ptr<Element> add_elementByNodeIndex(
+    const Element::ElementType _eType,
+    int32_t _id,
+    int32_t _part_id,
+    const std::vector<size_t>& _node_indexes);
+  std::shared_ptr<Element> DB_Elements::add_elementByNodeID(
+    const Element::ElementType _eType,
+    int32_t _elementID,
+    int32_t _part_id,
+    const std::vector<size_t>& _node_ids);
   std::shared_ptr<Element> add_element_byD3plot(
     const Element::ElementType _eType,
     const int32_t _id,
@@ -51,7 +67,7 @@ public:
     Element::ElementType _eType,
     int32_t _id,
     int32_t _partid,
-    std::vector<int32_t> _node_ids);
+    const std::vector<int32_t>& _node_ids);
 
   // getter
   size_t get_nElements(const Element::ElementType _type = Element::NONE) const;

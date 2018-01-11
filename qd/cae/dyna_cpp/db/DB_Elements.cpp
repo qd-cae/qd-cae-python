@@ -17,8 +17,7 @@ DB_Elements::DB_Elements(FEMFile* _femfile)
   : femfile(_femfile)
   , db_nodes(_femfile->get_db_nodes())
   , db_parts(_femfile->get_db_parts())
-{
-}
+{}
 
 /*
  * Destructor.
@@ -28,6 +27,165 @@ DB_Elements::~DB_Elements()
 #ifdef QD_DEBUG
   std::cout << "DB_Elements::~DB_Elements called." << std::endl;
 #endif
+}
+
+/** Add an element to the database (internal usage only)
+ *
+ * @param _etype : type of the element
+ * @param _elementID : id of the element
+ * @param _node_indexes : node indexes in db (must be in same db!!!)
+ *
+ * Adds an element, will not perform checks that the element
+ * has the same database as nodes and part.
+ * Also not checked whether the nodes with the specified indexes
+ * exist.
+ */
+std::shared_ptr<Element>
+DB_Elements::create_element_unchecked(Element::ElementType _eType,
+                                      int32_t _id,
+                                      const std::vector<size_t>& _node_indexes)
+{
+  std::shared_ptr<Element> element =
+    std::make_shared<Element>(_id, _eType, _node_indexes, this);
+
+  switch (_eType) {
+    case (Element::SHELL):
+      // check uniqueness
+      if (id2index_elements4.find(_id) != id2index_elements4.end())
+        throw(std::invalid_argument(
+          "Trying to insert an element with same id twice:" +
+          std::to_string(_id)));
+      // insert
+      id2index_elements4.insert(
+        std::pair<int32_t, size_t>(_id, elements4.size()));
+      elements4.push_back(element);
+      break;
+
+    case (Element::SOLID):
+      if (id2index_elements8.find(_id) != id2index_elements8.end())
+        throw(std::invalid_argument(
+          "Trying to insert an element with same id twice:" +
+          std::to_string(_id)));
+
+      id2index_elements8.insert(
+        std::pair<int32_t, size_t>(_id, elements8.size()));
+      elements8.push_back(element);
+      break;
+
+    case (Element::BEAM):
+      if (id2index_elements2.find(_id) != id2index_elements2.end())
+        throw(std::invalid_argument(
+          "Trying to insert an element with same id twice:" +
+          std::to_string(_id)));
+
+      this->id2index_elements2.insert(
+        std::pair<int32_t, size_t>(_id, elements2.size()));
+      this->elements2.push_back(element);
+      break;
+
+    case (Element::TSHELL):
+      if (id2index_elements4th.find(_id) != id2index_elements4th.end())
+        throw(std::invalid_argument(
+          "Trying to insert an element with same id twice:" +
+          std::to_string(_id)));
+
+      id2index_elements4th.insert(
+        std::pair<int32_t, size_t>(_id, this->elements4th.size()));
+      elements4th.push_back(element);
+      break;
+
+    default:
+      throw(std::invalid_argument(
+        "Element with an invalid element type was tried to get inserted "
+        "into the database."));
+      break;
+  }
+
+  return element;
+}
+
+/** Add an element to the database from node indexes
+ *
+ * @param _etype : type of the element
+ * @param _elementID : id of the element
+ * @param _part_id : id of the part the element belongs to
+ * @param _node_indexes : indexes of nodes
+ */
+std::shared_ptr<Element>
+DB_Elements::add_elementByNodeIndex(const Element::ElementType _eType,
+                                    int32_t _elementID,
+                                    int32_t _part_id,
+                                    const std::vector<size_t>& _node_indexes)
+{
+  if (_elementID < 0) {
+    throw(std::invalid_argument("Element-ID may not be negative!"));
+  }
+
+  // Find part
+  const auto part = db_parts->get_partByID(_part_id);
+  if (part == nullptr) {
+    throw(std::invalid_argument(
+      "Could not find part with id:" + std::to_string(_part_id) + " in db."));
+  }
+
+  // Find nodes (no uniqueness check)
+  std::vector<std::shared_ptr<Node>> nodes(_node_indexes.size());
+  for (size_t iNode = 0; iNode < _node_indexes.size(); iNode++)
+    nodes.push_back(db_nodes->get_nodeByIndex(_node_indexes[iNode]));
+
+  // Create element
+  auto element = create_element_unchecked(_eType, _elementID, _node_indexes);
+
+  // Register Element
+  for (auto& node : nodes)
+    node->add_element(element);
+  part->add_element(element);
+
+  return element;
+}
+
+/** Add an element to the database from node id
+ *
+ * @param _etype : type of the element
+ * @param _elementID : id of the element
+ * @param _part_id : id of the part the element belongs to
+ * @param _node_ids : ids of nodes
+ */
+std::shared_ptr<Element>
+DB_Elements::add_elementByNodeID(const Element::ElementType _eType,
+                                 int32_t _elementID,
+                                 int32_t _part_id,
+                                 const std::vector<size_t>& _node_ids)
+{
+  if (_elementID < 0) {
+    throw(std::invalid_argument("Element-ID may not be negative!"));
+  }
+
+  // Find part
+  const auto part = db_parts->get_partByID(_part_id);
+  if (part == nullptr) {
+    throw(std::invalid_argument(
+      "Could not find part with id:" + std::to_string(_part_id) + " in db."));
+  }
+
+  // Find nodes (no uniqueness check)
+  std::vector<size_t> node_indexes;
+  std::vector<std::shared_ptr<Node>> nodes(_node_ids.size());
+  for (size_t iNode = 0; iNode < _node_ids.size(); iNode++) {
+    size_t node_index = db_nodes->get_index_from_id(_node_ids[iNode]);
+    node_indexes.push_back(node_index);
+    nodes.push_back(db_nodes->get_nodeByIndex(node_index));
+  }
+
+  // Create element
+  auto element = create_element_unchecked(_eType, _elementID, node_indexes);
+
+  // Register Element
+  for (auto& node : nodes)
+    node->add_element(element);
+  part->add_element(element);
+
+  return element;
 }
 
 /** Add an element coming from a D3plot file
@@ -54,7 +212,8 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
   }
 
   // Find part
-  // index is decremented once, since ls-dyna starts at 1 (fortran array style)
+  // index is decremented once, since ls-dyna starts at 1 (fortran array
+  // style)
   const auto part = this->db_parts->get_partByIndex(_elementData.back() - 1);
   if (part == nullptr) {
     throw(std::invalid_argument(
@@ -84,62 +243,7 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
   }
 
   // Create element
-  std::shared_ptr<Element> element =
-    std::make_shared<Element>(_elementID, _eType, node_indexes, this);
-
-  if (_eType == Element::BEAM) {
-    auto it = this->id2index_elements2.find(_elementID);
-    if (it != this->id2index_elements2.end()) {
-      throw(std::invalid_argument(
-        "Trying to insert an element with same id twice:" +
-        std::to_string(_elementID)));
-    }
-
-    this->id2index_elements2.insert(
-      std::pair<int32_t, size_t>(_elementID, this->elements2.size()));
-    this->elements2.push_back(element);
-
-  } else if (_eType == Element::SHELL) {
-    auto it = this->id2index_elements4.find(_elementID);
-    if (it != this->id2index_elements4.end()) {
-      throw(std::invalid_argument(
-        "Trying to insert an element with same id twice:" +
-        std::to_string(_elementID)));
-    }
-
-    this->id2index_elements4.insert(
-      std::pair<int32_t, size_t>(_elementID, this->elements4.size()));
-    this->elements4.push_back(element);
-
-  } else if (_eType == Element::SOLID) {
-    auto it = this->id2index_elements8.find(_elementID);
-    if (it != this->id2index_elements8.end()) {
-      throw(std::invalid_argument(
-        "Trying to insert an element with same id twice:" +
-        std::to_string(_elementID)));
-    }
-
-    this->id2index_elements8.insert(
-      std::pair<int32_t, size_t>(_elementID, this->elements8.size()));
-    this->elements8.push_back(element);
-
-  } else if (_eType == Element::TSHELL) {
-    auto it = this->id2index_elements4th.find(_elementID);
-    if (it != this->id2index_elements4th.end()) {
-      throw(std::invalid_argument(
-        "Trying to insert an element with same id twice:" +
-        std::to_string(_elementID)));
-    }
-
-    this->id2index_elements4th.insert(
-      std::pair<int32_t, size_t>(_elementID, this->elements4th.size()));
-    this->elements4th.push_back(element);
-
-  } else {
-    throw(std::invalid_argument(
-      "Element with unknown element type was tried to get inserted "
-      "into the database."));
-  }
+  auto element = create_element_unchecked(_eType, _elementID, node_indexes);
 
   // Register Elements
   for (auto& node : nodes) {
@@ -167,7 +271,7 @@ std::shared_ptr<Element>
 DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
                                    int32_t _elementID,
                                    int32_t _partid,
-                                   std::vector<int32_t> _node_ids)
+                                   const std::vector<int32_t>& _node_ids)
 {
   if (_elementID < 0) {
     throw(std::invalid_argument("Element-ID may not be negative!"));
@@ -206,62 +310,7 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   }
 
   // Create element
-  std::shared_ptr<Element> element =
-    std::make_shared<Element>(_elementID, _eType, node_indexes, this);
-
-  if (_eType == Element::BEAM) {
-    auto it = this->id2index_elements2.find(_elementID);
-    if (it != this->id2index_elements2.end()) {
-      throw(std::invalid_argument(
-        "Trying to insert an element with same id twice:" +
-        std::to_string(_elementID)));
-    }
-
-    this->id2index_elements2.insert(
-      std::pair<int32_t, size_t>(_elementID, this->elements2.size()));
-    this->elements2.push_back(element);
-
-  } else if (_eType == Element::SHELL) {
-    auto it = this->id2index_elements4.find(_elementID);
-    if (it != this->id2index_elements4.end()) {
-      throw(std::invalid_argument(
-        "Trying to insert an element with same id twice:" +
-        std::to_string(_elementID)));
-    }
-
-    this->id2index_elements4.insert(
-      std::pair<int32_t, size_t>(_elementID, this->elements4.size()));
-    this->elements4.push_back(element);
-
-  } else if (_eType == Element::SOLID) {
-    auto it = this->id2index_elements8.find(_elementID);
-    if (it != this->id2index_elements8.end()) {
-      throw(std::invalid_argument(
-        "Trying to insert an element with same id twice:" +
-        std::to_string(_elementID)));
-    }
-
-    this->id2index_elements8.insert(
-      std::pair<int32_t, size_t>(_elementID, this->elements8.size()));
-    this->elements8.push_back(element);
-
-  } else if (_eType == Element::TSHELL) {
-    auto it = this->id2index_elements4th.find(_elementID);
-    if (it != this->id2index_elements4th.end()) {
-      throw(std::invalid_argument(
-        "Trying to insert an element with same id twice:" +
-        std::to_string(_elementID)));
-    }
-
-    this->id2index_elements4th.insert(
-      std::pair<int32_t, size_t>(_elementID, this->elements4th.size()));
-    this->elements4th.push_back(element);
-
-  } else {
-    throw(std::invalid_argument(
-      "Element with unknown element type was tried to get inserted "
-      "into the database."));
-  }
+  auto element = create_element_unchecked(_eType, _elementID, node_indexes);
 
   // Register Elements
   for (auto& node : nodes) {
@@ -309,15 +358,14 @@ DB_Elements::reserve(const Element::ElementType _type, const size_t _size)
     elements4th.reserve(_size);
   } else {
     throw std::invalid_argument(
-      "Can not reverse memory for an unknown ElementType: " +
+      "Can not reserve memory for an unknown ElementType: " +
       std::to_string(_type));
   }
 }
 
 /** Get the number of  in the db.
- * @return unsigned int32_t nElements : returns the total number of elements in
- * the
- * db
+ * @return unsigned int32_t nElements : returns the total number of elements
+ * in the db
  */
 size_t
 DB_Elements::get_nElements(const Element::ElementType _type) const
@@ -346,12 +394,12 @@ DB_Elements::get_elements(const Element::ElementType _type)
 
   if (_type == Element::NONE) {
     std::vector<std::shared_ptr<Element>> elems;
-    elems.reserve(this->get_nElements(_type));
+    elems.reserve(get_nElements(_type));
     elems.insert(elems.end(), elements2.begin(), elements2.end());
     elems.insert(elems.end(), elements4.begin(), elements4.end());
     elems.insert(elems.end(), elements8.begin(), elements8.end());
     elems.insert(elems.end(), elements4th.begin(), elements4th.end());
-    return elems;
+    return std::move(elems);
 
   } else if (_type == Element::BEAM) {
     return elements2;

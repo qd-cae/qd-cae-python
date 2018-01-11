@@ -21,16 +21,22 @@ Keyword::Align Keyword::field_alignment = Keyword::Align::LEFT;
  * @param _line_index line index for keeping order
  *
  */
-Keyword::Keyword(const std::vector<std::string>& _lines, int64_t _line_index)
+Keyword::Keyword(const std::vector<std::string>& _lines,
+                 int64_t _line_index,
+                 size_t _field_size = 0)
   : line_index(_line_index)
   , lines(_lines)
 {
 
   // field size
-  if (ends_with(get_keyword_name(), "+")) {
-    field_size = 20;
+  if (_field_size == 0) {
+    if (ends_with(get_keyword_name(), "+")) {
+      field_size = 20;
+    } else {
+      field_size = 10;
+    }
   } else {
-    field_size = 10;
+    field_size = _field_size;
   }
 }
 
@@ -39,12 +45,15 @@ Keyword::Keyword(const std::vector<std::string>& _lines, int64_t _line_index)
  * @param _lines the data of the keyword as a single string
  * @param _line_index line index for keeping order
  */
-Keyword::Keyword(const std::string& _lines, int64_t _line_index)
+Keyword::Keyword(const std::string& _lines,
+                 int64_t _line_index,
+                 size_t _field_size = 0)
   : Keyword(
       [](const std::string& _lines) {
         return string_to_lines(_lines, true);
       }(_lines),
-      _line_index)
+      _line_index,
+      _field_size)
 {}
 
 /** Construct a keyword
@@ -59,15 +68,20 @@ Keyword::Keyword(const std::string& _lines, int64_t _line_index)
  */
 Keyword::Keyword(const std::vector<std::string>& _lines,
                  const std::string& _keyword_name,
-                 int64_t _line_index)
+                 int64_t _line_index,
+                 size_t _field_size = 0)
   : line_index(_line_index)
   , lines(_lines)
 {
   // field size
-  if (ends_with(_keyword_name, "+")) {
-    field_size = 20;
+  if (_field_size == 0) {
+    if (ends_with(get_keyword_name(), "+")) {
+      field_size = 20;
+    } else {
+      field_size = 10;
+    }
   } else {
-    field_size = 10;
+    field_size = _field_size;
   }
 }
 
@@ -250,7 +264,7 @@ Keyword::get_keyword_name() const
 /** Set a card value from its card and field index
  *
  * @param iCard card index (non comment lines)
- * @param iField field index (a field has 10/20 chars)
+ * @param iField field index
  * @param _value value to set
  *
  * The values not fitting into the field will be cut off.

@@ -13,8 +13,12 @@
 
 namespace qd {
 
-/*
- * Constructor.
+/**  Constructor.
+ *
+ * @param _elementID
+ * @param _elementType
+ * @param _node_indexes
+ * @param _db_elements : parent database
  */
 Element::Element(const int32_t _elementID,
                  const Element::ElementType _elementType,
@@ -34,8 +38,9 @@ Element::Element(const int32_t _elementID,
   this->check();
 }
 
-/*
- * Comparator.
+/**  Comparison by id
+ *
+ * @param other
  */
 bool
 Element::operator<(const Element& other) const
