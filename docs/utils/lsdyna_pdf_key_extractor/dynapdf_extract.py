@@ -144,10 +144,16 @@ def get_tables_lskeyword(ls_keyword, pages_numbers_only=False):
 			return pages
 		keyword_dict = get_pdf_dict(lsdyna_manual_file_path, pages)
 
+	# Add the number of entries for this keyword dict
+	if keyword_dict[ls_keyword]['page_numbers']:
+		table_0 = keyword_dict[ls_keyword]['tables'][0][0]
+		num_entries = table_0.shape[1] - 1
+		keyword_dict[ls_keyword]['entries'] = num_entries
+
 	return keyword_dict
 
 def main():
-	keyword_dict = get_tables_lskeyword("*AIRBAG_ADIABATIC_GAS_MODEL")
+	keyword_dict = get_tables_lskeyword("*DEFINE_BOX_SPH")
 	return keyword_dict
 
 if __name__ == "__main__":
