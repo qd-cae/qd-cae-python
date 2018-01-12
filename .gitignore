@@ -5,3 +5,7 @@ docs/.DS_Store
 docs/utils/.DS_Store
 docs/utils/lsdyna_pdf_key_extractor/res/.DS_Store
 docs/utils/lsdyna_pdf_key_extractor/.DS_Store
+build/
+dist/qd-0.6.8-py3.6-macosx-10.9-x86_64.egg
+*pyc
+qd.egg-info/

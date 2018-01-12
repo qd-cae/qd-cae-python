@@ -24,7 +24,7 @@ measure_time = False
 version = "0.6.8"
 # =============================== #
 is_windows = (platform.system() == "Windows")
-is_linux = (platform.system() == "Linux")
+is_linux = (platform.system() == "Darwin")
 # =============================== #
 
 
