@@ -91,6 +91,36 @@ DB_Nodes::add_node(int32_t _nodeID, float _x, float _y, float _z)
   return std::move(node);
 }
 
+/** Add a node while parsing a keyfile
+ *
+ * @param _id : node_id
+ * @param _coords
+ * @return node
+ *
+ * The special case is, if the node is already existing
+ * it's data will jsut be corrected. This makes sense,
+ * since if an element is missing nodes on the fly,
+ * we simply create dummy ones.
+ */
+std::shared_ptr<Node>
+DB_Nodes::add_node_byKeyFile(int32_t _id, float _x, float _y, float _z)
+{
+
+  auto it = id2index_nodes.find(_id);
+
+  // correct existing nodes
+  if (it != id2index_nodes.end()) {
+    auto node = get_nodeByID(_id);
+    node->set_coords(_x, _y, _z);
+    return node;
+  }
+  // create missing node
+  else {
+    auto node = add_node(_id, _x, _y, _z);
+    return node;
+  }
+}
+
 /*
  * Get the owning d3plot of the db.
  */

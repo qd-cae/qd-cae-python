@@ -43,6 +43,7 @@ public:
   void add_disp(std::vector<float>);
   void add_vel(std::vector<float>);
   void add_accel(std::vector<float>);
+  void set_coords(float _x, float _y, float _z);
 
   inline void clear_disp() { this->disp.clear(); }
   inline void clear_vel() { this->vel.clear(); }

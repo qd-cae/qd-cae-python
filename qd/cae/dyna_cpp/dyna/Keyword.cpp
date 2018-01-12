@@ -23,8 +23,9 @@ Keyword::Align Keyword::field_alignment = Keyword::Align::LEFT;
  */
 Keyword::Keyword(const std::vector<std::string>& _lines,
                  int64_t _line_index,
-                 size_t _field_size = 0)
-  : line_index(_line_index)
+                 size_t _field_size)
+  : kw_type(KeywordType::GENERIC)
+  , line_index(_line_index)
   , lines(_lines)
 {
 
@@ -47,7 +48,7 @@ Keyword::Keyword(const std::vector<std::string>& _lines,
  */
 Keyword::Keyword(const std::string& _lines,
                  int64_t _line_index,
-                 size_t _field_size = 0)
+                 size_t _field_size)
   : Keyword(
       [](const std::string& _lines) {
         return string_to_lines(_lines, true);
@@ -69,8 +70,9 @@ Keyword::Keyword(const std::string& _lines,
 Keyword::Keyword(const std::vector<std::string>& _lines,
                  const std::string& _keyword_name,
                  int64_t _line_index,
-                 size_t _field_size = 0)
-  : line_index(_line_index)
+                 size_t _field_size)
+  : kw_type(KeywordType::GENERIC)
+  , line_index(_line_index)
   , lines(_lines)
 {
   // field size
@@ -83,6 +85,33 @@ Keyword::Keyword(const std::vector<std::string>& _lines,
   } else {
     field_size = _field_size;
   }
+}
+
+/** Get the type of the keyword
+ *
+ * @param str : keyword name as string
+ * @return type
+ *
+ * Generic, Node, etc.
+ */
+Keyword::KeywordType
+Keyword::determine_keyword_type(const std::string& _str)
+{
+  auto str_lower = to_lower_copy(_str);
+
+  if (str_lower == "*node" || str_lower == "*node_scalar_value" ||
+      str_lower == "*node_rigid_surface" || str_lower == "*node_merge")
+    return KeywordType::NODE;
+  else if (str_lower.find("*element_beam") != std::string::npos ||
+           str_lower == "*element_shell" ||
+           str_lower == "*element_shell_thickness" ||
+           str_lower == "*element_shell_beta" ||
+           str_lower == "*element_shell_mcid" ||
+           str_lower == "*element_shell_offset" ||
+           str_lower == "*element_shell_dof")
+    return KeywordType::ELEMENT;
+  else
+    return KeywordType::GENERIC;
 }
 
 /** Change the field size of the specified line

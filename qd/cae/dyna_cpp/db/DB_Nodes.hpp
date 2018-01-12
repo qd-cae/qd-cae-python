@@ -37,6 +37,10 @@ public:
   std::shared_ptr<Node> add_node(int32_t _id,
                                  const std::vector<float>& _coords);
   std::shared_ptr<Node> add_node(int32_t _id, float _x, float _y, float _z);
+  std::shared_ptr<Node> add_node_byKeyFile(int32_t _id,
+                                           float _x,
+                                           float _y,
+                                           float _z);
 
   template<typename T>
   T get_id_from_index(size_t _id);
@@ -52,6 +56,13 @@ public:
   std::shared_ptr<Node> get_nodeByIndex(T _index);
   template<typename T>
   std::vector<std::shared_ptr<Node>> get_nodeByIndex(
+    const std::vector<T>& _ids);
+
+  // dirty
+  template<typename T>
+  std::shared_ptr<Node> get_nodeByID_nothrow(T _id);
+  template<typename T>
+  std::vector<std::shared_ptr<Node>> get_nodeByIndex_nothrow(
     const std::vector<T>& _ids);
 };
 
@@ -103,6 +114,21 @@ DB_Nodes::get_nodeByID(T _id)
   return this->get_nodeByIndex(this->get_index_from_id(_id));
 }
 
+/** Get a node from the node ID.
+ *
+ * @param T _id : id of the node
+ * @return std::shared_ptr<Node> node : pointer to the node or nullptr if node
+ * is not existing!
+ */
+template<typename T>
+inline std::shared_ptr<Node>
+DB_Nodes::get_nodeByID_nothrow(T _id)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  return this->get_nodeByIndex_nothrow(this->get_index_from_id_nothrow(_id));
+}
+
 /** Get a list node from an id list
  *
  * @param std::vector<T> _ids : node ids
@@ -134,12 +160,29 @@ DB_Nodes::get_nodeByIndex(T _index)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  try {
-    return this->nodes.at(_index);
-  } catch (const std::out_of_range&) {
+  if (_index >= 0 && _index < nodes.size())
+    return nodes[_index];
+  else
     throw(std::invalid_argument("Could not find node with index " +
                                 std::to_string(_index)));
-  }
+}
+
+/** Get a node from the node index.
+ *
+ * @param int32_t _index : index of the node
+ * @return std::shared_ptr<Node> node : pointer to the node or nullptr if node
+ * is not existing!
+ */
+template<typename T>
+inline std::shared_ptr<Node>
+DB_Nodes::get_nodeByIndex_nothrow(T _index)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  if (_index >= 0 && _index < nodes.size())
+    return nodes[_index];
+  else
+    return nullptr;
 }
 
 /** Get a list of node from an index list

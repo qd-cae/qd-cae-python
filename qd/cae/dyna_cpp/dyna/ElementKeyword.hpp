@@ -21,10 +21,14 @@ private:
     const std::string& _keyword_name) const;
   void parse_elem2(const std::string& _keyword_name_lower,
                    const std::vector<std::string>& _lines);
+  void parse_elem4(const std::string& _keyword_name_lower,
+                   const std::vector<std::string>& _lines);
+  void keyword_elem2_str(std::stringstream& _ss);
+  void keyword_elem4_str(std::stringstream& _ss);
 
 public:
   explicit ElementKeyword(DB_Elements* _db_elems,
-                          const std::string& _lines,
+                          const std::vector<std::string>& _lines,
                           int64_t _iLine = 0);
   inline Element::ElementType get_type() const;
   inline size_t get_nElements() const;
@@ -38,7 +42,7 @@ public:
   std::shared_ptr<Element> add_elementByNodeIndex(
     T _id,
     T _part_id,
-    const std::vector<int32_t>& _node_indexes);
+    const std::vector<size_t>& _node_indexes);
   std::vector<std::shared_ptr<Element>> get_elements();
   std::string str() override;
 };
@@ -74,6 +78,8 @@ template<typename T>
 std::shared_ptr<Element>
 ElementKeyword::get_elementByIndex(T _index)
 {
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
   _index = index_treatment(_index, elem_indexes_in_card.size());
   return db_elems->get_elementByIndex(type, elem_indexes_in_card[_index]);
 }
@@ -87,15 +93,21 @@ ElementKeyword::get_elementByIndex(T _index)
  */
 template<typename T>
 std::shared_ptr<Element>
-ElementKeyword::add_elementByNodeIndex(
-  T _id,
-  T _part_id,
-  const std::vector<int32_t>& _node_indexes)
+ElementKeyword::add_elementByNodeIndex(T _id,
+                                       T _part_id,
+                                       const std::vector<size_t>& _node_indexes)
 {
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  // create element
+  auto id = static_cast<int32_t>(_id);
   auto elem = db_elems->add_elementByNodeIndex(
-    type, static_cast<int32_t>(_id), _part_id, _node_indexes);
-  elem_indexes_in_card.push_back(
-    db_elems->get_element_index_from_id(type, _id));
+    type, id, static_cast<int32_t>(_part_id), _node_indexes);
+
+  // save additional info
+  elem_indexes_in_card.push_back(db_elems->get_element_index_from_id(type, id));
+  elem_part_ids.push_back(static_cast<int32_t>(_part_id));
+
   return elem;
 }
 
@@ -112,10 +124,17 @@ ElementKeyword::add_elementByNodeID(T _id,
                                     T _part_id,
                                     const std::vector<int32_t>& _node_ids)
 {
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  // create element
+  auto id = static_cast<int32_t>(_id);
   auto elem = db_elems->add_elementByNodeID(
-    type, static_cast<int32_t>(_id), _part_id, _node_ids);
-  elem_indexes_in_card.push_back(
-    db_elems->get_element_index_from_id(type, _id));
+    type, id, static_cast<int32_t>(_part_id), _node_ids);
+
+  // save additional info
+  elem_indexes_in_card.push_back(db_elems->get_element_index_from_id(type, id));
+  elem_part_ids.push_back(static_cast<int32_t>(_part_id));
+
   return elem;
 }
 

@@ -8,6 +8,7 @@
 #include <dyna_cpp/db/Part.hpp>
 //#include <dyna_cpp/dyna/Binout.hpp>
 #include <dyna_cpp/dyna/D3plot.hpp>
+#include <dyna_cpp/dyna/ElementKeyword.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
 #include <dyna_cpp/dyna/Keyword.hpp>
 #include <dyna_cpp/dyna/NodeKeyword.hpp>
@@ -693,6 +694,8 @@ PYBIND11_MODULE(dyna_cpp, m)
   pybind11::class_<Keyword, std::shared_ptr<Keyword>> keyword_py(m, "Keyword");
   pybind11::class_<NodeKeyword, Keyword, std::shared_ptr<NodeKeyword>>
     node_keyword_py(m, "NodeKeyword");
+  pybind11::class_<ElementKeyword, Keyword, std::shared_ptr<ElementKeyword>>
+    element_keyword_py(m, "ElementKeyword");
 
   pybind11::enum_<Keyword::Align>(keyword_py, "align")
     .value("left", Keyword::Align::LEFT)
@@ -902,14 +905,31 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("get_nodes", &NodeKeyword::get_nodes)
     .def("get_node_indexes", &NodeKeyword::get_node_indexes);
 
+  element_keyword_py.def("get_elements", &ElementKeyword::get_elements)
+    .def("get_nElements", &ElementKeyword::get_nElements)
+    .def("get_elementByIndex",
+         &ElementKeyword::get_elementByIndex<int64_t>,
+         "index"_a)
+    .def("add_elementByNodeID",
+         &ElementKeyword::add_elementByNodeID<int64_t>,
+         "id"_a,
+         "part_id"_a,
+         "node_ids"_a)
+    .def("add_elementByNodeIndex",
+         &ElementKeyword::add_elementByNodeIndex<int64_t>,
+         "id"_a,
+         "part_id"_a,
+         "node_indexes"_a);
+
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
     m, "QD_KeyFile", keyfile_description);
   keyfile_py
-    .def(pybind11::init<const std::string&, bool, double>(),
+    .def(pybind11::init<const std::string&, bool, double, bool>(),
          "filepath"_a,
          "load_includes"_a = true,
          "encryption_detection"_a = 0.7,
+         "parse_mesh"_a = false,
          keyfile_constructor)
     .def("__str__", &KeyFile::str)
     .def("__getitem__",
@@ -920,16 +940,23 @@ PYBIND11_MODULE(dyna_cpp, m)
            if (kwrds.empty())
              return pybind11::cast(kwrds);
 
-           // node kw?
-           std::shared_ptr<NodeKeyword> is_node_kw =
-             std::static_pointer_cast<NodeKeyword>(kwrds[0]);
-           if (is_node_kw) {
+           // node keyword
+           if (kwrds[0]->get_keyword_type() == Keyword::KeywordType::NODE) {
              std::vector<std::shared_ptr<NodeKeyword>> ret(kwrds.size());
              for (size_t ii = 0; ii < kwrds.size(); ++ii)
                ret[ii] = std::static_pointer_cast<NodeKeyword>(kwrds[ii]);
              return pybind11::cast(ret);
-
            }
+
+           // element keyword
+           else if (kwrds[0]->get_keyword_type() ==
+                    Keyword::KeywordType::ELEMENT) {
+             std::vector<std::shared_ptr<ElementKeyword>> ret(kwrds.size());
+             for (size_t ii = 0; ii < kwrds.size(); ++ii)
+               ret[ii] = std::static_pointer_cast<ElementKeyword>(kwrds[ii]);
+             return pybind11::cast(ret);
+           }
+
            // generic kw?
            else
              return pybind11::cast(kwrds);

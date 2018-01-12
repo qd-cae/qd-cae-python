@@ -28,6 +28,13 @@ public:
     RIGHT
   };
 
+  enum class KeywordType
+  {
+    GENERIC,
+    NODE,
+    ELEMENT
+  };
+
   // Static settings
   static bool name_delimiter_used;
   static char name_delimiter;
@@ -36,6 +43,7 @@ public:
   static Align field_alignment;
 
 protected:
+  Keyword::KeywordType kw_type;
   size_t field_size;              // size of the fields (8 or 20)
   int64_t line_index;             // line index in file (keeps order)
   std::vector<std::string> lines; // line buffer
@@ -89,6 +97,8 @@ public:
                    size_t _field_size = 0);
 
   // getters
+  inline KeywordType get_keyword_type() const;
+  static KeywordType determine_keyword_type(const std::string& str);
   std::string get_keyword_name() const;
   inline std::vector<std::string> get_lines() const;
   inline std::vector<std::string>& get_lines();
@@ -161,6 +171,18 @@ public:
                            bool _format_field = true,
                            bool _format_name = true);
 };
+
+/** Get the type of the keyword
+ *
+ * @return type
+ *
+ * Generic, Node, etc.
+ */
+inline Keyword::KeywordType
+Keyword::get_keyword_type() const
+{
+  return kw_type;
+}
 
 /** Get a specific line in the keyword
  *
@@ -325,7 +347,7 @@ Keyword::iCard_to_iLine(T _iCard, bool _auto_extend)
   // search index
   size_t nCards = -1;
   for (size_t index = 0; index < lines.size(); ++index) {
-    if (!lines[index].empty() > 0 && lines[index][0] != '$' &&
+    if (!lines[index].empty() && lines[index][0] != '$' &&
         lines[index][0] != '*') {
       ++nCards;
       if (nCards == iCard_u)

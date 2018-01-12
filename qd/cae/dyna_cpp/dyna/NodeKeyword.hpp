@@ -19,6 +19,7 @@ class NodeKeyword : public Keyword
 private:
   DB_Nodes* db_nodes;
   std::vector<size_t> node_indexes_in_card;
+  std::vector<std::string> unparsed_node_data;
   std::vector<std::string> trailing_lines;
 
 public:

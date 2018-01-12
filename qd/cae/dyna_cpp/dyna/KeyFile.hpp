@@ -42,11 +42,13 @@ private:
   std::vector<std::shared_ptr<KeyFile>> includes;
   std::map<std::string, std::vector<std::shared_ptr<Keyword>>> keywords;
 
-  void read_mesh(const std::string& _filepath);
-  void parse_file(const std::string& _filepath);
+  void parse_file(const std::string& _filepath, bool _parse_mesh);
   void create_keyword(const std::vector<std::string>& _lines,
                       const std::string& _keyword_name,
-                      size_t _iLine);
+                      size_t _iLine,
+                      bool _parse_mesh);
+
+  void read_mesh(const std::string& _filepath);
   std::string resolve_include(const std::string& _filepath);
 
 public:

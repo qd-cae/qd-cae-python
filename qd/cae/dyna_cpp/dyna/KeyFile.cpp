@@ -10,6 +10,7 @@
 #include <dyna_cpp/db/DB_Parts.hpp>
 #include <dyna_cpp/db/Element.hpp>
 #include <dyna_cpp/db/Part.hpp>
+#include <dyna_cpp/dyna/ElementKeyword.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
 #include <dyna_cpp/dyna/NodeKeyword.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
@@ -28,7 +29,8 @@ KeyFile::KeyFile() {}
  */
 KeyFile::KeyFile(const std::string& _filepath,
                  bool _load_includes,
-                 double _encryption_detection)
+                 double _encryption_detection,
+                 bool _parse_mesh)
   : FEMFile(_filepath)
   , load_includes(_load_includes)
   , encryption_detection_threshold(_encryption_detection)
@@ -40,11 +42,16 @@ KeyFile::KeyFile(const std::string& _filepath,
 
   // Read the mesh
   // this->read_mesh(this->get_filepath());
-  this->parse_file(this->get_filepath());
+  this->parse_file(this->get_filepath(), _parse_mesh);
 }
 
+/** Parse a keyfile
+ *
+ * @param _filepath
+ * @param _parse_mesh : whether the mesh shall be parsed
+ */
 void
-KeyFile::parse_file(const std::string& _filepath)
+KeyFile::parse_file(const std::string& _filepath, bool _parse_mesh)
 {
 
   // File directory for Includes
@@ -72,8 +79,8 @@ KeyFile::parse_file(const std::string& _filepath)
   }
 
   // convert buffer into blocks
-  std::string last_keyword;
   size_t iLine = 0;
+  std::string last_keyword;
   std::vector<std::string> line_buffer;
   std::vector<std::string> line_buffer_tmp;
 
@@ -81,43 +88,35 @@ KeyFile::parse_file(const std::string& _filepath)
   std::stringstream st(std::string(char_buffer.begin(), char_buffer.end()));
   for (; std::getline(st, line); ++iLine) {
 
+    // remove windows file ending ... I hate it ...
+    if (line.size() != 0)
+      if (line[line.size() - 1] == '\r')
+        line.pop_back();
+
     // new keyword
     if (line[0] == '*') {
 
-      // check for previous header comments
-      // wrongly assigned to previous block
-      // people usually never define comments
-      // at the end of a previous block:
-      //
-      // *PART
-      // name
-      // $# title
-      // engine part number one
-      // $#     pid     secid       mid
-      //    2000001   2000001   2000017
-      // $-----------------------------------------------
-      // $ I belong to the lower keyword, not the upper!
-      // $-----------------------------------------------
-      // *PART
-      // name
-      // $# title
-      // engine part number one
-      // $#     pid     secid       mid
-      //    2000001   2000001   2000017
+      if (!line_buffer.empty() && !last_keyword.empty()) {
 
-      if (!line_buffer.empty()) {
+        // remove comment lines from previous block (see above)
+        size_t iCount = 0;
+        size_t nTransferLines = 0;
 
-        // remove comment lines from previous block
-        line_buffer_tmp.clear();
-        while (line_buffer.size() > 0 && line_buffer.back()[0] == '$') {
-          line_buffer_tmp.push_back(line_buffer.back());
-          line_buffer.pop_back();
-        }
+        if (line_buffer.size() > 0)
+          for (size_t iCount = line_buffer.size() - 1;
+               iCount > 0 && line_buffer[iCount][0] == '$';
+               --iCount)
+            ++nTransferLines;
+
+        line_buffer_tmp = std::vector<std::string>(
+          line_buffer.end() - nTransferLines, line_buffer.end());
+        line_buffer.resize(line_buffer.size() - nTransferLines);
 
         // create a new keyword from previous data
         create_keyword(line_buffer,
                        last_keyword,
-                       iLine - line_buffer.size() - line_buffer_tmp.size());
+                       iLine - line_buffer.size() - line_buffer_tmp.size(),
+                       _parse_mesh);
 
         // transfer cropped data
         line_buffer = line_buffer_tmp;
@@ -144,7 +143,8 @@ KeyFile::parse_file(const std::string& _filepath)
 
     create_keyword(line_buffer,
                    last_keyword,
-                   iLine - line_buffer.size() - line_buffer_tmp.size());
+                   iLine - line_buffer.size() - line_buffer_tmp.size(),
+                   _parse_mesh);
   }
 }
 
@@ -157,7 +157,8 @@ KeyFile::parse_file(const std::string& _filepath)
 void
 KeyFile::create_keyword(const std::vector<std::string>& _lines,
                         const std::string& _keyword_name,
-                        size_t _iLine)
+                        size_t _iLine,
+                        bool _parse_mesh)
 {
 
   // get stripped name for the dictionary
@@ -167,19 +168,19 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
 
   std::shared_ptr<Keyword> kw = nullptr;
 
-  auto db_nodes = this->get_db_nodes();
-
   // lowercase name
   auto keyword_name_low = to_lower_copy(_keyword_name);
+  auto kw_type = Keyword::determine_keyword_type(_keyword_name);
 
-  // node keyword
-  if (keyword_name_low == "*node" || keyword_name_low == "*node_scalar_value" ||
-      keyword_name_low == "*node_rigid_surface" ||
-      keyword_name_low == "*node_merge") {
+  // NODE
+  if (_parse_mesh && kw_type == Keyword::KeywordType::NODE)
     kw = std::make_shared<NodeKeyword>(
-      db_nodes, _lines, static_cast<int64_t>(_iLine));
-  }
-  // generic keyword
+      this->get_db_nodes(), _lines, static_cast<int64_t>(_iLine));
+  // ELEMENT
+  else if (_parse_mesh && kw_type == Keyword::KeywordType::ELEMENT)
+    kw = std::make_shared<ElementKeyword>(
+      this->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
+  // GENERIC
   else
     kw = std::make_shared<Keyword>(_lines, _keyword_name, _iLine);
 

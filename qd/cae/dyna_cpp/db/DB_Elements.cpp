@@ -1,4 +1,7 @@
 
+#include <algorithm>
+#include <unordered_set>
+
 #include "DB_Elements.hpp"
 #include "DB_Nodes.hpp"
 #include "DB_Parts.hpp"
@@ -128,13 +131,29 @@ DB_Elements::add_elementByNodeIndex(const Element::ElementType _eType,
       "Could not find part with id:" + std::to_string(_part_id) + " in db."));
   }
 
-  // Find nodes (no uniqueness check)
-  std::vector<std::shared_ptr<Node>> nodes(_node_indexes.size());
-  for (size_t iNode = 0; iNode < _node_indexes.size(); iNode++)
-    nodes.push_back(db_nodes->get_nodeByIndex(_node_indexes[iNode]));
+  // Find (unique) nodes
+  std::vector<std::shared_ptr<Node>> nodes;
+  std::vector<size_t> unique_node_indexes;
+  std::unordered_set<size_t> unique_node_ids;
+  for (size_t iNode = 0; iNode < _node_indexes.size(); ++iNode) {
+
+    // get node
+    auto node = db_nodes->get_nodeByIndex(_node_indexes[iNode]);
+
+    // check for duplicate
+    auto old_size = unique_node_ids.size();
+    unique_node_ids.insert(node->get_nodeID());
+    if (unique_node_ids.size() == old_size)
+      continue;
+
+    // get node
+    nodes.push_back(node);
+    unique_node_indexes.push_back(_node_indexes[iNode]);
+  }
 
   // Create element
-  auto element = create_element_unchecked(_eType, _elementID, _node_indexes);
+  auto element =
+    create_element_unchecked(_eType, _elementID, unique_node_indexes);
 
   // Register Element
   for (auto& node : nodes)
@@ -155,7 +174,7 @@ std::shared_ptr<Element>
 DB_Elements::add_elementByNodeID(const Element::ElementType _eType,
                                  int32_t _elementID,
                                  int32_t _part_id,
-                                 const std::vector<size_t>& _node_ids)
+                                 const std::vector<int32_t>& _node_ids)
 {
   if (_elementID < 0) {
     throw(std::invalid_argument("Element-ID may not be negative!"));
@@ -168,17 +187,30 @@ DB_Elements::add_elementByNodeID(const Element::ElementType _eType,
       "Could not find part with id:" + std::to_string(_part_id) + " in db."));
   }
 
-  // Find nodes (no uniqueness check)
-  std::vector<size_t> node_indexes;
-  std::vector<std::shared_ptr<Node>> nodes(_node_ids.size());
-  for (size_t iNode = 0; iNode < _node_ids.size(); iNode++) {
+  // Find (unique) nodes
+  std::vector<std::shared_ptr<Node>> nodes;
+  std::vector<size_t> unique_node_indexes;
+  std::unordered_set<size_t> unique_node_ids;
+  for (size_t iNode = 0; iNode < _node_ids.size(); ++iNode) {
+
+    // get node (fast)
     size_t node_index = db_nodes->get_index_from_id(_node_ids[iNode]);
-    node_indexes.push_back(node_index);
-    nodes.push_back(db_nodes->get_nodeByIndex(node_index));
+    auto node = db_nodes->get_nodeByIndex(node_index);
+
+    // check for duplicate
+    auto old_size = unique_node_ids.size();
+    unique_node_ids.insert(node->get_nodeID());
+    if (unique_node_ids.size() == old_size)
+      continue;
+
+    // get node
+    nodes.push_back(node);
+    unique_node_indexes.push_back(node_index);
   }
 
   // Create element
-  auto element = create_element_unchecked(_eType, _elementID, node_indexes);
+  auto element =
+    create_element_unchecked(_eType, _elementID, unique_node_indexes);
 
   // Register Element
   for (auto& node : nodes)
@@ -291,12 +323,12 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   std::vector<size_t> node_indexes;
   for (size_t iNode = 0; iNode < _node_ids.size(); ++iNode) {
 
-    auto _node = this->db_nodes->get_nodeByID(_node_ids[iNode]);
+    auto node_index = db_nodes->get_index_from_id(_node_ids[iNode]);
+    auto _node = db_nodes->get_nodeByIndex_nothrow(node_index);
 
     // check node existance
     if (_node == nullptr)
-      _node =
-        this->db_nodes->add_node(_node_ids[iNode], std::vector<float>(3, 0.0f));
+      _node = db_nodes->add_node_byKeyFile(_node_ids[iNode], 0., 0., 0.);
 
     // check if duplicate
     auto tmp = node_ids.size();
@@ -306,7 +338,7 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
 
     // save node data
     nodes.push_back(_node);
-    node_indexes.push_back(this->db_nodes->get_index_from_id(_node_ids[iNode]));
+    node_indexes.push_back(node_index);
   }
 
   // Create element
@@ -318,7 +350,7 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   }
   part->add_element(element);
 
-  return std::move(element);
+  return element;
 }
 
 /** Get the DynaInputFile pointer
@@ -400,16 +432,12 @@ DB_Elements::get_elements(const Element::ElementType _type)
     elems.insert(elems.end(), elements8.begin(), elements8.end());
     elems.insert(elems.end(), elements4th.begin(), elements4th.end());
     return std::move(elems);
-
   } else if (_type == Element::BEAM) {
     return elements2;
-
   } else if (_type == Element::SHELL) {
     return elements4;
-
   } else if (_type == Element::SOLID) {
     return elements8;
-
   } else if (_type == Element::TSHELL) {
     return elements4th;
   }

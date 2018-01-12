@@ -58,7 +58,7 @@ public:
     const Element::ElementType _eType,
     int32_t _elementID,
     int32_t _part_id,
-    const std::vector<size_t>& _node_ids);
+    const std::vector<int32_t>& _node_ids);
   std::shared_ptr<Element> add_element_byD3plot(
     const Element::ElementType _eType,
     const int32_t _id,

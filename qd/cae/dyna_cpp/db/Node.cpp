@@ -36,9 +36,7 @@ Node::Node(int32_t _nodeID,
  */
 Node::Node(int32_t _nodeID, float _x, float _y, float _z, DB_Nodes* _db_nodes)
   : nodeID(_nodeID)
-  , coords([](float _x, float _y, float _z) {
-    return std::move(std::vector<float>{ _x, _y, _z });
-  }(_x, _y, _z))
+  , coords({ _x, _y, _z })
   , db_nodes(_db_nodes)
 {}
 
@@ -121,6 +119,19 @@ Node::add_accel(std::vector<float> _new_accel)
 #endif
 
   this->accel.push_back(_new_accel);
+}
+
+/** Set the coordinates of the node
+ * @param _x
+ * @param _y
+ * @param _z
+ */
+void
+Node::set_coords(float _x, float _y, float _z)
+{
+  coords[0] = _x;
+  coords[1] = _y;
+  coords[2] = _z;
 }
 
 /** Get the coordinates of the node over time

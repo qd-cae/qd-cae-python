@@ -113,7 +113,7 @@ string_to_lines(const std::string& _buffer, bool ignore_trailing_lines = false)
  *
  * @param _txt
  */
-std::string&
+inline std::string&
 to_lower(std::string& _txt)
 {
   std::transform(_txt.begin(), _txt.end(), _txt.begin(), ::tolower);
@@ -124,7 +124,7 @@ to_lower(std::string& _txt)
  *
  * @param _txt
  */
-std::string
+inline std::string
 to_lower_copy(std::string _txt)
 {
   std::transform(_txt.begin(), _txt.end(), _txt.begin(), ::tolower);
