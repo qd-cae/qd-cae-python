@@ -99,19 +99,44 @@ Keyword::determine_keyword_type(const std::string& _str)
 {
   auto str_lower = to_lower_copy(_str);
 
-  if (str_lower == "*node" || str_lower == "*node_scalar_value" ||
-      str_lower == "*node_rigid_surface" || str_lower == "*node_merge")
-    return KeywordType::NODE;
-  else if (str_lower.find("*element_beam") != std::string::npos ||
-           str_lower == "*element_shell" ||
-           str_lower == "*element_shell_thickness" ||
-           str_lower == "*element_shell_beta" ||
-           str_lower == "*element_shell_mcid" ||
-           str_lower == "*element_shell_offset" ||
-           str_lower == "*element_shell_dof")
-    return KeywordType::ELEMENT;
-  else
-    return KeywordType::GENERIC;
+  // *NODE
+  if (str_lower.compare(0, 5, "*node") == 0) {
+    if (str_lower.size() == 5 || // just *node
+        str_lower.compare(5, 12, "scalar_value") == 0 ||
+        str_lower.compare(5, 13, "rigid_surface") == 0 ||
+        str_lower.compare(5, 5, "merge") == 0)
+      return KeywordType::NODE;
+  }
+  // *ELEMENT
+  else if (str_lower.compare(0, 8, "*element") == 0 && str_lower.size() > 8) {
+
+    // *ELEMENT_BEAM
+    if (str_lower.compare(8, 5, "_beam") == 0)
+      return KeywordType::ELEMENT;
+
+    // *ELEMENT_SOLID
+    if (str_lower.compare(8, 6, "_solid") == 0)
+      return KeywordType::ELEMENT;
+
+    // *ELEMENT_SHELL
+    if (str_lower.compare(8, 6, "_shell") == 0) {
+
+      if (str_lower.size() <= 14)
+        return KeywordType::ELEMENT;
+
+      if (14 < str_lower.size() && str_lower[14] != '_')
+        return KeywordType::ELEMENT;
+
+      if (str_lower.compare(15, 9, "thickness") == 0 ||
+          str_lower.compare(15, 4, "beta") == 0 ||
+          str_lower.compare(15, 4, "mcid") == 0 ||
+          str_lower.compare(15, 6, "offset") == 0 ||
+          str_lower.compare(15, 3, "dof") == 0)
+        return KeywordType::ELEMENT;
+    }
+  }
+
+  return KeywordType::GENERIC;
 }
 
 /** Change the field size of the specified line

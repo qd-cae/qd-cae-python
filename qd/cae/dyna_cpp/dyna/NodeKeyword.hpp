@@ -28,6 +28,7 @@ public:
                        int64_t _iLine = 0);
   template<typename T>
   std::shared_ptr<Node> add_node(T _id, float _x, float _y, float _z);
+
   template<typename T>
   std::shared_ptr<Node> get_nodeByIndex(T _index);
   inline std::vector<std::shared_ptr<Node>> get_nodes();

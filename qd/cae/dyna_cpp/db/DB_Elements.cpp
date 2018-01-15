@@ -324,11 +324,13 @@ DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
   for (size_t iNode = 0; iNode < _node_ids.size(); ++iNode) {
 
     auto node_index = db_nodes->get_index_from_id(_node_ids[iNode]);
-    auto _node = db_nodes->get_nodeByIndex_nothrow(node_index);
+    auto _node = db_nodes->get_nodeByIndex(node_index);
 
     // check node existance
+    /*
     if (_node == nullptr)
       _node = db_nodes->add_node_byKeyFile(_node_ids[iNode], 0., 0., 0.);
+    */
 
     // check if duplicate
     auto tmp = node_ids.size();

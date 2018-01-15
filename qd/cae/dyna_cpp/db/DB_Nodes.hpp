@@ -57,13 +57,8 @@ public:
   template<typename T>
   std::vector<std::shared_ptr<Node>> get_nodeByIndex(
     const std::vector<T>& _ids);
-
-  // dirty
   template<typename T>
-  std::shared_ptr<Node> get_nodeByID_nothrow(T _id);
-  template<typename T>
-  std::vector<std::shared_ptr<Node>> get_nodeByIndex_nothrow(
-    const std::vector<T>& _ids);
+  std::shared_ptr<Node> get_nodeByIndex_nothrow(T _index);
 };
 
 /** Get the node index from it's id
@@ -112,21 +107,6 @@ DB_Nodes::get_nodeByID(T _id)
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   return this->get_nodeByIndex(this->get_index_from_id(_id));
-}
-
-/** Get a node from the node ID.
- *
- * @param T _id : id of the node
- * @return std::shared_ptr<Node> node : pointer to the node or nullptr if node
- * is not existing!
- */
-template<typename T>
-inline std::shared_ptr<Node>
-DB_Nodes::get_nodeByID_nothrow(T _id)
-{
-  static_assert(std::is_integral<T>::value, "Integer number required.");
-
-  return this->get_nodeByIndex_nothrow(this->get_index_from_id_nothrow(_id));
 }
 
 /** Get a list node from an id list

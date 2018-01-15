@@ -43,10 +43,13 @@ private:
   std::map<std::string, std::vector<std::shared_ptr<Keyword>>> keywords;
 
   void parse_file(const std::string& _filepath, bool _parse_mesh);
-  void create_keyword(const std::vector<std::string>& _lines,
-                      const std::string& _keyword_name,
-                      size_t _iLine,
-                      bool _parse_mesh);
+  std::shared_ptr<Keyword> create_keyword(
+    const std::vector<std::string>& _lines,
+    Keyword::KeywordType _keyword_type,
+    size_t _iLine,
+    bool _parse_mesh);
+  void transfer_comment_header(std::vector<std::string>& _old,
+                               std::vector<std::string>& _new);
 
   void read_mesh(const std::string& _filepath);
   std::string resolve_include(const std::string& _filepath);

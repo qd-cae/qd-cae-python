@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <queue>
 #include <sstream>
 #include <stdexcept>
 
@@ -42,7 +43,11 @@ KeyFile::KeyFile(const std::string& _filepath,
 
   // Read the mesh
   // this->read_mesh(this->get_filepath());
-  this->parse_file(this->get_filepath(), _parse_mesh);
+  try {
+    this->parse_file(this->get_filepath(), _parse_mesh);
+  } catch (const std::exception& ex) {
+    std::cout << "Error:" << ex.what() << '\n';
+  }
 }
 
 /** Parse a keyfile
@@ -83,6 +88,9 @@ KeyFile::parse_file(const std::string& _filepath, bool _parse_mesh)
   std::string last_keyword;
   std::vector<std::string> line_buffer;
   std::vector<std::string> line_buffer_tmp;
+  std::queue<std::tuple<std::vector<std::string>, size_t, std::string>>
+    buffer_queue;
+  std::queue<size_t> buffer_iLine_queue;
 
   std::string line;
   std::stringstream st(std::string(char_buffer.begin(), char_buffer.end()));
@@ -98,32 +106,33 @@ KeyFile::parse_file(const std::string& _filepath, bool _parse_mesh)
 
       if (!line_buffer.empty() && !last_keyword.empty()) {
 
-        // remove comment lines from previous block (see above)
-        size_t iCount = 0;
-        size_t nTransferLines = 0;
+        // transfer possible header for following keyword (see function)
+        transfer_comment_header(line_buffer, line_buffer_tmp);
 
-        if (line_buffer.size() > 0)
-          for (size_t iCount = line_buffer.size() - 1;
-               iCount > 0 && line_buffer[iCount][0] == '$';
-               --iCount)
-            ++nTransferLines;
+        // get type
+        auto kw_type = Keyword::determine_keyword_type(last_keyword);
 
-        line_buffer_tmp = std::vector<std::string>(
-          line_buffer.end() - nTransferLines, line_buffer.end());
-        line_buffer.resize(line_buffer.size() - nTransferLines);
-
-        // create a new keyword from previous data
-        create_keyword(line_buffer,
-                       last_keyword,
-                       iLine - line_buffer.size() - line_buffer_tmp.size(),
-                       _parse_mesh);
+        // elements will be done after parsing since we might miss parts
+        // or nodes
+        if (_parse_mesh && kw_type == Keyword::KeywordType::ELEMENT) {
+          buffer_queue.push(std::make_tuple(line_buffer, iLine, last_keyword));
+        } else {
+          auto kw =
+            create_keyword(line_buffer,
+                           kw_type,
+                           iLine - line_buffer.size() - line_buffer_tmp.size(),
+                           _parse_mesh);
+          keywords[kw->get_keyword_name()].push_back(kw);
+        }
 
         // transfer cropped data
         line_buffer = line_buffer_tmp;
       }
 
+      // we always trim keywords
       trim_right(line);
       last_keyword = line;
+
     } // IF:line[0] == '*'
 
     // we stupidly add every line to the buffer
@@ -133,19 +142,74 @@ KeyFile::parse_file(const std::string& _filepath, bool _parse_mesh)
 
   // allocate last block
   if (!line_buffer.empty()) {
-
-    // remove comment lines from previous block
-    line_buffer_tmp.clear();
-    while (line_buffer.size() > 0 && line_buffer.back()[0] == '$') {
-      line_buffer_tmp.push_back(line_buffer.back());
-      line_buffer.pop_back();
-    }
-
-    create_keyword(line_buffer,
-                   last_keyword,
-                   iLine - line_buffer.size() - line_buffer_tmp.size(),
-                   _parse_mesh);
+    auto kw =
+      create_keyword(line_buffer,
+                     Keyword::determine_keyword_type(last_keyword),
+                     iLine - line_buffer.size() - line_buffer_tmp.size(),
+                     _parse_mesh);
+    keywords[kw->get_keyword_name()].push_back(kw);
   }
+
+  // get rid of work in queue
+  while (buffer_queue.size() > 0) {
+
+    auto& data = buffer_queue.front();
+    const auto& block = std::get<0>(data);
+    iLine = std::get<1>(data);
+    last_keyword = std::get<2>(data);
+
+    auto kw = create_keyword(block,
+                             Keyword::determine_keyword_type(last_keyword),
+                             iLine - block.size() - block.size(),
+                             _parse_mesh);
+    keywords[kw->get_keyword_name()].push_back(kw);
+
+    // hihihi popping ...
+    buffer_queue.pop();
+  }
+}
+
+/** Extract a comment header, which may belong to another keyword block
+ *
+ * @param _old : old string buffer with lines containing coments
+ * @param _new : buffer in which the extracted comments will be written
+ *
+ * The routine does the following:
+ * *KEYWORD
+ * I'm some data
+ * $-------------------------------------
+ * $ I should be removed from the upper
+ * $ because im the header for the lower
+ * $-------------------------------------
+ * *ANOTHER_KEYWORD
+ *
+ * If there are comments DIRECTLY ABOVE a keyword, they ought to be transferred
+ * to the following one, because people just defined a header. People never
+ * define comments at the end of a keyword, and if they do they suck!
+ */
+void
+KeyFile::transfer_comment_header(std::vector<std::string>& _old,
+                                 std::vector<std::string>& _new)
+{
+#ifdef QD_DEBUG
+  std::cout << "KeyFile::transfer_comment_header ... ";
+#endif
+
+  size_t iCount = 0;
+  size_t nTransferLines = 0;
+  if (_old.size() > 0)
+    for (size_t iCount = _old.size() - 1; iCount > 0 && _old[iCount][0] == '$';
+         --iCount)
+      ++nTransferLines;
+
+  _new.resize(nTransferLines);
+  std::copy(_old.end() - nTransferLines, _old.end(), _new.begin());
+  //_new = std::vector<std::string>(_old.end() - nTransferLines, _old.end());
+  _old.resize(_old.size() - nTransferLines);
+
+#ifdef QD_DEBUG
+  std::cout << "done" << '\n';
+#endif
 }
 
 /** Create a keyword from it's line buffer
@@ -154,38 +218,28 @@ KeyFile::parse_file(const std::string& _filepath, bool _parse_mesh)
  * @param _keyword_name name flag
  * @param _iLine line index of the block
  */
-void
+std::shared_ptr<Keyword>
 KeyFile::create_keyword(const std::vector<std::string>& _lines,
-                        const std::string& _keyword_name,
+                        Keyword::KeywordType _keyword_type,
                         size_t _iLine,
                         bool _parse_mesh)
 {
 
-  // get stripped name for the dictionary
-  const auto key = _keyword_name[_keyword_name.size() - 1] == '+'
-                     ? _keyword_name.substr(0, _keyword_name.size() - 1)
-                     : _keyword_name;
-
-  std::shared_ptr<Keyword> kw = nullptr;
-
-  // lowercase name
-  auto keyword_name_low = to_lower_copy(_keyword_name);
-  auto kw_type = Keyword::determine_keyword_type(_keyword_name);
+#ifdef QD_DEBUG
+  std::cout << "Creating:" << _keyword_name << '\n';
+#endif
 
   // NODE
-  if (_parse_mesh && kw_type == Keyword::KeywordType::NODE)
-    kw = std::make_shared<NodeKeyword>(
+  if (_parse_mesh && _keyword_type == Keyword::KeywordType::NODE)
+    return std::make_shared<NodeKeyword>(
       this->get_db_nodes(), _lines, static_cast<int64_t>(_iLine));
   // ELEMENT
-  else if (_parse_mesh && kw_type == Keyword::KeywordType::ELEMENT)
-    kw = std::make_shared<ElementKeyword>(
+  else if (_parse_mesh && _keyword_type == Keyword::KeywordType::ELEMENT)
+    return std::make_shared<ElementKeyword>(
       this->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
   // GENERIC
   else
-    kw = std::make_shared<Keyword>(_lines, _keyword_name, _iLine);
-
-  // save keyword
-  keywords[_keyword_name].push_back(kw);
+    return std::make_shared<Keyword>(_lines, _iLine);
 }
 
 /** Resolve an include

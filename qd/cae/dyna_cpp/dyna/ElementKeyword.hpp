@@ -17,14 +17,20 @@ private:
   std::vector<std::string> unparsed_element_data;
   std::vector<std::string> trailing_lines;
 
+  // solid only
+  bool old_solid_format = false;
+
   Element::ElementType determine_elementType(
     const std::string& _keyword_name) const;
   void parse_elem2(const std::string& _keyword_name_lower,
                    const std::vector<std::string>& _lines);
   void parse_elem4(const std::string& _keyword_name_lower,
                    const std::vector<std::string>& _lines);
+  void parse_elem8(const std::string& _keyword_name_lower,
+                   const std::vector<std::string>& _lines);
   void keyword_elem2_str(std::stringstream& _ss);
   void keyword_elem4_str(std::stringstream& _ss);
+  void keyword_elem8_str(std::stringstream& _ss);
 
 public:
   explicit ElementKeyword(DB_Elements* _db_elems,
