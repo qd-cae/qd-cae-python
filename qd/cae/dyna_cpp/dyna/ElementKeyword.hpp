@@ -20,7 +20,7 @@ private:
   // solid only
   bool old_solid_format = false;
 
-  Element::ElementType determine_elementType(
+  Element::ElementType determine_element_type(
     const std::string& _keyword_name) const;
   void parse_elem2(const std::string& _keyword_name_lower,
                    const std::vector<std::string>& _lines);
