@@ -256,7 +256,10 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("get_nodes",
          &Element::get_nodes,
          pybind11::return_value_policy::reference_internal,
-         element_get_nodes_docs);
+         element_get_nodes_docs)
+    .def("get_part_id",
+         &Element::get_part_id,
+         pybind11::return_value_policy::reference_internal);
 
   // Part
   pybind11::class_<Part, std::shared_ptr<Part>> part_py(m, "QD_Part");
@@ -340,7 +343,9 @@ PYBIND11_MODULE(dyna_cpp, m)
           _indexes, "An entry of the list was not a fully fledged integer."));
       },
       "index"_a,
-      pybind11::return_value_policy::reference_internal);
+      pybind11::return_value_policy::reference_internal)
+    .def(
+      "delete_nodeByIndex", &DB_Nodes::remove_nodeByIndex<int64_t>, "index"_a);
 
   // DB_Elements
   pybind11::class_<DB_Elements, std::shared_ptr<DB_Elements>> db_elements_py(
@@ -430,7 +435,11 @@ PYBIND11_MODULE(dyna_cpp, m)
          },
          "element_type"_a,
          "index"_a,
-         pybind11::return_value_policy::reference_internal);
+         pybind11::return_value_policy::reference_internal)
+    .def("delete_elementByIndex",
+         &DB_Elements::delete_elementByIndex<int64_t>,
+         "element_type"_a,
+         "index"_a);
 
   // DB_Parts
   pybind11::class_<DB_Parts, std::shared_ptr<DB_Parts>> db_parts_py(
@@ -925,10 +934,11 @@ PYBIND11_MODULE(dyna_cpp, m)
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
     m, "QD_KeyFile", keyfile_description);
   keyfile_py
-    .def(pybind11::init<const std::string&, bool, double, bool>(),
+    .def(pybind11::init<const std::string&, bool, double, bool, bool>(),
          "filepath"_a,
          "load_includes"_a = true,
          "encryption_detection"_a = 0.7,
+         "parse_keywords"_a = true,
          "parse_mesh"_a = false,
          keyfile_constructor)
     .def("__str__", &KeyFile::str)
@@ -960,13 +970,16 @@ PYBIND11_MODULE(dyna_cpp, m)
            // generic kw?
            else
              return pybind11::cast(kwrds);
-         })
+         },
+         "name"_a)
     .def("keys", &KeyFile::keys)
     .def("save_txt",
          &KeyFile::save_txt,
          "filepath"_a,
          "save_includes"_a = true,
-         "save_all_in_one"_a = false);
+         "save_all_in_one"_a = false)
+    .def(
+      "remove_keyword", &KeyFile::remove_keyword<int64_t>, "name"_a, "index"_a);
 
   // Binout
   /*

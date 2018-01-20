@@ -13,10 +13,13 @@ namespace qd {
 
 // forward declarations
 class Node;
+class DB_Nodes;
 class DB_Elements;
 
 class Element
 {
+  friend class DB_Nodes;
+
 public:
   enum ElementType
   {
@@ -29,8 +32,9 @@ public:
 
 private:
   int32_t elementID;
+  int32_t part_id;
   bool is_rigid;
-  std::vector<size_t> nodes; // indexes
+  std::vector<int32_t> node_ids;
   std::vector<float> energy;
   std::vector<float> stress_mises;
   std::vector<float> plastic_strain;
@@ -40,11 +44,15 @@ private:
   ElementType elemType;
   DB_Elements* db_elements;
 
+  void remove_node(int32_t _node_id);
+
 public:
-  explicit Element(const int32_t _id,
-                   const ElementType _etype,
-                   const std::vector<size_t>& _nodes,
+  explicit Element(int32_t _id,
+                   int32_t _part_id,
+                   ElementType _etype,
+                   const std::vector<int32_t>& _node_ids,
                    DB_Elements* db_elements);
+  virtual ~Element();
   bool operator<(const Element& other) const;
   inline std::string str()
   {
@@ -56,6 +64,7 @@ public:
   // getter
   ElementType get_elementType() const;
   int32_t get_elementID() const;
+  int32_t get_part_id() const;
   bool get_is_rigid() const;
   float get_estimated_element_size() const; // fast
   std::vector<std::shared_ptr<Node>> get_nodes() const;

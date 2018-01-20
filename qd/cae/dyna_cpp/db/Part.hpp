@@ -14,14 +14,19 @@ namespace qd {
 // forward declaration
 class Node;
 class FEMFile;
+class DB_Elements;
 
 class Part
 {
+  friend class DB_Elements;
+
 private:
   int32_t partID;
   FEMFile* femfile;
   std::string partName;
   std::vector<std::shared_ptr<Element>> elements;
+
+  void remove_element(std::shared_ptr<Element> _element);
 
 public:
   explicit Part(int32_t _partID,

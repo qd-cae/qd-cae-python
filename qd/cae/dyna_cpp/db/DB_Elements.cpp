@@ -45,55 +45,56 @@ DB_Elements::~DB_Elements()
  */
 std::shared_ptr<Element>
 DB_Elements::create_element_unchecked(Element::ElementType _eType,
-                                      int32_t _id,
-                                      const std::vector<size_t>& _node_indexes)
+                                      int32_t _element_id,
+                                      int32_t _part_id,
+                                      const std::vector<int32_t>& _node_ids)
 {
   std::shared_ptr<Element> element =
-    std::make_shared<Element>(_id, _eType, _node_indexes, this);
+    std::make_shared<Element>(_element_id, _part_id, _eType, _node_ids, this);
 
   switch (_eType) {
     case (Element::SHELL):
       // check uniqueness
-      if (id2index_elements4.find(_id) != id2index_elements4.end())
+      if (id2index_elements4.find(_element_id) != id2index_elements4.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
-          std::to_string(_id)));
+          std::to_string(_element_id)));
       // insert
       id2index_elements4.insert(
-        std::pair<int32_t, size_t>(_id, elements4.size()));
+        std::pair<int32_t, size_t>(_element_id, elements4.size()));
       elements4.push_back(element);
       break;
 
     case (Element::SOLID):
-      if (id2index_elements8.find(_id) != id2index_elements8.end())
+      if (id2index_elements8.find(_element_id) != id2index_elements8.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
-          std::to_string(_id)));
+          std::to_string(_element_id)));
 
       id2index_elements8.insert(
-        std::pair<int32_t, size_t>(_id, elements8.size()));
+        std::pair<int32_t, size_t>(_element_id, elements8.size()));
       elements8.push_back(element);
       break;
 
     case (Element::BEAM):
-      if (id2index_elements2.find(_id) != id2index_elements2.end())
+      if (id2index_elements2.find(_element_id) != id2index_elements2.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
-          std::to_string(_id)));
+          std::to_string(_element_id)));
 
       this->id2index_elements2.insert(
-        std::pair<int32_t, size_t>(_id, elements2.size()));
+        std::pair<int32_t, size_t>(_element_id, elements2.size()));
       this->elements2.push_back(element);
       break;
 
     case (Element::TSHELL):
-      if (id2index_elements4th.find(_id) != id2index_elements4th.end())
+      if (id2index_elements4th.find(_element_id) != id2index_elements4th.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
-          std::to_string(_id)));
+          std::to_string(_element_id)));
 
       id2index_elements4th.insert(
-        std::pair<int32_t, size_t>(_id, this->elements4th.size()));
+        std::pair<int32_t, size_t>(_element_id, this->elements4th.size()));
       elements4th.push_back(element);
       break;
 
@@ -133,27 +134,27 @@ DB_Elements::add_elementByNodeIndex(const Element::ElementType _eType,
 
   // Find (unique) nodes
   std::vector<std::shared_ptr<Node>> nodes;
-  std::vector<size_t> unique_node_indexes;
-  std::unordered_set<size_t> unique_node_ids;
+  std::vector<int32_t> unique_node_ids;
+  std::unordered_set<int32_t> node_ids_set;
   for (size_t iNode = 0; iNode < _node_indexes.size(); ++iNode) {
 
     // get node
     auto node = db_nodes->get_nodeByIndex(_node_indexes[iNode]);
 
     // check for duplicate
-    auto old_size = unique_node_ids.size();
-    unique_node_ids.insert(node->get_nodeID());
-    if (unique_node_ids.size() == old_size)
+    auto old_size = node_ids_set.size();
+    node_ids_set.insert(node->get_nodeID());
+    if (node_ids_set.size() == old_size)
       continue;
 
     // get node
     nodes.push_back(node);
-    unique_node_indexes.push_back(_node_indexes[iNode]);
+    unique_node_ids.push_back(node->get_nodeID());
   }
 
   // Create element
   auto element =
-    create_element_unchecked(_eType, _elementID, unique_node_indexes);
+    create_element_unchecked(_eType, _part_id, _elementID, unique_node_ids);
 
   // Register Element
   for (auto& node : nodes)
@@ -189,8 +190,8 @@ DB_Elements::add_elementByNodeID(const Element::ElementType _eType,
 
   // Find (unique) nodes
   std::vector<std::shared_ptr<Node>> nodes;
-  std::vector<size_t> unique_node_indexes;
-  std::unordered_set<size_t> unique_node_ids;
+  std::vector<int32_t> unique_node_ids;
+  std::unordered_set<int32_t> node_ids_set;
   for (size_t iNode = 0; iNode < _node_ids.size(); ++iNode) {
 
     // get node (fast)
@@ -198,19 +199,19 @@ DB_Elements::add_elementByNodeID(const Element::ElementType _eType,
     auto node = db_nodes->get_nodeByIndex(node_index);
 
     // check for duplicate
-    auto old_size = unique_node_ids.size();
-    unique_node_ids.insert(node->get_nodeID());
-    if (unique_node_ids.size() == old_size)
+    auto old_size = node_ids_set.size();
+    node_ids_set.insert(node->get_nodeID());
+    if (node_ids_set.size() == old_size)
       continue;
 
     // get node
     nodes.push_back(node);
-    unique_node_indexes.push_back(node_index);
+    unique_node_ids.push_back(_node_ids[iNode]);
   }
 
   // Create element
   auto element =
-    create_element_unchecked(_eType, _elementID, unique_node_indexes);
+    create_element_unchecked(_eType, _elementID, _part_id, unique_node_ids);
 
   // Register Element
   for (auto& node : nodes)
@@ -254,9 +255,9 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
   }
 
   // Find nodes
-  std::set<int32_t> node_ids; // just for testing
+  std::unordered_set<int32_t> node_id_set; // just for testing
+  std::vector<int32_t> node_ids;
   std::vector<std::shared_ptr<Node>> nodes;
-  std::vector<size_t> node_indexes;
   for (size_t iNode = 0; iNode < _elementData.size() - 1;
        iNode++) { // last is mat
 
@@ -264,87 +265,19 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
     auto _node = this->db_nodes->get_nodeByIndex(_elementData[iNode] - 1);
 
     // check if duplicate
-    auto tmp = node_ids.size();
-    node_ids.insert(_elementData[iNode]);
-    if (node_ids.size() == tmp)
+    auto tmp = node_id_set.size();
+    node_id_set.insert(_elementData[iNode]);
+    if (node_id_set.size() == tmp)
       continue;
 
     // add new node data
     nodes.push_back(_node);
-    node_indexes.push_back(_elementData[iNode] - 1);
+    node_ids.push_back(_node->get_nodeID());
   }
 
   // Create element
-  auto element = create_element_unchecked(_eType, _elementID, node_indexes);
-
-  // Register Elements
-  for (auto& node : nodes) {
-    node->add_element(element);
-  }
-  part->add_element(element);
-
-  return element;
-}
-
-/** Add an element coming from a KeyFile/Dyna Input File
- *
- * @param Element::ElementType _eType : type of the element to add, enum in
- * Element.hpp
- * @param int32_t _elementID : id of the element to add
- * @param int32_t part_id : id of the part, the element belongs to
- * @param std::vector<int32_t> _node_ids : node ids of the used nodes
- * @return std::shared_ptr<Element> element : pointer to created instance
- *
- * Add an element to the db by it's ID  and it's nodeIDs. Throws an exception
- * if one nodeID is invalid or if the elementID is already existing. Since a
- * KeyFile may have some weird order, missing parts and nodes are created.
- */
-std::shared_ptr<Element>
-DB_Elements::add_element_byKeyFile(Element::ElementType _eType,
-                                   int32_t _elementID,
-                                   int32_t _partid,
-                                   const std::vector<int32_t>& _node_ids)
-{
-  if (_elementID < 0) {
-    throw(std::invalid_argument("Element-ID may not be negative!"));
-  }
-
-  // Find part (inefficient)
-  std::shared_ptr<Part> part = nullptr;
-  try {
-    part = this->db_parts->get_partByID(_partid);
-  } catch (std::invalid_argument) {
-    part = this->db_parts->add_partByID(_partid);
-  }
-
-  // Find nodes
-  std::set<int32_t> node_ids;
-  std::vector<std::shared_ptr<Node>> nodes;
-  std::vector<size_t> node_indexes;
-  for (size_t iNode = 0; iNode < _node_ids.size(); ++iNode) {
-
-    auto node_index = db_nodes->get_index_from_id(_node_ids[iNode]);
-    auto _node = db_nodes->get_nodeByIndex(node_index);
-
-    // check node existance
-    /*
-    if (_node == nullptr)
-      _node = db_nodes->add_node_byKeyFile(_node_ids[iNode], 0., 0., 0.);
-    */
-
-    // check if duplicate
-    auto tmp = node_ids.size();
-    node_ids.insert(_node_ids[iNode]);
-    if (node_ids.size() == tmp)
-      continue;
-
-    // save node data
-    nodes.push_back(_node);
-    node_indexes.push_back(node_index);
-  }
-
-  // Create element
-  auto element = create_element_unchecked(_eType, _elementID, node_indexes);
+  auto element =
+    create_element_unchecked(_eType, _elementID, part->get_partID(), node_ids);
 
   // Register Elements
   for (auto& node : nodes) {

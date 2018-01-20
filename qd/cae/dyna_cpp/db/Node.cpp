@@ -8,6 +8,7 @@
 #include "dyna_cpp/dyna/D3plot.hpp"
 #include "dyna_cpp/utility/TextUtility.hpp"
 
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
 #include <stdexcept>
@@ -39,6 +40,16 @@ Node::Node(int32_t _nodeID, float _x, float _y, float _z, DB_Nodes* _db_nodes)
   , coords({ _x, _y, _z })
   , db_nodes(_db_nodes)
 {}
+
+/** Destructor
+ *
+ */
+Node::~Node()
+{
+#ifdef QD_DEBUG
+  std::cout << "Node " << nodeID << " erased." << '\n';
+#endif
+}
 
 /** Comparator.
  * Used for maps ... somwhere ... can not remember
@@ -159,6 +170,22 @@ Node::get_coords() const
     std::vector<std::vector<float>> ret = { this->coords };
     return ret;
   }
+}
+
+/** Remove an element from the node
+ *
+ * @param _element : element to remove
+ *
+ * Does nothing if element referenced by node
+ */
+void
+Node::remove_element(std::shared_ptr<Element> _element)
+{
+  elements.erase(
+    std::remove_if(elements.begin(),
+                   elements.end(),
+                   [_element](auto elem) { return elem == _element; }),
+    elements.end());
 }
 
 } // NAMESPACE:qd

@@ -101,10 +101,10 @@ Keyword::determine_keyword_type(const std::string& _str)
 
   // *NODE
   if (str_lower.compare(0, 5, "*node") == 0) {
-    if (str_lower.size() == 5 || // just *node
-        str_lower.compare(5, 12, "scalar_value") == 0 ||
-        str_lower.compare(5, 13, "rigid_surface") == 0 ||
-        str_lower.compare(5, 5, "merge") == 0)
+    if (str_lower.size() <= 5 || // just *node
+        str_lower.compare(5, 13, "_scalar_value") == 0 ||
+        str_lower.compare(5, 14, "_rigid_surface") == 0 ||
+        str_lower.compare(5, 6, "_merge") == 0)
       return KeywordType::NODE;
   }
   // *ELEMENT
@@ -124,14 +124,21 @@ Keyword::determine_keyword_type(const std::string& _str)
       if (str_lower.size() <= 14)
         return KeywordType::ELEMENT;
 
-      if (14 < str_lower.size() && str_lower[14] != '_')
+      if (str_lower.compare(14, 10, "_thickness") == 0 ||
+          str_lower.compare(14, 5, "_beta") == 0 ||
+          str_lower.compare(14, 5, "_mcid") == 0 ||
+          str_lower.compare(14, 7, "_offset") == 0 ||
+          str_lower.compare(14, 4, "_dof") == 0)
+        return KeywordType::ELEMENT;
+    }
+
+    // *ELEMENT_TSHELL
+    if (str_lower.compare(8, 7, "_tshell") == 0) {
+
+      if (str_lower.size() <= 15)
         return KeywordType::ELEMENT;
 
-      if (str_lower.compare(15, 9, "thickness") == 0 ||
-          str_lower.compare(15, 4, "beta") == 0 ||
-          str_lower.compare(15, 4, "mcid") == 0 ||
-          str_lower.compare(15, 6, "offset") == 0 ||
-          str_lower.compare(15, 3, "dof") == 0)
+      if (str_lower.compare(15, 5, "_beta") == 0)
         return KeywordType::ELEMENT;
     }
   }

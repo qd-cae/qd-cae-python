@@ -42,7 +42,9 @@ private:
   std::vector<std::shared_ptr<KeyFile>> includes;
   std::map<std::string, std::vector<std::shared_ptr<Keyword>>> keywords;
 
-  void parse_file(const std::string& _filepath, bool _parse_mesh);
+  void parse_file(const std::string& _filepath,
+                  bool _parse_mesh,
+                  bool _parse_keywords);
   std::shared_ptr<Keyword> create_keyword(
     const std::vector<std::string>& _lines,
     Keyword::KeywordType _keyword_type,
@@ -50,8 +52,6 @@ private:
     bool _parse_mesh);
   void transfer_comment_header(std::vector<std::string>& _old,
                                std::vector<std::string>& _new);
-
-  void read_mesh(const std::string& _filepath);
   std::string resolve_include(const std::string& _filepath);
 
 public:
@@ -59,9 +59,12 @@ public:
   KeyFile(const std::string& _filepath,
           bool _load_includes = true,
           double _encryption_detection = 0.7,
-          bool _parse_mesh = true);
+          bool _parse_keywords = true,
+          bool _parse_mesh = false);
   inline std::vector<std::shared_ptr<Keyword>> get_keywordsByName(
     const std::string& _keyword_name);
+  template<typename T>
+  void remove_keyword(const std::string& _keyword_name, T _index);
   inline std::vector<std::string> keys();
   std::string str() const;
   void save_txt(const std::string& _filepath,
@@ -88,6 +91,31 @@ KeyFile::get_keywordsByName(const std::string& _keyword_name)
   // return empty vector if not found
   // (prevents creation of an empty entry in map)
   return std::vector<std::shared_ptr<Keyword>>();
+}
+
+/** Remove a keyword
+ *
+ * @param _keyword_name : name
+ * @param _index : index in the vector
+ *
+ * Does nothing if keyword does not exist or
+ */
+template<typename T>
+void
+KeyFile::remove_keyword(const std::string& _keyword_name, T _index)
+{
+  // search
+  auto it = keywords.find(_keyword_name);
+  if (it == keywords.end())
+    return;
+
+  auto& kwrds = it->second;
+
+  _index = index_treatment(_index, kwrds.size());
+  if (static_cast<size_t>(_index) < kwrds.size())
+    kwrds.erase(kwrds.begin() + _index);
+  if (kwrds.size() == 0)
+    keywords.erase(it);
 }
 
 /** Get a list of keywords in the file

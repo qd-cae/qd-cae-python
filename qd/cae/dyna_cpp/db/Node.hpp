@@ -12,9 +12,12 @@ namespace qd {
 // forward declarations
 class Element;
 class DB_Nodes;
+class DB_Elements;
 
 class Node
 {
+  friend class DB_Elements;
+
 private:
   int32_t nodeID;
   std::vector<std::shared_ptr<Element>> elements;
@@ -23,6 +26,8 @@ private:
   std::vector<std::vector<float>> vel;
   std::vector<std::vector<float>> accel;
   DB_Nodes* db_nodes;
+
+  void remove_element(std::shared_ptr<Element> _element);
 
 public:
   explicit Node(int32_t _nodeID,
@@ -33,6 +38,7 @@ public:
                 float _y,
                 float _z,
                 DB_Nodes* db_nodes);
+  ~Node();
   bool operator<(const Node& other) const;
   inline std::string str()
   {

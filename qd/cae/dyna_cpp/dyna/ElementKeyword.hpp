@@ -28,14 +28,18 @@ private:
                    const std::vector<std::string>& _lines);
   void parse_elem8(const std::string& _keyword_name_lower,
                    const std::vector<std::string>& _lines);
+  void parse_elem4th(const std::string& _keyword_name_lower,
+                     const std::vector<std::string>& _lines);
   void keyword_elem2_str(std::stringstream& _ss);
   void keyword_elem4_str(std::stringstream& _ss);
   void keyword_elem8_str(std::stringstream& _ss);
+  void keyword_elem4th_str(std::stringstream& _ss);
 
 public:
   explicit ElementKeyword(DB_Elements* _db_elems,
                           const std::vector<std::string>& _lines,
                           int64_t _iLine = 0);
+  virtual ~ElementKeyword();
   inline Element::ElementType get_type() const;
   inline size_t get_nElements() const;
   template<typename T>

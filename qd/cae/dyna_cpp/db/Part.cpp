@@ -107,4 +107,20 @@ Part::get_elements(Element::ElementType _etype)
   }
 }
 
+/** Remove an element
+ *
+ * @param _element : element to remove
+ *
+ * Does nothing if element not referenced
+ */
+void
+Part::remove_element(std::shared_ptr<Element> _element)
+{
+  elements.erase(
+    std::remove_if(elements.begin(),
+                   elements.end(),
+                   [_element](auto elem) { return elem == _element; }),
+    elements.end());
+}
+
 } // namespace qd
