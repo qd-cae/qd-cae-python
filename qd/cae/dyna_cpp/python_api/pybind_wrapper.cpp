@@ -12,6 +12,7 @@
 #include <dyna_cpp/dyna/KeyFile.hpp>
 #include <dyna_cpp/dyna/Keyword.hpp>
 #include <dyna_cpp/dyna/NodeKeyword.hpp>
+#include <dyna_cpp/dyna/PartKeyword.hpp>
 #include <dyna_cpp/dyna/RawD3plot.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
@@ -343,9 +344,7 @@ PYBIND11_MODULE(dyna_cpp, m)
           _indexes, "An entry of the list was not a fully fledged integer."));
       },
       "index"_a,
-      pybind11::return_value_policy::reference_internal)
-    .def(
-      "delete_nodeByIndex", &DB_Nodes::remove_nodeByIndex<int64_t>, "index"_a);
+      pybind11::return_value_policy::reference_internal);
 
   // DB_Elements
   pybind11::class_<DB_Elements, std::shared_ptr<DB_Elements>> db_elements_py(
@@ -435,11 +434,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          },
          "element_type"_a,
          "index"_a,
-         pybind11::return_value_policy::reference_internal)
-    .def("delete_elementByIndex",
-         &DB_Elements::delete_elementByIndex<int64_t>,
-         "element_type"_a,
-         "index"_a);
+         pybind11::return_value_policy::reference_internal);
 
   // DB_Parts
   pybind11::class_<DB_Parts, std::shared_ptr<DB_Parts>> db_parts_py(
@@ -705,6 +700,8 @@ PYBIND11_MODULE(dyna_cpp, m)
     node_keyword_py(m, "NodeKeyword");
   pybind11::class_<ElementKeyword, Keyword, std::shared_ptr<ElementKeyword>>
     element_keyword_py(m, "ElementKeyword");
+  pybind11::class_<PartKeyword, Keyword, std::shared_ptr<PartKeyword>>
+    part_keyword_py(m, "PartKeyword");
 
   pybind11::enum_<Keyword::Align>(keyword_py, "align")
     .value("left", Keyword::Align::LEFT)
@@ -929,6 +926,13 @@ PYBIND11_MODULE(dyna_cpp, m)
          "id"_a,
          "part_id"_a,
          "node_indexes"_a);
+
+  part_keyword_py
+    .def("add_part", &PartKeyword::add_part<int64_t>, "id"_a, "name"_a = "")
+    .def("get_partByIndex", &PartKeyword::get_partByIndex<int64_t>, "index"_a)
+    .def("get_parts", &PartKeyword::get_parts)
+    .def("get_nParts", &PartKeyword::get_nParts)
+    .def("__str__", &PartKeyword::str);
 
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(

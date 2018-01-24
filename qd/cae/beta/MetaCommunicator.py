@@ -189,6 +189,10 @@ class MetaCommunicator:
             partlist = [partlist]
         partlist = [ int(entry) for entry in partlist if isinstance(entry, numbers.Number) ]
         
+        # clean if neccesary
+        if show_only:
+            self.hide_pids()
+        
         # send command
         if partlist:
             self.send_command("add pid %s" % str(partlist)[1:-1]  )

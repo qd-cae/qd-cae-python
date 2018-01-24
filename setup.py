@@ -251,7 +251,7 @@ if __name__ == "__main__":
                        },
           package_data={
               'qd.cae.resources': ['*.js', 'html.template'],
-              'qd.cae.beta': ['meta_remote_control', 'meta_remote_control.exe']
+              'qd.cae.beta': ['meta_remote_control', 'meta_remote_control.exe','msvcr71.dll']
           },
           ext_package='qd.cae',  # where to place c extensions
           ext_modules=[dyna_extension],

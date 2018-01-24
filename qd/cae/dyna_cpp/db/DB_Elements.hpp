@@ -87,10 +87,6 @@ public:
   std::vector<std::shared_ptr<Element>> get_elementByIndex(
     Element::ElementType _eType,
     const std::vector<T>& _indexes);
-
-  template<typename T>
-  void delete_elementByIndex(Element::ElementType _eType,
-                             const std::vector<T>& _elem_indexes);
 };
 
 /** Get the element idnex from an id
@@ -282,77 +278,6 @@ DB_Elements::get_elementByIndex(Element::ElementType _elementType,
     ret.push_back(this->get_elementByIndex(_elementType, index));
   }
   return std::move(ret);
-}
-
-/** Remove elements from an index list
- *
- * @param _eType : type of the element to remove
- * @param _indexes : indexes of the elements to remove
- *
- * invalid indexes will be skipped
- */
-template<typename T>
-void
-DB_Elements::delete_elementByIndex(Element::ElementType _eType,
-                                   const std::vector<T>& _elem_indexes)
-{
-
-  if (_eType == Element::NONE)
-    throw(std::invalid_argument("Invalid element type for deletion."));
-
-  if (_elem_indexes.empty())
-    return;
-
-  // first sort from bigger to less and make unique!
-  std::set<T> indexes_unique(_elem_indexes.begin(), _elem_indexes.end());
-  std::vector<T> indexes_sorted(indexes_unique.rbegin(), indexes_unique.rend());
-
-  // prepare copying
-  auto nElements = get_nElements(_eType);
-
-  std::vector<std::shared_ptr<Element>> new_elements;
-  std::unordered_map<int32_t, size_t> new_id2index;
-
-  new_elements.reserve(nElements - indexes_sorted.size());
-  new_id2index.reserve(nElements - indexes_sorted.size());
-
-  // do the thing
-  for (size_t iElement = 0; iElement < nElements; ++iElement) {
-
-    auto element = get_elementByIndex(_eType, iElement);
-
-    // delete elements
-    if (iElement == indexes_sorted.back()) {
-      for (auto node : element->get_nodes())
-        node->remove_element(element);
-      db_parts->get_partByID(element->get_part_id())->remove_element(element);
-      indexes_sorted.pop_back();
-      continue;
-    }
-
-    new_elements.push_back(element);
-    new_id2index[element->get_elementID()] = iElement;
-  }
-
-  // assign new elements
-  switch (_eType) {
-    case (Element::BEAM):
-      elements2 = std::move(new_elements);
-      id2index_elements2 = std::move(new_id2index);
-      break;
-    case (Element::SHELL):
-      elements4 = std::move(new_elements);
-      id2index_elements4 = std::move(new_id2index);
-      break;
-    case (Element::SOLID):
-      elements8 = std::move(new_elements);
-      id2index_elements8 = std::move(new_id2index);
-      break;
-    case (Element::TSHELL):
-      elements4th = std::move(new_elements);
-      id2index_elements4th = std::move(new_id2index);
-      break;
-  }
 }
 
 } // namespace qd

@@ -32,7 +32,8 @@ public:
   {
     GENERIC,
     NODE,
-    ELEMENT
+    ELEMENT,
+    PART
   };
 
   // Static settings

@@ -111,9 +111,13 @@ KeyFile::remove_keyword(const std::string& _keyword_name, T _index)
 
   auto& kwrds = it->second;
 
+  // do the thing
   _index = index_treatment(_index, kwrds.size());
-  if (static_cast<size_t>(_index) < kwrds.size())
+  if (static_cast<size_t>(_index) < kwrds.size() &&
+      kwrds[_index]->get_keyword_type() == Keyword::KeywordType::GENERIC)
     kwrds.erase(kwrds.begin() + _index);
+
+  // remove keyword name in map if no data is here
   if (kwrds.size() == 0)
     keywords.erase(it);
 }

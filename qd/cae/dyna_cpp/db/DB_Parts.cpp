@@ -10,8 +10,7 @@ namespace qd {
  */
 DB_Parts::DB_Parts(FEMFile* _femfile)
   : femfile(_femfile)
-{
-}
+{}
 
 /**
  * Destructor
@@ -28,12 +27,11 @@ DB_Parts::~DB_Parts()
 std::shared_ptr<Part>
 DB_Parts::add_partByID(int32_t _partID, const std::string& name)
 {
-#ifdef QD_DEBUG
   const auto& it = id2index_parts.find(_partID);
   if (it != id2index_parts.end())
-    throw(std::invalid_argument(
-      "Trying to insert a part with same ID twice into the part-db!"));
-#endif
+    throw(std::invalid_argument("Trying to insert a part with same id " +
+                                std::to_string(_partID) +
+                                " twice into the part-db!"));
 
   auto part = std::make_shared<Part>(_partID, name, this->femfile);
   this->parts.push_back(part);

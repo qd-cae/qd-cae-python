@@ -60,9 +60,6 @@ public:
     const std::vector<T>& _ids);
   template<typename T>
   std::shared_ptr<Node> get_nodeByIndex_nothrow(T _index);
-
-  template<typename T>
-  void remove_nodeByID(std::vector<T> _indexes);
 };
 
 /** Get the node index from it's id
@@ -186,43 +183,6 @@ DB_Nodes::get_nodeByIndex(const std::vector<T>& _indexes)
   }
 
   return std::move(ret);
-}
-
-/** Remove elements by their indexes
- *
- * @param _indexes
- */
-template<typename T>
-void
-DB_Nodes::remove_nodeByID(std::vector<T> _node_ids)
-{
-
-  if (_node_ids.empty())
-    return;
-
-  auto db_elements = get_femfile()->get_db_elements();
-
-  // make indexes unique and sort
-  std::sort(_node_ids.begin(), _node_ids.end());
-  _node_ids.erase(std::unique(_node_ids.begin(), _node_ids.end()),
-                  _node_ids.end());
-
-  // find elements belonging to nodes
-  std::unordered_set<std::shared_ptr<Element>> elems_to_delete;
-  for (auto node_id : _node_ids) {
-    auto node = get_nodeByID(node_id);
-
-    for (auto node_elem : node->get_elements())
-      elems_to_delete.insert(node_elem);
-  }
-
-  // delete elements
-  db_elements->delete_elements(elemes_to_delete);
-
-  // delete nodes
-  for (auto node_id : _node_ids)
-    id2index_nodes.erase(node->get_nodeID());
-  vector_remove_indexes(nodes, _indexes, false);
 }
 
 } // namespace qd
