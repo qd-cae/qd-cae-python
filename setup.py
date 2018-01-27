@@ -22,7 +22,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 debugging_mode = True
 measure_time = False
 use_openmp = True
-version = "0.6.9"
+version = "0.7"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() in ["Linux", "Darwin"])
@@ -50,6 +50,7 @@ def setup_dyna_cpp():
         "qd/cae/dyna_cpp/dyna/Keyword.cpp",
         "qd/cae/dyna_cpp/dyna/NodeKeyword.cpp",
         "qd/cae/dyna_cpp/dyna/ElementKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/PartKeyword.cpp",
         "qd/cae/dyna_cpp/utility/FileUtility.cpp",
         "qd/cae/dyna_cpp/utility/TextUtility.cpp"]
 
@@ -251,7 +252,7 @@ if __name__ == "__main__":
                        },
           package_data={
               'qd.cae.resources': ['*.js', 'html.template'],
-              'qd.cae.beta': ['meta_remote_control', 'meta_remote_control.exe','msvcr71.dll']
+              'qd.cae.beta': ['meta_remote_control', 'meta_remote_control.exe', 'msvcr71.dll']
           },
           ext_package='qd.cae',  # where to place c extensions
           ext_modules=[dyna_extension],

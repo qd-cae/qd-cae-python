@@ -31,7 +31,7 @@ public:
   inline std::shared_ptr<Part> get_partByIndex(T _part_index);
   inline std::vector<std::shared_ptr<Part>> get_parts();
   inline size_t get_nParts() const;
-  inline std::string str() const;
+  std::string str() const;
 };
 
 /** Add a part to the keyword
@@ -45,8 +45,10 @@ std::shared_ptr<Part>
 PartKeyword::add_part(T _part_id, const std::string& _name)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
-  auto part = db_parts->add_partByID(_part_id, _name);
-  part_ids.push_back(static_cast<int32_t>(_part_id));
+
+  auto part_id_i32 = static_cast<int32_t>(_part_id);
+  auto part = db_parts->add_partByID(part_id_i32, _name);
+  part_ids.push_back(part_id_i32);
   return part;
 }
 
@@ -60,7 +62,9 @@ std::shared_ptr<Part>
 PartKeyword::get_partByIndex(T _part_index)
 {
   _part_index = index_treatment(_part_index, part_ids.size());
-  return this->db_parts->get_partByID(_part_index);
+  if (static_cast<size_t>(_part_index) > part_ids.size())
+    throw(std::invalid_argument("Part index out of bounds for part keyword."));
+  return this->db_parts->get_partByID(part_ids[_part_index]);
 }
 
 /** Get all the parts in the keyword

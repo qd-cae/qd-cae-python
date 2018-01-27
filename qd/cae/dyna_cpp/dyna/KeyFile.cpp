@@ -14,6 +14,7 @@
 #include <dyna_cpp/dyna/ElementKeyword.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
 #include <dyna_cpp/dyna/NodeKeyword.hpp>
+#include <dyna_cpp/dyna/PartKeyword.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 
@@ -228,17 +229,25 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
                         bool _parse_mesh)
 {
 
-  // NODE
-  if (_parse_mesh && _keyword_type == Keyword::KeywordType::NODE)
-    return std::make_shared<NodeKeyword>(
-      this->get_db_nodes(), _lines, static_cast<int64_t>(_iLine));
-  // ELEMENT
-  else if (_parse_mesh && _keyword_type == Keyword::KeywordType::ELEMENT)
-    return std::make_shared<ElementKeyword>(
-      this->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
-  // GENERIC
-  else
-    return std::make_shared<Keyword>(_lines, _iLine);
+  if (_parse_mesh) {
+
+    switch (_keyword_type) {
+      case (Keyword::KeywordType::NODE):
+        return std::make_shared<NodeKeyword>(
+          this->get_db_nodes(), _lines, static_cast<int64_t>(_iLine));
+      case (Keyword::KeywordType::ELEMENT):
+        return std::make_shared<ElementKeyword>(
+          this->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
+      case (Keyword::KeywordType::PART):
+        return std::make_shared<PartKeyword>(
+          this->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
+      default:
+        // nothing
+        break;
+    }
+  }
+
+  return std::make_shared<Keyword>(_lines, _iLine);
 }
 
 /** Resolve an include

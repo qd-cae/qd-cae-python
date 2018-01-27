@@ -142,6 +142,23 @@ Keyword::determine_keyword_type(const std::string& _str)
         return KeywordType::ELEMENT;
     }
   }
+  // *PART
+  else if (str_lower.compare(0, 5, "*part") == 0) {
+    if (str_lower.size() > 6) {
+
+      // unsupported part options
+      if (str_lower.compare(6, 8, "adaptive") ||
+          str_lower.compare(6, 6, "anneal") ||
+          str_lower.compare(6, 9, "composite") ||
+          str_lower.compare(6, 9, "duplicate") ||
+          str_lower.compare(6, 5, "modes") || str_lower.compare(6, 4, "move") ||
+          str_lower.compare(6, 6, "sensor") ||
+          str_lower.compare(6, 7, "stacked"))
+        return KeywordType::GENERIC;
+      else
+        return KeywordType::PART;
+    }
+  }
 
   return KeywordType::GENERIC;
 }
