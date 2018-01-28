@@ -47,7 +47,7 @@ Node::Node(int32_t _nodeID, float _x, float _y, float _z, DB_Nodes* _db_nodes)
 Node::~Node()
 {
 #ifdef QD_DEBUG
-  std::cout << "Node " << nodeID << " erased." << '\n';
+// std::cout << "Node " << nodeID << " erased." << '\n';
 #endif
 }
 

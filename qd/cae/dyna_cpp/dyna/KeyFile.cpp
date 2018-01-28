@@ -116,11 +116,37 @@ KeyFile::parse_file(const std::string& _filepath,
         // get type
         auto kw_type = Keyword::determine_keyword_type(last_keyword);
 
+#ifdef QD_DEBUG
+        std::cout << last_keyword << " -> ";
+        switch (kw_type) {
+          case (Keyword::KeywordType::NODE):
+            std::cout << "NODE\n";
+            break;
+          case (Keyword::KeywordType::ELEMENT):
+            std::cout << "ELEMENT\n";
+            break;
+          case (Keyword::KeywordType::PART):
+            std::cout << "PART\n";
+            break;
+          case (Keyword::KeywordType::GENERIC):
+            std::cout << "GENERIC\n";
+            break;
+        }
+#endif
+
         // elements will be done after parsing since we might miss parts
         // or nodes
-        if (_parse_mesh && kw_type == Keyword::KeywordType::ELEMENT) {
+        if (_parse_keywords && kw_type == Keyword::KeywordType::GENERIC) {
+          auto kw =
+            create_keyword(line_buffer,
+                           kw_type,
+                           iLine - line_buffer.size() - line_buffer_tmp.size(),
+                           _parse_mesh);
+          keywords[kw->get_keyword_name()].push_back(kw);
+        } else if (_parse_mesh && kw_type == Keyword::KeywordType::ELEMENT) {
           buffer_queue.push(std::make_tuple(line_buffer, iLine, last_keyword));
-        } else if (_parse_keywords) {
+        } else if (_parse_mesh) {
+
           auto kw =
             create_keyword(line_buffer,
                            kw_type,
@@ -195,9 +221,6 @@ void
 KeyFile::transfer_comment_header(std::vector<std::string>& _old,
                                  std::vector<std::string>& _new)
 {
-#ifdef QD_DEBUG
-  std::cout << "KeyFile::transfer_comment_header ... ";
-#endif
 
   size_t iCount = 0;
   size_t nTransferLines = 0;
@@ -210,10 +233,6 @@ KeyFile::transfer_comment_header(std::vector<std::string>& _old,
   std::copy(_old.end() - nTransferLines, _old.end(), _new.begin());
   //_new = std::vector<std::string>(_old.end() - nTransferLines, _old.end());
   _old.resize(_old.size() - nTransferLines);
-
-#ifdef QD_DEBUG
-  std::cout << "done" << '\n';
-#endif
 }
 
 /** Create a keyword from it's line buffer

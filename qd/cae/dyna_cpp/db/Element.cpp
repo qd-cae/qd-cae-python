@@ -46,7 +46,7 @@ Element::Element(int32_t _elementID,
 Element::~Element()
 {
 #ifdef QD_DEBUG
-  std::cout << "Element " << elementID << " erased\n";
+// std::cout << "Element " << elementID << " erased\n";
 #endif
 }
 

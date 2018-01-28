@@ -954,26 +954,34 @@ PYBIND11_MODULE(dyna_cpp, m)
            if (kwrds.empty())
              return pybind11::cast(kwrds);
 
-           // node keyword
-           if (kwrds[0]->get_keyword_type() == Keyword::KeywordType::NODE) {
-             std::vector<std::shared_ptr<NodeKeyword>> ret(kwrds.size());
-             for (size_t ii = 0; ii < kwrds.size(); ++ii)
-               ret[ii] = std::static_pointer_cast<NodeKeyword>(kwrds[ii]);
-             return pybind11::cast(ret);
+           switch (kwrds[0]->get_keyword_type()) {
+             // node keyword
+             case (Keyword::KeywordType::NODE): {
+               std::vector<std::shared_ptr<NodeKeyword>> ret(kwrds.size());
+               for (size_t ii = 0; ii < kwrds.size(); ++ii)
+                 ret[ii] = std::static_pointer_cast<NodeKeyword>(kwrds[ii]);
+               return pybind11::cast(ret);
+             }
+
+             // element keyword
+             case (Keyword::KeywordType::ELEMENT): {
+               std::vector<std::shared_ptr<ElementKeyword>> ret(kwrds.size());
+               for (size_t ii = 0; ii < kwrds.size(); ++ii)
+                 ret[ii] = std::static_pointer_cast<ElementKeyword>(kwrds[ii]);
+               return pybind11::cast(ret);
+             }
+
+             case (Keyword::KeywordType::PART): {
+               std::vector<std::shared_ptr<PartKeyword>> ret(kwrds.size());
+               for (size_t ii = 0; ii < kwrds.size(); ++ii)
+                 ret[ii] = std::static_pointer_cast<PartKeyword>(kwrds[ii]);
+               return pybind11::cast(ret);
+             }
+
+             default:
+               return pybind11::cast(kwrds);
            }
 
-           // element keyword
-           else if (kwrds[0]->get_keyword_type() ==
-                    Keyword::KeywordType::ELEMENT) {
-             std::vector<std::shared_ptr<ElementKeyword>> ret(kwrds.size());
-             for (size_t ii = 0; ii < kwrds.size(); ++ii)
-               ret[ii] = std::static_pointer_cast<ElementKeyword>(kwrds[ii]);
-             return pybind11::cast(ret);
-           }
-
-           // generic kw?
-           else
-             return pybind11::cast(kwrds);
          },
          "name"_a)
     .def("keys", &KeyFile::keys)

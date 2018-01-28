@@ -29,6 +29,7 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
 
   // how much data to read
   bool is_part_inertia = false;
+  bool one_more_card = false;
   size_t nAdditionalLines = 0;
   if (kw_name.find("inertia", 7) != std::string::npos) {
     nAdditionalLines += 3;
@@ -45,8 +46,10 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
 
   std::string part_name;
   int32_t part_id;
-  for (; iLine < lines.size(); iLine += nAdditionalLines) {
+  for (; iLine < lines.size(); iLine += nAdditionalLines + one_more_card) {
+    one_more_card = false;
 
+    // TODO: comment treatment inbetween
     const auto& line = lines[iLine];
     if (iLine + 1 >= lines.size())
       throw(std::runtime_error(
@@ -56,10 +59,9 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
 
     try {
       part_name = line.substr(0, 7 * field_size);
-      part_id = std::stoi(line.substr(0, field_size));
+      part_id = std::stoi(next_line.substr(0, field_size));
       std::string remaining_data(next_line.begin() + field_size,
                                  next_line.end());
-      bool one_more_card = false;
       for (size_t iExtraLine = 0; iExtraLine < nAdditionalLines + one_more_card;
            ++iExtraLine) {
         remaining_data += '\n' + lines[iLine + 2 + iExtraLine];
@@ -73,19 +75,19 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
       part_ids.push_back(part_id);
       unparsed_data.push_back(remaining_data);
 
-    } catch (const std::out_of_range& err) {
+    } catch (const std::exception& err) {
       std::cerr << "Parsing error in line: " << (line_index + iLine + 1) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }
-
-    // trailing shit
-    for (; iLine < lines.size(); ++iLine)
-      trailing_lines.push_back(lines[iLine]);
-
-    // remove all lines below keyword
-    lines.resize(header_size);
   }
+
+  // trailing shit
+  for (; iLine < lines.size(); ++iLine)
+    trailing_lines.push_back(lines[iLine]);
+
+  // remove all lines below keyword
+  lines.resize(header_size);
 }
 
 /** Get the keyword as a string
@@ -101,7 +103,19 @@ PartKeyword::str() const
   for (const auto& entry : lines)
     ss << entry << '\n';
 
+  ss << "-----------------\n";
+
   // write parts
+  switch (Keyword::field_alignment) {
+    case (Keyword::Align::LEFT):
+      ss.setf(std::ios::left);
+      break;
+    case (Keyword::Align::RIGHT):
+      ss.setf(std::ios::right);
+      break;
+    default:
+      ss.setf(std::ios::internal);
+  }
   ss.precision(7);
   for (size_t iPart = 0; iPart < part_ids.size(); ++iPart) {
     auto part = db_parts->get_partByID(part_ids[iPart]);
@@ -109,6 +123,8 @@ PartKeyword::str() const
        << std::setw(field_size) << part->get_partID() << unparsed_data[iPart]
        << '\n';
   }
+
+  ss << "-----------------\n";
 
   // write trailing lines
   for (const auto& entry : trailing_lines)

@@ -106,6 +106,7 @@ Keyword::determine_keyword_type(const std::string& _str)
         str_lower.compare(5, 14, "_rigid_surface") == 0 ||
         str_lower.compare(5, 6, "_merge") == 0)
       return KeywordType::NODE;
+
   }
   // *ELEMENT
   else if (str_lower.compare(0, 8, "*element") == 0 && str_lower.size() > 8) {
@@ -144,19 +145,22 @@ Keyword::determine_keyword_type(const std::string& _str)
   }
   // *PART
   else if (str_lower.compare(0, 5, "*part") == 0) {
-    if (str_lower.size() > 6) {
+    if (str_lower.size() > 5) {
 
       // unsupported part options
-      if (str_lower.compare(6, 8, "adaptive") ||
-          str_lower.compare(6, 6, "anneal") ||
-          str_lower.compare(6, 9, "composite") ||
-          str_lower.compare(6, 9, "duplicate") ||
-          str_lower.compare(6, 5, "modes") || str_lower.compare(6, 4, "move") ||
-          str_lower.compare(6, 6, "sensor") ||
-          str_lower.compare(6, 7, "stacked"))
+      if (str_lower.compare(5, 9, "_adaptive") == 0 ||
+          str_lower.compare(5, 7, "_anneal") == 0 ||
+          str_lower.compare(5, 10, "_composite") == 0 ||
+          str_lower.compare(5, 10, "_duplicate") == 0 ||
+          str_lower.compare(5, 6, "_modes") == 0 ||
+          str_lower.compare(6, 5, "_move") == 0 ||
+          str_lower.compare(5, 7, "_sensor") == 0 ||
+          str_lower.compare(5, 8, "_stacked") == 0)
         return KeywordType::GENERIC;
       else
         return KeywordType::PART;
+    } else {
+      return KeywordType::PART;
     }
   }
 
