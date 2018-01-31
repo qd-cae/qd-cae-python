@@ -31,30 +31,39 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
   bool is_part_inertia = false;
   bool one_more_card = false;
   size_t nAdditionalLines = 0;
-  if (kw_name.find("inertia", 7) != std::string::npos) {
+  if (kw_name.find("inertia", 6) != std::string::npos) {
     nAdditionalLines += 3;
     is_part_inertia = true;
   }
-  if (kw_name.find("reposition", 7) != std::string::npos)
+  if (kw_name.find("reposition", 6) != std::string::npos)
     ++nAdditionalLines;
-  if (kw_name.find("contact", 7) != std::string::npos)
+  if (kw_name.find("contact", 6) != std::string::npos)
     ++nAdditionalLines;
-  if (kw_name.find("print", 7) != std::string::npos)
+  if (kw_name.find("print", 6) != std::string::npos)
     ++nAdditionalLines;
-  if (kw_name.find("attachment_nodes", 7) != std::string::npos)
+  if (kw_name.find("attachment_nodes", 6) != std::string::npos)
     ++nAdditionalLines;
+
+#ifdef QD_DEBUG
+  std::cout << "PartKeyword\nname: " << kw_name
+            << "\nnAdditionalLines: " << nAdditionalLines
+            << "\nis_part_inertia: " << is_part_inertia << '\n';
+#endif
 
   std::string part_name;
   int32_t part_id;
-  for (; iLine < lines.size(); iLine += nAdditionalLines + one_more_card) {
+  for (; iLine < lines.size(); iLine += 2 + nAdditionalLines + one_more_card) {
     one_more_card = false;
 
     // TODO: comment treatment inbetween
     const auto& line = lines[iLine];
+    if (line.empty())
+      break;
+
     if (iLine + 1 >= lines.size())
       throw(std::runtime_error(
         "Parsing error in line: " + std::to_string(line_index + iLine + 1) +
-        ". Part is supposed to have a card with a part id."));
+        "\nerror: Part is supposed to have a card with a part id."));
     const auto& next_line = lines[iLine + 1];
 
     try {
@@ -65,10 +74,12 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
       for (size_t iExtraLine = 0; iExtraLine < nAdditionalLines + one_more_card;
            ++iExtraLine) {
         remaining_data += '\n' + lines[iLine + 2 + iExtraLine];
-        if (is_part_inertia && iExtraLine == 1 &&
-            std::stod(lines[iLine + 2 + iExtraLine].substr(4 * field_size,
-                                                           field_size)) == 1)
-          one_more_card = true;
+        if (is_part_inertia && iExtraLine == 1) {
+          auto flag_ircs = trim(
+            lines[iLine + 2 + iExtraLine].substr(4 * field_size, field_size));
+          if (flag_ircs.empty() || std::stod(flag_ircs) == 1)
+            one_more_card = true;
+        }
       }
 
       db_parts->add_partByID(part_id, part_name);
@@ -103,8 +114,6 @@ PartKeyword::str() const
   for (const auto& entry : lines)
     ss << entry << '\n';
 
-  ss << "-----------------\n";
-
   // write parts
   switch (Keyword::field_alignment) {
     case (Keyword::Align::LEFT):
@@ -123,8 +132,6 @@ PartKeyword::str() const
        << std::setw(field_size) << part->get_partID() << unparsed_data[iPart]
        << '\n';
   }
-
-  ss << "-----------------\n";
 
   // write trailing lines
   for (const auto& entry : trailing_lines)

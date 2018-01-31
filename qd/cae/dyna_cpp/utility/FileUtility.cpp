@@ -154,6 +154,26 @@ get_entropy(const std::vector<char>& _buffer)
 /* === WINDOWS === */
 #ifdef _WIN32
 
+auto s2ws = [](const std::string& s) {
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
+};
+
+auto ws2s = [](const std::wstring& text) {
+	std::locale const loc("");
+	wchar_t const* from = text.c_str();
+	std::size_t const len = text.size();
+	std::vector<char> buffer(len + 1);
+	std::use_facet<std::ctype<wchar_t> >(loc).narrow(from, from + len, '_', &buffer[0]);
+	return std::string(&buffer[0], &buffer[len]);
+};
+
 bool
 check_ExistanceAndAccess(const std::string& filepath)
 {
@@ -206,6 +226,8 @@ std::vector<std::string>
 find_dyna_result_files(const std::string& _base_filepath)
 {
 
+
+
   // get file directory
   std::string directory = "";
   std::string base_filename = _base_filepath;
@@ -220,7 +242,7 @@ find_dyna_result_files(const std::string& _base_filepath)
   std::string win32_pattern = std::string(_base_filepath + "*");
   WIN32_FIND_DATA FindFileData;
   HANDLE hFind = FindFirstFileEx(
-    win32_pattern.c_str(),
+	win32_pattern.c_str(),
     FindExInfoStandard,
     &FindFileData,
     FindExSearchNameMatch,

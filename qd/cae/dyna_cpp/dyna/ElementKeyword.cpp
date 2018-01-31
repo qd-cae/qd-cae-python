@@ -87,6 +87,11 @@ ElementKeyword::parse_elem2(const std::string& _keyword_name_lower,
   if (_keyword_name_lower.find("elbow", 13) != std::string::npos)
     ++nAdditionalLines;
 
+#ifdef QD_DEBUG
+  std::cout << "ElementKeyword\nname: " << _keyword_name_lower
+            << "\nnAdditionalLines: " << nAdditionalLines << '\n';
+#endif
+
   // extract node data
   int32_t element_id;
   int32_t part_id;
@@ -167,6 +172,11 @@ ElementKeyword::parse_elem4(const std::string& _keyword_name_lower,
       << '\n';
     return;
   }
+
+#ifdef QD_DEBUG
+  std::cout << "ElementKeyword\nname: " << _keyword_name_lower
+            << "\nnAdditionalLines: " << nAdditionalLines << '\n';
+#endif
 
   // extract node data
   std::string remaining_data;
@@ -263,6 +273,12 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
       old_solid_format = true;
     }
   }
+
+#ifdef QD_DEBUG
+  std::cout << "ElementKeyword\nname: " << _keyword_name_lower
+            << "\nnAdditionalLines: " << nAdditionalLines
+            << "\nold_solid_format: " << old_solid_format << '\n';
+#endif
 
   // extract node data
   int32_t element_id;
