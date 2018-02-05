@@ -31,9 +31,9 @@ KeyFile::KeyFile() {}
  * @param string filepath : filepath of a key file to read
  */
 KeyFile::KeyFile(const std::string& _filepath,
-                 bool _parse_keywords = true,
-                 bool _parse_mesh = false,
-                 bool _load_includes = true,
+                 bool _parse_keywords,
+                 bool _parse_mesh,
+                 bool _load_includes,
                  double _encryption_detection)
   : FEMFile(_filepath)
   , load_includes(_load_includes)
@@ -269,7 +269,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
           this->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
       case (Keyword::KeywordType::INCLUDE_PATH):
         return std::make_shared<IncludePathKeyword>(
-          this->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
+          _lines, static_cast<int64_t>(_iLine));
       default:
         // nothing
         break;

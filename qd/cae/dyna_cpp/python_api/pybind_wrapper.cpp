@@ -938,12 +938,12 @@ PYBIND11_MODULE(dyna_cpp, m)
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
     m, "QD_KeyFile", keyfile_description);
   keyfile_py
-    .def(pybind11::init<const std::string&, bool, double, bool, bool>(),
+    .def(pybind11::init<const std::string&, bool, bool, bool, double>(),
          "filepath"_a,
-         "load_includes"_a = true,
-         "encryption_detection"_a = 0.7,
          "parse_keywords"_a = true,
          "parse_mesh"_a = false,
+         "load_includes"_a = true,
+         "encryption_detection"_a = 0.7,
          keyfile_constructor)
     .def("__str__", &KeyFile::str)
     .def("__getitem__",

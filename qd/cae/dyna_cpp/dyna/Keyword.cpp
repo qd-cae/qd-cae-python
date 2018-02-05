@@ -172,7 +172,7 @@ Keyword::determine_keyword_type(const std::string& _str)
   // *INCLUDE_PATH
   else if (str_lower.compare(0, 13, "*include_path") == 0) {
 
-    if (str.lower.size() == 13 || str_lower.compare(13, 9, "_relative") == 0)
+    if (str_lower.size() == 13 || str_lower.compare(13, 9, "_relative") == 0)
       return KeywordType::INCLUDE_PATH;
   }
 
