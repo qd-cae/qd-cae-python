@@ -10,9 +10,6 @@
 #include <stdexcept>
 #include <string>
 
-// forward declarations
-class D3plot;
-
 namespace qd {
 
 /**
@@ -38,7 +35,7 @@ public:
 private:
   bool load_includes;
   double encryption_detection_threshold;
-  std::vector<std::string> base_dirs;
+  std::vector<std::string> include_dirs;
   std::vector<std::shared_ptr<KeyFile>> includes;
   std::map<std::string, std::vector<std::shared_ptr<Keyword>>> keywords;
 
@@ -52,15 +49,16 @@ private:
     bool _parse_mesh);
   void transfer_comment_header(std::vector<std::string>& _old,
                                std::vector<std::string>& _new);
-  std::string resolve_include(const std::string& _filepath);
+  std::string resolve_include_filepath(const std::string& _filepath);
+  void load_include_files();
 
 public:
   KeyFile();
   KeyFile(const std::string& _filepath,
-          bool _load_includes = true,
-          double _encryption_detection = 0.7,
           bool _parse_keywords = true,
-          bool _parse_mesh = false);
+          bool _parse_mesh = false,
+          bool _load_includes = true,
+          double _encryption_detection = 0.7);
   inline std::vector<std::shared_ptr<Keyword>> get_keywordsByName(
     const std::string& _keyword_name);
   template<typename T>

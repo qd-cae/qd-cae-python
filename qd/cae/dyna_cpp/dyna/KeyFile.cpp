@@ -12,6 +12,7 @@
 #include <dyna_cpp/db/Element.hpp>
 #include <dyna_cpp/db/Part.hpp>
 #include <dyna_cpp/dyna/ElementKeyword.hpp>
+#include <dyna_cpp/dyna/IncludePathKeyword.hpp>
 #include <dyna_cpp/dyna/KeyFile.hpp>
 #include <dyna_cpp/dyna/NodeKeyword.hpp>
 #include <dyna_cpp/dyna/PartKeyword.hpp>
@@ -30,10 +31,10 @@ KeyFile::KeyFile() {}
  * @param string filepath : filepath of a key file to read
  */
 KeyFile::KeyFile(const std::string& _filepath,
-                 bool _load_includes,
-                 double _encryption_detection,
-                 bool _parse_keywords,
-                 bool _parse_mesh)
+                 bool _parse_keywords = true,
+                 bool _parse_mesh = false,
+                 bool _load_includes = true,
+                 double _encryption_detection)
   : FEMFile(_filepath)
   , load_includes(_load_includes)
   , encryption_detection_threshold(_encryption_detection)
@@ -131,6 +132,12 @@ KeyFile::parse_file(const std::string& _filepath,
           case (Keyword::KeywordType::GENERIC):
             std::cout << "GENERIC\n";
             break;
+          case (Keyword::KeywordType::INCLUDE):
+            std::cout << "INCLUDE\n";
+            break;
+          case (Keyword::KeywordType::INCLUDE_PATH):
+            std::cout << "INCLUDE_PATH\n";
+            break;
         }
 #endif
 
@@ -180,7 +187,7 @@ KeyFile::parse_file(const std::string& _filepath,
     keywords[kw->get_keyword_name()].push_back(kw);
   }
 
-  // get rid of work in queue
+  // get rid of work in queue (*ELEMENT)
   while (buffer_queue.size() > 0) {
 
     auto& data = buffer_queue.front();
@@ -260,6 +267,9 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
       case (Keyword::KeywordType::PART):
         return std::make_shared<PartKeyword>(
           this->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
+      case (Keyword::KeywordType::INCLUDE_PATH):
+        return std::make_shared<IncludePathKeyword>(
+          this->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
       default:
         // nothing
         break;
@@ -275,18 +285,50 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
  * @return filepath resolved filepath
  */
 std::string
-KeyFile::resolve_include(const std::string& _filepath)
+KeyFile::resolve_include_filepath(const std::string& _filepath)
 {
 
   if (check_ExistanceAndAccess(_filepath))
     return _filepath;
 
-  for (const auto& dir : base_dirs) {
+  for (const auto& dir : include_dirs) {
     if (check_ExistanceAndAccess(dir + _filepath))
       return dir + _filepath;
   }
 
   throw(std::runtime_error("Can not resolve include:" + _filepath));
+}
+
+/** Resolves all includes (loads them)
+ *
+ */
+void
+KeyFile::load_include_files()
+{
+
+  // update include dirs
+  include_dirs.clear();
+
+  auto kwrd_names = keys();
+  for (const auto& kwrd_name : kwrd_names) {
+
+    auto kwrds = get_keywordsByName(kwrd_name);
+
+    if (kwrds.size() < 1)
+      continue;
+
+    if (kwrds[0]->get_keyword_type() == Keyword::KeywordType::INCLUDE_PATH) {
+      for (auto kw : kwrds) {
+        auto kw_inc_dir = std::static_pointer_cast<IncludePathKeyword>(kw);
+        auto tmp_dirs = kw_inc_dir->get_include_dirs();
+        include_dirs.insert(
+          include_dirs.end(), tmp_dirs.begin(), tmp_dirs.end());
+      }
+    }
+  }
+
+  // do the thing (read include)
+  // TODO
 }
 
 /** Convert the keyfile to a string

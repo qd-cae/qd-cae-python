@@ -33,7 +33,9 @@ public:
     GENERIC,
     NODE,
     ELEMENT,
-    PART
+    PART,
+    INCLUDE_PATH,
+    INCLUDE
   };
 
   // Static settings
