@@ -16,39 +16,51 @@ ElementKeyword::ElementKeyword(DB_Elements* _db_elems,
                                int64_t _iLine)
   : Keyword(_lines, _iLine)
   , db_elems(_db_elems)
-  , type(Element::ElementType::NONE)
+  , element_type(Element::ElementType::NONE)
 {
+  // keyword type
   kw_type = KeywordType::ELEMENT;
+  // element type
+  element_type = determine_element_type(get_keyword_name());
+}
+
+/** Load the data from the string data
+ *
+ * This function loads the data from the string data.
+ * The string data is removed while the data is being parsed.
+ */
+void
+ElementKeyword::load()
+{
 
   // prepare extraction
   field_size = has_long_fields() ? 16 : 8;
 
   // what element type do we have?
   auto keyword_name = to_lower_copy(get_keyword_name());
-  type = determine_element_type(keyword_name);
-  if (type == Element::ElementType::NONE)
+  element_type = determine_element_type(keyword_name);
+  if (element_type == Element::ElementType::NONE)
     throw(
       std::invalid_argument("Can not find out, what type of element "
                             "(beam,shell,solid,tshell) the keyword contains:"));
 
   // do the thing
-  if (type == Element::ElementType::BEAM)
-    parse_elem2(keyword_name, lines);
-  if (type == Element::ElementType::SHELL)
-    parse_elem4(keyword_name, lines);
-  if (type == Element::ElementType::SOLID)
-    parse_elem8(keyword_name, lines);
-  if (type == Element::ElementType::TSHELL)
-    parse_elem4th(keyword_name, lines);
-}
+  switch (element_type) {
+    case (Element::ElementType::BEAM):
+      parse_elem2(keyword_name, lines);
+      break;
 
-/** ElementKeyword destructor
- *
- */
-ElementKeyword::~ElementKeyword()
-{
+    case (Element::ElementType::SHELL):
+      parse_elem4(keyword_name, lines);
+      break;
 
-  for (auto elem_index : elem_indexes_in_card) {
+    case (Element::ElementType::SOLID):
+      parse_elem8(keyword_name, lines);
+      break;
+
+    case (Element::ElementType::TSHELL):
+      parse_elem4th(keyword_name, lines);
+      break;
   }
 }
 
@@ -116,10 +128,11 @@ ElementKeyword::parse_elem2(const std::string& _keyword_name_lower,
       for (size_t iExtraLine = 0; iExtraLine < nAdditionalLines; ++iExtraLine)
         remaining_data += '\n' + lines[iLine + 1 + iExtraLine];
 
-      db_elems->add_elementByNodeID(type, element_id, part_id, node_ids);
+      db_elems->add_elementByNodeID(
+        element_type, element_id, part_id, node_ids);
       unparsed_element_data.push_back(remaining_data);
       elem_indexes_in_card.push_back(
-        db_elems->get_element_index_from_id(type, element_id));
+        db_elems->get_element_index_from_id(element_type, element_id));
       elem_part_ids.push_back(part_id);
 
     } catch (const std::out_of_range& err) {
@@ -213,10 +226,11 @@ ElementKeyword::parse_elem4(const std::string& _keyword_name_lower,
         remaining_data += '\n' + lines[iLine + 1 + iExtraLine];
 
       // do the thing
-      db_elems->add_elementByNodeID(type, element_id, part_id, node_ids);
+      db_elems->add_elementByNodeID(
+        element_type, element_id, part_id, node_ids);
       unparsed_element_data.push_back(remaining_data);
       elem_indexes_in_card.push_back(
-        db_elems->get_element_index_from_id(type, element_id));
+        db_elems->get_element_index_from_id(element_type, element_id));
       elem_part_ids.push_back(part_id);
 
     } catch (const std::exception& err) {
@@ -326,10 +340,11 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
       for (size_t iExtraLine = 0; iExtraLine < nAdditionalLines; ++iExtraLine)
         remaining_data += '\n' + lines[iLine + 1 + iExtraLine];
 
-      db_elems->add_elementByNodeID(type, element_id, part_id, node_ids);
+      db_elems->add_elementByNodeID(
+        element_type, element_id, part_id, node_ids);
       unparsed_element_data.push_back(remaining_data);
       elem_indexes_in_card.push_back(
-        db_elems->get_element_index_from_id(type, element_id));
+        db_elems->get_element_index_from_id(element_type, element_id));
       elem_part_ids.push_back(part_id);
 
     } catch (const std::out_of_range& err) {
@@ -402,10 +417,11 @@ ElementKeyword::parse_elem4th(const std::string& _keyword_name_lower,
       for (size_t iExtraLine = 0; iExtraLine < nAdditionalLines; ++iExtraLine)
         remaining_data += '\n' + lines[iLine + 1 + iExtraLine];
 
-      db_elems->add_elementByNodeID(type, element_id, part_id, node_ids);
+      db_elems->add_elementByNodeID(
+        element_type, element_id, part_id, node_ids);
       unparsed_element_data.push_back(remaining_data);
       elem_indexes_in_card.push_back(
-        db_elems->get_element_index_from_id(type, element_id));
+        db_elems->get_element_index_from_id(element_type, element_id));
       elem_part_ids.push_back(part_id);
 
     } catch (const std::out_of_range& err) {
@@ -464,7 +480,7 @@ ElementKeyword::get_elements()
   std::vector<std::shared_ptr<Element>> elems;
   elems.reserve(elem_indexes_in_card.size());
   for (auto iElement : elem_indexes_in_card)
-    elems.push_back(db_elems->get_elementByIndex(type, iElement));
+    elems.push_back(db_elems->get_elementByIndex(element_type, iElement));
 
   return std::move(elems);
 }
@@ -482,11 +498,11 @@ ElementKeyword::str()
     ss << entry << '\n';
 
   // do the thing
-  if (type == Element::ElementType::BEAM)
+  if (element_type == Element::ElementType::BEAM)
     keyword_elem2_str(ss);
-  else if (type == Element::ElementType::SHELL)
+  else if (element_type == Element::ElementType::SHELL)
     keyword_elem4_str(ss);
-  else if (type == Element::ElementType::SOLID)
+  else if (element_type == Element::ElementType::SOLID)
     keyword_elem8_str(ss);
 
   // trailing lines

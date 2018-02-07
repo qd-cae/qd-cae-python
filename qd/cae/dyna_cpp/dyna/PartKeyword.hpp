@@ -24,6 +24,7 @@ public:
   explicit PartKeyword(DB_Parts* _db_parts,
                        const std::vector<std::string>& _lines,
                        int64_t _iLine);
+  void load();
   template<typename T>
   std::shared_ptr<Part> add_part(T _part_id, const std::string& _name = "");
 

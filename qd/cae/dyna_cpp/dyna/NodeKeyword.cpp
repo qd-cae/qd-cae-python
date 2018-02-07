@@ -12,9 +12,17 @@ NodeKeyword::NodeKeyword(DB_Nodes* _db_nodes,
   : Keyword(_lines, _iLine)
   , db_nodes(_db_nodes)
 {
-
   kw_type = KeywordType::NODE;
+}
 
+/** Load the data from the string data
+ *
+ * This function loads the data from the string data.
+ * The string data is removed while the data is being parsed.
+ */
+void
+NodeKeyword::load()
+{
   // find first card line
   size_t header_size = iCard_to_iLine(0, false);
   size_t iLine = header_size;
@@ -71,7 +79,8 @@ NodeKeyword::NodeKeyword(DB_Nodes* _db_nodes,
       unparsed_node_data.push_back(remaining_data);
 
     } catch (std::exception& err) {
-      std::cout << "Parsing error in line: " << (_iLine + iLine + 1) << '\n'
+      std::cout << "Parsing error in line: "
+                << (static_cast<size_t>(line_index) + iLine) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }

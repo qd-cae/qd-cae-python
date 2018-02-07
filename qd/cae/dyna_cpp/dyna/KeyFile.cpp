@@ -44,13 +44,8 @@ KeyFile::KeyFile(const std::string& _filepath,
     throw(std::invalid_argument(
       "Encryption detection threshold must be between 0 and 1."));
 
-  // Read the mesh
-  // this->read_mesh(this->get_filepath());
-  try {
-    this->parse_file(this->get_filepath(), _parse_mesh, _parse_keywords);
-  } catch (const std::exception& ex) {
-    std::cout << "Error:" << ex.what() << '\n';
-  }
+  // TODO: make these properties class variables?
+  load(_filepath, _parse_mesh, _parse_keywords);
 }
 
 /** Parse a keyfile
@@ -59,10 +54,11 @@ KeyFile::KeyFile(const std::string& _filepath,
  * @param _parse_mesh : whether the mesh shall be parsed
  */
 void
-KeyFile::parse_file(const std::string& _filepath,
-                    bool _parse_mesh,
-                    bool _parse_keywords)
+KeyFile::load(const std::string& _filepath,
+              bool _parse_mesh,
+              bool _parse_keywords)
 {
+  // TODO rewrite function -> load function for keywords in right order
 
   // File directory for Includes
   std::string directory = "";
@@ -279,6 +275,29 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
   return std::make_shared<Keyword>(_lines, _iLine);
 }
 
+/** Update the include path
+ *
+ * The include path are the directories, in which all includes will be
+ * searched for.
+ */
+void
+KeyFile::update_include_path()
+{
+  // clean up
+  include_dirs.clear();
+
+  // collect
+  auto keywords_include_path =
+    get_keywordsByType(Keyword::KeywordType::INCLUDE_PATH);
+
+  // update
+  for (auto& kw : keywords_include_path) {
+    auto kw_inc_path = std::static_pointer_cast<IncludePathKeyword>(kw);
+    auto tmp_dirs = kw_inc_path->get_include_dirs();
+    include_dirs.insert(include_dirs.end(), tmp_dirs.begin(), tmp_dirs.end());
+  }
+}
+
 /** Resolve an include
  *
  * @param _filepath path of the include
@@ -306,29 +325,41 @@ void
 KeyFile::load_include_files()
 {
 
-  // update include dirs
-  include_dirs.clear();
-
-  auto kwrd_names = keys();
-  for (const auto& kwrd_name : kwrd_names) {
-
-    auto kwrds = get_keywordsByName(kwrd_name);
-
-    if (kwrds.size() < 1)
-      continue;
-
-    if (kwrds[0]->get_keyword_type() == Keyword::KeywordType::INCLUDE_PATH) {
-      for (auto kw : kwrds) {
-        auto kw_inc_dir = std::static_pointer_cast<IncludePathKeyword>(kw);
-        auto tmp_dirs = kw_inc_dir->get_include_dirs();
-        include_dirs.insert(
-          include_dirs.end(), tmp_dirs.begin(), tmp_dirs.end());
-      }
-    }
-  }
+  update_include_path();
 
   // do the thing (read include)
+  auto includes = get_keywordsByType(Keyword::KeywordType::INCLUDE);
+
+  for (auto include : includes) {
+    include->load();
+  }
   // TODO
+}
+
+/** Get all keywords from a certain type
+ *
+ * @param type
+ * @return keywords
+ */
+std::vector<std::shared_ptr<Keyword>>
+KeyFile::get_keywordsByType(Keyword::KeywordType _type)
+{
+
+  std::vector<std::shared_ptr<Keyword>> keywords_found;
+
+  for (auto& kv : keywords) {
+
+    // check if not empty
+    if (kv.second.empty())
+      continue;
+
+    // check for type
+    if (kv.second[0]->get_keyword_type() == _type)
+      keywords_found.insert(
+        keywords_found.end(), kv.second.begin(), kv.second.end());
+  }
+
+  return keywords_found;
 }
 
 /** Convert the keyfile to a string

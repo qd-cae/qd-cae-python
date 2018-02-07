@@ -20,7 +20,7 @@ public:
   IncludeKeyword(KeyFile* parent_db,
                  const std::vector<std::string> lines,
                  int64_t _iLine);
-  void resolve();
+  void load();
 
   // getters
   inline std::vector<std::shared_ptr<KeyFile>> get_includes();

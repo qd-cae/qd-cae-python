@@ -4,7 +4,12 @@
 
 // includes
 #include <dyna_cpp/db/FEMFile.hpp>
+#include <dyna_cpp/dyna/ElementKeyword.hpp>
+#include <dyna_cpp/dyna/IncludeKeyword.hpp>
+#include <dyna_cpp/dyna/IncludePathKeyword.hpp>
 #include <dyna_cpp/dyna/Keyword.hpp>
+#include <dyna_cpp/dyna/NodeKeyword.hpp>
+#include <dyna_cpp/dyna/PartKeyword.hpp>
 
 #include <map>
 #include <stdexcept>
@@ -23,9 +28,7 @@ public:
   {
     NONE,
     NODE,
-    ELEMENT_BEAM,
-    ELEMENT_SHELL,
-    ELEMENT_SOLID,
+    ELEMENT,
     PART,
     INCLUDE,
     COMMENT,
@@ -36,12 +39,16 @@ private:
   bool load_includes;
   double encryption_detection_threshold;
   std::vector<std::string> include_dirs;
-  std::vector<std::shared_ptr<KeyFile>> includes;
+
   std::map<std::string, std::vector<std::shared_ptr<Keyword>>> keywords;
 
-  void parse_file(const std::string& _filepath,
-                  bool _parse_mesh,
-                  bool _parse_keywords);
+  // internal use only
+  std::vector<std::shared_ptr<NodeKeyword>> node_keywords;
+  std::vector<std::shared_ptr<ElementKeyword>> element_keywords;
+  std::vector<std::shared_ptr<PartKeyword>> part_keywords;
+  std::vector<std::shared_ptr<IncludeKeyword>> include_keywords;
+  std::vector<std::shared_ptr<IncludePathKeyword>> include_path_keywords;
+
   std::shared_ptr<Keyword> create_keyword(
     const std::vector<std::string>& _lines,
     Keyword::KeywordType _keyword_type,
@@ -49,13 +56,21 @@ private:
     bool _parse_mesh);
   void transfer_comment_header(std::vector<std::string>& _old,
                                std::vector<std::string>& _new);
+  void update_include_path();
+  void update_keyword_names(); // TODO
   std::string resolve_include_filepath(const std::string& _filepath);
+  void load(const std::string& _filepath,
+            bool _parse_mesh,
+            bool _parse_keywords);
   void load_include_files();
+
+  std::vector<std::shared_ptr<Keyword>> get_keywordsByType(
+    Keyword::KeywordType _type);
 
 public:
   KeyFile();
   KeyFile(const std::string& _filepath,
-          bool _parse_keywords = true,
+          bool _parse_keywords = false,
           bool _parse_mesh = false,
           bool _load_includes = true,
           double _encryption_detection = 0.7);

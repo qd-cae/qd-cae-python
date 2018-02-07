@@ -26,6 +26,7 @@ public:
   explicit NodeKeyword(DB_Nodes* _db_nodes,
                        const std::vector<std::string>& _lines,
                        int64_t _iLine = 0);
+  void load();
   template<typename T>
   std::shared_ptr<Node> add_node(T _id, float _x, float _y, float _z);
 

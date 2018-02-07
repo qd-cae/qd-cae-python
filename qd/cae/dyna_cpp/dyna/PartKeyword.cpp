@@ -19,7 +19,16 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
 {
 
   field_size = has_long_fields() ? 20 : 10;
+}
 
+/** Load the data from the string data
+ *
+ * This function loads the data from the string data.
+ * The string data is removed while the data is being parsed.
+ */
+void
+PartKeyword::load()
+{
   // name
   auto kw_name = to_lower_copy(get_keyword_name());
 
@@ -62,7 +71,8 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
 
     if (iLine + 1 >= lines.size())
       throw(std::runtime_error(
-        "Parsing error in line: " + std::to_string(line_index + iLine + 1) +
+        "Parsing error in line: " +
+        std::to_string(static_cast<size_t>(line_index) + iLine) +
         "\nerror: Part is supposed to have a card with a part id."));
     const auto& next_line = lines[iLine + 1];
 
@@ -87,7 +97,8 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
       unparsed_data.push_back(remaining_data);
 
     } catch (const std::exception& err) {
-      std::cerr << "Parsing error in line: " << (line_index + iLine + 1) << '\n'
+      std::cerr << "Parsing error in line: "
+                << (static_cast<size_t>(line_index) + iLine) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }

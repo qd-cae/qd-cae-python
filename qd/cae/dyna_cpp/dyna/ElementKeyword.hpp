@@ -11,7 +11,7 @@ class ElementKeyword : public Keyword
 {
 private:
   DB_Elements* db_elems;
-  Element::ElementType type;
+  Element::ElementType element_type;
   std::vector<size_t> elem_indexes_in_card;
   std::vector<int32_t> elem_part_ids;
   std::vector<std::string> unparsed_element_data;
@@ -39,8 +39,9 @@ public:
   explicit ElementKeyword(DB_Elements* _db_elems,
                           const std::vector<std::string>& _lines,
                           int64_t _iLine = 0);
-  virtual ~ElementKeyword();
-  inline Element::ElementType get_type() const;
+  void load();
+
+  inline Element::ElementType get_element_type() const;
   inline size_t get_nElements() const;
   template<typename T>
   std::shared_ptr<Element> get_elementByIndex(T _index);
@@ -62,9 +63,9 @@ public:
  * @return type : element type
  */
 Element::ElementType
-ElementKeyword::get_type() const
+ElementKeyword::get_element_type() const
 {
-  return type;
+  return element_type;
 }
 
 /** Get the number of elements in the keyword
