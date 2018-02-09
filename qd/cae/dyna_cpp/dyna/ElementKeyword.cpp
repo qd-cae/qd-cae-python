@@ -32,6 +32,8 @@ ElementKeyword::ElementKeyword(DB_Elements* _db_elems,
 void
 ElementKeyword::load()
 {
+  if (db_elems == nullptr)
+    return;
 
   // prepare extraction
   field_size = has_long_fields() ? 16 : 8;

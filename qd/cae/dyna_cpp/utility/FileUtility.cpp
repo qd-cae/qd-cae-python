@@ -24,6 +24,25 @@
 
 namespace qd {
 
+/** Join filepaths correctly
+ *
+ * @param _path1 : path to first file
+ * @param _path2 : path to secon file
+ * @return combined_path : joined path
+ */
+std::string
+join_path(const std::string& _path1, const std::string& _path2)
+{
+  if (_path1.empty())
+    return _path2;
+
+  auto last_char = _path1[_path1.size() - 1];
+  if (last_char == '/' || last_char == '\\')
+    return _path1 + _path2;
+  else
+    return _path1 + '/' + _path2;
+}
+
 /** Read the lines of a text file into a vector
  * @param filepath : path of the text file
  *
@@ -155,23 +174,24 @@ get_entropy(const std::vector<char>& _buffer)
 #ifdef _WIN32
 
 auto s2ws = [](const std::string& s) {
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
-	wchar_t* buf = new wchar_t[len];
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-	std::wstring r(buf);
-	delete[] buf;
-	return r;
+  int len;
+  int slength = (int)s.length() + 1;
+  len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+  wchar_t* buf = new wchar_t[len];
+  MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+  std::wstring r(buf);
+  delete[] buf;
+  return r;
 };
 
 auto ws2s = [](const std::wstring& text) {
-	std::locale const loc("");
-	wchar_t const* from = text.c_str();
-	std::size_t const len = text.size();
-	std::vector<char> buffer(len + 1);
-	std::use_facet<std::ctype<wchar_t> >(loc).narrow(from, from + len, '_', &buffer[0]);
-	return std::string(&buffer[0], &buffer[len]);
+  std::locale const loc("");
+  wchar_t const* from = text.c_str();
+  std::size_t const len = text.size();
+  std::vector<char> buffer(len + 1);
+  std::use_facet<std::ctype<wchar_t>>(loc).narrow(
+    from, from + len, '_', &buffer[0]);
+  return std::string(&buffer[0], &buffer[len]);
 };
 
 bool
@@ -226,8 +246,6 @@ std::vector<std::string>
 find_dyna_result_files(const std::string& _base_filepath)
 {
 
-
-
   // get file directory
   std::string directory = "";
   std::string base_filename = _base_filepath;
@@ -242,7 +260,7 @@ find_dyna_result_files(const std::string& _base_filepath)
   std::string win32_pattern = std::string(_base_filepath + "*");
   WIN32_FIND_DATA FindFileData;
   HANDLE hFind = FindFirstFileEx(
-	win32_pattern.c_str(),
+    win32_pattern.c_str(),
     FindExInfoStandard,
     &FindFileData,
     FindExSearchNameMatch,

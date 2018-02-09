@@ -10,6 +10,9 @@ namespace qd {
 bool
 check_ExistanceAndAccess(const std::string&);
 
+std::string
+join_path(const std::string& _path1, const std::string& _path2);
+
 std::vector<std::string>
 glob_vector(const std::string&);
 

@@ -29,6 +29,9 @@ PartKeyword::PartKeyword(DB_Parts* _db_parts,
 void
 PartKeyword::load()
 {
+  if (db_parts == nullptr)
+    return;
+
   // name
   auto kw_name = to_lower_copy(get_keyword_name());
 

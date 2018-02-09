@@ -70,7 +70,6 @@ ElementKeyword::get_element_type() const
 
 /** Get the number of elements in the keyword
  *
- * @param _type : optional element type specify
  * @return nElements
  */
 size_t
@@ -92,7 +91,8 @@ ElementKeyword::get_elementByIndex(T _index)
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   _index = index_treatment(_index, elem_indexes_in_card.size());
-  return db_elems->get_elementByIndex(type, elem_indexes_in_card[_index]);
+  return db_elems->get_elementByIndex(element_type,
+                                      elem_indexes_in_card[_index]);
 }
 
 /** Add an element by the indices of a node
@@ -113,10 +113,11 @@ ElementKeyword::add_elementByNodeIndex(T _id,
   // create element
   auto id = static_cast<int32_t>(_id);
   auto elem = db_elems->add_elementByNodeIndex(
-    type, id, static_cast<int32_t>(_part_id), _node_indexes);
+    element_type, id, static_cast<int32_t>(_part_id), _node_indexes);
 
   // save additional info
-  elem_indexes_in_card.push_back(db_elems->get_element_index_from_id(type, id));
+  elem_indexes_in_card.push_back(
+    db_elems->get_element_index_from_id(element_type, id));
   elem_part_ids.push_back(static_cast<int32_t>(_part_id));
 
   return elem;
@@ -140,10 +141,11 @@ ElementKeyword::add_elementByNodeID(T _id,
   // create element
   auto id = static_cast<int32_t>(_id);
   auto elem = db_elems->add_elementByNodeID(
-    type, id, static_cast<int32_t>(_part_id), _node_ids);
+    element_type, id, static_cast<int32_t>(_part_id), _node_ids);
 
   // save additional info
-  elem_indexes_in_card.push_back(db_elems->get_element_index_from_id(type, id));
+  elem_indexes_in_card.push_back(
+    db_elems->get_element_index_from_id(element_type, id));
   elem_part_ids.push_back(static_cast<int32_t>(_part_id));
 
   return elem;

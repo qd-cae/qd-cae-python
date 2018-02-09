@@ -15,6 +15,20 @@ IncludePathKeyword::IncludePathKeyword(const std::vector<std::string> _lines,
   : Keyword(_lines, _iLine)
 {}
 
+/** If the path keyword contains a relative path
+ *
+ * @return is_relative
+ */
+bool
+IncludePathKeyword::is_relative() const
+{
+  auto name = to_lower(get_keyword_name());
+  if (name.compare(0, 17, "*include_path_rel") == 0)
+    return true;
+  else
+    return false;
+}
+
 /** Get the include dir paths
  *
  * @return dir_filepaths

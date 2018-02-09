@@ -6,6 +6,12 @@
 
 namespace qd {
 
+/** Constructor of a NodeKeyword
+ *
+ * @param _db_nodes : parent database
+ * @param _lines : line buffer
+ * @param _iLine : line (sorting) index
+ */
 NodeKeyword::NodeKeyword(DB_Nodes* _db_nodes,
                          const std::vector<std::string>& _lines,
                          int64_t _iLine)
@@ -17,12 +23,18 @@ NodeKeyword::NodeKeyword(DB_Nodes* _db_nodes,
 
 /** Load the data from the string data
  *
+ * @param _db_nodes : database to put nodes in
+ *
  * This function loads the data from the string data.
  * The string data is removed while the data is being parsed.
  */
 void
 NodeKeyword::load()
 {
+
+  if (db_nodes == nullptr)
+    return;
+
   // find first card line
   size_t header_size = iCard_to_iLine(0, false);
   size_t iLine = header_size;

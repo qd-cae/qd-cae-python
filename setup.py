@@ -51,6 +51,7 @@ def setup_dyna_cpp():
         "qd/cae/dyna_cpp/dyna/NodeKeyword.cpp",
         "qd/cae/dyna_cpp/dyna/ElementKeyword.cpp",
         "qd/cae/dyna_cpp/dyna/PartKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/IncludeKeyword.cpp",
         "qd/cae/dyna_cpp/dyna/IncludePathKeyword.cpp",
         "qd/cae/dyna_cpp/utility/FileUtility.cpp",
         "qd/cae/dyna_cpp/utility/TextUtility.cpp"]

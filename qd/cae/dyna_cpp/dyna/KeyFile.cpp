@@ -24,53 +24,54 @@ namespace qd {
 /**
  * Constructor for a LS-Dyna input file.
  */
-KeyFile::KeyFile() {}
+KeyFile::KeyFile(bool _read_generic_keywords,
+                 bool _parse_mesh,
+                 bool _load_includes,
+                 double _encryption_detection,
+                 KeyFile* _parent_kf)
+  : KeyFile("", _parse_mesh, _load_includes, _encryption_detection, _parent_kf)
+{}
 
 /** Constructor for reading a LS-Dyna input file.
  *
  * @param string filepath : filepath of a key file to read
  */
 KeyFile::KeyFile(const std::string& _filepath,
-                 bool _parse_keywords,
+                 bool _read_generic_keywords,
                  bool _parse_mesh,
                  bool _load_includes,
-                 double _encryption_detection)
+                 double _encryption_detection,
+                 KeyFile* _parent_kf)
   : FEMFile(_filepath)
+  , parent_kf(_parent_kf)
   , load_includes(_load_includes)
+  , read_generic_keywords(_read_generic_keywords)
+  , parse_mesh(_parse_mesh)
   , encryption_detection_threshold(_encryption_detection)
 {
+  if (_parent_kf == nullptr)
+    _parent_kf = this;
+
   // check encryption
   if (encryption_detection_threshold < 0 || encryption_detection_threshold > 1)
     throw(std::invalid_argument(
       "Encryption detection threshold must be between 0 and 1."));
-
-  // TODO: make these properties class variables?
-  load(_filepath, _parse_mesh, _parse_keywords);
 }
 
 /** Parse a keyfile
  *
- * @param _filepath
- * @param _parse_mesh : whether the mesh shall be parsed
+ * @param _load_mesh : whether the mesh shall loaded
+ *
+ * The parameter can be used to prevent the loading of the mesh,
+ * even though we use parse_mesh. We need this for includes.
  */
 void
-KeyFile::load(const std::string& _filepath,
-              bool _parse_mesh,
-              bool _parse_keywords)
+KeyFile::load(bool _load_mesh)
 {
-  // TODO rewrite function -> load function for keywords in right order
-
-  // File directory for Includes
-  std::string directory = "";
-  size_t pos = _filepath.find_last_of("/\\");
-  if (pos != std::string::npos)
-    directory = _filepath.substr(0, pos) + "/";
-#ifdef QD_DEBUG
-  std::cout << "Basic directory for *INCLUDE: " << directory << std::endl;
-#endif
 
   // read file
-  std::vector<char> char_buffer = read_binary_file(_filepath);
+  auto my_filepath = resolve_include_filepath(get_filepath());
+  std::vector<char> char_buffer = read_binary_file(my_filepath);
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
@@ -78,19 +79,20 @@ KeyFile::load(const std::string& _filepath,
   // test for encryption
   if ((get_entropy(char_buffer) / 8.) > this->encryption_detection_threshold) {
 #ifdef QD_DEBUG
-    std::cout << "Skipping file " << _filepath << " with normalized entropy of "
+    std::cout << "Skipping file " << my_filepath
+              << " with normalized entropy of "
               << (get_entropy(char_buffer) / 8) << std::endl;
 #endif
     return;
   }
 
   // convert buffer into blocks
+  constexpr bool insert_into_buffers = true;
+
   size_t iLine = 0;
   std::string last_keyword;
   std::vector<std::string> line_buffer;
   std::vector<std::string> line_buffer_tmp;
-  std::queue<std::tuple<std::vector<std::string>, size_t, std::string>>
-    buffer_queue;
   std::queue<size_t> buffer_iLine_queue;
 
   std::string line;
@@ -137,26 +139,13 @@ KeyFile::load(const std::string& _filepath,
         }
 #endif
 
-        // elements will be done after parsing since we might miss parts
-        // or nodes
-        if (_parse_keywords && kw_type == Keyword::KeywordType::GENERIC) {
-          auto kw =
-            create_keyword(line_buffer,
-                           kw_type,
-                           iLine - line_buffer.size() - line_buffer_tmp.size(),
-                           _parse_mesh);
+        auto kw =
+          create_keyword(line_buffer,
+                         kw_type,
+                         iLine - line_buffer.size() - line_buffer_tmp.size(),
+                         insert_into_buffers);
+        if (kw)
           keywords[kw->get_keyword_name()].push_back(kw);
-        } else if (_parse_mesh && kw_type == Keyword::KeywordType::ELEMENT) {
-          buffer_queue.push(std::make_tuple(line_buffer, iLine, last_keyword));
-        } else if (_parse_mesh) {
-
-          auto kw =
-            create_keyword(line_buffer,
-                           kw_type,
-                           iLine - line_buffer.size() - line_buffer_tmp.size(),
-                           _parse_mesh);
-          keywords[kw->get_keyword_name()].push_back(kw);
-        }
 
         // transfer cropped data
         line_buffer = line_buffer_tmp;
@@ -179,27 +168,97 @@ KeyFile::load(const std::string& _filepath,
       create_keyword(line_buffer,
                      Keyword::determine_keyword_type(last_keyword),
                      iLine - line_buffer.size() - line_buffer_tmp.size(),
-                     _parse_mesh);
+                     true);
     keywords[kw->get_keyword_name()].push_back(kw);
   }
 
-  // get rid of work in queue (*ELEMENT)
-  while (buffer_queue.size() > 0) {
+  // includes
+  if (load_includes) {
 
-    auto& data = buffer_queue.front();
-    const auto& block = std::get<0>(data);
-    iLine = std::get<1>(data);
-    last_keyword = std::get<2>(data);
+    // update include dirs
+    get_include_dirs(true);
 
-    auto kw = create_keyword(block,
-                             Keyword::determine_keyword_type(last_keyword),
-                             iLine - block.size() - block.size(),
-                             _parse_mesh);
-    keywords[kw->get_keyword_name()].push_back(kw);
-
-    // hihihi popping ...
-    buffer_queue.pop();
+    // do the thing
+    for (auto& include_kw : include_keywords) {
+      include_kw->load(false); // prevent loading the mesh here
+    }
   }
+
+  // load mesh if requested
+  if (parse_mesh && _load_mesh) {
+    // load nodes
+    load_nodes();
+
+    // load parts
+    load_parts();
+
+    // load elements
+    load_elements();
+  }
+}
+
+/** Load the include files
+ *
+ */
+void
+KeyFile::load_include_files()
+{}
+
+/** Loads the nodes from the keywords into the database
+ *
+ */
+void
+KeyFile::load_nodes()
+{
+
+  // load oneself
+  for (auto& node_keyword : node_keywords) {
+    node_keyword->load();
+  }
+
+  // load includes
+  if (load_includes)
+    for (auto& include_kw : include_keywords)
+      for (auto& include_kf : include_kw->get_includes())
+        include_kf->load_nodes();
+}
+
+/** Loads the parts from the keywords into the database
+ *
+ */
+void
+KeyFile::load_parts()
+{
+
+  // load oneself
+  for (auto& part_kw : part_keywords) {
+    part_kw->load();
+  }
+
+  // load includes
+  if (load_includes)
+    for (auto& include_kw : include_keywords)
+      for (auto& include_kf : include_kw->get_includes())
+        include_kf->load_parts();
+}
+
+/** Loads the parts from the keywords into the database
+ *
+ */
+void
+KeyFile::load_elements()
+{
+
+  // load oneself
+  for (auto& element_kw : element_keywords) {
+    element_kw->load();
+  }
+
+  // load includes
+  if (load_includes)
+    for (auto& include_kw : include_keywords)
+      for (auto& include_kf : include_kw->get_includes())
+        include_kf->load_elements();
 }
 
 /** Extract a comment header, which may belong to another keyword block
@@ -240,62 +299,134 @@ KeyFile::transfer_comment_header(std::vector<std::string>& _old,
 
 /** Create a keyword from it's line buffer
  *
- * @param _lines buffer
- * @param _keyword_name name flag
- * @param _iLine line index of the block
+ * @param _lines : buffer
+ * @param _keyword_type : type if the keyword
+ * @param _iLine : line index of the block
+ * @param _insert_into_buffer : whether to insert typed keywords into their
+ * buffers
+ *
+ * The *typed* keywords not inserted into the loading buffers are not loaded
+ * automatically and require to call the "load" function
  */
 std::shared_ptr<Keyword>
 KeyFile::create_keyword(const std::vector<std::string>& _lines,
                         Keyword::KeywordType _keyword_type,
                         size_t _iLine,
-                        bool _parse_mesh)
+                        bool _insert_into_buffer)
 {
 
-  if (_parse_mesh) {
+  if (parse_mesh) {
 
     switch (_keyword_type) {
-      case (Keyword::KeywordType::NODE):
-        return std::make_shared<NodeKeyword>(
-          this->get_db_nodes(), _lines, static_cast<int64_t>(_iLine));
-      case (Keyword::KeywordType::ELEMENT):
-        return std::make_shared<ElementKeyword>(
-          this->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
-      case (Keyword::KeywordType::PART):
-        return std::make_shared<PartKeyword>(
-          this->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
-      case (Keyword::KeywordType::INCLUDE_PATH):
-        return std::make_shared<IncludePathKeyword>(
-          _lines, static_cast<int64_t>(_iLine));
+      case (Keyword::KeywordType::NODE): {
+        auto kw = std::make_shared<NodeKeyword>(
+          parent_kf->get_db_nodes(), _lines, static_cast<int64_t>(_iLine));
+        if (_insert_into_buffer)
+          node_keywords.push_back(kw);
+        return kw;
+        break;
+      }
+      case (Keyword::KeywordType::ELEMENT): {
+        auto kw = std::make_shared<ElementKeyword>(
+          parent_kf->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
+        if (_insert_into_buffer)
+          element_keywords.push_back(kw);
+        return kw;
+        break;
+      }
+      case (Keyword::KeywordType::PART): {
+        auto kw = std::make_shared<PartKeyword>(
+          parent_kf->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
+        if (_insert_into_buffer)
+          part_keywords.push_back(kw);
+        return kw;
+        break;
+      }
       default:
         // nothing
         break;
     }
   }
 
-  return std::make_shared<Keyword>(_lines, _iLine);
+  // *INCLUDE_PATH
+  if (load_includes && _keyword_type == Keyword::KeywordType::INCLUDE_PATH) {
+    auto kw = std::make_shared<IncludePathKeyword>(
+      _lines, static_cast<int64_t>(_iLine));
+    if (_insert_into_buffer)
+      include_path_keywords.push_back(kw);
+    return kw;
+  }
+
+  // *INCLUDE
+  if (load_includes && _keyword_type == Keyword::KeywordType::INCLUDE) {
+    auto kw = std::make_shared<IncludeKeyword>(
+      parent_kf, _lines, static_cast<int64_t>(_iLine));
+    if (_insert_into_buffer)
+      include_keywords.push_back(kw);
+    return kw;
+  }
+
+  if (read_generic_keywords)
+    return std::make_shared<Keyword>(_lines, _iLine);
+  else
+    return nullptr;
 }
 
 /** Update the include path
  *
+ * @return include filepaths
+ *
  * The include path are the directories, in which all includes will be
  * searched for.
  */
-void
-KeyFile::update_include_path()
+const std::vector<std::string>&
+KeyFile::get_include_dirs(bool _update)
 {
   // clean up
   include_dirs.clear();
 
-  // collect
+  // dir of file
+  std::string directory = "";
+  auto my_filepath = get_filepath();
+  size_t pos = my_filepath.find_last_of("/\\");
+  if (pos != std::string::npos)
+    directory = my_filepath.substr(0, pos) + "/";
+
+  if (!directory.empty())
+    include_dirs.push_back(directory);
+
+  // dirs of include_path
   auto keywords_include_path =
     get_keywordsByType(Keyword::KeywordType::INCLUDE_PATH);
 
   // update
   for (auto& kw : keywords_include_path) {
     auto kw_inc_path = std::static_pointer_cast<IncludePathKeyword>(kw);
-    auto tmp_dirs = kw_inc_path->get_include_dirs();
-    include_dirs.insert(include_dirs.end(), tmp_dirs.begin(), tmp_dirs.end());
+    bool is_relative_dir = kw_inc_path->is_relative();
+
+    // append
+    for (const auto& dirpath : kw_inc_path->get_include_dirs()) {
+      if (is_relative_dir)
+        include_dirs.push_back(join_path(directory, dirpath));
+      else
+        include_dirs.push_back(dirpath);
+    }
   }
+
+  // INCLUDES
+  for (auto& include_kw : include_keywords)
+    for (auto& include_kf : include_kw->get_includes()) {
+      auto paths = include_kf->get_include_dirs(true);
+      include_dirs.insert(include_dirs.end(), paths.begin(), paths.end());
+    }
+
+#ifdef QD_DEBUG
+  std::cout << "Include dirs:\n";
+  for (const auto& entry : include_dirs)
+    std::cout << entry << '\n';
+#endif
+
+  return include_dirs;
 }
 
 /** Resolve an include
@@ -315,25 +446,7 @@ KeyFile::resolve_include_filepath(const std::string& _filepath)
       return dir + _filepath;
   }
 
-  throw(std::runtime_error("Can not resolve include:" + _filepath));
-}
-
-/** Resolves all includes (loads them)
- *
- */
-void
-KeyFile::load_include_files()
-{
-
-  update_include_path();
-
-  // do the thing (read include)
-  auto includes = get_keywordsByType(Keyword::KeywordType::INCLUDE);
-
-  for (auto include : includes) {
-    include->load();
-  }
-  // TODO
+  throw(std::runtime_error("Can not find anywhere:" + _filepath));
 }
 
 /** Get all keywords from a certain type
