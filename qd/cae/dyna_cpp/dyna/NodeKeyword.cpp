@@ -51,7 +51,7 @@ NodeKeyword::load()
   auto field_size_x2 = 2 * field_size;
   auto field_size_x3 = 3 * field_size;
   auto field_size_x5 = 5 * field_size;
-  auto field_size_x6 = 6 * field_size;
+  auto field_size_x7 = 7 * field_size;
 
   for (; iLine < lines.size(); ++iLine) {
 
@@ -81,8 +81,8 @@ NodeKeyword::load()
         coords[2] = 0.f;
 
       // remainder
-      if (field_size_x6 < line.size())
-        remaining_data = std::string(line.begin() + field_size_x6, line.end());
+      if (field_size_x7 < line.size())
+        remaining_data = std::string(line.begin() + field_size_x7, line.end());
       else
         remaining_data = std::string();
 

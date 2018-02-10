@@ -55,8 +55,6 @@ protected:
   inline bool is_comment(const std::string& _line) const;
   inline bool is_keyword(const std::string& _line) const;
   template<typename T>
-  size_t iCard_to_iLine(T _iCard, bool _auto_extend = true);
-  template<typename T>
   inline size_t iChar_to_iField(T _iChar) const;
   template<typename T>
   std::string get_field_byLine(const std::string& _line,
@@ -173,6 +171,11 @@ public:
                            size_t _field_size = 0,
                            bool _format_field = true,
                            bool _format_name = true);
+
+  // useful but mostly internal stuff
+  template<typename T>
+  size_t iCard_to_iLine(T _iCard, bool _auto_extend = true);
+  inline size_t get_line_index_of_next_card(size_t _iLineOffset = 0);
 };
 
 /** Get the type of the keyword
@@ -367,6 +370,23 @@ Keyword::iCard_to_iLine(T _iCard, bool _auto_extend)
   throw(std::invalid_argument("card index " + std::to_string(iCard_u) +
                               " >= number of cards " +
                               std::to_string(++nCards)));
+}
+
+/** find the line index of the next card
+ *
+ * @param _iCard : card index
+ * @return index : returns lines.size() if none found
+ *
+ * Does not check the line at the offset position.
+ */
+size_t
+Keyword::get_line_index_of_next_card(size_t _iLineOffset)
+{
+  for (size_t iLine = _iLineOffset + 1; iLine < lines.size(); ++iLine) {
+    if (!is_comment(lines[iLine]) && !is_keyword(lines[iLine]))
+      return iLine;
+  }
+  return lines.size();
 }
 
 /** Get a field index from a char index

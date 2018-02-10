@@ -85,18 +85,17 @@ public:
           double _encryption_detection = 0.7,
           KeyFile* _parent_kf = nullptr);
 
-  void load(bool _load_mesh = false);
+  void load(bool _load_mesh = true);
   inline std::vector<std::shared_ptr<Keyword>> get_keywordsByName(
     const std::string& _keyword_name);
+  void remove_keyword(const std::string& _keyword_name);
   template<typename T>
   void remove_keyword(const std::string& _keyword_name, T _index);
   inline std::vector<std::string> keys();
   std::string str() const;
-  void save_txt(const std::string& _filepath,
-                bool _save_includes = true,
-                bool _save_all_in_one = false);
-
+  void save_txt(const std::string& _filepath);
   std::string resolve_include_filepath(const std::string& _filepath);
+  std::vector<std::shared_ptr<KeyFile>> get_includes();
 
   bool get_read_generic_keywords() const { return read_generic_keywords; }
   bool get_parse_mesh() const { return parse_mesh; }

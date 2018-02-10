@@ -14,6 +14,7 @@ IncludeKeyword::IncludeKeyword(KeyFile* _parent_kf,
                                const std::vector<std::string> _lines,
                                int64_t _iLine)
   : Keyword(_lines, _iLine)
+  , parent_kf(_parent_kf)
 {}
 
 /** Load the includes in the
@@ -34,15 +35,17 @@ IncludeKeyword::load(bool _load_mesh)
       break;
 
     auto fpath = parent_kf->resolve_include_filepath(line);
-    auto kf = std::make_shared<KeyFile>(
-      fpath,
-      parent_kf->get_read_generic_keywords(),
-      parent_kf->get_parse_mesh(),
-      parent_kf->get_load_includes(),
-      parent_kf->get_encryption_detection_threshold());
+    auto kf =
+      std::make_shared<KeyFile>(fpath,
+                                parent_kf->get_read_generic_keywords(),
+                                parent_kf->get_parse_mesh(),
+                                parent_kf->get_load_includes(),
+                                parent_kf->get_encryption_detection_threshold(),
+                                parent_kf);
 
     kf->load(_load_mesh);
     includes.push_back(kf);
+    unresolved_filepaths.push_back(line);
   }
 
   // handle trailing lines
@@ -65,8 +68,8 @@ IncludeKeyword::str()
     ss << entry << '\n';
 
   // data
-  for (auto& include : includes)
-    ss << include->get_filepath();
+  for (const auto& include_path : unresolved_filepaths)
+    ss << include_path << '\n';
 
   // trailing lines
   for (const auto& line : trailing_lines)

@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@ class PartKeyword : public Keyword
 private:
   DB_Parts* db_parts;
   std::vector<int32_t> part_ids;
+  std::vector<std::string> comments_between_card0_and_card1;
   std::vector<std::string> unparsed_data;
   std::vector<std::string> trailing_lines;
 
@@ -32,7 +34,7 @@ public:
   inline std::shared_ptr<Part> get_partByIndex(T _part_index);
   inline std::vector<std::shared_ptr<Part>> get_parts();
   inline size_t get_nParts() const;
-  std::string str() const;
+  std::string str() override;
 };
 
 /** Add a part to the keyword

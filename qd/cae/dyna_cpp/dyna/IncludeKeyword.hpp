@@ -17,7 +17,9 @@ class IncludeKeyword : public Keyword
 private:
   KeyFile* parent_kf;
   std::vector<std::shared_ptr<KeyFile>> includes;
+
   std::vector<std::string> trailing_lines;
+  std::vector<std::string> unresolved_filepaths; // for writing l8ter
 
 public:
   IncludeKeyword(KeyFile* _parent_kf,

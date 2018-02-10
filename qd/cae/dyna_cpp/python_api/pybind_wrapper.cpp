@@ -694,7 +694,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          "data"_a)
     .def("info", &RawD3plot::info, rawd3plot_info_docs);
 
-  // Keyword
+  // Keyword (and subclasses)
   pybind11::class_<Keyword, std::shared_ptr<Keyword>> keyword_py(m, "Keyword");
   pybind11::class_<NodeKeyword, Keyword, std::shared_ptr<NodeKeyword>>
     node_keyword_py(m, "NodeKeyword");
@@ -702,6 +702,11 @@ PYBIND11_MODULE(dyna_cpp, m)
     element_keyword_py(m, "ElementKeyword");
   pybind11::class_<PartKeyword, Keyword, std::shared_ptr<PartKeyword>>
     part_keyword_py(m, "PartKeyword");
+  pybind11::
+    class_<IncludePathKeyword, Keyword, std::shared_ptr<IncludePathKeyword>>
+      include_path_keyword_py(m, "IncludePathKeyword");
+  pybind11::class_<IncludeKeyword, Keyword, std::shared_ptr<IncludeKeyword>>
+    include_keyword_py(m, "IncludeKeyword");
 
   pybind11::enum_<Keyword::Align>(keyword_py, "align")
     .value("left", Keyword::Align::LEFT)
@@ -909,7 +914,8 @@ PYBIND11_MODULE(dyna_cpp, m)
   node_keyword_py.def("add_node", &NodeKeyword::add_node<int64_t>)
     .def("get_nNodes", &NodeKeyword::get_nNodes)
     .def("get_nodes", &NodeKeyword::get_nodes)
-    .def("get_node_indexes", &NodeKeyword::get_node_indexes);
+    .def("get_node_indexes", &NodeKeyword::get_node_indexes)
+    .def("load", &NodeKeyword::load);
 
   element_keyword_py.def("get_elements", &ElementKeyword::get_elements)
     .def("get_nElements", &ElementKeyword::get_nElements)
@@ -925,73 +931,109 @@ PYBIND11_MODULE(dyna_cpp, m)
          &ElementKeyword::add_elementByNodeIndex<int64_t>,
          "id"_a,
          "part_id"_a,
-         "node_indexes"_a);
+         "node_indexes"_a)
+    .def("load", &ElementKeyword::load);
 
   part_keyword_py
     .def("add_part", &PartKeyword::add_part<int64_t>, "id"_a, "name"_a = "")
     .def("get_partByIndex", &PartKeyword::get_partByIndex<int64_t>, "index"_a)
     .def("get_parts", &PartKeyword::get_parts)
     .def("get_nParts", &PartKeyword::get_nParts)
+    .def("load", &PartKeyword::load)
     .def("__str__", &PartKeyword::str);
+
+  include_path_keyword_py.def("is_relative", &IncludePathKeyword::is_relative)
+    .def("get_include_dirs", &IncludePathKeyword::get_include_dirs);
+
+  include_keyword_py.def("get_includes", &IncludeKeyword::get_includes)
+    .def("load", &IncludeKeyword::load);
 
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
     m, "QD_KeyFile", keyfile_description);
   keyfile_py
-    .def(pybind11::init<const std::string&, bool, bool, bool, double>(),
+    .def("__init__",
+         [](KeyFile& instance,
+            const std::string& _filepath,
+            bool read_generic_keywords,
+            bool parse_mesh,
+            bool load_includes,
+            double encryption_detection_threshold) {
+
+           new (&instance) KeyFile(_filepath,
+                                   read_generic_keywords,
+                                   parse_mesh,
+                                   load_includes,
+                                   encryption_detection_threshold);
+           instance.load();
+
+         },
          "filepath"_a,
-         "parse_keywords"_a = true,
+         "read_generic_keywords"_a = true,
          "parse_mesh"_a = false,
          "load_includes"_a = true,
          "encryption_detection"_a = 0.7,
          keyfile_constructor)
     .def("__str__", &KeyFile::str)
-    .def("__getitem__",
-         [](std::shared_ptr<KeyFile> self, std::string key) {
-           auto kwrds = self->get_keywordsByName(key);
-
-           // safe sex
-           if (kwrds.empty())
-             return pybind11::cast(kwrds);
-
-           switch (kwrds[0]->get_keyword_type()) {
-             // node keyword
-             case (Keyword::KeywordType::NODE): {
-               std::vector<std::shared_ptr<NodeKeyword>> ret(kwrds.size());
-               for (size_t ii = 0; ii < kwrds.size(); ++ii)
-                 ret[ii] = std::static_pointer_cast<NodeKeyword>(kwrds[ii]);
-               return pybind11::cast(ret);
-             }
-
-             // element keyword
-             case (Keyword::KeywordType::ELEMENT): {
-               std::vector<std::shared_ptr<ElementKeyword>> ret(kwrds.size());
-               for (size_t ii = 0; ii < kwrds.size(); ++ii)
-                 ret[ii] = std::static_pointer_cast<ElementKeyword>(kwrds[ii]);
-               return pybind11::cast(ret);
-             }
-
-             case (Keyword::KeywordType::PART): {
-               std::vector<std::shared_ptr<PartKeyword>> ret(kwrds.size());
-               for (size_t ii = 0; ii < kwrds.size(); ++ii)
-                 ret[ii] = std::static_pointer_cast<PartKeyword>(kwrds[ii]);
-               return pybind11::cast(ret);
-             }
-
-             default:
-               return pybind11::cast(kwrds);
-           }
-
-         },
-         "name"_a)
-    .def("keys", &KeyFile::keys)
-    .def("save_txt",
-         &KeyFile::save_txt,
-         "filepath"_a,
-         "save_includes"_a = true,
-         "save_all_in_one"_a = false)
     .def(
-      "remove_keyword", &KeyFile::remove_keyword<int64_t>, "name"_a, "index"_a);
+      "__getitem__",
+      [](std::shared_ptr<KeyFile> self, std::string key) {
+        auto kwrds = self->get_keywordsByName(key);
+
+        // safe sex
+        if (kwrds.empty())
+          return pybind11::cast(kwrds);
+
+        switch (kwrds[0]->get_keyword_type()) {
+
+          // node keyword
+          case (Keyword::KeywordType::NODE): {
+            std::vector<std::shared_ptr<NodeKeyword>> ret(kwrds.size());
+            for (size_t ii = 0; ii < kwrds.size(); ++ii)
+              ret[ii] = std::static_pointer_cast<NodeKeyword>(kwrds[ii]);
+            return pybind11::cast(ret);
+          }
+
+          // element keyword
+          case (Keyword::KeywordType::ELEMENT): {
+            std::vector<std::shared_ptr<ElementKeyword>> ret(kwrds.size());
+            for (size_t ii = 0; ii < kwrds.size(); ++ii)
+              ret[ii] = std::static_pointer_cast<ElementKeyword>(kwrds[ii]);
+            return pybind11::cast(ret);
+          }
+
+          case (Keyword::KeywordType::PART): {
+            std::vector<std::shared_ptr<PartKeyword>> ret(kwrds.size());
+            for (size_t ii = 0; ii < kwrds.size(); ++ii)
+              ret[ii] = std::static_pointer_cast<PartKeyword>(kwrds[ii]);
+            return pybind11::cast(ret);
+          }
+
+          case (Keyword::KeywordType::INCLUDE_PATH): {
+            std::vector<std::shared_ptr<IncludePathKeyword>> ret(kwrds.size());
+            for (size_t ii = 0; ii < kwrds.size(); ++ii)
+              ret[ii] = std::static_pointer_cast<IncludePathKeyword>(kwrds[ii]);
+            return pybind11::cast(ret);
+          }
+
+          case (Keyword::KeywordType::INCLUDE): {
+            std::vector<std::shared_ptr<IncludeKeyword>> ret(kwrds.size());
+            for (size_t ii = 0; ii < kwrds.size(); ++ii)
+              ret[ii] = std::static_pointer_cast<IncludeKeyword>(kwrds[ii]);
+            return pybind11::cast(ret);
+          }
+
+          default:
+            return pybind11::cast(kwrds);
+        }
+
+      },
+      "name"_a)
+    .def("keys", &KeyFile::keys)
+    .def("save_txt", &KeyFile::save_txt, "filepath"_a)
+    .def(
+      "remove_keyword", &KeyFile::remove_keyword<int64_t>, "name"_a, "index"_a)
+    .def("get_includes", &KeyFile::get_includes);
 
   // Binout
   /*

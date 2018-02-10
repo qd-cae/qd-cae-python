@@ -49,8 +49,8 @@ KeyFile::KeyFile(const std::string& _filepath,
   , parse_mesh(_parse_mesh)
   , encryption_detection_threshold(_encryption_detection)
 {
-  if (_parent_kf == nullptr)
-    _parent_kf = this;
+  if (parent_kf == nullptr)
+    parent_kf = this;
 
   // check encryption
   if (encryption_detection_threshold < 0 || encryption_detection_threshold > 1)
@@ -139,11 +139,11 @@ KeyFile::load(bool _load_mesh)
         }
 #endif
 
-        auto kw =
-          create_keyword(line_buffer,
-                         kw_type,
-                         iLine - line_buffer.size() - line_buffer_tmp.size(),
-                         insert_into_buffers);
+        auto kw = create_keyword(line_buffer,
+                                 kw_type,
+                                 iLine - line_buffer.size() -
+                                   line_buffer_tmp.size() + 1,
+                                 insert_into_buffers);
         if (kw)
           keywords[kw->get_keyword_name()].push_back(kw);
 
@@ -163,13 +163,16 @@ KeyFile::load(bool _load_mesh)
   } // for:line
 
   // allocate last block
-  if (!line_buffer.empty()) {
-    auto kw =
-      create_keyword(line_buffer,
-                     Keyword::determine_keyword_type(last_keyword),
-                     iLine - line_buffer.size() - line_buffer_tmp.size(),
-                     true);
-    keywords[kw->get_keyword_name()].push_back(kw);
+  if (!line_buffer.empty() && !last_keyword.empty()) {
+
+    auto kw_type = Keyword::determine_keyword_type(last_keyword);
+
+    auto kw = create_keyword(line_buffer,
+                             Keyword::determine_keyword_type(last_keyword),
+                             iLine - line_buffer.size() + 1,
+                             insert_into_buffers);
+    if (kw)
+      keywords[kw->get_keyword_name()].push_back(kw);
   }
 
   // includes
@@ -449,6 +452,51 @@ KeyFile::resolve_include_filepath(const std::string& _filepath)
   throw(std::runtime_error("Can not find anywhere:" + _filepath));
 }
 
+/** Get all child include files
+ *
+ * @return all_includes
+ *
+ * load_includes must be enabled for includes to be loaded.
+ */
+std::vector<std::shared_ptr<KeyFile>>
+KeyFile::get_includes()
+{
+  std::vector<std::shared_ptr<KeyFile>> all_includes;
+
+  for (auto& include_kw : include_keywords) {
+    auto new_includes = include_kw->get_includes();
+    all_includes.insert(
+      all_includes.end(), new_includes.begin(), new_includes.end());
+  }
+
+  return all_includes;
+}
+
+/** Remove all keywords with the specified name
+ *
+ * @param _keyword_name
+ *
+ */
+void
+KeyFile::remove_keyword(const std::string& _keyword_name)
+{
+  // search
+  auto it = keywords.find(_keyword_name);
+  if (it == keywords.end())
+    return;
+
+  auto& kwrds = it->second;
+
+  // check for non-generic type
+  if (kwrds.size() > 0) {
+    auto keyword_type = kwrds[0]->get_keyword_type();
+    if (keyword_type != Keyword::KeywordType::GENERIC)
+      throw(std::invalid_argument("Can not delete non-generic keywords yet."));
+  }
+
+  keywords.erase(it);
+}
+
 /** Get all keywords from a certain type
  *
  * @param type
@@ -500,13 +548,9 @@ KeyFile::str() const
 /** Save a keyfile again
  *
  * @param _filepath : path to new file
- * @param _save_includes : save also include files in same dir
- * @param _save_all_in_one : save all include data in the master file
  */
 void
-KeyFile::save_txt(const std::string& _filepath,
-                  bool _save_includes,
-                  bool _save_all_in_one)
+KeyFile::save_txt(const std::string& _filepath)
 {
   save_file(_filepath, str());
 }

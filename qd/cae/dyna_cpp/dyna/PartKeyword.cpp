@@ -36,7 +36,7 @@ PartKeyword::load()
   auto kw_name = to_lower_copy(get_keyword_name());
 
   // find first card line
-  size_t header_size = iCard_to_iLine(0, false);
+  size_t header_size = get_line_index_of_next_card(0);
   size_t iLine = header_size;
 
   // how much data to read
@@ -64,47 +64,76 @@ PartKeyword::load()
 
   std::string part_name;
   int32_t part_id;
-  for (; iLine < lines.size(); iLine += 2 + nAdditionalLines + one_more_card) {
+  while (iLine < lines.size()) {
+
+    // depends on a specific card value
     one_more_card = false;
 
-    // TODO: comment treatment inbetween
     const auto& line = lines[iLine];
-    if (line.empty())
-      break;
 
-    if (iLine + 1 >= lines.size())
+    // if (std::all_of(line.begin(), line.end(), std::isspace))
+    //   break;
+
+    // find second card for parsing
+    const auto iNextLine = get_line_index_of_next_card(iLine);
+    if (iNextLine == lines.size())
       throw(std::runtime_error(
         "Parsing error in line: " +
-        std::to_string(static_cast<size_t>(line_index) + iLine) +
-        "\nerror: Part is supposed to have a card with a part id."));
-    const auto& next_line = lines[iLine + 1];
+        std::to_string(static_cast<size_t>(line_index) + 1 + iLine) +
+        "\nerror: Second card is missing."));
 
+    // eventually there are comments inbetween first and second card
+    std::string comment_block;
+    for (size_t iCLine = 1; iCLine < iNextLine - iLine; ++iCLine)
+      comment_block += lines[iLine + iCLine] + '\n';
+    comments_between_card0_and_card1.push_back(comment_block);
+
+    const auto& next_line = lines[iNextLine];
+
+    // do the thing (parse card 0 and card 1)
+    // then save remaining card data
     try {
       part_name = line.substr(0, 7 * field_size);
       part_id = std::stoi(next_line.substr(0, field_size));
       std::string remaining_data(next_line.begin() + field_size,
                                  next_line.end());
-      for (size_t iExtraLine = 0; iExtraLine < nAdditionalLines + one_more_card;
-           ++iExtraLine) {
-        remaining_data += '\n' + lines[iLine + 2 + iExtraLine];
-        if (is_part_inertia && iExtraLine == 1) {
-          auto flag_ircs = trim(
-            lines[iLine + 2 + iExtraLine].substr(4 * field_size, field_size));
-          if (flag_ircs.empty() || std::stod(flag_ircs) == 1)
-            one_more_card = true;
+
+      // find end of part block
+      iLine = iNextLine + 1;
+      size_t iCardCount = 0;
+      while (iCardCount < nAdditionalLines + one_more_card &&
+             iLine < lines.size()) {
+
+        if (!is_comment(lines[iLine])) {
+
+          // if ircs field is 1, then we have another card line
+          if (is_part_inertia && iCardCount == 0) {
+            const auto flag_ircs =
+              trim(lines[iLine].substr(4 * field_size, field_size));
+            if (flag_ircs.empty() || std::stod(flag_ircs) == 1)
+              one_more_card = true;
+          }
+
+          ++iCardCount;
         }
+
+        // copy line
+        remaining_data += '\n' + lines[iLine++];
       }
 
+      // create part and save data
       db_parts->add_partByID(part_id, part_name);
       part_ids.push_back(part_id);
       unparsed_data.push_back(remaining_data);
-
     } catch (const std::exception& err) {
       std::cerr << "Parsing error in line: "
                 << (static_cast<size_t>(line_index) + iLine) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }
+
+    // update line counter
+    ++iLine;
   }
 
   // trailing shit
@@ -120,7 +149,7 @@ PartKeyword::load()
  * @return str : keyword as string (again)
  */
 std::string
-PartKeyword::str() const
+PartKeyword::str()
 {
   std::stringstream ss;
 
@@ -139,12 +168,16 @@ PartKeyword::str() const
     default:
       ss.setf(std::ios::internal);
   }
+
   ss.precision(7);
   for (size_t iPart = 0; iPart < part_ids.size(); ++iPart) {
     auto part = db_parts->get_partByID(part_ids[iPart]);
+
+    const auto& comment_block = comments_between_card0_and_card1[iPart];
+
     ss << std::setw(7 * field_size) << part->get_name() << '\n'
-       << std::setw(field_size) << part->get_partID() << unparsed_data[iPart]
-       << '\n';
+       << comment_block << std::setw(field_size) << part->get_partID()
+       << unparsed_data[iPart] << '\n';
   }
 
   // write trailing lines
