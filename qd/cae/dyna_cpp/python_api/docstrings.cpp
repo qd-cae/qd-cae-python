@@ -1338,7 +1338,7 @@ const char* rawd3plot_get_float_data_docs = R"qddoc(
     floating point value.
 
     Parameters
-    ---------
+    ----------
     name : str
         name of data array to request for
 
@@ -1367,4 +1367,703 @@ const char* rawd3plot_info_docs = R"qddoc(
     --------
         >>> raw_d3plot = RawD3plot("path/to/d3plot")
         >>> raw_d3plot.info()
+)qddoc";
+
+/* ----------------------- KEYWORD ---------------------- */
+
+const char* keyword_enum_align_docs = R"qddoc(
+    Type of alignment for comment names and fields:
+     - left
+     - right
+     - middle
+
+    Examples
+    --------
+        >>> # The alignment is always global
+        >>> Keyword.field_alignment = Keyword.align.middle
+)qddoc";
+
+const char* keyword_constructor_docs = R"qddoc(
+    Keyword(lines, line_index=0)
+
+    Parameters
+    ----------
+    lines : str or list of str
+        Keyword data for initalization. May contain the lines of
+        the keyword either as list or as one string. If provided
+        one string, it is splitted at the line ending symbols.
+    line_index : int
+        line index at which the keyword shall be positioned. This
+        will be the sorting index in a KeyFile.
+
+    Returns
+    -------
+    keyword : Keyword
+
+    Examples
+    --------
+        >>> from qd.cae.dyna import Keyword
+        >>> 
+        >>> data = '''
+        >>> $------------------------------------------
+        >>> $ Parts, Sections, and Materials
+        >>> $------------------------------------------
+        >>> *PART
+        >>> $# title
+        >>> engine part number one 
+        >>> $#     pid     secid       mid     eosid   
+        >>>    2000001   2000001   2000017
+        >>> '''
+        >>>
+        >>> kw = Keyword(data)
+)qddoc";
+
+const char* keyword_str_docs = R"qddoc(
+    __str__()
+
+    Returns
+    -------
+    keyword_str : str
+        keyword as one string
+
+    Examples
+    --------
+        >>> kw_as_string = str(kw)
+        >>> print(kw)
+)qddoc";
+
+const char* keyword_repr_docs = R"qddoc(
+    __repr__()
+
+    Returns
+    -------
+    repr : str
+        representation string of the keyword
+
+    Examples
+    --------
+        >>> from qd.cae.dyna import KeyFile
+        >>> kf = KeyFile("path/to/keyfile")
+        >>> kf["*SET_NODE_ADD"]
+        [<Keyword: *SET_NODE_ADD>]
+)qddoc";
+
+const char* keyword_iter_docs = R"qddoc(
+    __iter__()
+
+    Returns
+    -------
+    line : str
+        line of the keyword buffer
+
+    Examples
+    --------
+        >>> for line in kw:
+        >>>    print(line)
+)qddoc";
+
+const char* keyword_getitem_docs = R"qddoc(
+    __getitem__(arg1, arg2, field_size=0)
+    
+    *Abreviation for `get_card_valueByName` and `get_card_valueByIndex`*
+
+    Parameters
+    ----------
+    arg1 : int or str
+        either card index (starting with 0) or field name
+    arg2 : int
+        if first argument is a card index, then this is the 
+        optional field index, otherwise full card will be returned
+    field_size : int
+        the number of characters, which can be found in the 
+        card field.
+
+    Returns
+    -------
+    entry : int, float or str
+        field value
+
+    Raises
+    ------
+    ValueError
+        if indexes are out of bounds or name not found
+
+    Notes
+    -----
+        This function is just a quick, dirty wrapper for the member function
+        `get_card_value`. 
+
+    Examples
+    --------
+        >>> # keyword is from constructor example
+        >>> kw["pid"]
+        2000001
+        >>> kw["yay"]
+        ValueError: Can not find field: yay in comments.
+        >>> kw[0]
+        'engine part number one '
+        >>> kw[0,0]
+        'engine par'
+        >>> kw[0,0,50]
+        'engine part number one'
+)qddoc";
+
+const char* keyword_get_card_valueByIndex_docs = R"qddoc(
+    get_card_valueByIndex(iCard, iField, field_size=0)
+    
+    Parameters
+    ----------
+    arg1 : int
+        card index
+    arg2 : int
+        optional field index
+    field_size : int
+        (optional) size of field 
+
+    Returns
+    -------
+    entry : int, float or str
+        field value
+
+    Raises
+    ------
+    ValueError
+        if indexes are out of bounds
+
+    Examples
+    --------
+        >>> # keyword is from constructor example
+        >>> # get pid
+        >>> kw.get_card_value(1,0) 
+        2000001
+        >>> kw.get_card_value(0) 
+        'engine part number one '
+        >>> kw.get_card_value(1,0)
+        'engine par'
+        >>> kw.get_card_value(1,0,50) 
+        'engine part number one'
+)qddoc";
+
+const char* keyword_get_card_valueByName_docs = R"qddoc(
+    get_card_valueByName(name, field_size=0)
+    
+    Parameters
+    ----------
+    name : str
+        name of the field in comments
+    field_size : int
+        (optional) size of fields in characters
+
+    Returns
+    -------
+    entry : int, float or str
+        field value
+
+    Raises
+    ------
+    ValueError
+        if name not found
+
+    Examples
+    --------
+        >>> # keyword is from constructor example
+        >>> # get pid
+        >>> kw.get_card_value("pid") 
+        2000001
+)qddoc";
+
+const char* keyword_setitem_docs = R"qddoc(
+    __setitem__(args, value)
+    
+    *Please consider using `set_card_valueByIndex` or `set_card_valueByName`*
+
+    Parameters
+    ----------
+    args : str, int or tuple
+        Possible arguments are:
+         - card index (int)
+         - card and field index (int,int)
+         - card index, field index and field size (int,int,int)
+         - field name (str)
+         - field name and field size (str,int)
+    value : object
+        Value to bet set. Must be convertible to string.
+
+    Raises
+    ------
+    ValueError
+        if indexes are out of bounds or field name not found
+    RuntimeError
+        if arguments are not castable to int
+
+    Notes
+    -----
+        This function is just a quick, dirty wrapper for the member function
+        `set_card_value`. It is recommended to use `set_card_value` instead,
+        since it's much clearer.
+
+    Examples
+    --------
+        >>> # keyword is from constructor example
+        >>>
+        >>> kw["title"] = Im too long hihihi
+        >>> kw["title"]
+        'Im too lon'
+        >>> kw["title",50] = Im too long hihihi
+        >>> kw["title"]
+        'Im too long hihihi'
+
+        Set value from indexes:
+
+        >>> kw[0] = "Set full keyword line to this"
+        >>> kw[1,0] = 2001 # pid
+        >>> kw[0,0,50] = "Set 50 chars to this"
+)qddoc";
+
+const char* keyword_set_card_valueByIndex_docs = R"qddoc(
+    set_card_valueByIndex(iCard, iField, value, name="", field_size=0)
+    
+    Parameters
+    ----------
+    iCard : int
+        card index
+    iField : int
+        field index
+    value : object
+        Value to bet set. Must be convertible to string.
+    name : str
+        (optional) name in comments to be set
+    field_size : int
+        (optional) size of field 
+    
+
+    Raises
+    ------
+    ValueError
+        if indexes are out of bounds
+
+
+    Examples
+    --------
+        >>> # keyword is from constructor example
+        >>>
+        >>> # set pid
+        >>> kw.set_card_valueByIndex(1, 0, value=100, name="haha")
+        >>> print(kw)
+        $------------------------------------------
+        $ Parts, Sections, and Materials
+        $------------------------------------------
+        *PART
+        $# title
+        engine part number one 
+        $#    haha     secid       mid     eosid   
+               100   2000001   2000017
+        
+)qddoc";
+
+const char* keyword_set_card_valueByName_docs = R"qddoc(
+    set_card_valueByName(name, value, field_size=0)
+    
+    Parameters
+    ----------
+    name : str
+        name of the field in comments
+    value : object
+        Value to bet set. Must be convertible to string.
+    field_size : int
+        (optional) size of field 
+    
+    Raises
+    ------
+    ValueError
+        if name not found
+
+    Examples
+    --------
+        >>> # keyword is from constructor example
+        >>>
+        >>> # set pid
+        >>> kw.set_card_valueByName("pid", value=100)
+        >>> print(kw)
+        $------------------------------------------
+        $ Parts, Sections, and Materials
+        $------------------------------------------
+        *PART
+        $# title
+        engine part number one 
+        $#     pid     secid       mid     eosid   
+               100   2000001   2000017
+        
+)qddoc";
+
+const char* keyword_set_card_valueByDict_docs = R"qddoc(
+    set_card_valueByDict(fields, field_size=0)
+    
+    Parameters
+    ----------
+    field : dict
+        fields to set, key can be string or indexes
+    field_size : int
+        (optional) size of field 
+    
+    Raises
+    ------
+    ValueError
+        if name or card/field indexes not found
+
+    Examples
+    --------
+        >>> # keyword is from constructor example
+        >>>
+        >>> fields = {"pid":100, (1,0):200}
+        >>> kw.set_card_valueByDict(fields)
+        >>> print(kw)
+        $------------------------------------------
+        $ Parts, Sections, and Materials
+        $------------------------------------------
+        *PART
+        $# title
+        engine part number one 
+        $#     pid     secid       mid     eosid   
+               100       200   2000017
+        
+)qddoc";
+
+const char* keyword_len_docs = R"qddoc(
+    __len__()
+    
+    Returns
+    -------
+    len : int
+        number of lines of the keyword (not cards!)
+
+    Examples
+    --------
+        >>> len(kw)
+        8
+        
+)qddoc";
+
+const char* keyword_get_lines_docs = R"qddoc(
+    get_lines()
+    
+    Returns
+    -------
+    lines : list of str
+        lines of the keyword
+
+    Examples
+    --------
+        >>> list_of_lines = kw.get_lines()
+        
+)qddoc";
+
+const char* keyword_get_line_docs = R"qddoc(
+    get_line()
+    
+    Parameters
+    ----------
+    iLine : int
+        index of the line
+
+    Returns
+    -------
+    line : str
+
+    Raises
+    ------
+    ValueError
+        if iLine out of bounds
+
+    Examples
+    --------
+        >>> kw.get_line(4)
+        '$# title'
+)qddoc";
+
+const char* keyword_set_lines_docs = R"qddoc(
+    set_lines(lines)
+    
+    Parameters
+    ----------
+    lines : list of str
+        set the lines of the line buffer
+
+    Examples
+    --------
+        >>> lines = ["*PART","engine part number one"]
+        >>> kw.set_lines(lines)
+)qddoc";
+
+const char* keyword_set_line_docs = R"qddoc(
+    set_line(iLine, line)
+    
+    Parameters
+    ----------
+    iLine : int
+        index of the line
+    line : str
+
+    Examples
+    --------
+        >>> kw.set_line(4, "blubber")
+)qddoc";
+
+const char* keyword_insert_line_docs = R"qddoc(
+    insert_line(iLine, line)
+    
+    Parameters
+    ----------
+    iLine : int
+        index of the line
+    line : str
+
+    Examples
+    --------
+        >>> kw.insert_line(4, "$ comment")
+)qddoc";
+
+const char* keyword_remove_line_docs = R"qddoc(
+    remove_line(iLine)
+    
+    Parameters
+    ----------
+    iLine : int
+
+    Examples
+    --------
+        >>> kw.remove_line(4)
+)qddoc";
+
+const char* keyword_line_index_docs = R"qddoc(
+    
+    Notes
+    -----
+        Line index of the `Keyword`. This is used for sorting
+        before writing to a file.
+
+    Examples
+    --------
+        >>> kw.line_index = 438
+        >>> kw.line_index
+        438
+        
+)qddoc";
+
+const char* keyword_switch_field_size_docs = R"qddoc(
+    switch_field_size(skip_cards=[])
+
+    Parameters
+    ----------
+    skip_cards : list of int
+        indexes of cards not to touch
+
+    Notes
+    -----
+        This function switches the card size between single and
+        double sized fields. In the process the global formatting
+        rules are applied.
+        *BEWARE* skip cards which have a field with unnormal size.
+
+    Examples
+    --------
+        >>> kw.switch_field_size(skip_cards=[0])
+)qddoc";
+
+const char* keyword_reformat_all_docs = R"qddoc(
+    reformat_all(skip_cards=[])
+
+    Parameters
+    ----------
+    skip_cards : list of int
+        indexes of cards not to touch
+
+    Notes
+    -----
+        This function reformats the card regarding the 
+        global formatting rules. 
+        *BEWARE* skip cards which have a field with unnormal size.
+
+    Examples
+    --------
+        >>> Keyword.name_delimiter_used = True
+        >>> Keyword.name_delimiter = '|'
+        >>> Keyword.name_spacer = '-'
+        >>> Keyword.name_alignment = Keyword.align.right
+        >>> Keyword.field_alignment = Keyword.align.right
+        >>> kw.reformat_all(skip_cards=[0])
+        >>> print(kw)
+        $------------------------------------------
+        $ Parts, Sections, and Materials
+        $------------------------------------------
+        *PART
+        $# title
+        engine part number one 
+        $------pid|----secid|------mid|----eosid|
+               100       200   2000017
+)qddoc";
+
+const char* keyword_reformat_field_docs = R"qddoc(
+    reformat_field(iCard, iField, field_size=0, format_field=True, format_name=True)
+
+    Parameters
+    ----------
+    iCard : int
+        card index
+    iField : int
+        field index
+    field_size : int
+        (optional) field size
+    format_field : bool
+        (optional) whether to format the field
+    format_name : bool
+        (optional) whether to format the comment name
+
+    Raises
+    ------
+    ValueError
+        if card and field index not found
+
+    Notes
+    -----
+        This function reformats a single card regarding the 
+        global formatting rules. 
+
+    Examples
+    --------
+        >>> Keyword.name_delimiter_used = True
+        >>> Keyword.name_delimiter = '|'
+        >>> Keyword.name_spacer = '-'
+        >>> Keyword.name_alignment = Keyword.align.right
+        >>> Keyword.field_alignment = Keyword.align.right
+        >>> kw.reformat_field(0,0,40)
+        >>> print(kw)
+        $------------------------------------------
+        $ Parts, Sections, and Materials
+        $------------------------------------------
+        *PART
+        $----------------------------------title
+                          engine part number one
+        $#     pid     secid       mid     eosid   
+               100       200   2000017
+)qddoc";
+
+const char* keyword_has_long_fields_docs = R"qddoc(
+    has_long_fields()
+
+    Returns
+    -------
+    has_long_fields : bool
+        whether the card uses double size fields or not
+
+    Raises
+    ------
+    RuntimeError
+        if keyword definition can not be found in line buffer
+
+    Notes
+    -----
+        A card uses double sized fields, if + is appended to the
+        keywords name.
+
+    Examples
+    --------
+        >>> kw.has_long_fields()
+        False
+        >>> kw.get_keyword_name()
+        '*PART'
+)qddoc";
+
+const char* keyword_get_keyword_name_docs = R"qddoc(
+    get_keyword_name()
+
+    Returns
+    -------
+    keyword_name : str
+
+    Raises
+    ------
+    RuntimeError
+        if keyword definition can not be found in line buffer
+
+    Notes
+    -----
+        According to LS-Dyna, char 0 in the line must be a *
+
+    Examples
+    --------
+        >>> kw.get_keyword_name()
+        '*PART'
+)qddoc";
+
+const char* keyword_name_delimiter_docs = R"qddoc(
+    name_delimiter
+
+    Notes
+    -----
+        Delimiter used to separate the keywords optionally.
+        Disable or enable with `Keyword.name_delimiter_used`
+
+    Examples
+    --------
+        >>> Keyword.name_delimiter
+        '|'
+        >>> Keyword.name_delimiter = '/'
+)qddoc";
+
+const char* keyword_name_delimiter_used_docs = R"qddoc(
+    name_delimiter_used
+
+    Notes
+    -----
+        Whether to use the delimiter specified in the
+        property `Keyword.name_delimiter`
+
+    Examples
+    --------
+        >>> Keyword.name_delimiter_used
+        True
+        >>> Keyword.name_delimiter_used = False
+)qddoc";
+
+const char* keyword_name_spacer_docs = R"qddoc(
+    name_spacer
+
+    Notes
+    -----
+        Spacer used for comment names.
+
+    Examples
+    --------
+        >>> Keyword.name_spacer
+        '-'
+        >>> Keyword.name_spacer = ' '
+)qddoc";
+
+const char* keyword_field_alignment_docs = R"qddoc(
+    field_alignment
+
+    Notes
+    -----
+        How to align the card fields. Use `Keyword.align`.
+
+    Examples
+    --------
+        >>> Keyword.field_alignment
+        align.right
+        >>> Keyword.field_alignment = Keyword.align.left
+)qddoc";
+
+const char* keyword_name_alignment_docs = R"qddoc(
+    name_alignment
+
+    Notes
+    -----
+        How to align the name of the fields in the comments. Use `Keyword.align`.
+
+    Examples
+    --------
+        >>> Keyword.name_alignment
+        align.right
+        >>> Keyword.name_alignment = Keyword.align.left
 )qddoc";

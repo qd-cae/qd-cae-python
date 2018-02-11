@@ -333,7 +333,7 @@ Keyword::get_field_indexes(const std::string& _keyword_name) const
                             iChar_to_iField(static_cast<size_t>(start)));
   }
 
-  throw(std::invalid_argument("Can not find field:" + _keyword_name +
+  throw(std::invalid_argument("Can not find field: " + _keyword_name +
                               " in comments."));
 }
 

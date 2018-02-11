@@ -25,6 +25,19 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 18.02.2018*
+Version 0.7.0
+
+qd.cae.dyna
+ - `KeyFile` can now read all keywords and cards with the option `read_generic_keywords`
+ - Added new classes related to `KeyFile`:
+   - `Keyword`
+   - `NodeKeyword`
+   - `ElementKeyword`
+   - `PartKeyword`
+ - Note: using `KeyFile.write_txt` preserves the file structure including comments
+ - Note: `KeyFile` while one can add mesh entities, one can not delete them for the moment
+
 *Changelog 24.11.2017*
 Version 0.6.8
 
@@ -32,15 +45,6 @@ qd.cae.dyna
  - `D3plot.plot` and `Part.plot` function was fixed and works now again
  - few minor improvements and changes in the background
 
-*Changelog 12.11.2017*
-Version 0.6.7
-
-qd.cae.dyna
- - `RawD3plot` now also reads the information, whether an element was deleted.
- - `RawD3plot.save_hdf5` and `Binout.save_hdf5` have now a compression argument, which is by default enabled (`"gzip"`).
- - `Binout` now automatically detects string data when performing `Binout.read`
- - `Binout.to_string` was made a private function (removed for users)
- - `Binout.save_hdf5` saves the binout to an HDF5 file  (yay)
 
 # Documentation
 

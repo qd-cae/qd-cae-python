@@ -107,7 +107,8 @@ public:
   inline const std::string& get_line(T _iLine) const;
   template<typename T>
   inline std::string get_card(T _iCard);
-  inline std::string get_card_value(const std::string& _field_name);
+  inline std::string get_card_value(const std::string& _field_name,
+                                    size_t _field_size = 0);
   template<typename T>
   inline std::string get_card_value(T _iCard,
                                     T _iField,
@@ -266,10 +267,11 @@ Keyword::get_card_value(T _iCard, T _iField, size_t _field_size)
  * @return field, is empty if field does not exist
  */
 std::string
-Keyword::get_card_value(const std::string& _field_name)
+Keyword::get_card_value(const std::string& _field_name, size_t _field_size)
 {
   auto indexes = get_field_indexes(_field_name);
-  return get_card_value_byLine(lines[indexes.first], indexes.second);
+  return get_card_value_byLine(
+    lines[indexes.first], indexes.second, _field_size);
 }
 
 /** Get the number of lines in the line buffer
