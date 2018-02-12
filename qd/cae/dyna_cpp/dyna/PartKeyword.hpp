@@ -29,6 +29,12 @@ public:
   void load();
   template<typename T>
   std::shared_ptr<Part> add_part(T _part_id, const std::string& _name = "");
+  template<typename T>
+  std::shared_ptr<Part> add_part(
+    T _part_id,
+    const std::string& _name = "",
+    const std::vector<std::string>& _additional_lines =
+      std::vector<std::string>());
 
   template<typename T>
   inline std::shared_ptr<Part> get_partByIndex(T _part_index);
@@ -52,6 +58,28 @@ PartKeyword::add_part(T _part_id, const std::string& _name)
   auto part_id_i32 = static_cast<int32_t>(_part_id);
   auto part = db_parts->add_partByID(part_id_i32, _name);
   part_ids.push_back(part_id_i32);
+  return part;
+}
+
+/** Add a part to the keyword
+ *
+ * @param _part_id
+ * @param _name
+ * @param _additional_card_data : additional missing card information as string
+ * @return part
+ */
+template<typename T>
+std::shared_ptr<Part>
+PartKeyword::add_part(T _part_id,
+                      const std::string& _name,
+                      const std::vector<std::string>& _additional_lines)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  auto part_id_i32 = static_cast<int32_t>(_part_id);
+  auto part = db_parts->add_partByID(part_id_i32, _name);
+  part_ids.push_back(part_id_i32);
+  unparsed_data.push_back(str_concat_lines(_additional_lines));
   return part;
 }
 

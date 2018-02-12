@@ -36,8 +36,11 @@ NodeKeyword::load()
     return;
 
   // find first card line
-  size_t header_size = iCard_to_iLine(0, false);
+  size_t header_size = get_line_index_of_next_card(0);
   size_t iLine = header_size;
+
+  if (iLine == lines.size())
+    return;
 
   // extra card treatment
   size_t nAdditionalLines = 0;
@@ -87,7 +90,7 @@ NodeKeyword::load()
         remaining_data = std::string();
 
       db_nodes->add_node(node_id, coords);
-      node_indexes_in_card.push_back(db_nodes->get_index_from_id(node_id));
+      node_ids_in_card.push_back(node_id);
       unparsed_node_data.push_back(remaining_data);
 
     } catch (std::exception& err) {
@@ -102,7 +105,7 @@ NodeKeyword::load()
   for (; iLine < lines.size(); ++iLine)
     trailing_lines.push_back(lines[iLine]);
 
-  // remove all lines below keyword
+  // remove all lines below keyword (except for failed ones)
   lines.resize(header_size);
 }
 

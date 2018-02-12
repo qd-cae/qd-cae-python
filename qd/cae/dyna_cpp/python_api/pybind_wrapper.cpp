@@ -954,6 +954,11 @@ PYBIND11_MODULE(dyna_cpp, m)
          &Keyword::size,
          pybind11::return_value_policy::take_ownership,
          keyword_len_docs)
+    .def("append_line",
+         &Keyword::append_line,
+         "line"_a,
+         pybind11::return_value_policy::take_ownership,
+         keyword_append_line_docs)
     .def("get_lines",
          (std::vector<std::string> & (Keyword::*)()) & Keyword::get_lines,
          pybind11::return_value_policy::take_ownership,
@@ -1040,11 +1045,31 @@ PYBIND11_MODULE(dyna_cpp, m)
       },
       keyword_name_alignment_docs);
 
-  node_keyword_py.def("add_node", &NodeKeyword::add_node<int64_t>)
-    .def("get_nNodes", &NodeKeyword::get_nNodes)
-    .def("get_nodes", &NodeKeyword::get_nodes)
-    .def("get_node_indexes", &NodeKeyword::get_node_indexes)
-    .def("load", &NodeKeyword::load);
+  node_keyword_py
+    .def("add_node",
+         (std::shared_ptr<Node>(NodeKeyword::*)(
+           int64_t, float, float, float, const std::string&)) &
+           NodeKeyword::add_node<int64_t>,
+         "id"_a,
+         "x"_a,
+         "y"_a,
+         "z"_a,
+         "additional_card_data"_a = "",
+         pybind11::return_value_policy::take_ownership,
+         node_keyword_add_node_docs)
+    .def("get_nNodes",
+         &NodeKeyword::get_nNodes,
+         pybind11::return_value_policy::take_ownership,
+         node_keyword_get_nNodes_docs)
+    .def("get_nodes",
+         &NodeKeyword::get_nodes,
+         pybind11::return_value_policy::take_ownership,
+         node_keyword_get_nodes_docs)
+    .def("get_node_ids",
+         &NodeKeyword::get_node_ids,
+         pybind11::return_value_policy::take_ownership,
+         node_keyword_get_node_ids_docs)
+    .def("load", &NodeKeyword::load, node_keyword_load_docs);
 
   element_keyword_py.def("get_elements", &ElementKeyword::get_elements)
     .def("get_nElements", &ElementKeyword::get_nElements)
@@ -1064,7 +1089,26 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("load", &ElementKeyword::load);
 
   part_keyword_py
-    .def("add_part", &PartKeyword::add_part<int64_t>, "id"_a, "name"_a = "")
+    .def("add_part",
+         (std::shared_ptr<Part>(PartKeyword::*)(
+           int64_t, const std::string&, const std::vector<std::string>&)) &
+           PartKeyword::add_part<int64_t>,
+         "id"_a,
+         "name"_a = "",
+         "additional_lines"_a = std::vector<std::string>(),
+         pybind11::return_value_policy::take_ownership,
+         part_keyword_add_part_docs)
+    .def("add_part",
+         [](std::shared_ptr<PartKeyword> self,
+            int64_t part_id,
+            const std::string& name,
+            const std::string& additional_lines) {
+           return self->add_part(part_id, name, { additional_lines });
+         },
+         "id"_a,
+         "name"_a = "",
+         "additional_lines"_a = "",
+         pybind11::return_value_policy::take_ownership)
     .def("get_partByIndex", &PartKeyword::get_partByIndex<int64_t>, "index"_a)
     .def("get_parts", &PartKeyword::get_parts)
     .def("get_nParts", &PartKeyword::get_nParts)

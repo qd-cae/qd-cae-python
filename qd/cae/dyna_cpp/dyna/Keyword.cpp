@@ -288,6 +288,16 @@ Keyword::reformat_line(std::string& _line, size_t _field_size)
   }
 }
 
+/** Append a new line to the string buffer
+ *
+ * @param _new_line
+ */
+void
+Keyword::append_line(const std::string& _new_line)
+{
+  lines.push_back(_new_line);
+}
+
 /** Set a new line buffer
  *
  * @param _new_lines

@@ -15,6 +15,20 @@
 
 namespace qd {
 
+/** Concat a vector of strings with line endings
+ *
+ * @param _lines
+ * @return concat
+ */
+inline std::string
+str_concat_lines(const std::vector<std::string>& _lines)
+{
+  std::stringstream ss;
+  for (const auto& line : _lines)
+    ss << line << '\n';
+  return ss.str();
+}
+
 /** Trim a string from left
  *
  * @param s : string getting trimmed

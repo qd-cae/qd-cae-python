@@ -1416,6 +1416,11 @@ const char* keyword_constructor_docs = R"qddoc(
         >>> '''
         >>>
         >>> kw = Keyword(data)
+        >>> kw["pid"]
+        2000001
+        >>> kw[0]
+        'engine part number one '
+        >>> kw[1,0] = 2000002
 )qddoc";
 
 const char* keyword_str_docs = R"qddoc(
@@ -1744,6 +1749,20 @@ const char* keyword_len_docs = R"qddoc(
         
 )qddoc";
 
+const char* keyword_append_line_docs = R"qddoc(
+    append_line(line)
+    
+    Parameters
+    ----------
+    line : str
+        line to append to the internal string buffer
+
+    Examples
+    --------
+        >>> kw.append_line("$ Im a comment")
+        
+)qddoc";
+
 const char* keyword_get_lines_docs = R"qddoc(
     get_lines()
     
@@ -2066,4 +2085,162 @@ const char* keyword_name_alignment_docs = R"qddoc(
         >>> Keyword.name_alignment
         align.right
         >>> Keyword.name_alignment = Keyword.align.left
+)qddoc";
+
+/* ----------------------- NODE KEYWORD ---------------------- */
+
+const char* node_keyword_add_node_docs = R"qddoc(
+    add_node(id, x, y, z, additional_card_data="")
+
+    Parameters
+    ----------
+    id : int
+        id of the node
+    x : float
+        x-coordinate
+    y : float
+        y-coordinate
+    z : float
+        z-coordinate
+    additional_card_data : str
+        (optional) further card data (see Notes section).
+
+    Returns
+    -------
+    node : Node
+        newly created part object
+
+    Raises
+    ------
+    ValueError
+        if id does already exist in the database
+
+    Notes
+    -----
+        The `additional_card_data` is a string appended to the keyword 
+        when writing the output file. The string is appended behind 
+        the coordinates.
+
+    Examples
+    --------
+        >>> # (optional) TC and RC fields for node
+        >>> additional_data = "       0       0"
+        >>> node = kw.add_node(123, 3.141, 5.926, 5.35, additional_data)
+)qddoc";
+
+const char* node_keyword_get_nNodes_docs = R"qddoc(
+    get_nNodes()
+
+    Returns
+    -------
+    nNodes : int
+        number of nodes in keyword
+
+    Examples
+    --------
+        >>> kw.get_nNodes()
+        26357
+)qddoc";
+
+const char* node_keyword_get_nodes_docs = R"qddoc(
+    get_nodes()
+
+    Returns
+    -------
+    nodes : list of Node
+        all node objects in the keyword
+
+    Examples
+    --------
+        >>> len(kw.get_nodes())
+        26357
+)qddoc";
+
+const char* node_keyword_get_node_ids_docs = R"qddoc(
+    get_node_ids()
+
+    Returns
+    -------
+    node_ids : list of int
+        isd of all nodes in the card
+
+    Examples
+    --------
+        >>> kw.get_node_ids()
+        [1, 2, 3, 4]
+)qddoc";
+
+const char* node_keyword_load_docs = R"qddoc(
+    load()
+
+    Raises
+    ------
+    RuntimeError
+        if a parsing error occurs
+
+    Notes
+    -----
+        This function parses the string data in the node object.
+        The function is automatically triggered when reading an 
+        input file. 
+        
+        One may also assign new node data as a string to the keyword 
+        and trigger `load` manually. 
+        
+        **The string data will be erased during parsing** and thus 
+        is removed from the string buffer.
+
+    Examples
+    --------
+        >>> # The keyword has already one node
+        >>> kw.get_nNodes()
+        1
+        >>> # lets see it
+        >>> print(kw)
+        *NODE
+        $ some comment line
+        $     id               x               y               z
+               1              0.              0.              0.
+        >>> # append new node data to the keyword
+        >>> kw.append("       2              0.              0.              0.")
+        >>> # and load it
+        >>> kw.load()
+
+)qddoc";
+
+/* ----------------------- PART KEYWORD ---------------------- */
+
+const char* part_keyword_add_part_docs = R"qddoc(
+    add_part(id, name="", additional_card_data="")
+
+    Parameters
+    ----------
+    id : int
+        id of the part
+    name : str 
+        (optional) name of the part
+    additional_card_data : str or list of str
+        (optional) further card data (see Notes section).
+
+    Returns
+    -------
+    part : Part
+        newly created part object
+
+    Raises
+    ------
+    ValueError
+        if id does already exist in the database
+
+    Notes
+    -----
+        The `additional_card_data` is a string or a list of strings 
+        appended to the keyword when writing the output file. The first
+        line or string is appended to the same line as the part id.
+
+    Examples
+    --------
+        >>> # secid and mid for part 
+        >>> additional_data = "   2000001   2000017"
+        >>> part = kw.add_part(100, "my_part", additional_data)
 )qddoc";

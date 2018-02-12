@@ -156,6 +156,7 @@ public:
                              double _value,
                              const std::string& _comment_name = "",
                              size_t _field_size = 0);
+  void append_line(const std::string& _new_line);
   void set_lines(const std::vector<std::string>& _new_lines);
   template<typename T>
   void set_line(T iLine, const std::string& _line);
