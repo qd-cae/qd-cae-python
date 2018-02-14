@@ -1112,16 +1112,20 @@ const char* keyfile_description = R"qddoc(
 )qddoc";
 
 const char* keyfile_constructor = R"qddoc(
-    KeyFile(filepath, load_includes=True, encryption_detection=0.7)
+    KeyFile(filepath, read_keywords=True, parse_mesh=True, load_includes=True, encryption_detection=0.7)
 
     Parameters
     ----------
     filepath : str
         path to the keyfile
+    read_keywords : bool
+        (optional) whether to read all keywords
+    parse_mesh : bool
+        (optional) whether the mesh keywords shall be parsed
     load_includes : bool
-        load all includes within the file
+        (optional) load all includes within the file
     encryption_detection : float
-        detection threshold for encrypted include files. 
+        (optional) detection threshold for encrypted include files. 
         Must be between 0 and 1.
 
     Raises
@@ -1138,6 +1142,15 @@ const char* keyfile_constructor = R"qddoc(
 
     Notes
     -----
+        If ``read_keywords=True`` every keyword found will be loaded
+        and made accessible by the generic ´´Keyword´´ class. If at 
+        the same time ``parse_mesh=False`` then also the mesh itself 
+        is treated as a common keyword.
+
+        If ``parse_mesh=True``, then the mesh keywords are loaded and
+        parsed. While parsing, the line buffer is emptied and the data
+        is loaded into the internal mesh database. 
+
         The argument ``encryption_detection`` is used to skip encrypted 
         include files. It is simply tested against the entropy of every
         include divided by 8 for normalization. Encrypted files usually
@@ -1146,42 +1159,218 @@ const char* keyfile_constructor = R"qddoc(
 
     Examples
     --------
-        >>> # load a keyfile
-        >>> keyfile = KeyFile("path/to/keyfile")
-        >>> # load keyfile without includes
-        >>> keyfile = KeyFile("path/to/keyfile", load_includes=False)
+        >>> # load keyfile and parse the mesh
+        >>> keyfile = KeyFile("path/to/keyfile", parse_mesh=True)
         >>> # get some mesh data
         >>> node = keyfile.get_nodeByIndex(0)
-
+        >>> # check the keywords
+        >>> keyfile.keys()
+        ['*NODE', '*ELEMENT_SHELL', ...]
+        >>> # get all part keywords
+        >>> part_keywords = keyfile["*PART"]
 )qddoc";
 
-const char* module_get_file_entropy_description = R"qddoc(
-    get_file_entropy(filepath)
+const char* keyfile_str_description = R"qddoc(
+    __str__()
+
+    Returns
+    -------
+    text : str
+        Converts the KeyFile back to a string. This assembles
+        all keywords again.
+
+    Examples
+    --------
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # write identical file again
+        >>> with open("outfile.key","w") as fp:
+        >>>     fp.write(str(keyfile))
+)qddoc";
+
+const char* keyfile_getitem_description = R"qddoc(
+    __getitem__(name)
+
+    Parameters
+    ----------
+    name : str
+        keyword name
+
+    Returns
+    -------
+    keywords : list of Keyword
+        Returns a list of keyworsd with the specified name.
+        If no keyword with such a name is found, an empty list
+        is returned.
+
+    Examples
+    --------
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get all section shell keywords
+        >>> keyfile["*SECTION_SHELL"]
+        [<Keyword: *PART_CONTACT>, <Keyword: *PART_CONTACT>]
+)qddoc";
+
+const char* keyfile_keys_description = R"qddoc(
+    keys()
+
+    Returns
+    -------
+    keyword_names : list of str
+        list of keyword names saved in the file
+
+    Examples
+    --------
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get a list of all keyword names
+        >>> keyfile.keys()
+        ['*BOUNDARY_SPC_SET_ID', '*PART_CONTACT', '*NODE', ...]
+)qddoc";
+
+const char* keyfile_save_description = R"qddoc(
+    keys()
 
     Parameters
     ----------
     filepath : str
-        path to the file
+        path for the output file
 
-    Returns
-    -------
-    entropy : float
-        entropy of the file
-
-    Notes
-    -----
-        The shannon entropy of a file describes the 
-        randomness of the bytes in the file. The value is
-        limited between 0 and 8, where 0 means 
-        entirely structured and 8 means the file 
-        is entirely random or encrypted.
+    Raises
+    ------
+    RuntimeError
+        if the output file can not be written
 
     Examples
     --------
-        >>> get_file_entropy("path/to/encrypted_file")
-        7.64367
-        >>> get_file_entropy("path/to/text_file")
-        3.12390
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # and write the identical file again
+        >>> keyfile.save("path/to/identical_file.key")
+        
+)qddoc";
+
+const char* keyfile_remove_keyword_description = R"qddoc(
+    remove_keyword(name, index)
+
+    Parameters
+    ----------
+    name : str
+        name of keyword to remove
+    index : int 
+        (optional) index of keyword in list
+
+    Notes
+    -----
+        When using ``parse_mesh=True`` then all mesh keywords
+        are using the following specific classes:
+        
+            - ``NodeKeyword``
+            - ``ElementKeyword``
+            - ``PartKeyword``
+
+        These mesh keywords cannot be deleted, since deletion
+        of mesh entities is not supported yet.
+
+    Examples
+    --------
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # remove the second keyword of section shell
+        >>> keyfile.remove_keyword("*SECTION_SHELL",1)
+        >>> # remove all keywords node keywords
+        >>> keyfile.remove_keyword("*NODE")
+        
+)qddoc";
+
+const char* keyfile_add_keyword_description = R"qddoc(
+    add_keyword(lines)
+
+    Parameters
+    ----------
+    lines : str or list of str
+        keyword definition
+
+    Notes
+    -----
+        When using ``parse_mesh=True`` then if a mesh keyword
+        is created, the corresponding classes are returned instead
+        of a generic keyword:
+        
+            - ``NodeKeyword``
+            - ``ElementKeyword``
+            - ``PartKeyword``
+
+    Examples
+    --------
+        Adding *NODE without mesh parsing:
+
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get the node keyword as generic keyword
+        >>> kw = keyfile.add_keyword("*NODE")
+        >>> type(kw)
+        <class 'qd.cae.dyna_cpp.Keyword'>
+
+        Adding *NODE with mesh parsing support
+
+        >>> keyfile = KeyFile("path/to/keyfile.key", load_mesh=True)
+        >>> kw = type(keyfile.add_keyword(["$ Comment header",
+        >>>                                 "*NODE"]))
+        >>> type(kw)
+        <class 'qd.cae.dyna_cpp.NodeKeyword'>
+        >>> # now it's simple to add nodes
+        >>> kw.add_node(id=1, x=0, y=0, z=0)
+        <qd.cae.dyna_cpp.Node object at 0x0000016D800ECA08>
+        
+)qddoc";
+
+const char* keyfile_get_includes_description = R"qddoc(
+    get_includes()
+
+    Returns
+    -------
+    includes : list of KeyFile
+        list of all loaded include files
+
+    Notes
+    -----
+        In order to load includes, the ``load_includes=True``
+        option must be used in the constructor of the KeyFile
+        or one can use the ``IncludeKeyword.load`` function,
+        which every include keyword has.
+
+    Examples
+    --------
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get all includes
+        >>> len(keyfile.get_includes())
+        7
+        
+)qddoc";
+
+const char* keyfile_get_include_dirs_description = R"qddoc(
+    get_include_dirs()
+
+    Returns
+    -------
+    include_dirs : list of str
+        list of directories searched for includes. This function
+        can be used to check which directories the library
+        recognizes.
+
+    Notes
+    -----
+        Gets all include directories from every *INCLUDE_PATH or
+        *INCLUDE_PATH_RELATIVE keyword.
+
+    Examples
+    --------
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get all includes
+        >>> kf.get_include_dirs()
+        ['path/to/includes', 'path/to/other/includes', ...]
+        
 )qddoc";
 
 /* ----------------------- RAW D3PLOT ---------------------- */
@@ -2243,4 +2432,33 @@ const char* part_keyword_add_part_docs = R"qddoc(
         >>> # secid and mid for part 
         >>> additional_data = "   2000001   2000017"
         >>> part = kw.add_part(100, "my_part", additional_data)
+)qddoc";
+
+const char* module_get_file_entropy_description = R"qddoc(
+    get_file_entropy(filepath)
+
+    Parameters
+    ----------
+    filepath : str
+        path to the file
+
+    Returns
+    -------
+    entropy : float
+        entropy of the file
+
+    Notes
+    -----
+        The shannon entropy of a file describes the 
+        randomness of the bytes in the file. The value is
+        limited between 0 and 8, where 0 means 
+        entirely structured and 8 means the file 
+        is entirely random or encrypted.
+
+    Examples
+    --------
+        >>> get_file_entropy("path/to/encrypted_file")
+        7.64367
+        >>> get_file_entropy("path/to/text_file")
+        3.12390
 )qddoc";

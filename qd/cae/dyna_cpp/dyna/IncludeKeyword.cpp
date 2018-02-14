@@ -24,8 +24,11 @@ IncludeKeyword::IncludeKeyword(KeyFile* _parent_kf,
 void
 IncludeKeyword::load(bool _load_mesh)
 {
-  auto iLine = iCard_to_iLine(0, false);
+  auto iLine = get_line_index_of_next_card(0);
   auto header_size = iLine;
+
+  if (iLine == lines.size())
+    return;
 
   // create keywords
   for (; iLine < lines.size(); ++iLine) {

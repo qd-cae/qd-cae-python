@@ -61,10 +61,8 @@ private:
 
   void transfer_comment_header(std::vector<std::string>& _old,
                                std::vector<std::string>& _new);
-  const std::vector<std::string>& get_include_dirs(bool _update = false);
   void update_keyword_names(); // TODO
 
-  void load_include_files();
   void load_nodes();
   void load_parts();
   void load_elements();
@@ -91,6 +89,7 @@ public:
   void remove_keyword(const std::string& _keyword_name);
   template<typename T>
   void remove_keyword(const std::string& _keyword_name, T _index);
+  std::shared_ptr<Keyword> add_keyword(const std::vector<std::string>& _lines);
   inline std::vector<std::string> keys();
   std::string str() const;
   void save_txt(const std::string& _filepath);
@@ -104,6 +103,7 @@ public:
   {
     return encryption_detection_threshold;
   }
+  const std::vector<std::string>& get_include_dirs(bool _update = false);
 };
 
 /** Get all keywords with a specific name

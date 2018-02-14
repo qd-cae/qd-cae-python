@@ -57,6 +57,8 @@ protected:
   template<typename T>
   inline size_t iChar_to_iField(T _iChar) const;
   template<typename T>
+  size_t iCard_to_iLine(T _iCard, bool _auto_extend = true);
+  template<typename T>
   std::string get_field_byLine(const std::string& _line,
                                T _iField,
                                size_t _field_size = 0) const;
@@ -175,8 +177,6 @@ public:
                            bool _format_name = true);
 
   // useful but mostly internal stuff
-  template<typename T>
-  size_t iCard_to_iLine(T _iCard, bool _auto_extend = true);
   inline size_t get_line_index_of_next_card(size_t _iLineOffset = 0);
 };
 

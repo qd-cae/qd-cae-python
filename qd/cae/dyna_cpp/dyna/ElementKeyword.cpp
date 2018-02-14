@@ -77,8 +77,11 @@ ElementKeyword::parse_elem2(const std::string& _keyword_name_lower,
 {
 
   // find first card line
-  size_t header_size = iCard_to_iLine(0, false);
+  size_t header_size = get_line_index_of_next_card(0);
   size_t iLine = header_size;
+
+  if (header_size == lines.size())
+	  return;
 
   // how much data to read
   size_t nAdditionalLines = 0;
@@ -261,8 +264,11 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
 {
 
   // find first card line
-  size_t header_size = iCard_to_iLine(0, false);
+  size_t header_size = get_line_index_of_next_card(0);
   size_t iLine = header_size;
+
+  if (header_size == lines.size())
+	  return;
 
   // how much data to read
   size_t nAdditionalLines = 0;
@@ -375,8 +381,11 @@ ElementKeyword::parse_elem4th(const std::string& _keyword_name_lower,
 {
 
   // find first card line
-  size_t header_size = iCard_to_iLine(0, false);
+  size_t header_size = get_line_index_of_next_card(0);
   size_t iLine = header_size;
+
+  if (header_size == lines.size())
+	  return;
 
   // how much data to read
   size_t nAdditionalLines = 0;

@@ -200,13 +200,6 @@ KeyFile::load(bool _load_mesh)
   }
 }
 
-/** Load the include files
- *
- */
-void
-KeyFile::load_include_files()
-{}
-
 /** Loads the nodes from the keywords into the database
  *
  */
@@ -352,7 +345,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
   }
 
   // *INCLUDE_PATH
-  if (load_includes && _keyword_type == Keyword::KeywordType::INCLUDE_PATH) {
+  if (_keyword_type == Keyword::KeywordType::INCLUDE_PATH) {
     auto kw = std::make_shared<IncludePathKeyword>(
       _lines, static_cast<int64_t>(_iLine));
     if (_insert_into_buffer)
@@ -361,7 +354,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
   }
 
   // *INCLUDE
-  if (load_includes && _keyword_type == Keyword::KeywordType::INCLUDE) {
+  if (_keyword_type == Keyword::KeywordType::INCLUDE) {
     auto kw = std::make_shared<IncludeKeyword>(
       parent_kf, _lines, static_cast<int64_t>(_iLine));
     if (_insert_into_buffer)
@@ -385,8 +378,12 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
 const std::vector<std::string>&
 KeyFile::get_include_dirs(bool _update)
 {
+
+  if (!_update)
+	return include_dirs;
+
   // clean up
-  include_dirs.clear();
+  std::set<std::string> new_include_dirs;
 
   // dir of file
   std::string directory = "";
@@ -396,7 +393,7 @@ KeyFile::get_include_dirs(bool _update)
     directory = my_filepath.substr(0, pos) + "/";
 
   if (!directory.empty())
-    include_dirs.push_back(directory);
+    new_include_dirs.insert(directory);
 
   // dirs of include_path
   auto keywords_include_path =
@@ -410,9 +407,9 @@ KeyFile::get_include_dirs(bool _update)
     // append
     for (const auto& dirpath : kw_inc_path->get_include_dirs()) {
       if (is_relative_dir)
-        include_dirs.push_back(join_path(directory, dirpath));
+		  new_include_dirs.insert(join_path(directory, dirpath));
       else
-        include_dirs.push_back(dirpath);
+		  new_include_dirs.insert(dirpath);
     }
   }
 
@@ -420,7 +417,7 @@ KeyFile::get_include_dirs(bool _update)
   for (auto& include_kw : include_keywords)
     for (auto& include_kf : include_kw->get_includes()) {
       auto paths = include_kf->get_include_dirs(true);
-      include_dirs.insert(include_dirs.end(), paths.begin(), paths.end());
+	  new_include_dirs.insert( paths.begin(), paths.end());
     }
 
 #ifdef QD_DEBUG
@@ -428,6 +425,8 @@ KeyFile::get_include_dirs(bool _update)
   for (const auto& entry : include_dirs)
     std::cout << entry << '\n';
 #endif
+
+  include_dirs = std::vector<std::string>(new_include_dirs.begin(), new_include_dirs.end());
 
   return include_dirs;
 }

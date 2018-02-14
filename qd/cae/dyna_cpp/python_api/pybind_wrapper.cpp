@@ -1142,12 +1142,12 @@ PYBIND11_MODULE(dyna_cpp, m)
 
          },
          "filepath"_a,
-         "read_generic_keywords"_a = true,
+         "read_keywords"_a = true,
          "parse_mesh"_a = false,
-         "load_includes"_a = true,
+         "load_includes"_a = false,
          "encryption_detection"_a = 0.7,
          keyfile_constructor)
-    .def("__str__", &KeyFile::str)
+    .def("__str__", &KeyFile::str, keyfile_str_description)
     .def(
       "__getitem__",
       [](std::shared_ptr<KeyFile> self, std::string key) {
@@ -1201,12 +1201,33 @@ PYBIND11_MODULE(dyna_cpp, m)
         }
 
       },
-      "name"_a)
-    .def("keys", &KeyFile::keys)
-    .def("save_txt", &KeyFile::save_txt, "filepath"_a)
+      "name"_a,
+      keyfile_getitem_description)
+    .def("keys", &KeyFile::keys, keyfile_keys_description)
+    .def("save", &KeyFile::save_txt, "filepath"_a, keyfile_save_description)
+    .def("remove_keyword",
+         [](std::shared_ptr<KeyFile> self,
+            const std::string& name,
+            int64_t index) { self->remove_keyword(name, index); },
+         "name"_a,
+         "index"_a,
+         keyfile_remove_keyword_description)
+    .def("remove_keyword",
+         [](std::shared_ptr<KeyFile> self, const std::string& name) {
+           self->remove_keyword(name);
+         },
+         "name"_a)
+    .def("add_keyword",
+         &KeyFile::add_keyword,
+         "lines"_a,
+         keyfile_add_keyword_description)
     .def(
-      "remove_keyword", &KeyFile::remove_keyword<int64_t>, "name"_a, "index"_a)
-    .def("get_includes", &KeyFile::get_includes);
+      "get_includes", &KeyFile::get_includes, keyfile_get_includes_description)
+    .def("get_include_dirs",
+         [](std::shared_ptr<KeyFile> self) {
+           return self->get_include_dirs(true);
+         },
+         keyfile_get_include_dirs_description);
 
   // Binout
   /*

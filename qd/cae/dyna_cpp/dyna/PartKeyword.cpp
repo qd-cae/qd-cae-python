@@ -39,6 +39,9 @@ PartKeyword::load()
   size_t header_size = get_line_index_of_next_card(0);
   size_t iLine = header_size;
 
+  if (iLine == lines.size())
+    return;
+
   // how much data to read
   bool is_part_inertia = false;
   bool one_more_card = false;
