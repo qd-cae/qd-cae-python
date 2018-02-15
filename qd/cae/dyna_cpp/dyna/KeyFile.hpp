@@ -56,8 +56,7 @@ private:
   std::shared_ptr<Keyword> create_keyword(
     const std::vector<std::string>& _lines,
     Keyword::KeywordType _keyword_type,
-    size_t _iLine,
-    bool _insert_into_buffer);
+    size_t _iLine);
 
   void transfer_comment_header(std::vector<std::string>& _old,
                                std::vector<std::string>& _new);
@@ -66,9 +65,6 @@ private:
   void load_nodes();
   void load_parts();
   void load_elements();
-
-  std::vector<std::shared_ptr<Keyword>> get_keywordsByType(
-    Keyword::KeywordType _type);
 
 public:
   KeyFile(bool _read_generic_keywords = false,
@@ -84,17 +80,23 @@ public:
           KeyFile* _parent_kf = nullptr);
 
   void load(bool _load_mesh = true);
+
+  // keywords
+  inline std::vector<std::string> keys();
   inline std::vector<std::shared_ptr<Keyword>> get_keywordsByName(
     const std::string& _keyword_name);
+  std::shared_ptr<Keyword> add_keyword(const std::vector<std::string>& _lines,
+                                       int64_t _line_index = 0);
   void remove_keyword(const std::string& _keyword_name);
   template<typename T>
   void remove_keyword(const std::string& _keyword_name, T _index);
-  std::shared_ptr<Keyword> add_keyword(const std::vector<std::string>& _lines);
-  inline std::vector<std::string> keys();
+
+  // io
   std::string str() const;
   void save_txt(const std::string& _filepath);
   std::string resolve_include_filepath(const std::string& _filepath);
   std::vector<std::shared_ptr<KeyFile>> get_includes();
+  const std::vector<std::string>& get_include_dirs(bool _update = false);
 
   bool get_read_generic_keywords() const { return read_generic_keywords; }
   bool get_parse_mesh() const { return parse_mesh; }
@@ -103,7 +105,6 @@ public:
   {
     return encryption_detection_threshold;
   }
-  const std::vector<std::string>& get_include_dirs(bool _update = false);
 };
 
 /** Get all keywords with a specific name

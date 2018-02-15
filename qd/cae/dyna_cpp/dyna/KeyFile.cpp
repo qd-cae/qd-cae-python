@@ -87,8 +87,6 @@ KeyFile::load(bool _load_mesh)
   }
 
   // convert buffer into blocks
-  constexpr bool insert_into_buffers = true;
-
   size_t iLine = 0;
   std::string last_keyword;
   std::vector<std::string> line_buffer;
@@ -142,8 +140,7 @@ KeyFile::load(bool _load_mesh)
         auto kw = create_keyword(line_buffer,
                                  kw_type,
                                  iLine - line_buffer.size() -
-                                   line_buffer_tmp.size() + 1,
-                                 insert_into_buffers);
+                                   line_buffer_tmp.size() + 1);
         if (kw)
           keywords[kw->get_keyword_name()].push_back(kw);
 
@@ -169,8 +166,7 @@ KeyFile::load(bool _load_mesh)
 
     auto kw = create_keyword(line_buffer,
                              Keyword::determine_keyword_type(last_keyword),
-                             iLine - line_buffer.size() + 1,
-                             insert_into_buffers);
+                             iLine - line_buffer.size() + 1);
     if (kw)
       keywords[kw->get_keyword_name()].push_back(kw);
   }
@@ -307,8 +303,7 @@ KeyFile::transfer_comment_header(std::vector<std::string>& _old,
 std::shared_ptr<Keyword>
 KeyFile::create_keyword(const std::vector<std::string>& _lines,
                         Keyword::KeywordType _keyword_type,
-                        size_t _iLine,
-                        bool _insert_into_buffer)
+                        size_t _iLine)
 {
 
   if (parse_mesh) {
@@ -317,24 +312,21 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
       case (Keyword::KeywordType::NODE): {
         auto kw = std::make_shared<NodeKeyword>(
           parent_kf->get_db_nodes(), _lines, static_cast<int64_t>(_iLine));
-        if (_insert_into_buffer)
-          node_keywords.push_back(kw);
+        node_keywords.push_back(kw);
         return kw;
         break;
       }
       case (Keyword::KeywordType::ELEMENT): {
         auto kw = std::make_shared<ElementKeyword>(
           parent_kf->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
-        if (_insert_into_buffer)
-          element_keywords.push_back(kw);
+        element_keywords.push_back(kw);
         return kw;
         break;
       }
       case (Keyword::KeywordType::PART): {
         auto kw = std::make_shared<PartKeyword>(
           parent_kf->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
-        if (_insert_into_buffer)
-          part_keywords.push_back(kw);
+        part_keywords.push_back(kw);
         return kw;
         break;
       }
@@ -348,8 +340,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
   if (_keyword_type == Keyword::KeywordType::INCLUDE_PATH) {
     auto kw = std::make_shared<IncludePathKeyword>(
       _lines, static_cast<int64_t>(_iLine));
-    if (_insert_into_buffer)
-      include_path_keywords.push_back(kw);
+    include_path_keywords.push_back(kw);
     return kw;
   }
 
@@ -357,8 +348,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
   if (_keyword_type == Keyword::KeywordType::INCLUDE) {
     auto kw = std::make_shared<IncludeKeyword>(
       parent_kf, _lines, static_cast<int64_t>(_iLine));
-    if (_insert_into_buffer)
-      include_keywords.push_back(kw);
+    include_keywords.push_back(kw);
     return kw;
   }
 
@@ -380,9 +370,9 @@ KeyFile::get_include_dirs(bool _update)
 {
 
   if (!_update)
-	return include_dirs;
+    return include_dirs;
 
-  // clean up
+  // lets take the long way ...
   std::set<std::string> new_include_dirs;
 
   // dir of file
@@ -395,29 +385,25 @@ KeyFile::get_include_dirs(bool _update)
   if (!directory.empty())
     new_include_dirs.insert(directory);
 
-  // dirs of include_path
-  auto keywords_include_path =
-    get_keywordsByType(Keyword::KeywordType::INCLUDE_PATH);
-
   // update
-  for (auto& kw : keywords_include_path) {
+  for (auto& kw : include_path_keywords) {
     auto kw_inc_path = std::static_pointer_cast<IncludePathKeyword>(kw);
     bool is_relative_dir = kw_inc_path->is_relative();
 
     // append
     for (const auto& dirpath : kw_inc_path->get_include_dirs()) {
       if (is_relative_dir)
-		  new_include_dirs.insert(join_path(directory, dirpath));
+        new_include_dirs.insert(join_path(directory, dirpath));
       else
-		  new_include_dirs.insert(dirpath);
+        new_include_dirs.insert(dirpath);
     }
   }
 
-  // INCLUDES
+  // check also the includes
   for (auto& include_kw : include_keywords)
     for (auto& include_kf : include_kw->get_includes()) {
       auto paths = include_kf->get_include_dirs(true);
-	  new_include_dirs.insert( paths.begin(), paths.end());
+      new_include_dirs.insert(paths.begin(), paths.end());
     }
 
 #ifdef QD_DEBUG
@@ -426,7 +412,8 @@ KeyFile::get_include_dirs(bool _update)
     std::cout << entry << '\n';
 #endif
 
-  include_dirs = std::vector<std::string>(new_include_dirs.begin(), new_include_dirs.end());
+  include_dirs =
+    std::vector<std::string>(new_include_dirs.begin(), new_include_dirs.end());
 
   return include_dirs;
 }
@@ -471,10 +458,42 @@ KeyFile::get_includes()
   return all_includes;
 }
 
+/** Add a keyword from it's definition
+ *
+ * @param  _lines : lines which define the keyword
+ * @return keyword
+ *
+ * Returns a nullptr if keyword the keyword
+ */
+std::shared_ptr<Keyword>
+KeyFile::add_keyword(const std::vector<std::string>& _lines,
+                     int64_t _line_index)
+{
+
+  // find keyword name
+  const auto it =
+    std::find_if(_lines.cbegin(), _lines.cend(), [](const std::string& line) {
+      return (line.size() > 0 && line[0] == '*');
+    });
+
+  if (it == _lines.cend())
+    throw(std::invalid_argument(
+      "Can not find keyword definition (line must begin with *)"));
+
+  // determine type
+  auto kw_type = Keyword::determine_keyword_type(*it);
+
+  // do the thing
+  auto kw = create_keyword(_lines, kw_type, _line_index);
+  if (kw)
+    keywords[kw->get_keyword_name()].push_back(kw);
+
+  return kw;
+}
+
 /** Remove all keywords with the specified name
  *
  * @param _keyword_name
- *
  */
 void
 KeyFile::remove_keyword(const std::string& _keyword_name)
@@ -494,32 +513,6 @@ KeyFile::remove_keyword(const std::string& _keyword_name)
   }
 
   keywords.erase(it);
-}
-
-/** Get all keywords from a certain type
- *
- * @param type
- * @return keywords
- */
-std::vector<std::shared_ptr<Keyword>>
-KeyFile::get_keywordsByType(Keyword::KeywordType _type)
-{
-
-  std::vector<std::shared_ptr<Keyword>> keywords_found;
-
-  for (auto& kv : keywords) {
-
-    // check if not empty
-    if (kv.second.empty())
-      continue;
-
-    // check for type
-    if (kv.second[0]->get_keyword_type() == _type)
-      keywords_found.insert(
-        keywords_found.end(), kv.second.begin(), kv.second.end());
-  }
-
-  return keywords_found;
 }
 
 /** Convert the keyfile to a string

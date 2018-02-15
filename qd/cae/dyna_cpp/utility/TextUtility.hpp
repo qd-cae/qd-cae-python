@@ -15,6 +15,22 @@
 
 namespace qd {
 
+/** Tests if a string has content (non spacing chars)
+ *
+ * @param _str : string to test
+ * @return is_empty
+ *
+ * A string has no content, if it only contains
+ * spaces, tabs etc.
+ */
+inline bool
+str_has_content(const std::string& _str)
+{
+  return std::all_of(_str.begin(), _str.end(), [](const char c) {
+    return std::isspace(static_cast<unsigned char>(c));
+  });
+}
+
 /** Concat a vector of strings with line endings
  *
  * @param _lines
@@ -26,7 +42,12 @@ str_concat_lines(const std::vector<std::string>& _lines)
   std::stringstream ss;
   for (const auto& line : _lines)
     ss << line << '\n';
-  return ss.str();
+
+  // remove last linebreak
+  auto ret = ss.str();
+  ret.pop_back();
+
+  return ret;
 }
 
 /** Trim a string from left
@@ -102,17 +123,21 @@ trim_copy(std::string s)
 /** Convert a string into a vector of lines
  *
  * @param _buffer string which has the lines
+ * @param _ignore_trailing_lines : ignores trailing empty lines in the front
  * @return lines
  */
 inline std::vector<std::string>
-string_to_lines(const std::string& _buffer, bool ignore_trailing_lines = false)
+string_to_lines(const std::string& _buffer, bool _ignore_trailing_lines = false)
 {
   std::string line;
   std::vector<std::string> lines;
   std::stringstream ss(_buffer, std::ios_base::in);
 
-  if (ignore_trailing_lines) {
-    while (std::getline(ss, line) && line.size() == 0)
+  if (_ignore_trailing_lines) {
+    while (std::getline(ss, line) &&
+           std::all_of(line.begin(), line.end(), [](char c) {
+             return std::isspace(static_cast<unsigned char>(c));
+           }))
       continue;
     if (!line.empty())
       lines.push_back(line);

@@ -1112,20 +1112,20 @@ const char* keyfile_description = R"qddoc(
 )qddoc";
 
 const char* keyfile_constructor = R"qddoc(
-    KeyFile(filepath, read_keywords=True, parse_mesh=True, load_includes=True, encryption_detection=0.7)
+    KeyFile(filepath="", read_keywords=True, parse_mesh=True, load_includes=True, encryption_detection=0.7)
 
     Parameters
     ----------
     filepath : str
         path to the keyfile
     read_keywords : bool
-        (optional) whether to read all keywords
+        whether to read all keywords
     parse_mesh : bool
-        (optional) whether the mesh keywords shall be parsed
+        whether the mesh keywords shall be parsed
     load_includes : bool
-        (optional) load all includes within the file
+        load all includes within the file
     encryption_detection : float
-        (optional) detection threshold for encrypted include files. 
+        detection threshold for encrypted include files. 
         Must be between 0 and 1.
 
     Raises
@@ -1168,6 +1168,12 @@ const char* keyfile_constructor = R"qddoc(
         ['*NODE', '*ELEMENT_SHELL', ...]
         >>> # get all part keywords
         >>> part_keywords = keyfile["*PART"]
+
+        One can also create empty keyfiles and built them.
+
+        >>> keyfile = KeyFile(parse_mesh=True)
+        >>> kw = keyfile.add_keyword("*NODE")
+
 )qddoc";
 
 const char* keyfile_str_description = R"qddoc(
@@ -1256,7 +1262,7 @@ const char* keyfile_remove_keyword_description = R"qddoc(
     name : str
         name of keyword to remove
     index : int 
-        (optional) index of keyword in list
+        index of keyword in list
 
     Notes
     -----
@@ -1282,18 +1288,20 @@ const char* keyfile_remove_keyword_description = R"qddoc(
 )qddoc";
 
 const char* keyfile_add_keyword_description = R"qddoc(
-    add_keyword(lines)
+    add_keyword(lines, line_index=0)
 
     Parameters
     ----------
     lines : str or list of str
         keyword definition
+    line_index : int
+        where to position the keyword in the KeyFile
 
     Notes
     -----
-        When using ``parse_mesh=True`` then if a mesh keyword
-        is created, the corresponding classes are returned instead
-        of a generic keyword:
+        When the KeyFile was created using ``parse_mesh=True``,
+        then if a mesh keyword is created, the corresponding 
+        classes are returned instead of a generic keyword:
         
             - ``NodeKeyword``
             - ``ElementKeyword``
@@ -1318,8 +1326,7 @@ const char* keyfile_add_keyword_description = R"qddoc(
         >>> type(kw)
         <class 'qd.cae.dyna_cpp.NodeKeyword'>
         >>> # now it's simple to add nodes
-        >>> kw.add_node(id=1, x=0, y=0, z=0)
-        <qd.cae.dyna_cpp.Node object at 0x0000016D800ECA08>
+        >>> node = kw.add_node(id=1, x=0, y=0, z=0)
         
 )qddoc";
 
@@ -1712,7 +1719,7 @@ const char* keyword_get_card_valueByIndex_docs = R"qddoc(
     arg2 : int
         optional field index
     field_size : int
-        (optional) size of field 
+        size of field 
 
     Returns
     -------
@@ -1746,7 +1753,7 @@ const char* keyword_get_card_valueByName_docs = R"qddoc(
     name : str
         name of the field in comments
     field_size : int
-        (optional) size of fields in characters
+        size of fields in characters
 
     Returns
     -------
@@ -1826,9 +1833,9 @@ const char* keyword_set_card_valueByIndex_docs = R"qddoc(
     value : object
         Value to bet set. Must be convertible to string.
     name : str
-        (optional) name in comments to be set
+        name in comments to be set
     field_size : int
-        (optional) size of field 
+        size of field 
     
 
     Raises
@@ -1865,7 +1872,7 @@ const char* keyword_set_card_valueByName_docs = R"qddoc(
     value : object
         Value to bet set. Must be convertible to string.
     field_size : int
-        (optional) size of field 
+        size of field 
     
     Raises
     ------
@@ -1898,7 +1905,7 @@ const char* keyword_set_card_valueByDict_docs = R"qddoc(
     field : dict
         fields to set, key can be string or indexes
     field_size : int
-        (optional) size of field 
+        size of field 
     
     Raises
     ------
@@ -2121,11 +2128,11 @@ const char* keyword_reformat_field_docs = R"qddoc(
     iField : int
         field index
     field_size : int
-        (optional) field size
+        field size
     format_field : bool
-        (optional) whether to format the field
+        whether to format the field
     format_name : bool
-        (optional) whether to format the comment name
+        whether to format the comment name
 
     Raises
     ------
@@ -2292,7 +2299,7 @@ const char* node_keyword_add_node_docs = R"qddoc(
     z : float
         z-coordinate
     additional_card_data : str
-        (optional) further card data (see Notes section).
+        further card data (see Notes section).
 
     Returns
     -------
@@ -2397,6 +2404,159 @@ const char* node_keyword_load_docs = R"qddoc(
 
 )qddoc";
 
+/* ----------------------- ELEMENT KEYWORD ---------------------- */
+
+const char* element_keyword_get_elements_docs = R"qddoc(
+    get_elements()
+
+    Returns
+    -------
+    elements : list of Element
+        parsed elements belonging to the keyword
+
+    Notes
+    -----
+        Get all elements of belonging to the keyword.
+
+    Examples
+    --------
+        >>> print(kw)
+        *ELEMENT_SHELL
+        $    eid     pid      n1      n2      n3      n4
+               1       1       1       2       3       4
+        >>> len( kw.get_elements() )
+        1
+)qddoc";
+
+const char* element_keyword_get_nElements_docs = R"qddoc(
+    get_nElements()
+
+    Returns
+    -------
+    nElements : int
+        number of elements belonging to the keyword
+
+    Examples
+    --------
+        >>> print(kw)
+        *ELEMENT_SHELL
+        $    eid     pid      n1      n2      n3      n4
+               1       1       1       2       3       4
+        >>> kw.nElements()
+        1
+)qddoc";
+
+const char* element_keyword_add_elementByNodeID_docs = R"qddoc(
+    add_elementByNodeID(id, part_id, node_ids, additional_card_data="")
+
+    Parameters
+    ----------
+    id : int
+        id of the new element
+    part_id : int
+        id of the part to which this element shall be assigned
+    node_ids : list of int
+        list of node ids, which belong to the element
+    additional_card_data : str or list of str
+        further card data (see Notes section).
+
+    Returns
+    -------
+    elem : Element
+        newly created element object
+
+    Notes
+    -----
+        The `additional_card_data` is a string or a list of strings 
+        appended to the keyword when writing the output file. This
+        is required in case a non-standard keyword is used such as
+        *ELEMENT_BEAM_SCALAR, which requires further card infos. The first
+        line or string is appended without a linebreak.
+        
+        The type of the element is inferred from the name
+        of the keyword.
+
+    Examples
+    --------
+        >>> print(kw)
+        *ELEMENT_SHELL
+        $    eid     pid      n1      n2      n3      n4
+               1       1       1       2       3       4
+        >>> elem = kw.add_elementByNodeID(2, 1, [1,2,3])
+        >>> print(kw)
+        $    eid     pid      n1      n2      n3      n4
+               1       1       1       2       3       4
+               2       1       1       2       3       3
+
+)qddoc";
+
+const char* element_keyword_add_elementByNodeIndex_docs = R"qddoc(
+    add_elementByNodeIndex(id, part_id, node_indexes, additional_card_data="")
+
+    Parameters
+    ----------
+    id : int
+        id of the new element
+    part_id : int
+        id of the part to which this element shall be assigned
+    node_indexes : list of int
+        list of node indexes, which belong to the element
+    additional_card_data : str or list of str
+        further card data (see Notes section).
+
+    Returns
+    -------
+    elem : Element
+        newly created element object
+
+    Notes
+    -----
+        The `additional_card_data` is a string or a list of strings 
+        appended to the keyword when writing the output file. This
+        is required in case a non-standard keyword is used such as
+        *ELEMENT_BEAM_SCALAR, which requires further card infos. The first
+        line or string is appended without a linebreak.
+
+        The type of the element is inferred from the name
+        of the keyword. 
+
+    Examples
+    --------
+        >>> print(kw)
+        *ELEMENT_SHELL
+        $    eid     pid      n1      n2      n3      n4
+               1       1       1       2       3       4
+        >>> elem = kw.add_elementByNodeIndex(2, 1, [0,1,2])
+        >>> print(kw)
+        $    eid     pid      n1      n2      n3      n4
+               1       1       1       2       3       4
+               2       1      77      21       4       4
+
+)qddoc";
+
+const char* element_keyword_load_docs = R"qddoc(
+    load()
+
+    Notes
+    -----
+        This function iterates through the lines of the
+        keyword, parses each element and loads it the
+        files database. In the process, the lines of every
+        parsed element is destroyed.
+
+    Examples
+    --------
+        >>> kf = KeyFile("path/to/keyfile",parse_mesh=True)
+        >>> kw = kf.add_keyword("*ELEMENT_SHELL")
+        >>> kw.get_nElements()
+        0
+        >>> # append a new element (id=3, part_id=1 and node ids)
+        >>> kw.append_line("       3       1       1       2       3       4")
+        >>> kw.load()
+        >>> kw.get_nElements()
+        1
+)qddoc";
+
 /* ----------------------- PART KEYWORD ---------------------- */
 
 const char* part_keyword_add_part_docs = R"qddoc(
@@ -2407,9 +2567,9 @@ const char* part_keyword_add_part_docs = R"qddoc(
     id : int
         id of the part
     name : str 
-        (optional) name of the part
+        name of the part
     additional_card_data : str or list of str
-        (optional) further card data (see Notes section).
+        further card data (see Notes section).
 
     Returns
     -------
@@ -2425,14 +2585,198 @@ const char* part_keyword_add_part_docs = R"qddoc(
     -----
         The `additional_card_data` is a string or a list of strings 
         appended to the keyword when writing the output file. The first
-        line or string is appended to the same line as the part id.
+        line or string is appended without a linebreak.
 
     Examples
     --------
+        >>> # create file with mesh parsing on
+        >>> kf = KeyFile(parse_mesh=True)
+        >>> # create a new part keyword
+        >>> kw = kf.add_keyword("*PART")
         >>> # secid and mid for part 
         >>> additional_data = "   2000001   2000017"
         >>> part = kw.add_part(100, "my_part", additional_data)
 )qddoc";
+
+const char* part_keyword_get_parts_docs = R"qddoc(
+    get_parts()
+
+    Returns
+    -------
+    parts : list of Part
+        list of all parts in the keyword
+
+    Notes
+    -----
+        Yes, there can be more than one part in a
+        part keyword.
+
+    Examples
+    --------
+        >>> # open file with mesh parsing on
+        >>> kf = KeyFile("path/to/keyfile", parse_mesh=True)
+        >>> kw = kf["*PART"][0]
+        >>> len( kw.get_parts() )
+        1
+)qddoc";
+
+const char* part_keyword_get_nParts_docs = R"qddoc(
+    get_nParts()
+
+    Returns
+    -------
+    nParts : int
+        number of parts in the PartKeyword
+
+    Notes
+    -----
+        Returns the parsed/loaded number of parts belonging 
+        to this keyword.
+
+    Examples
+    --------
+        >>> # open file with mesh parsing on
+        >>> kf = KeyFile("path/to/keyfile", parse_mesh=True)
+        >>> kw = kf["*PART"][0]
+        >>> kw.get_nParts()
+        1
+)qddoc";
+
+const char* part_keyword_load_docs = R"qddoc(
+    load()
+
+    Notes
+    -----
+        This function iterates through the lines of the
+        keyword, parses each part and loads it the
+        files database. In the process, the lines of every
+        parsed part is destroyed.
+
+    Examples
+    --------
+        >>> kf = KeyFile(parse_mesh=True)
+        >>> kw = kf.add_keyword("*PART")
+        >>> kw.get_nParts()
+        0
+        >>> # append a new part (pid=2, secid=1, mid=1)
+        >>> kw.append_line("         2           1         1")
+        >>> kw.load()
+        >>> kw.get_nParts()
+        1
+        >>> print(kw)
+        *PART
+                 2           1         1
+)qddoc";
+
+/* ----------------------- INCLUDE PATH KEYWORD ---------------------- */
+
+const char* include_path_is_relative_docs = R"qddoc(
+    is_relative()
+
+    Returns
+    -------
+    is_relative : bool
+         whether the include path defintion describes a relative path
+
+    Notes
+    -----
+        Same as checking for definition *INCLUDE_PATH_RELATIVE.
+
+    Examples
+    --------
+        >>> kf = KeyFile("path/to/keyfile", load_includes=True)
+        >>> # get the first include dir keyword
+        >>> kw = kf["*INCLUDE_PATH_RELATIVE"][0]
+        >>> kw.is_relative()
+        True
+        
+
+)qddoc";
+
+const char* include_path_keyword_get_include_dirs_docs = R"qddoc(
+    get_include_dirs()
+
+    Returns
+    -------
+    include_dirs : list of str
+         list of all include dirs
+
+    Notes
+    -----
+        The include dirs are from the position of the file, not
+        of the program. For getting the resolved include dirs
+        use ``KeyFile.get_include_dirs``.
+
+    Examples
+    --------
+        >>> kf = KeyFile("path/to/keyfile", load_includes=True)
+        >>> # get the first include dir keyword
+        >>> kw = kf["*INCLUDE_PATH"][0]
+        >>> kw.get_include_dirs()
+        ['includes']
+        >>> # get resolved include dirs (from program location)
+        >>> kf.get_include_dirs()
+        ['path/to/','path/to/includes']
+
+)qddoc";
+
+/* ----------------------- INCLUDE KEYWORD ---------------------- */
+
+const char* include_keyword_get_includes_docs = R"qddoc(
+    get_includes()
+
+    Returns
+    -------
+    includes : list of KeyFile
+         list of loaded keyfiles
+
+    Notes
+    -----
+        Returns all loaded keyfiles belonging to this include keyword.
+
+    Examples
+    --------
+        >>> kf = KeyFile("path/to/keyfile", load_includes=True)
+        >>> # get the first include keyword
+        >>> kw = kf["*INCLUDE"][0]
+        >>> len( kw.get_includes() )
+        1
+
+)qddoc";
+
+const char* include_keyword_load_docs = R"qddoc(
+    load()
+
+    Notes
+    -----
+        This function iterates through the lines of the
+        keyword, and loads every include defined. In the 
+        process, the filepath of every loaded include
+        is removed from the line buffer.
+
+        To check if the class searches the correct include
+        directories, ``KeyFile.get_include_dirs`` can be used.
+
+        If the parent ``KeyFile`` uses ``parse_mesh=True``,
+        then also the includes mesh will be parsed, but the mesh will
+        be loaded into the parents database and not the includes
+        for consistency.
+
+    Examples
+    --------
+        >>> kf = KeyFile()
+        >>> kw = kf.add_keyword("*INCLUDE")
+        >>> kw.append_line("path/to/my/include")
+        >>> kw.load()
+        >>> len( kw.get_includes() )
+        1
+        >>> # one can also get all includes from the KeyFile directly
+        >>> len( kf.get_includes() )
+        1
+
+)qddoc";
+
+/* ----------------------- MODULE ---------------------- */
 
 const char* module_get_file_entropy_description = R"qddoc(
     get_file_entropy(filepath)

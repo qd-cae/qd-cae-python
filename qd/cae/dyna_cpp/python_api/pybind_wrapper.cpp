@@ -121,6 +121,33 @@ struct type_caster<std::vector<std::shared_ptr<qd::Part>>> : ListCasterParts
 
 namespace qd {
 
+/* Utility functions */
+auto cast_kw = [](std::shared_ptr<Keyword> instance) {
+
+  switch (instance->get_keyword_type()) {
+
+    case (Keyword::KeywordType::NODE):
+      return pybind11::cast(std::static_pointer_cast<NodeKeyword>(instance));
+
+    case (Keyword::KeywordType::ELEMENT):
+      return pybind11::cast(std::static_pointer_cast<ElementKeyword>(instance));
+
+    case (Keyword::KeywordType::PART):
+      return pybind11::cast(std::static_pointer_cast<PartKeyword>(instance));
+
+    case (Keyword::KeywordType::INCLUDE_PATH):
+      return pybind11::cast(
+        std::static_pointer_cast<IncludePathKeyword>(instance));
+
+    case (Keyword::KeywordType::INCLUDE):
+      return pybind11::cast(std::static_pointer_cast<IncludeKeyword>(instance));
+
+    default:
+      return pybind11::cast(instance);
+  }
+
+};
+
 /*========= PLUGIN: dyna_cpp =========*/
 PYBIND11_MODULE(dyna_cpp, m)
 {
@@ -142,6 +169,12 @@ PYBIND11_MODULE(dyna_cpp, m)
   pybind11::class_<Node, std::shared_ptr<Node>> node_py(
     m, "Node", qd_node_class_docs);
   node_py
+    .def("__repr__",
+         [](std::shared_ptr<Node> self) {
+           return "<qd.cae.dyna.Node id=" + std::to_string(self->get_nodeID()) +
+                  '>';
+         },
+         pybind11::return_value_policy::take_ownership)
     .def("get_id",
          &Node::get_nodeID,
          pybind11::return_value_policy::take_ownership,
@@ -192,6 +225,36 @@ PYBIND11_MODULE(dyna_cpp, m)
     .export_values();
 
   element_py
+    .def("__repr__",
+         [](std::shared_ptr<Element> self) {
+
+           std::string etype_str;
+           switch (self->get_elementType()) {
+             case (Element::ElementType::SHELL):
+               etype_str = "shell";
+               break;
+             case (Element::ElementType::SOLID):
+               etype_str = "solid";
+               break;
+             case (Element::ElementType::BEAM):
+               etype_str = "beam";
+               break;
+             case (Element::ElementType::TSHELL):
+               etype_str = "tshell";
+               break;
+             case (Element::ElementType::NONE):
+               etype_str = "none";
+               break;
+             default:
+               etype_str = "unknown";
+               break;
+           }
+
+           return "<qd.cae.dyna.Element id=" +
+                  std::to_string(self->get_elementID()) + " type=" + etype_str +
+                  '>';
+         },
+         pybind11::return_value_policy::take_ownership)
     .def("get_id",
          &Element::get_elementID,
          pybind11::return_value_policy::take_ownership,
@@ -265,6 +328,12 @@ PYBIND11_MODULE(dyna_cpp, m)
   // Part
   pybind11::class_<Part, std::shared_ptr<Part>> part_py(m, "QD_Part");
   part_py
+    .def("__repr__",
+         [](std::shared_ptr<Part> self) {
+           return "<qd.cae.dyna.Part id=" + std::to_string(self->get_partID()) +
+                  " name=" + self->get_name() + '>';
+         },
+         pybind11::return_value_policy::take_ownership)
     .def("get_name",
          &Part::get_name,
          pybind11::return_value_policy::take_ownership,
@@ -1071,22 +1140,63 @@ PYBIND11_MODULE(dyna_cpp, m)
          node_keyword_get_node_ids_docs)
     .def("load", &NodeKeyword::load, node_keyword_load_docs);
 
-  element_keyword_py.def("get_elements", &ElementKeyword::get_elements)
-    .def("get_nElements", &ElementKeyword::get_nElements)
-    .def("get_elementByIndex",
-         &ElementKeyword::get_elementByIndex<int64_t>,
-         "index"_a)
+  element_keyword_py
+    .def("get_elements",
+         &ElementKeyword::get_elements,
+         pybind11::return_value_policy::take_ownership,
+         element_keyword_get_elements_docs)
+    .def("get_nElements",
+         &ElementKeyword::get_nElements,
+         pybind11::return_value_policy::take_ownership,
+         element_keyword_get_nElements_docs)
+    .def("add_elementByNodeID",
+         [](std::shared_ptr<ElementKeyword> self,
+            int64_t element_id,
+            int64_t part_id,
+            const std::vector<int32_t>& node_ids,
+            const std::string& additional_card_data) {
+
+           return self->add_elementByNodeID<int64_t>(
+             element_id, part_id, node_ids, { additional_card_data });
+         },
+         "element_id"_a,
+         "part_id"_a,
+         "node_ids"_a,
+         "additional_card_data"_a = "",
+         pybind11::return_value_policy::take_ownership,
+         element_keyword_add_elementByNodeID_docs)
     .def("add_elementByNodeID",
          &ElementKeyword::add_elementByNodeID<int64_t>,
-         "id"_a,
+         "element_id"_a,
          "part_id"_a,
-         "node_ids"_a)
+         "node_ids"_a,
+         "additional_card_data"_a = "",
+         pybind11::return_value_policy::take_ownership)
+    .def("add_elementByNodeIndex",
+         [](std::shared_ptr<ElementKeyword> self,
+            int64_t element_id,
+            int64_t part_id,
+            const std::vector<size_t>& node_indexes,
+            const std::string& additional_card_data) {
+
+           return self->add_elementByNodeIndex<int64_t>(
+             element_id, part_id, node_indexes, { additional_card_data });
+         },
+         "element_id"_a,
+         "part_id"_a,
+         "node_indexes"_a,
+         "additional_card_data"_a = "",
+         pybind11::return_value_policy::take_ownership,
+         element_keyword_add_elementByNodeIndex_docs)
     .def("add_elementByNodeIndex",
          &ElementKeyword::add_elementByNodeIndex<int64_t>,
          "id"_a,
          "part_id"_a,
-         "node_indexes"_a)
-    .def("load", &ElementKeyword::load);
+         "node_indexes"_a,
+         "additional_card_data"_a = "",
+         pybind11::return_value_policy::take_ownership,
+         element_keyword_add_elementByNodeIndex_docs)
+    .def("load", &ElementKeyword::load, element_keyword_load_docs);
 
   part_keyword_py
     .def("add_part",
@@ -1109,21 +1219,31 @@ PYBIND11_MODULE(dyna_cpp, m)
          "name"_a = "",
          "additional_lines"_a = "",
          pybind11::return_value_policy::take_ownership)
-    .def("get_partByIndex", &PartKeyword::get_partByIndex<int64_t>, "index"_a)
-    .def("get_parts", &PartKeyword::get_parts)
-    .def("get_nParts", &PartKeyword::get_nParts)
-    .def("load", &PartKeyword::load)
-    .def("__str__", &PartKeyword::str);
+    .def("get_parts", &PartKeyword::get_parts, part_keyword_get_parts_docs)
+    .def("get_nParts", &PartKeyword::get_nParts, part_keyword_get_nParts_docs)
+    .def("load", &PartKeyword::load, part_keyword_load_docs);
 
-  include_path_keyword_py.def("is_relative", &IncludePathKeyword::is_relative)
-    .def("get_include_dirs", &IncludePathKeyword::get_include_dirs);
+  include_path_keyword_py
+    .def("is_relative",
+         &IncludePathKeyword::is_relative,
+         pybind11::return_value_policy::take_ownership,
+         include_path_is_relative_docs)
+    .def("get_include_dirs",
+         &IncludePathKeyword::get_include_dirs,
+         pybind11::return_value_policy::take_ownership,
+         include_path_keyword_get_include_dirs_docs);
 
-  include_keyword_py.def("get_includes", &IncludeKeyword::get_includes)
-    .def("load", &IncludeKeyword::load);
+  include_keyword_py
+    .def("get_includes",
+         &IncludeKeyword::get_includes,
+         pybind11::return_value_policy::take_ownership,
+         include_keyword_get_includes_docs)
+    .def("load", &IncludeKeyword::load, include_keyword_load_docs);
 
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(
     m, "QD_KeyFile", keyfile_description);
+
   keyfile_py
     .def("__init__",
          [](KeyFile& instance,
@@ -1138,16 +1258,20 @@ PYBIND11_MODULE(dyna_cpp, m)
                                    parse_mesh,
                                    load_includes,
                                    encryption_detection_threshold);
-           instance.load();
+           if (!str_has_content(_filepath))
+             instance.load();
 
          },
-         "filepath"_a,
+         "filepath"_a = std::string(),
          "read_keywords"_a = true,
          "parse_mesh"_a = false,
          "load_includes"_a = false,
          "encryption_detection"_a = 0.7,
          keyfile_constructor)
-    .def("__str__", &KeyFile::str, keyfile_str_description)
+    .def("__str__",
+         &KeyFile::str,
+         pybind11::return_value_policy::take_ownership,
+         keyfile_str_description)
     .def(
       "__getitem__",
       [](std::shared_ptr<KeyFile> self, std::string key) {
@@ -1202,8 +1326,12 @@ PYBIND11_MODULE(dyna_cpp, m)
 
       },
       "name"_a,
+      pybind11::return_value_policy::take_ownership,
       keyfile_getitem_description)
-    .def("keys", &KeyFile::keys, keyfile_keys_description)
+    .def("keys",
+         &KeyFile::keys,
+         pybind11::return_value_policy::take_ownership,
+         keyfile_keys_description)
     .def("save", &KeyFile::save_txt, "filepath"_a, keyfile_save_description)
     .def("remove_keyword",
          [](std::shared_ptr<KeyFile> self,
@@ -1211,22 +1339,49 @@ PYBIND11_MODULE(dyna_cpp, m)
             int64_t index) { self->remove_keyword(name, index); },
          "name"_a,
          "index"_a,
+         pybind11::return_value_policy::take_ownership,
          keyfile_remove_keyword_description)
     .def("remove_keyword",
          [](std::shared_ptr<KeyFile> self, const std::string& name) {
            self->remove_keyword(name);
          },
-         "name"_a)
+         "name"_a,
+         pybind11::return_value_policy::take_ownership)
     .def("add_keyword",
-         &KeyFile::add_keyword,
+         [](std::shared_ptr<KeyFile> self,
+            const std::string& lines,
+            int64_t line_index) {
+
+           return cast_kw(
+             self->add_keyword(string_to_lines(lines, true), line_index));
+         },
          "lines"_a,
+         "line_index"_a = 0,
+         pybind11::return_value_policy::take_ownership)
+    .def("add_keyword",
+         [](std::shared_ptr<KeyFile> self,
+            const std::vector<std::string>& lines,
+            int64_t line_index) {
+
+           return cast_kw(self->add_keyword(lines, line_index));
+         },
+         "lines"_a,
+         "line_index"_a = 0,
+         pybind11::return_value_policy::take_ownership,
          keyfile_add_keyword_description)
-    .def(
-      "get_includes", &KeyFile::get_includes, keyfile_get_includes_description)
+    .def("get_includes",
+         &KeyFile::get_includes,
+         pybind11::return_value_policy::take_ownership,
+         keyfile_get_includes_description)
+    .def("get_includes",
+         &KeyFile::get_includes,
+         pybind11::return_value_policy::take_ownership,
+         keyfile_get_includes_description)
     .def("get_include_dirs",
          [](std::shared_ptr<KeyFile> self) {
            return self->get_include_dirs(true);
          },
+         pybind11::return_value_policy::take_ownership,
          keyfile_get_include_dirs_description);
 
   // Binout

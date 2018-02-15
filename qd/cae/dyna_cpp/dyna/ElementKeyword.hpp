@@ -47,13 +47,17 @@ public:
   std::shared_ptr<Element> get_elementByIndex(T _index);
 
   template<typename T>
-  std::shared_ptr<Element>
-  add_elementByNodeID(T _id, T _part_id, const std::vector<int32_t>& _node_ids);
+  std::shared_ptr<Element> add_elementByNodeID(
+    T _id,
+    T _part_id,
+    const std::vector<int32_t>& _node_ids,
+    const std::vector<std::string>& _additional_card_data = "");
   template<typename T>
   std::shared_ptr<Element> add_elementByNodeIndex(
     T _id,
     T _part_id,
-    const std::vector<size_t>& _node_indexes);
+    const std::vector<size_t>& _node_indexes,
+    const std::vector<std::string>& _additional_card_data = "");
   std::vector<std::shared_ptr<Element>> get_elements();
   std::string str() override;
 };
@@ -104,9 +108,11 @@ ElementKeyword::get_elementByIndex(T _index)
  */
 template<typename T>
 std::shared_ptr<Element>
-ElementKeyword::add_elementByNodeIndex(T _id,
-                                       T _part_id,
-                                       const std::vector<size_t>& _node_indexes)
+ElementKeyword::add_elementByNodeIndex(
+  T _id,
+  T _part_id,
+  const std::vector<size_t>& _node_indexes,
+  const std::vector<std::string>& _additional_card_data)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
@@ -119,6 +125,7 @@ ElementKeyword::add_elementByNodeIndex(T _id,
   elem_indexes_in_card.push_back(
     db_elems->get_element_index_from_id(element_type, id));
   elem_part_ids.push_back(static_cast<int32_t>(_part_id));
+  unparsed_element_data.push_back(str_concat_lines(_additional_card_data));
 
   return elem;
 }
@@ -132,9 +139,11 @@ ElementKeyword::add_elementByNodeIndex(T _id,
  */
 template<typename T>
 std::shared_ptr<Element>
-ElementKeyword::add_elementByNodeID(T _id,
-                                    T _part_id,
-                                    const std::vector<int32_t>& _node_ids)
+ElementKeyword::add_elementByNodeID(
+  T _id,
+  T _part_id,
+  const std::vector<int32_t>& _node_ids,
+  const std::vector<std::string>& _additional_card_data)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
@@ -147,6 +156,7 @@ ElementKeyword::add_elementByNodeID(T _id,
   elem_indexes_in_card.push_back(
     db_elems->get_element_index_from_id(element_type, id));
   elem_part_ids.push_back(static_cast<int32_t>(_part_id));
+  unparsed_element_data.push_back(str_concat_lines(_additional_card_data));
 
   return elem;
 }

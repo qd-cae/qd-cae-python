@@ -81,7 +81,7 @@ ElementKeyword::parse_elem2(const std::string& _keyword_name_lower,
   size_t iLine = header_size;
 
   if (header_size == lines.size())
-	  return;
+    return;
 
   // how much data to read
   size_t nAdditionalLines = 0;
@@ -268,7 +268,7 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
   size_t iLine = header_size;
 
   if (header_size == lines.size())
-	  return;
+    return;
 
   // how much data to read
   size_t nAdditionalLines = 0;
@@ -385,7 +385,7 @@ ElementKeyword::parse_elem4th(const std::string& _keyword_name_lower,
   size_t iLine = header_size;
 
   if (header_size == lines.size())
-	  return;
+    return;
 
   // how much data to read
   size_t nAdditionalLines = 0;

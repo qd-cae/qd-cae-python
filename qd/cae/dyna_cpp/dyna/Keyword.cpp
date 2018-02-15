@@ -165,15 +165,20 @@ Keyword::determine_keyword_type(const std::string& _str)
   }
   // *INCLUDE
   else if (str_lower.compare(0, 8, "*include") == 0) {
+
     // TODO
     if (str_lower.size() == 8 || str_lower.compare(8, 4, "_binary") == 0)
       return KeywordType::INCLUDE;
+
+    // PATH
+    if (str_lower.compare(8, 5, "_path") == 0) {
+
+      if (str_lower.size() == 13 || str_lower.compare(13, 9, "_relative") == 0)
+        return KeywordType::INCLUDE_PATH;
+    }
   }
   // *INCLUDE_PATH
   else if (str_lower.compare(0, 13, "*include_path") == 0) {
-
-    if (str_lower.size() == 13 || str_lower.compare(13, 9, "_relative") == 0)
-      return KeywordType::INCLUDE_PATH;
   }
 
   return KeywordType::GENERIC;
