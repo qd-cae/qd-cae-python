@@ -48,7 +48,7 @@ public:
 protected:
   Keyword::KeywordType kw_type;
   size_t field_size;              // size of the fields (8 or 20)
-  int64_t line_index;             // line index in file (keeps order)
+  int64_t position;               // line index in file (keeps order)
   std::vector<std::string> lines; // line buffer
 
   // as always, dirty stuff is better kept private ...
@@ -89,24 +89,45 @@ protected:
 
 public:
   explicit Keyword(const std::string& _lines,
-                   int64_t _line_index = 0,
+                   int64_t _position = 0,
                    size_t _field_size = 0);
   explicit Keyword(const std::vector<std::string>& _lines,
-                   int64_t _line_index = 0,
+                   int64_t _position = 0,
                    size_t _field_size = 0);
   explicit Keyword(const std::vector<std::string>& _lines,
                    const std::string& _keyword_name,
-                   int64_t _line_index = 0,
+                   int64_t _position = 0,
                    size_t _field_size = 0);
 
   // getters
+  inline size_t get_field_size() const;
+  template<typename T>
+  inline void set_field_size(T _new_field_size);
+
   inline KeywordType get_keyword_type() const;
   static KeywordType determine_keyword_type(const std::string& str);
   std::string get_keyword_name() const;
-  inline std::vector<std::string> get_lines() const;
-  inline std::vector<std::string>& get_lines();
+
+  inline bool has_long_fields() const;
+  inline size_t size();
+  inline int64_t get_position();
+  /*
+  bool contains_field(const std::string& _name) const;
+  */
+  virtual std::string str();
+  void print();
+
+  // card stuff
   template<typename T>
-  inline const std::string& get_line(T _iLine) const;
+  void switch_field_size(const std::vector<T> _skip_cards);
+  template<typename T>
+  void reformat_all(std::vector<T> _skip_cards);
+  template<typename T>
+  void reformat_card_value(T _iCard,
+                           T _iField,
+                           size_t _field_size = 0,
+                           bool _format_field = true,
+                           bool _format_name = true);
   template<typename T>
   inline std::string get_card(T _iCard);
   inline std::string get_card_value(const std::string& _field_name,
@@ -115,18 +136,6 @@ public:
   inline std::string get_card_value(T _iCard,
                                     T _iField,
                                     size_t _field_size = 0);
-  inline bool has_long_fields() const;
-  inline size_t size();
-  inline int64_t get_line_index();
-  /*
-  bool contains_field(const std::string& _name) const;
-  */
-  virtual std::string str();
-  void print();
-
-  // setters
-  template<typename T>
-  void switch_field_size(const std::vector<T> _skip_cards);
   template<typename T>
   inline void set_card(T _iCard, const std::string& _data);
   inline void set_card_value(const std::string& _field_name,
@@ -138,8 +147,6 @@ public:
   inline void set_card_value(const std::string& _field_name,
                              double _value,
                              size_t _field_size = 0);
-
-  // card values by indexes
   template<typename T>
   inline void set_card_value(T iCard,
                              T iField,
@@ -158,6 +165,8 @@ public:
                              double _value,
                              const std::string& _comment_name = "",
                              size_t _field_size = 0);
+
+  // lines
   void append_line(const std::string& _new_line);
   void set_lines(const std::vector<std::string>& _new_lines);
   template<typename T>
@@ -166,19 +175,36 @@ public:
   void insert_line(T iLine, const std::string& _line);
   template<typename T>
   void remove_line(T iLine);
-  inline void set_line_index(int64_t _iLine);
+  inline std::vector<std::string> get_lines() const;
+  inline std::vector<std::string>& get_lines();
   template<typename T>
-  void reformat_all(std::vector<T> _skip_cards);
-  template<typename T>
-  void reformat_card_value(T _iCard,
-                           T _iField,
-                           size_t _field_size = 0,
-                           bool _format_field = true,
-                           bool _format_name = true);
+  inline const std::string& get_line(T _iLine) const;
+
+  inline void set_position(int64_t _iLine);
 
   // useful but mostly internal stuff
   inline size_t get_line_index_of_next_card(size_t _iLineOffset = 0);
 };
+
+/** Get the current field size in chars
+ *
+ */
+size_t
+Keyword::get_field_size() const
+{
+  return field_size;
+}
+
+/** Set a new field size
+ *
+ */
+template<typename T>
+void
+Keyword::set_field_size(T _new_field_size)
+{
+  check_non_negative(_new_field_size);
+  field_size = static_cast<size_t>(_new_field_size);
+}
 
 /** Get the type of the keyword
  *
@@ -290,9 +316,9 @@ Keyword::size()
  * @return line_index line index of the keyword in the file
  */
 int64_t
-Keyword::get_line_index()
+Keyword::get_position()
 {
-  return line_index;
+  return position;
 }
 
 /** Set the line number at which this block shall be positioned in the file
@@ -303,9 +329,9 @@ Keyword::get_line_index()
  * in sequence. Thus thus line number is rather seen as a wish.
  */
 void
-Keyword::set_line_index(int64_t _iLine)
+Keyword::set_position(int64_t _iLine)
 {
-  line_index = _iLine;
+  position = _iLine;
 }
 
 /** Checks if a string is a comment

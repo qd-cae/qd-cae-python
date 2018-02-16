@@ -195,7 +195,7 @@
             
   <div class="section" id="keyword">
 <h1>Keyword<a class="headerlink" href="#keyword" title="Permalink to this headline">¶</a></h1>
-<p>This class is used for almost all Keywords. It simply saves and manipulates the lines of the Keyword smartly and also proides multiple means of manipulation. For reading these keywords, please enable the argument <cite>read_generic_keywords</cite> in the KeyFile constructor.</p>
+<p>This class is used for almost all Keywords. It simply saves and manipulates the lines of the Keyword smartly and also proides multiple means of manipulation. For reading these keywords, please enable the argument <cite>read_keywords</cite> in the KeyFile constructor.</p>
 <dl class="class">
 <dt id="qd.cae.dyna.Keyword">
 <em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Keyword</code><span class="sig-paren">(</span><em>lines</em>, <em>line_index=0</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Keyword" title="Permalink to this definition">¶</a></dt>
@@ -236,6 +236,11 @@ will be the sorting index in a KeyFile.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;&#39;&#39;</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span> <span class="o">=</span> <span class="n">Keyword</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">]</span>
+<span class="go">2000001</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">&#39;engine part number one &#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2000002</span>
 </pre></div>
 </div>
 <p class="rubric">Attributes</p>
@@ -245,7 +250,10 @@ will be the sorting index in a KeyFile.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">line_index</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">field_size</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">line_index</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -260,52 +268,55 @@ will be the sorting index in a KeyFile.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">align</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_card_valueByIndex</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">append_line</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_card_valueByName</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_card_valueByIndex</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_keyword_name</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_card_valueByName</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_line</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_keyword_name</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_lines</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_line</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">has_long_fields</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_lines</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">insert_line</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">has_long_fields</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">reformat_all</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">insert_line</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">reformat_field</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">reformat_all</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">remove_line</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">reformat_field</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_card_valueByDict</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">remove_line</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_card_valueByIndex</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_card_valueByDict</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_card_valueByName</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_card_valueByIndex</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_line</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_card_valueByName</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_lines</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_line</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">switch_field_size</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_lines</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">switch_field_size</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -518,6 +529,56 @@ card field.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="qd.cae.dyna.Keyword.append_line">
+<code class="descname">append_line</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Keyword.append_line" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>line</strong> : str</p>
+<blockquote class="last">
+<div><p>line to append to the internal string buffer</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">append_line</span><span class="p">(</span><span class="s2">&quot;$ Im a comment&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="qd.cae.dyna.Keyword.field_size">
+<code class="descname">field_size</code><a class="headerlink" href="#qd.cae.dyna.Keyword.field_size" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote class="last">
+<div><p>if the library doesn’t like you for setting
+a negative field size.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Size of the fields in the keyword. May not be 
+negative!</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># open a keyfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">field_size</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># some keywords use 8 chars per field</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">field_size</span><span class="o">=</span><span class="mi">8</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="qd.cae.dyna.Keyword.get_card_valueByIndex">
 <code class="descname">get_card_valueByIndex</code><span class="sig-paren">(</span><em>iCard</em>, <em>iField</em>, <em>field_size=0</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Keyword.get_card_valueByIndex" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -534,7 +595,7 @@ card field.</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>(optional) size of field</p>
+<div><p>size of field</p>
 </div></blockquote>
 </td>
 </tr>
@@ -580,7 +641,7 @@ card field.</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>(optional) size of fields in characters</p>
+<div><p>size of fields in characters</p>
 </div></blockquote>
 </td>
 </tr>
@@ -811,15 +872,15 @@ global formatting rules.
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>(optional) field size</p>
+<div><p>field size</p>
 </div></blockquote>
 <p><strong>format_field</strong> : bool</p>
 <blockquote>
-<div><p>(optional) whether to format the field</p>
+<div><p>whether to format the field</p>
 </div></blockquote>
 <p><strong>format_name</strong> : bool</p>
 <blockquote>
-<div><p>(optional) whether to format the comment name</p>
+<div><p>whether to format the comment name</p>
 </div></blockquote>
 </td>
 </tr>
@@ -884,7 +945,7 @@ global formatting rules.</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>(optional) size of field</p>
+<div><p>size of field</p>
 </div></blockquote>
 </td>
 </tr>
@@ -935,11 +996,11 @@ global formatting rules.</p>
 </div></blockquote>
 <p><strong>name</strong> : str</p>
 <blockquote>
-<div><p>(optional) name in comments to be set</p>
+<div><p>name in comments to be set</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>(optional) size of field</p>
+<div><p>size of field</p>
 </div></blockquote>
 </td>
 </tr>
@@ -986,7 +1047,7 @@ global formatting rules.</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>(optional) size of field</p>
+<div><p>size of field</p>
 </div></blockquote>
 </td>
 </tr>

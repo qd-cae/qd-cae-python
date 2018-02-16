@@ -22,6 +22,7 @@ These are all the data arrays available with their shape description. They are c
  - node_displacement *(nTimesteps x nNodes x 3)*
  - node_velocity *(nTimesteps x nNodes x 3)*
  - node_acceleration *(nTimesteps x nNodes x 3)*
+ - node_mass_scaling *(nTimesteps x nNodes)*
  - elem_solid_results *(nTimesteps x nSolids x nResults)*
  - elem_solid_deletion_info *(nTimesteps x nSolids)*
  - elem_shell_results_layers *(nTimesteps x nShells x nLayers x nResults)*

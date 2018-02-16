@@ -329,6 +329,34 @@ index_treatment(T _index, size_t _size)
   return _index;
 }
 
+/** Checks if argument is non negative and returns it back.
+ *
+ * @param _number
+ *
+ */
+template<typename T,
+         typename std::enable_if<std::is_integral<T>::value &&
+                                 std::is_signed<T>::value>::type* = nullptr>
+void
+check_non_negative(T _number)
+{
+  if (_number < 0)
+    throw(std::invalid_argument("Argument may not be negative."));
+}
+
+/** Checks if argument is non negative and returns it back.
+ *
+ * @param _number
+ *
+ * Does nothing for unsigned integrals, thus has no overhead of being used.
+ */
+template<typename T,
+         typename std::enable_if<std::is_integral<T>::value &&
+                                 std::is_unsigned<T>::value>::type* = nullptr>
+void
+check_non_negative(T _number)
+{}
+
 } // namespace qd
 
 #endif

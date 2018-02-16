@@ -191,11 +191,11 @@
             
   <div class="section" id="keyword-types">
 <h1>Keyword Types<a class="headerlink" href="#keyword-types" title="Permalink to this headline">¶</a></h1>
-<p>The basic idea of these classes is, that the file should look identical if written again, except for modifications. Also comments shall be preserved. Please beware in case of</p>
+<p>The basic idea of these classes is, that the file should look identical if written again, except for modifications. Also comments shall be preserved. Please beware in case of parsing the mesh, since the rewritten floating point numbers will deviate in due to the machine precision. To prevent this deviation, just don’t parse the mesh.</p>
 <p><strong>Keyword</strong></p>
 <blockquote>
-<div><p>The generic <cite>Keyword</cite> class is used for all unknown keywords. If the mesh of a <cite>KeyFile</cite> is not parsed, then also the mesh keywords are seen as generic keywords. To read all keywords of a <cite>KeyFile</cite> use the <cite>read_generic_keywords</cite> option.</p>
-<p>If a <cite>KeyFile</cite> is written again, it will look identical, since the class saves saves everything including the comments.</p>
+<div><p>The generic <code class="docutils literal"><span class="pre">Keyword</span></code> class is used for all unknown keywords. If the mesh of a <code class="docutils literal"><span class="pre">KeyFile</span></code> is not parsed, then also the mesh keywords are seen as generic keywords. To read all keywords of a <code class="docutils literal"><span class="pre">KeyFile</span></code> use the <code class="docutils literal"><span class="pre">read_keywords</span></code> option.</p>
+<p>If a <code class="docutils literal"><span class="pre">KeyFile</span></code> is written again, it will look identical, since the class saves everything including the comments.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_Keyword.html">Keyword</a><ul class="simple">
@@ -203,10 +203,23 @@
 </li>
 </ul>
 </div>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
+<span class="c1"># open a file (without mesh parsing)</span>
+<span class="n">kf</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">)</span>
+<span class="c1"># get the third part keyword</span>
+<span class="n">generic_keyword</span> <span class="o">=</span> <span class="n">kf</span><span class="p">[</span><span class="s2">&quot;*PART&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="c1"># set a new pid (searches pid in comment line above card)</span>
+<span class="n">generic_keyword</span><span class="p">[</span><span class="s2">&quot;pid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="c1"># save it</span>
+<span class="n">kf</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;path/to/new_keyfile&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div></blockquote>
 <p><strong>Include Keywords</strong></p>
 <blockquote>
-<div><p>The specific include keyword classes are only used, if includes are loaded in the <cite>KeyFile</cite> contructor (<cite>load_includes</cite>). They <cite>IncludePathKeyword</cite> class manages all locations, where include files could be located, while the <cite>IncludeKeyword</cite> is resposible for managing one or multiple includes.</p>
+<div><p>The specific include keyword classes provide means to deal with include files.
+Includes are loaded automatically, if in the <code class="docutils literal"><span class="pre">KeyFile</span></code> contructor argument <code class="docutils literal"><span class="pre">load_includes=True</span></code>. The <code class="docutils literal"><span class="pre">IncludePathKeyword</span></code> manages all locations, where include files could be located, while the <code class="docutils literal"><span class="pre">IncludeKeyword</span></code> is resposible for managing the files.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_IncludeKeyword.html">IncludeKeyword</a><ul class="simple">
@@ -217,9 +230,21 @@
 </li>
 </ul>
 </div>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
+<span class="c1"># open a file</span>
+<span class="n">kf</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">,</span> <span class="n">load_includes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># get first include keyword</span>
+<span class="n">include_keyword</span> <span class="o">=</span> <span class="n">kf</span><span class="p">[</span><span class="s2">&quot;*INCLUDE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># get the include(s) of the keyword</span>
+<span class="n">includes</span> <span class="o">=</span> <span class="n">include_keyword</span><span class="o">.</span><span class="n">get_includes</span><span class="p">()</span>
+<span class="c1"># or get all loaded includes at once</span>
+<span class="n">includes</span> <span class="o">=</span> <span class="n">kf</span><span class="o">.</span><span class="n">get_includes</span><span class="p">()</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">All the keywords of the includes are not accessible from the main <cite>KeyFile</cite>, but only from the include <cite>KeyFile</cite>, which can be retrieved by <cite>KeyFile.get_includes</cite>.</p>
+<p class="last">All the keywords of the includes are not accessible from the main <code class="docutils literal"><span class="pre">KeyFile</span></code>, but only from the include <code class="docutils literal"><span class="pre">KeyFile</span></code>, which can be retrieved by <code class="docutils literal"><span class="pre">KeyFile.get_includes</span></code>.</p>
 </div>
 </div></blockquote>
 <p><strong>Mesh Keywords</strong></p>
@@ -238,14 +263,28 @@
 </li>
 </ul>
 </div>
-<p>are only created, if opening a <cite>KeyFile</cite> with the argument <cite>parse_mesh</cite> enabled. If the mesh is not parsed, their data is seen as a generic <cite>Keyword</cite>.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">If parsing the mesh, all keywords, except for the <cite>PartKeyword</cite> stop parsing, if they encounter a comment in the data block (e.g. between two elements)</p>
+<p>are only created, if opening a <code class="docutils literal"><span class="pre">KeyFile</span></code> with the argument <code class="docutils literal"><span class="pre">parse_mesh</span></code> enabled. If the mesh is not parsed, their data is seen as a generic <code class="docutils literal"><span class="pre">Keyword</span></code>.</p>
+<p>Example</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
+<span class="c1"># load a file</span>
+<span class="n">kf</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">,</span>
+              <span class="n">parse_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">load_includes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># get first node keyword</span>
+<span class="n">node_keyword</span> <span class="o">=</span> <span class="n">kf</span><span class="p">[</span><span class="s2">&quot;*NODE&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># add a node</span>
+<span class="n">node_keyword</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">6728</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="c1"># and save again</span>
+<span class="n">kf</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;path/to/new_keyfile&quot;</span><span class="p">)</span>
+</pre></div>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">Mesh entities, such as nodes can be created, but not deleted. Also these mesh-specific keywords can not be deleted.</p>
+<p class="last">If parsing the mesh, all keywords, except for the <code class="docutils literal"><span class="pre">PartKeyword</span></code> stop parsing, if they encounter a comment or empty line in the data block (e.g. between two elements)</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Mesh entities, such as nodes can be created, but not deleted. Also the mesh keywords can not be deleted.</p>
 </div>
 </div></blockquote>
 </div>

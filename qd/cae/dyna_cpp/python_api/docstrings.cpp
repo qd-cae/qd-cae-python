@@ -1095,291 +1095,6 @@ const char* d3plot_clear_docs = R"qddoc(
         0
 )qddoc";
 
-/* ----------------------- KEYFILE ---------------------- */
-const char* keyfile_description = R"qddoc(
-
-    A KeyFile is a textual input file for the FEM-Solver
-    LS-Dyna from LSTC. The input file contains all the data 
-    neccessary, such as nodes, elements, material and so on.
-
-    Notes
-    -----
-        The library currently supports keyfiles only on a
-        very primitive level. The mesh data is available
-        in the same way as in a d3plot but everything 
-        else is neglected (for now ... I'm lazy).
-
-)qddoc";
-
-const char* keyfile_constructor = R"qddoc(
-    KeyFile(filepath="", read_keywords=True, parse_mesh=True, load_includes=True, encryption_detection=0.7)
-
-    Parameters
-    ----------
-    filepath : str
-        path to the keyfile
-    read_keywords : bool
-        whether to read all keywords
-    parse_mesh : bool
-        whether the mesh keywords shall be parsed
-    load_includes : bool
-        load all includes within the file
-    encryption_detection : float
-        detection threshold for encrypted include files. 
-        Must be between 0 and 1.
-
-    Raises
-    ------
-    ValueError
-        in case of a wrong filepath or invalid encryption threshold
-    RuntimeError
-        if anything goes wrong during reading
-
-    Returns
-    -------
-    keyfile : KeyFile
-        instance
-
-    Notes
-    -----
-        If ``read_keywords=True`` every keyword found will be loaded
-        and made accessible by the generic ´´Keyword´´ class. If at 
-        the same time ``parse_mesh=False`` then also the mesh itself 
-        is treated as a common keyword.
-
-        If ``parse_mesh=True``, then the mesh keywords are loaded and
-        parsed. While parsing, the line buffer is emptied and the data
-        is loaded into the internal mesh database. 
-
-        The argument ``encryption_detection`` is used to skip encrypted 
-        include files. It is simply tested against the entropy of every
-        include divided by 8 for normalization. Encrypted files usually
-        have a very high entropy. The entropy of a file can be obtained 
-        through the function ``qd.cae.dyna.get_file_entropy``.
-
-    Examples
-    --------
-        >>> # load keyfile and parse the mesh
-        >>> keyfile = KeyFile("path/to/keyfile", parse_mesh=True)
-        >>> # get some mesh data
-        >>> node = keyfile.get_nodeByIndex(0)
-        >>> # check the keywords
-        >>> keyfile.keys()
-        ['*NODE', '*ELEMENT_SHELL', ...]
-        >>> # get all part keywords
-        >>> part_keywords = keyfile["*PART"]
-
-        One can also create empty keyfiles and built them.
-
-        >>> keyfile = KeyFile(parse_mesh=True)
-        >>> kw = keyfile.add_keyword("*NODE")
-
-)qddoc";
-
-const char* keyfile_str_description = R"qddoc(
-    __str__()
-
-    Returns
-    -------
-    text : str
-        Converts the KeyFile back to a string. This assembles
-        all keywords again.
-
-    Examples
-    --------
-        >>> keyfile = KeyFile("path/to/keyfile.key")
-        >>> # write identical file again
-        >>> with open("outfile.key","w") as fp:
-        >>>     fp.write(str(keyfile))
-)qddoc";
-
-const char* keyfile_getitem_description = R"qddoc(
-    __getitem__(name)
-
-    Parameters
-    ----------
-    name : str
-        keyword name
-
-    Returns
-    -------
-    keywords : list of Keyword
-        Returns a list of keyworsd with the specified name.
-        If no keyword with such a name is found, an empty list
-        is returned.
-
-    Examples
-    --------
-        >>> keyfile = KeyFile("path/to/keyfile.key")
-        >>> # get all section shell keywords
-        >>> keyfile["*SECTION_SHELL"]
-        [<Keyword: *PART_CONTACT>, <Keyword: *PART_CONTACT>]
-)qddoc";
-
-const char* keyfile_keys_description = R"qddoc(
-    keys()
-
-    Returns
-    -------
-    keyword_names : list of str
-        list of keyword names saved in the file
-
-    Examples
-    --------
-        >>> keyfile = KeyFile("path/to/keyfile.key")
-        >>> # get a list of all keyword names
-        >>> keyfile.keys()
-        ['*BOUNDARY_SPC_SET_ID', '*PART_CONTACT', '*NODE', ...]
-)qddoc";
-
-const char* keyfile_save_description = R"qddoc(
-    keys()
-
-    Parameters
-    ----------
-    filepath : str
-        path for the output file
-
-    Raises
-    ------
-    RuntimeError
-        if the output file can not be written
-
-    Examples
-    --------
-        >>> # open a keyfile
-        >>> keyfile = KeyFile("path/to/keyfile.key")
-        >>> # and write the identical file again
-        >>> keyfile.save("path/to/identical_file.key")
-        
-)qddoc";
-
-const char* keyfile_remove_keyword_description = R"qddoc(
-    remove_keyword(name, index)
-
-    Parameters
-    ----------
-    name : str
-        name of keyword to remove
-    index : int 
-        index of keyword in list
-
-    Notes
-    -----
-        When using ``parse_mesh=True`` then all mesh keywords
-        are using the following specific classes:
-        
-            - ``NodeKeyword``
-            - ``ElementKeyword``
-            - ``PartKeyword``
-
-        These mesh keywords cannot be deleted, since deletion
-        of mesh entities is not supported yet.
-
-    Examples
-    --------
-        >>> # open a keyfile
-        >>> keyfile = KeyFile("path/to/keyfile.key")
-        >>> # remove the second keyword of section shell
-        >>> keyfile.remove_keyword("*SECTION_SHELL",1)
-        >>> # remove all keywords node keywords
-        >>> keyfile.remove_keyword("*NODE")
-        
-)qddoc";
-
-const char* keyfile_add_keyword_description = R"qddoc(
-    add_keyword(lines, line_index=0)
-
-    Parameters
-    ----------
-    lines : str or list of str
-        keyword definition
-    line_index : int
-        where to position the keyword in the KeyFile
-
-    Notes
-    -----
-        When the KeyFile was created using ``parse_mesh=True``,
-        then if a mesh keyword is created, the corresponding 
-        classes are returned instead of a generic keyword:
-        
-            - ``NodeKeyword``
-            - ``ElementKeyword``
-            - ``PartKeyword``
-
-    Examples
-    --------
-        Adding *NODE without mesh parsing:
-
-        >>> # open a keyfile
-        >>> keyfile = KeyFile("path/to/keyfile.key")
-        >>> # get the node keyword as generic keyword
-        >>> kw = keyfile.add_keyword("*NODE")
-        >>> type(kw)
-        <class 'qd.cae.dyna_cpp.Keyword'>
-
-        Adding *NODE with mesh parsing support
-
-        >>> keyfile = KeyFile("path/to/keyfile.key", load_mesh=True)
-        >>> kw = type(keyfile.add_keyword(["$ Comment header",
-        >>>                                 "*NODE"]))
-        >>> type(kw)
-        <class 'qd.cae.dyna_cpp.NodeKeyword'>
-        >>> # now it's simple to add nodes
-        >>> node = kw.add_node(id=1, x=0, y=0, z=0)
-        
-)qddoc";
-
-const char* keyfile_get_includes_description = R"qddoc(
-    get_includes()
-
-    Returns
-    -------
-    includes : list of KeyFile
-        list of all loaded include files
-
-    Notes
-    -----
-        In order to load includes, the ``load_includes=True``
-        option must be used in the constructor of the KeyFile
-        or one can use the ``IncludeKeyword.load`` function,
-        which every include keyword has.
-
-    Examples
-    --------
-        >>> # open a keyfile
-        >>> keyfile = KeyFile("path/to/keyfile.key")
-        >>> # get all includes
-        >>> len(keyfile.get_includes())
-        7
-        
-)qddoc";
-
-const char* keyfile_get_include_dirs_description = R"qddoc(
-    get_include_dirs()
-
-    Returns
-    -------
-    include_dirs : list of str
-        list of directories searched for includes. This function
-        can be used to check which directories the library
-        recognizes.
-
-    Notes
-    -----
-        Gets all include directories from every *INCLUDE_PATH or
-        *INCLUDE_PATH_RELATIVE keyword.
-
-    Examples
-    --------
-        >>> # open a keyfile
-        >>> keyfile = KeyFile("path/to/keyfile.key")
-        >>> # get all includes
-        >>> kf.get_include_dirs()
-        ['path/to/includes', 'path/to/other/includes', ...]
-        
-)qddoc";
-
 /* ----------------------- RAW D3PLOT ---------------------- */
 
 const char* rawd3plot_constructor_description = R"qddoc(
@@ -1565,6 +1280,312 @@ const char* rawd3plot_info_docs = R"qddoc(
         >>> raw_d3plot.info()
 )qddoc";
 
+/* ----------------------- KEYFILE ---------------------- */
+const char* keyfile_description = R"qddoc(
+
+    A KeyFile is a textual input file for the FEM-Solver
+    LS-Dyna from LSTC. The input file contains all the data 
+    neccessary, such as nodes, elements, material and so on.
+
+)qddoc";
+
+const char* keyfile_constructor = R"qddoc(
+    KeyFile(filepath="", read_keywords=True, parse_mesh=True, load_includes=True, encryption_detection=0.7)
+
+    Parameters
+    ----------
+    filepath : str
+        path to the keyfile
+    read_keywords : bool
+        whether to read all keywords
+    parse_mesh : bool
+        whether the mesh keywords shall be parsed
+    load_includes : bool
+        load all includes within the file
+    encryption_detection : float
+        detection threshold for encrypted include files. 
+        Must be between 0 and 1.
+
+    Raises
+    ------
+    ValueError
+        in case of a wrong filepath or invalid encryption threshold
+    RuntimeError
+        if anything goes wrong during reading
+
+    Returns
+    -------
+    keyfile : KeyFile
+        instance
+
+    Notes
+    -----
+        If ``read_keywords=True`` every keyword found will be loaded
+        and made accessible by the generic ``Keyword`` class. If at 
+        the same time ``parse_mesh=False`` then also the mesh itself 
+        is treated as generic keywords.
+
+        If ``parse_mesh=True``, then the mesh keywords are loaded and
+        parsed. Also the mesh specific keyword classes are used (see 
+        the keyword classes).
+
+        The argument ``encryption_detection`` is used to skip encrypted 
+        include files. It is simply tested against the entropy of every
+        include divided by 8 for normalization. Encrypted files usually
+        have a very high entropy. The entropy of a file can be tested 
+        with the function ``qd.cae.dyna.get_file_entropy``.
+
+    Examples
+    --------
+        >>> # load keyfile and parse the mesh
+        >>> keyfile = KeyFile("path/to/keyfile", parse_mesh=True)
+        >>> # get some mesh data
+        >>> node = keyfile.get_nodeByIndex(0)
+        >>> # check the keywords
+        >>> keyfile.keys()
+        ['*NODE', '*ELEMENT_SHELL', ...]
+        >>> # get all part keywords
+        >>> part_keywords = keyfile["*PART"]
+
+        One can also create empty keyfiles and built them.
+
+        >>> keyfile = KeyFile(parse_mesh=True)
+        >>> kw = keyfile.add_keyword("*NODE")
+        >>> kw.add_node(1, x=0, y=0, z=0)
+
+)qddoc";
+
+const char* keyfile_str_description = R"qddoc(
+    __str__()
+
+    Returns
+    -------
+    text : str
+        Converts the KeyFile back to a string. This assembles
+        all keywords again.
+
+    Examples
+    --------
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # write identical file again
+        >>> with open("outfile.key","w") as fp:
+        >>>     fp.write(str(keyfile))
+)qddoc";
+
+const char* keyfile_getitem_description = R"qddoc(
+    __getitem__(name)
+
+    Parameters
+    ----------
+    name : str
+        keyword name
+
+    Returns
+    -------
+    keywords : list of Keyword
+        Returns a list of keyworsd with the specified name.
+        If no keyword with such a name is found, an empty list
+        is returned.
+
+    Examples
+    --------
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get all section shell keywords
+        >>> keyfile["*SECTION_SHELL"]
+        [<Keyword: *PART_CONTACT>, <Keyword: *PART_CONTACT>]
+)qddoc";
+
+const char* keyfile_keys_description = R"qddoc(
+    keys()
+
+    Returns
+    -------
+    keyword_names : list of str
+        list of keyword names saved in the file
+
+    Examples
+    --------
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get a list of all keyword names
+        >>> keyfile.keys()
+        ['*BOUNDARY_SPC_SET_ID', '*PART_CONTACT', '*NODE', ...]
+)qddoc";
+
+const char* keyfile_save_description = R"qddoc(
+    keys()
+
+    Parameters
+    ----------
+    filepath : str
+        path for the output file
+
+    Raises
+    ------
+    RuntimeError
+        if the output file can not be written
+
+    Examples
+    --------
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # and write the identical file again
+        >>> keyfile.save("path/to/identical_file.key")
+        
+)qddoc";
+
+const char* keyfile_remove_keyword_description = R"qddoc(
+    remove_keyword(name, index)
+
+    Parameters
+    ----------
+    name : str
+        name of keyword to remove
+    index : int 
+        index of keyword in list
+
+    Notes
+    -----
+        When using ``parse_mesh=True`` then all mesh keywords
+        are using the following specific classes:
+        
+            - ``NodeKeyword``
+            - ``ElementKeyword``
+            - ``PartKeyword``
+
+        These mesh keywords cannot be deleted, since deletion
+        of mesh entities is not supported yet.
+
+    Examples
+    --------
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # remove the second keyword of section shell
+        >>> keyfile.remove_keyword("*SECTION_SHELL",1)
+        >>> # remove all keywords node keywords
+        >>> keyfile.remove_keyword("*NODE")
+        
+)qddoc";
+
+const char* keyfile_add_keyword_description = R"qddoc(
+    add_keyword(lines, position=0)
+
+    Parameters
+    ----------
+    lines : str or list of str
+        keyword definition
+    position : int
+        where to position the keyword in the KeyFile
+
+    Notes
+    -----
+        When the KeyFile was created using ``parse_mesh=True``,
+        then if a mesh keyword is created, the corresponding 
+        classes are returned instead of a generic keyword:
+        
+            - ``NodeKeyword``
+            - ``ElementKeyword``
+            - ``PartKeyword``
+
+    Examples
+    --------
+        Adding *NODE without mesh parsing:
+
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get the node keyword as generic keyword
+        >>> kw = keyfile.add_keyword("*NODE")
+        >>> type(kw)
+        <class 'qd.cae.dyna_cpp.Keyword'>
+
+        Adding *NODE with mesh parsing support
+
+        >>> keyfile = KeyFile("path/to/keyfile.key", load_mesh=True)
+        >>> kw = type(keyfile.add_keyword(["$ Comment header",
+        >>>                                 "*NODE"]))
+        >>> type(kw)
+        <class 'qd.cae.dyna_cpp.NodeKeyword'>
+        >>> # now it's simple to add nodes
+        >>> node = kw.add_node(id=1, x=0, y=0, z=0)
+        
+)qddoc";
+
+const char* keyfile_get_includes_description = R"qddoc(
+    get_includes()
+
+    Returns
+    -------
+    includes : list of KeyFile
+        list of all loaded include files
+
+    Notes
+    -----
+        In order to load includes, the ``load_includes=True``
+        option must be used in the constructor of the KeyFile
+        or one can use the ``IncludeKeyword.load`` function,
+        which every include keyword has.
+
+    Examples
+    --------
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get all includes
+        >>> len(keyfile.get_includes())
+        7
+        
+)qddoc";
+
+const char* keyfile_get_include_dirs_description = R"qddoc(
+    get_include_dirs()
+
+    Returns
+    -------
+    include_dirs : list of str
+        list of directories searched for includes. This function
+        can be used to check which directories the library
+        recognizes.
+
+    Notes
+    -----
+        Gets all include directories from every *INCLUDE_PATH or
+        *INCLUDE_PATH_RELATIVE keyword.
+
+    Examples
+    --------
+        >>> # open a keyfile
+        >>> keyfile = KeyFile("path/to/keyfile.key")
+        >>> # get all includes
+        >>> kf.get_include_dirs()
+        ['path/to/includes', 'path/to/other/includes', ...]
+        
+)qddoc";
+
+const char* keyfile_field_size_description = R"qddoc(
+    field_size
+
+    Raises
+    ------
+    ValueError
+        if the library doesn't like you for setting
+        a negative field size.
+
+    Notes
+    -----
+        Size of the fields in the keyword. Most cards
+        have a field size of 10. Unfortunately some
+        cards have a deviating field size (e.g. 8) 
+        and there is no automatic way to check for 
+        this.
+
+    Examples
+    --------
+        >>> # the field size of the card
+        >>> kw.field_size
+        10
+        >>> # some keywords use 8 chars per field
+        >>> kw.field_size=8
+        
+)qddoc";
+
 /* ----------------------- KEYWORD ---------------------- */
 
 const char* keyword_enum_align_docs = R"qddoc(
@@ -1580,7 +1601,7 @@ const char* keyword_enum_align_docs = R"qddoc(
 )qddoc";
 
 const char* keyword_constructor_docs = R"qddoc(
-    Keyword(lines, line_index=0)
+    Keyword(lines, position=0)
 
     Parameters
     ----------
@@ -1588,7 +1609,7 @@ const char* keyword_constructor_docs = R"qddoc(
         Keyword data for initalization. May contain the lines of
         the keyword either as list or as one string. If provided
         one string, it is splitted at the line ending symbols.
-    line_index : int
+    position : int
         line index at which the keyword shall be positioned. This
         will be the sorting index in a KeyFile.
 
@@ -1714,12 +1735,12 @@ const char* keyword_get_card_valueByIndex_docs = R"qddoc(
     
     Parameters
     ----------
-    arg1 : int
+    iCard : int
         card index
-    arg2 : int
-        optional field index
+    iField : int
+        field index
     field_size : int
-        size of field 
+        number of chars to read
 
     Returns
     -------
@@ -1739,9 +1760,9 @@ const char* keyword_get_card_valueByIndex_docs = R"qddoc(
         2000001
         >>> kw.get_card_value(0) 
         'engine part number one '
-        >>> kw.get_card_value(1,0)
+        >>> kw.get_card_value(0,0)
         'engine par'
-        >>> kw.get_card_value(1,0,50) 
+        >>> kw.get_card_value(0,0,50) 
         'engine part number one'
 )qddoc";
 
@@ -1753,7 +1774,7 @@ const char* keyword_get_card_valueByName_docs = R"qddoc(
     name : str
         name of the field in comments
     field_size : int
-        size of fields in characters
+        number of chars to read
 
     Returns
     -------
@@ -1763,7 +1784,7 @@ const char* keyword_get_card_valueByName_docs = R"qddoc(
     Raises
     ------
     ValueError
-        if name not found
+        if name not found in the previous comment line
 
     Examples
     --------
@@ -1776,7 +1797,7 @@ const char* keyword_get_card_valueByName_docs = R"qddoc(
 const char* keyword_setitem_docs = R"qddoc(
     __setitem__(args, value)
     
-    *Please consider using `set_card_valueByIndex` or `set_card_valueByName`*
+    *Please consider using ``set_card_valueByIndex`` or ``set_card_valueByName``*
 
     Parameters
     ----------
@@ -1800,7 +1821,7 @@ const char* keyword_setitem_docs = R"qddoc(
     Notes
     -----
         This function is just a quick, dirty wrapper for the member function
-        `set_card_value`. It is recommended to use `set_card_value` instead,
+        ``set_card_value``. It is recommended to use ``set_card_value`` instead,
         since it's much clearer.
 
     Examples
@@ -1835,7 +1856,7 @@ const char* keyword_set_card_valueByIndex_docs = R"qddoc(
     name : str
         name in comments to be set
     field_size : int
-        size of field 
+        number of chars to read
     
 
     Raises
@@ -1872,12 +1893,12 @@ const char* keyword_set_card_valueByName_docs = R"qddoc(
     value : object
         Value to bet set. Must be convertible to string.
     field_size : int
-        size of field 
+        number of chars to read
     
     Raises
     ------
     ValueError
-        if name not found
+        if name not found in the previous comment line
 
     Examples
     --------
@@ -1905,7 +1926,7 @@ const char* keyword_set_card_valueByDict_docs = R"qddoc(
     field : dict
         fields to set, key can be string or indexes
     field_size : int
-        size of field 
+        number of chars to read
     
     Raises
     ------
@@ -2050,17 +2071,17 @@ const char* keyword_remove_line_docs = R"qddoc(
         >>> kw.remove_line(4)
 )qddoc";
 
-const char* keyword_line_index_docs = R"qddoc(
+const char* keyword_position_docs = R"qddoc(
     
     Notes
     -----
-        Line index of the `Keyword`. This is used for sorting
+        Line index of the ``Keyword``. This is used for sorting
         before writing to a file.
 
     Examples
     --------
-        >>> kw.line_index = 438
-        >>> kw.line_index
+        >>> kw.position = 438
+        >>> kw.position
         438
         
 )qddoc";
@@ -2128,7 +2149,7 @@ const char* keyword_reformat_field_docs = R"qddoc(
     iField : int
         field index
     field_size : int
-        field size
+        size of field in chars
     format_field : bool
         whether to format the field
     format_name : bool
@@ -2217,7 +2238,7 @@ const char* keyword_name_delimiter_docs = R"qddoc(
     Notes
     -----
         Delimiter used to separate the keywords optionally.
-        Disable or enable with `Keyword.name_delimiter_used`
+        Disable or enable with ``Keyword.name_delimiter_used``
 
     Examples
     --------
@@ -2232,7 +2253,7 @@ const char* keyword_name_delimiter_used_docs = R"qddoc(
     Notes
     -----
         Whether to use the delimiter specified in the
-        property `Keyword.name_delimiter`
+        property ``Keyword.name_delimiter``
 
     Examples
     --------
@@ -2260,7 +2281,7 @@ const char* keyword_field_alignment_docs = R"qddoc(
 
     Notes
     -----
-        How to align the card fields. Use `Keyword.align`.
+        How to align the card fields. Use ``Keyword.align``.
 
     Examples
     --------
@@ -2274,7 +2295,7 @@ const char* keyword_name_alignment_docs = R"qddoc(
 
     Notes
     -----
-        How to align the name of the fields in the comments. Use `Keyword.align`.
+        How to align the name of the fields in the comments. Use ``Keyword.align``.
 
     Examples
     --------
@@ -2313,7 +2334,7 @@ const char* node_keyword_add_node_docs = R"qddoc(
 
     Notes
     -----
-        The `additional_card_data` is a string appended to the keyword 
+        The ``additional_card_data`` is a string appended to the keyword 
         when writing the output file. The string is appended behind 
         the coordinates.
 
@@ -2381,7 +2402,7 @@ const char* node_keyword_load_docs = R"qddoc(
         input file. 
         
         One may also assign new node data as a string to the keyword 
-        and trigger `load` manually. 
+        and trigger ``load`` manually. 
         
         **The string data will be erased during parsing** and thus 
         is removed from the string buffer.
@@ -2467,7 +2488,7 @@ const char* element_keyword_add_elementByNodeID_docs = R"qddoc(
 
     Notes
     -----
-        The `additional_card_data` is a string or a list of strings 
+        The ``additional_card_data`` is a string or a list of strings 
         appended to the keyword when writing the output file. This
         is required in case a non-standard keyword is used such as
         *ELEMENT_BEAM_SCALAR, which requires further card infos. The first
@@ -2511,7 +2532,7 @@ const char* element_keyword_add_elementByNodeIndex_docs = R"qddoc(
 
     Notes
     -----
-        The `additional_card_data` is a string or a list of strings 
+        The ``additional_card_data`` is a string or a list of strings 
         appended to the keyword when writing the output file. This
         is required in case a non-standard keyword is used such as
         *ELEMENT_BEAM_SCALAR, which requires further card infos. The first
@@ -2583,7 +2604,7 @@ const char* part_keyword_add_part_docs = R"qddoc(
 
     Notes
     -----
-        The `additional_card_data` is a string or a list of strings 
+        The ``additional_card_data`` is a string or a list of strings 
         appended to the keyword when writing the output file. The first
         line or string is appended without a linebreak.
 

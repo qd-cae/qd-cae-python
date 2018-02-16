@@ -28,15 +28,27 @@ This core idea keeps us pushing forward.
 *Changelog 18.02.2018*
 Version 0.7.0
 
+The `KeyFile` class was rewritten entirely with a ton of new features, such as keyword creation and manipulation. The main idea was to create or read a `KeyFile` and preserve its whole structure including comments. We will make a few tutorials to explain enitre the capabilities and limits.
+
+For more info see the [Documentation](https://qd-cae.github.io/qd-cae-python/build/html/index.html).
+
 qd.cae.dyna
- - `KeyFile` can now read all keywords and cards with the option `read_generic_keywords`
- - Added new classes related to `KeyFile`:
-   - `Keyword`
-   - `NodeKeyword`
-   - `ElementKeyword`
-   - `PartKeyword`
- - Note: using `KeyFile.write_txt` preserves the file structure including comments
- - Note: `KeyFile` while one can add mesh entities, one can not delete them for the moment
+ - The `KeyFile` class can now read all keywords
+   - using `filepath=""` creates an empty `KeyFile` 
+   - using `read_keywords=True` reads all keywords as generic keywords
+   - using `parse_mesh=True` creates the mesh specific keywords below and loads the mesh. If `parse_mesh=False`, then also the mesh keywords are treated as generic keywords.
+   - using `load_includes` ... loads the includes of course
+ - Added new classes related to the `KeyFile` enhancement:
+   - `Keyword`: Generic keyword class for all keywords
+   - `NodeKeyword`: if `parse_mesh=True` then this class is used for nodes keywords
+   - `ElementKeyword`: if `parse_mesh=True` then this class is used for element keywords
+   - `PartKeyword`: if `parse_mesh=True` then this class is used for part keywords
+   - `IncludeKeyword`: handles include keywords
+   - `IncludePathKeyword`: handles include path keywords
+ - `KeyFile.save` preserves the file structure including comments
+ - Note: While one can add mesh entities to a `KeyFile`, one can currently not delete them
+ - Note: `KeyFile` reading performance has not been tuned yet ... 
+ - Fix: `D3plot` can now read files with temperature field
 
 *Changelog 24.11.2017*
 Version 0.6.8
@@ -97,9 +109,10 @@ If you are bold enough to compile it yourself, then follow the [compilation guid
 
 # License
 
-*This library is a free gift from and to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share their code as a thank you back to the community. If one does not want to share ones code (usually due to commercial reasons), then there is also the possibility to provide a closed-source licensing scheme against financial compensation, so that this project can go on.*
+*This library is a free gift from and to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share their code as well. As long as one is not selling their code, in which is library is embedded, we will not demand the disclosure though. Against financial compensation we can also provide professional support or a different license.*
 
 # Authors
 
 - codie (C. Diez)
 - towelie (D. Toewe)
+- (?)

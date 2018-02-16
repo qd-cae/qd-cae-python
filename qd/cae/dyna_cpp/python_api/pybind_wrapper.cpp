@@ -786,11 +786,11 @@ PYBIND11_MODULE(dyna_cpp, m)
   keyword_py
     .def(pybind11::init<std::string, int64_t>(),
          "lines"_a,
-         "line_index"_a = 0,
+         "position"_a = 0,
          keyword_constructor_docs)
     .def(pybind11::init<std::vector<std::string>, int64_t>(),
          "lines"_a,
-         "line_index"_a = 0)
+         "position"_a = 0)
     .def("__str__",
          &Keyword::str,
          pybind11::return_value_policy::take_ownership,
@@ -1052,10 +1052,10 @@ PYBIND11_MODULE(dyna_cpp, m)
          &Keyword::remove_line<int64_t>,
          "iLine"_a,
          keyword_remove_line_docs)
-    .def_property("line_index",
-                  &Keyword::get_line_index,
-                  &Keyword::set_line_index,
-                  keyword_line_index_docs)
+    .def_property("position",
+                  &Keyword::get_position,
+                  &Keyword::set_position,
+                  keyword_position_docs)
     .def("switch_field_size",
          &Keyword::switch_field_size<size_t>,
          "skip_cards"_a = pybind11::list(),
@@ -1084,6 +1084,10 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("get_keyword_name",
          &Keyword::get_keyword_name,
          keyword_get_keyword_name_docs)
+    .def_property("field_size",
+                  &Keyword::get_field_size,
+                  &Keyword::set_field_size<int64_t>,
+                  keyfile_field_size_description)
     .def_property_static(
       "name_delimiter",
       [](pybind11::object) { return Keyword::name_delimiter; },
@@ -1350,23 +1354,23 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("add_keyword",
          [](std::shared_ptr<KeyFile> self,
             const std::string& lines,
-            int64_t line_index) {
+            int64_t position) {
 
            return cast_kw(
-             self->add_keyword(string_to_lines(lines, true), line_index));
+             self->add_keyword(string_to_lines(lines, true), position));
          },
          "lines"_a,
-         "line_index"_a = 0,
+         "position"_a = 0,
          pybind11::return_value_policy::take_ownership)
     .def("add_keyword",
          [](std::shared_ptr<KeyFile> self,
             const std::vector<std::string>& lines,
-            int64_t line_index) {
+            int64_t position) {
 
-           return cast_kw(self->add_keyword(lines, line_index));
+           return cast_kw(self->add_keyword(lines, position));
          },
          "lines"_a,
-         "line_index"_a = 0,
+         "position"_a = 0,
          pybind11::return_value_policy::take_ownership,
          keyfile_add_keyword_description)
     .def("get_includes",

@@ -101,6 +101,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">KeyFile</a><ul class="simple">
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_keywords.html">Keyword Types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_FEMFile.html">FEMFile (D3plot and KeyFile)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Element.html">Element</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Node.html">Node</a></li>
@@ -186,7 +187,7 @@
 <p>This class is for handling generic Keywords in a <cite>KeyFile</cite>. The class simply provides comfortable means to access or manipulate the lines of the Keyword. This has the advantage, that writing the <cite>Keyword</cite> will yield the exact same card including comments except for the changes.</p>
 <dl class="class">
 <dt id="qd.cae.dyna.KeyFile">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">KeyFile</code><span class="sig-paren">(</span><em>filepath</em>, <em>load_includes=True</em>, <em>encryption_detection=0.7</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">KeyFile</code><span class="sig-paren">(</span><em>filepath=&quot;&quot;</em>, <em>read_keywords=True</em>, <em>parse_mesh=True</em>, <em>load_includes=True</em>, <em>encryption_detection=0.7</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -194,6 +195,14 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
 <blockquote>
 <div><p>path to the keyfile</p>
+</div></blockquote>
+<p><strong>read_keywords</strong> : bool</p>
+<blockquote>
+<div><p>whether to read all keywords</p>
+</div></blockquote>
+<p><strong>parse_mesh</strong> : bool</p>
+<blockquote>
+<div><p>whether the mesh keywords shall be parsed</p>
 </div></blockquote>
 <p><strong>load_includes</strong> : bool</p>
 <blockquote>
@@ -225,18 +234,34 @@ Must be between 0 and 1.</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
+<p>If <code class="docutils literal"><span class="pre">read_keywords=True</span></code> every keyword found will be loaded
+and made accessible by the generic <code class="docutils literal"><span class="pre">Keyword</span></code> class. If at 
+the same time <code class="docutils literal"><span class="pre">parse_mesh=False</span></code> then also the mesh itself 
+is treated as generic keywords.</p>
+<p>If <code class="docutils literal"><span class="pre">parse_mesh=True</span></code>, then the mesh keywords are loaded and
+parsed. Also the mesh specific keyword classes are used (see 
+the keyword classes).</p>
 <p>The argument <code class="docutils literal"><span class="pre">encryption_detection</span></code> is used to skip encrypted 
 include files. It is simply tested against the entropy of every
 include divided by 8 for normalization. Encrypted files usually
-have a very high entropy. The entropy of a file can be obtained 
-through the function <code class="docutils literal"><span class="pre">qd.cae.dyna.get_file_entropy</span></code>.</p>
+have a very high entropy. The entropy of a file can be tested 
+with the function <code class="docutils literal"><span class="pre">qd.cae.dyna.get_file_entropy</span></code>.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># load a keyfile</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load keyfile without includes</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">,</span> <span class="n">load_includes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># load keyfile and parse the mesh</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">,</span> <span class="n">parse_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># get some mesh data</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">keyfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># check the keywords</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[&#39;*NODE&#39;, &#39;*ELEMENT_SHELL&#39;, ...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get all part keywords</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_keywords</span> <span class="o">=</span> <span class="n">keyfile</span><span class="p">[</span><span class="s2">&quot;*PART&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>One can also create empty keyfiles and built them.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="n">parse_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span> <span class="o">=</span> <span class="n">keyfile</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;*NODE&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="rubric">Methods</p>
@@ -246,16 +271,22 @@ through the function <code class="docutils literal"><span class="pre">qd.cae.dyn
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByID</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">add_keyword</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByIndex</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByID</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByIndex</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_include_dirs</span></code></td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_includes</span></code></td>
@@ -303,11 +334,63 @@ through the function <code class="docutils literal"><span class="pre">qd.cae.dyn
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">remove_keyword</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_txt</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save</span></code></td>
 <td></td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="qd.cae.dyna.KeyFile.add_keyword">
+<code class="descname">add_keyword</code><span class="sig-paren">(</span><em>lines</em>, <em>line_index=0</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.add_keyword" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>lines</strong> : str or list of str</p>
+<blockquote>
+<div><p>keyword definition</p>
+</div></blockquote>
+<p><strong>line_index</strong> : int</p>
+<blockquote class="last">
+<div><p>where to position the keyword in the KeyFile</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>When the KeyFile was created using <code class="docutils literal"><span class="pre">parse_mesh=True</span></code>,
+then if a mesh keyword is created, the corresponding 
+classes are returned instead of a generic keyword:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">NodeKeyword</span></code></li>
+<li><code class="docutils literal"><span class="pre">ElementKeyword</span></code></li>
+<li><code class="docutils literal"><span class="pre">PartKeyword</span></code></li>
+</ul>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<p>Adding <a href="#id1"><span class="problematic" id="id2">*</span></a>NODE without mesh parsing:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># open a keyfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile.key&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get the node keyword as generic keyword</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span> <span class="o">=</span> <span class="n">keyfile</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;*NODE&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span>
+<span class="go">&lt;class &#39;qd.cae.dyna_cpp.Keyword&#39;&gt;</span>
+</pre></div>
+</div>
+<p>Adding <a href="#id3"><span class="problematic" id="id4">*</span></a>NODE with mesh parsing support</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile.key&quot;</span><span class="p">,</span> <span class="n">load_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">keyfile</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">([</span><span class="s2">&quot;$ Comment header&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                                <span class="s2">&quot;*NODE&quot;</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span>
+<span class="go">&lt;class &#39;qd.cae.dyna_cpp.NodeKeyword&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># now it&#39;s simple to add nodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="method">
 <dt id="qd.cae.dyna.KeyFile.get_elementByIndex">
 <code class="descname">get_elementByIndex</code><span class="sig-paren">(</span><em>element_type</em>, <em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.get_elementByIndex" title="Permalink to this definition">¶</a></dt>
@@ -410,6 +493,66 @@ or <code class="docutils literal"><span class="pre">index</span></code> does not
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_filepath</span><span class="p">()</span>
 <span class="go">&quot;path/to/femfile&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.KeyFile.get_include_dirs">
+<code class="descname">get_include_dirs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.get_include_dirs" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>include_dirs</strong> : list of str</p>
+<blockquote class="last">
+<div><p>list of directories searched for includes. This function
+can be used to check which directories the library
+recognizes.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Gets all include directories from every <a href="#id5"><span class="problematic" id="id6">*</span></a>INCLUDE_PATH or
+<a href="#id7"><span class="problematic" id="id8">*</span></a>INCLUDE_PATH_RELATIVE keyword.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># open a keyfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile.key&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get all includes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kf</span><span class="o">.</span><span class="n">get_include_dirs</span><span class="p">()</span>
+<span class="go">[&#39;path/to/includes&#39;, &#39;path/to/other/includes&#39;, ...]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.KeyFile.get_includes">
+<code class="descname">get_includes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.get_includes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>includes</strong> : list of KeyFile</p>
+<blockquote class="last">
+<div><p>list of all loaded include files</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>In order to load includes, the <code class="docutils literal"><span class="pre">load_includes=True</span></code>
+option must be used in the constructor of the KeyFile
+or one can use the <code class="docutils literal"><span class="pre">IncludeKeyword.load</span></code> function,
+which every include keyword has.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># open a keyfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile.key&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get all includes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">keyfile</span><span class="o">.</span><span class="n">get_includes</span><span class="p">())</span>
+<span class="go">7</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -709,6 +852,30 @@ or <code class="docutils literal"><span class="pre">index</span></code> does not
 </dd></dl>
 
 <dl class="method">
+<dt id="qd.cae.dyna.KeyFile.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.keys" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>keyword_names</strong> : list of str</p>
+<blockquote class="last">
+<div><p>list of keyword names saved in the file</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile.key&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get a list of all keyword names</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[&#39;*BOUNDARY_SPC_SET_ID&#39;, &#39;*PART_CONTACT&#39;, &#39;*NODE&#39;, ...]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="qd.cae.dyna.KeyFile.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the KeyFile geometry.</p>
@@ -718,6 +885,78 @@ or <code class="docutils literal"><span class="pre">index</span></code> does not
 <dt id="qd.cae.dyna.KeyFile.plot_parts">
 <em class="property">static </em><code class="descname">plot_parts</code><span class="sig-paren">(</span><em>parts</em>, <em>export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.plot_parts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a selected group of parts</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.KeyFile.remove_keyword">
+<code class="descname">remove_keyword</code><span class="sig-paren">(</span><em>name</em>, <em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.remove_keyword" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
+<blockquote>
+<div><p>name of keyword to remove</p>
+</div></blockquote>
+<p><strong>index</strong> : int</p>
+<blockquote class="last">
+<div><p>index of keyword in list</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>When using <code class="docutils literal"><span class="pre">parse_mesh=True</span></code> then all mesh keywords
+are using the following specific classes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">NodeKeyword</span></code></li>
+<li><code class="docutils literal"><span class="pre">ElementKeyword</span></code></li>
+<li><code class="docutils literal"><span class="pre">PartKeyword</span></code></li>
+</ul>
+</div></blockquote>
+<p>These mesh keywords cannot be deleted, since deletion
+of mesh entities is not supported yet.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># open a keyfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile.key&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove the second keyword of section shell</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span><span class="o">.</span><span class="n">remove_keyword</span><span class="p">(</span><span class="s2">&quot;*SECTION_SHELL&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># remove all keywords node keywords</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span><span class="o">.</span><span class="n">remove_keyword</span><span class="p">(</span><span class="s2">&quot;*NODE&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.KeyFile.save">
+<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.save" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote>
+<div><p>path for the output file</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>RuntimeError</strong></p>
+<blockquote class="last">
+<div><p>if the output file can not be written</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># open a keyfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile.key&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># and write the identical file again</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;path/to/identical_file.key&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>

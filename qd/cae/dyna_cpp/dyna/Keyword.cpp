@@ -18,14 +18,14 @@ Keyword::Align Keyword::field_alignment = Keyword::Align::LEFT;
 /** Construct a keyword
  *
  * @param _lines lines of the buffer
- * @param _line_index line index for keeping order
+ * @param _position line index for keeping order
  *
  */
 Keyword::Keyword(const std::vector<std::string>& _lines,
-                 int64_t _line_index,
+                 int64_t _position,
                  size_t _field_size)
   : kw_type(KeywordType::GENERIC)
-  , line_index(_line_index)
+  , position(_position)
   , lines(_lines)
 {
 
@@ -44,16 +44,16 @@ Keyword::Keyword(const std::vector<std::string>& _lines,
 /** Construct a keyword
  *
  * @param _lines the data of the keyword as a single string
- * @param _line_index line index for keeping order
+ * @param _position line index for keeping order
  */
 Keyword::Keyword(const std::string& _lines,
-                 int64_t _line_index,
+                 int64_t _position,
                  size_t _field_size)
   : Keyword(
       [](const std::string& _lines) {
         return string_to_lines(_lines, true);
       }(_lines),
-      _line_index,
+      _position,
       _field_size)
 {}
 
@@ -61,7 +61,7 @@ Keyword::Keyword(const std::string& _lines,
  *
  * @param _lines lines of the buffer
  * @param _keyword_name name of the keyword (redundant!)
- * @param _line_index line index in the file for ordering
+ * @param _position line index in the file for ordering
  *
  * This constructor is meant for fast creation while parsing.
  * The data is redundant, since the keyword name should also be
@@ -69,10 +69,10 @@ Keyword::Keyword(const std::string& _lines,
  */
 Keyword::Keyword(const std::vector<std::string>& _lines,
                  const std::string& _keyword_name,
-                 int64_t _line_index,
+                 int64_t _position,
                  size_t _field_size)
   : kw_type(KeywordType::GENERIC)
-  , line_index(_line_index)
+  , position(_position)
   , lines(_lines)
 {
   // field size

@@ -90,6 +90,8 @@ D3plot::D3plot(std::string _filename,
   , own_nel10(false)
   , own_external_numbers_I8(false)
   , own_has_internal_energy(false)
+  , own_has_temperatures(false)
+  , own_has_mass_scaling_info(false)
   , wordPosition(0)
   , wordsToRead(0)
   , wordPositionStates(0)
@@ -251,6 +253,12 @@ D3plot::read_header()
   this->dyna_iv = this->buffer->read_int(21);
   this->dyna_ia = this->buffer->read_int(22);
   this->dyna_it = this->buffer->read_int(19);
+  if (this->dyna_it != 0) {
+    own_has_temperatures = (this->dyna_it % 10) != 0;
+  }
+  if (this->dyna_it >= 10) {
+    own_has_mass_scaling_info = (this->dyna_it / 10) == 1;
+  }
 
   this->dyna_nel2 = this->buffer->read_int(28);
   this->dyna_nel4 = this->buffer->read_int(31);
@@ -379,13 +387,9 @@ D3plot::read_header()
   // ale
   if (this->dyna_ialemat != 0)
     throw(std::runtime_error("ALE can not be handled."));
-  // thick shells not implemented
-  // if (this->dyna_nelth > 0)
-  //  throw(std::runtime_error("Can not handle thick shell elements."));
   // no temps
-  if (this->dyna_it != 0)
-    throw(std::runtime_error("dyna_it != 0: Can not handle temperatures."));
-  //
+  if (own_has_temperatures)
+    throw(std::runtime_error("Can not handle temperatures in file."));
   if (own_external_numbers_I8)
     throw(
       std::runtime_error("Can not handle external ids with 8 byte length."));
@@ -445,7 +449,8 @@ D3plot::info() const
             << "narbs: " << this->dyna_narbs << "\n"
             << "idtdt: " << this->dyna_idtdt << "\n"
             << "npefg: " << this->dyna_npefg << " (airbag particles)\n"
-            << "extra: " << this->dyna_extra << std::endl;
+            << "extra: " << this->dyna_extra << '\n'
+            << "node_mass_scaling: " << own_has_mass_scaling_info << std::endl;
 #endif
 }
 
@@ -1585,7 +1590,9 @@ D3plot::read_states(std::vector<std::string> _variables)
 
   // Calculate loop properties
   size_t iState = 0;
-  int32_t nVarsNodes = dyna_ndim * (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp;
+  int32_t nVarsNodes =
+    (dyna_ndim * (dyna_iu + dyna_iv + dyna_ia) + own_has_mass_scaling_info) *
+    dyna_numnp;
   int32_t nVarsElems = dyna_nel2 * dyna_nv1d +
                        (dyna_nel4 - dyna_numrbe) * dyna_nv2d +
                        dyna_nel8 * dyna_nv3d + dyna_nelth * dyna_nv3dt;
@@ -1742,8 +1749,13 @@ D3plot::read_states_displacement()
     return;
 
   int32_t start = wordPosition + dyna_nglbv + 1;
+
   wordsToRead = dyna_numnp * dyna_ndim;
   size_t iNode = 0;
+
+#ifdef QD_DEBUG
+  std::cout << "> read_states_displacement at " << start << std::endl;
+#endif
 
   DB_Nodes* db_nodes = this->get_db_nodes();
   std::vector<float> _disp(dyna_ndim);
@@ -1769,8 +1781,15 @@ D3plot::read_states_velocity()
     return;
 
   int32_t start =
-    1 + dyna_nglbv + (dyna_iu)*dyna_numnp * dyna_ndim + wordPosition;
+    wordPosition + 1 + dyna_nglbv +
+    (dyna_iu * dyna_ndim + own_has_mass_scaling_info) * dyna_numnp;
+
   wordsToRead = dyna_numnp * dyna_ndim;
+
+#ifdef QD_DEBUG
+  std::cout << "> read_states_velocity at " << start << std::endl;
+#endif
+
   size_t iNode = 0;
 
   DB_Nodes* db_nodes = this->get_db_nodes();
@@ -1796,9 +1815,16 @@ D3plot::read_states_acceleration()
   if (dyna_ia != 1)
     return;
 
-  int32_t start = 1 + dyna_nglbv +
-                  (dyna_iu + dyna_iv) * dyna_numnp * dyna_ndim + wordPosition;
+  int32_t start =
+    wordPosition + 1 + dyna_nglbv +
+    ((dyna_iu + dyna_iv) * dyna_ndim + own_has_mass_scaling_info) * dyna_numnp;
+
   wordsToRead = dyna_numnp * dyna_ndim;
+
+#ifdef QD_DEBUG
+  std::cout << "> read_states_acceleration at " << start << std::endl;
+#endif
+
   int32_t iNode = 0;
 
   DB_Nodes* db_nodes = this->get_db_nodes();
@@ -1829,9 +1855,12 @@ D3plot::read_states_elem8(size_t iState)
   if ((dyna_nv3d <= 0) && (dyna_nel8 <= 0))
     return;
 
-  int32_t start = this->wordPosition + 1 // time
-                  + dyna_nglbv +
-                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim;
+  int32_t start =
+    this->wordPosition + 1 // time
+    + dyna_nglbv +
+    ((dyna_iu + dyna_iv + dyna_ia) * dyna_ndim + own_has_mass_scaling_info) *
+      dyna_numnp;
+
   wordsToRead = dyna_nv3d * dyna_nel8;
 
   std::vector<float> tmp_vector(6);
@@ -1906,8 +1935,11 @@ D3plot::read_states_elem4(size_t iState)
   // prepare looping
   int32_t start =
     this->wordPosition + 1 // time
-    + dyna_nglbv + (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+    + dyna_nglbv +
+    ((dyna_iu + dyna_iv + dyna_ia) * dyna_ndim + own_has_mass_scaling_info) *
+      dyna_numnp +
     dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt + dyna_nv1d * dyna_nel2;
+
   wordsToRead = dyna_nv2d * (dyna_nel4 - dyna_numrbe);
 
   // offsets
@@ -2060,10 +2092,12 @@ D3plot::read_states_elem4th(size_t iState)
     return;
 
   // prepare looping
-  int32_t start = this->wordPosition + 1 // time
-                  + dyna_nglbv +
-                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
-                  dyna_nv3d * dyna_nel8;
+  int32_t start =
+    this->wordPosition + 1 // time
+    + dyna_nglbv +
+    ((dyna_iu + dyna_iv + dyna_ia) * dyna_ndim + own_has_mass_scaling_info) *
+      dyna_numnp +
+    dyna_nv3d * dyna_nel8; // solids
 
   wordsToRead = dyna_nelth * dyna_nv3dt;
 

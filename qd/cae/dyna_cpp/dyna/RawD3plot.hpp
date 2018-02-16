@@ -95,6 +95,10 @@ private:
   bool own_nel10;               // dunno anymore
   bool own_external_numbers_I8; // if 64bit integers written, not 32
   bool own_has_internal_energy;
+  bool own_has_temperatures;
+  bool
+    own_has_mass_scaling_info; // true if dyna_it > 10 (little more complicate)
+
   int32_t own_nDeletionVars;
 
   int32_t wordPosition; // tracker of word position in file
@@ -130,6 +134,7 @@ private:
 
   // state reading
   void read_states();
+  void read_states_nodes_mass_scaling();
   void read_states_displacement();
   void read_states_velocity();
   void read_states_acceleration();

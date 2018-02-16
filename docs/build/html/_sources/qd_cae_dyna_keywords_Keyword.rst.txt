@@ -2,7 +2,7 @@
 Keyword
 ^^^^^^^
 
-This class is used for almost all Keywords. It simply saves and manipulates the lines of the Keyword smartly and also proides multiple means of manipulation. For reading these keywords, please enable the argument `read_generic_keywords` in the KeyFile constructor.
+This class is used for almost all Keywords. It simply saves and manipulates the lines of the Keyword smartly and also proides multiple means of manipulation. For reading these keywords, please enable the argument `read_keywords` in the KeyFile constructor.
 
 .. autoclass:: qd.cae.dyna.Keyword
     :members:
