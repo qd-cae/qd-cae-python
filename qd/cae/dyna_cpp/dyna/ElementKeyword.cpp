@@ -141,7 +141,7 @@ ElementKeyword::parse_elem2(const std::string& _keyword_name_lower,
       elem_part_ids.push_back(part_id);
 
     } catch (const std::out_of_range& err) {
-      std::cout << "Parsing error in line: " << (line_index + iLine + 1) << '\n'
+      std::cout << "Parsing error in line: " << (position + iLine + 1) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }
@@ -239,7 +239,7 @@ ElementKeyword::parse_elem4(const std::string& _keyword_name_lower,
       elem_part_ids.push_back(part_id);
 
     } catch (const std::exception& err) {
-      std::cout << "Parsing error in line: " << (line_index + iLine + 1) << '\n'
+      std::cout << "Parsing error in line: " << (position + iLine + 1) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }
@@ -356,7 +356,7 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
       elem_part_ids.push_back(part_id);
 
     } catch (const std::out_of_range& err) {
-      std::cout << "Parsing error in line: " << (line_index + iLine + 1) << '\n'
+      std::cout << "Parsing error in line: " << (position + iLine + 1) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }
@@ -436,7 +436,7 @@ ElementKeyword::parse_elem4th(const std::string& _keyword_name_lower,
       elem_part_ids.push_back(part_id);
 
     } catch (const std::out_of_range& err) {
-      std::cout << "Parsing error in line: " << (line_index + iLine + 1) << '\n'
+      std::cout << "Parsing error in line: " << (position + iLine + 1) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }

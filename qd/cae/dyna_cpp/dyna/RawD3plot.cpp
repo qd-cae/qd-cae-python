@@ -141,6 +141,8 @@ RawD3plot::RawD3plot(std::string _filename, bool _useFemzip)
   , own_nel10(false)
   , own_external_numbers_I8(false)
   , own_has_internal_energy(false)
+  , own_has_temperatures(false)
+  , own_has_mass_scaling_info(false)
   , own_nDeletionVars(0)
   , wordPosition(0)
   , wordsToRead(0)
@@ -255,7 +257,7 @@ RawD3plot::read_header()
     own_has_temperatures = (this->dyna_it % 10) != 0;
   }
   if (this->dyna_it >= 10) {
-    own_has_mass_scaling_info = ((this->dyna_it / 10) % 10) == 1;
+    own_has_mass_scaling_info = (this->dyna_it / 10) == 1;
   }
 
   this->dyna_nel2 = this->buffer->read_int(28);
@@ -387,7 +389,7 @@ RawD3plot::read_header()
     throw(std::runtime_error("ALE can not be handled."));
   // no temps
   if (own_has_temperatures)
-    throw(std::runtime_error("dyna_it != 0: Can not handle temperatures."));
+    throw(std::runtime_error("Can not handle temperatures in file."));
   //
   if (own_external_numbers_I8)
     throw(

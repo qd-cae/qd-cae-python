@@ -526,7 +526,7 @@ KeyFile::str() const
   std::map<int64_t, std::shared_ptr<Keyword>> kwrds_sorted;
   for (auto& kv : keywords) {
     for (auto kw : kv.second) {
-      kwrds_sorted.insert(std::make_pair(kw->get_line_index(), kw));
+      kwrds_sorted.insert(std::make_pair(kw->get_position(), kw));
     }
   }
 

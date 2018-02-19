@@ -382,8 +382,9 @@ Keyword::iCard_to_iLine(T _iCard, bool _auto_extend)
   // search index
   size_t nCards = -1;
   for (size_t index = 0; index < lines.size(); ++index) {
-    if (!lines[index].empty() && lines[index][0] != '$' &&
-        lines[index][0] != '*') {
+    // if (!lines[index].empty() && lines[index][0] != '$' &&
+    //     lines[index][0] != '*')
+    if (!is_comment(lines[index]) && !is_keyword(lines[index])) {
       ++nCards;
       if (nCards == iCard_u)
         return index;

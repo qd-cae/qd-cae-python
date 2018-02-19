@@ -82,7 +82,7 @@ PartKeyword::load()
     if (iNextLine == lines.size())
       throw(std::runtime_error(
         "Parsing error in line: " +
-        std::to_string(static_cast<size_t>(line_index) + 1 + iLine) +
+        std::to_string(static_cast<size_t>(position) + 1 + iLine) +
         "\nerror: Second card is missing."));
 
     // eventually there are comments inbetween first and second card
@@ -130,7 +130,7 @@ PartKeyword::load()
       unparsed_data.push_back(remaining_data);
     } catch (const std::exception& err) {
       std::cerr << "Parsing error in line: "
-                << (static_cast<size_t>(line_index) + iLine) << '\n'
+                << (static_cast<size_t>(position) + 1 + iLine) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }

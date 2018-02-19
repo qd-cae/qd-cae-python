@@ -41,11 +41,14 @@ string_has_only_numbers(const std::string& _text, size_t start_pos)
 StringType
 get_string_type(const std::string& _arg)
 {
+  if(_arg.empty())
+    return StringType::STRING;
+    
   size_t nPoints = 0;
   bool has_digit = false;
   bool is_exponential = false;
 
-  for (size_t ii = 0; ii < _arg.size(); ++ii) {
+  for (size_t ii = (_arg[0] == '-' || _arg[0] == '+'); ii < _arg.size(); ++ii) {
 
     if (std::ispunct(_arg[ii])) {
       ++nPoints;

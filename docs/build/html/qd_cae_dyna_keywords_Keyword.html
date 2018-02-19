@@ -198,7 +198,7 @@
 <p>This class is used for almost all Keywords. It simply saves and manipulates the lines of the Keyword smartly and also proides multiple means of manipulation. For reading these keywords, please enable the argument <cite>read_keywords</cite> in the KeyFile constructor.</p>
 <dl class="class">
 <dt id="qd.cae.dyna.Keyword">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Keyword</code><span class="sig-paren">(</span><em>lines</em>, <em>line_index=0</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Keyword" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Keyword</code><span class="sig-paren">(</span><em>lines</em>, <em>position=0</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Keyword" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -209,7 +209,7 @@
 the keyword either as list or as one string. If provided
 one string, it is splitted at the line ending symbols.</p>
 </div></blockquote>
-<p><strong>line_index</strong> : int</p>
+<p><strong>position</strong> : int</p>
 <blockquote>
 <div><p>line index at which the keyword shall be positioned. This
 will be the sorting index in a KeyFile.</p>
@@ -253,7 +253,7 @@ will be the sorting index in a KeyFile.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">field_size</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">line_index</span></code></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">position</span></code></td>
 <td></td>
 </tr>
 </tbody>
@@ -324,7 +324,7 @@ will be the sorting index in a KeyFile.</p>
 <dl class="method">
 <dt id="qd.cae.dyna.Keyword.__setitem__">
 <code class="descname">__setitem__</code><span class="sig-paren">(</span><em>args</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Keyword.__setitem__" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Please consider using `set_card_valueByIndex` or `set_card_valueByName`</em></p>
+<dd><p><em>Please consider using ``set_card_valueByIndex`` or ``set_card_valueByName``</em></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -363,7 +363,7 @@ will be the sorting index in a KeyFile.</p>
 </table>
 <p class="rubric">Notes</p>
 <p>This function is just a quick, dirty wrapper for the member function
-<cite>set_card_value</cite>. It is recommended to use <cite>set_card_value</cite> instead,
+<code class="docutils literal"><span class="pre">set_card_value</span></code>. It is recommended to use <code class="docutils literal"><span class="pre">set_card_value</span></code> instead,
 since it’s much clearer.</p>
 <p class="rubric">Examples</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># keyword is from constructor example</span>
@@ -566,10 +566,13 @@ a negative field size.</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>Size of the fields in the keyword. May not be 
-negative!</p>
+<p>Size of the fields in the keyword. Most cards
+have a field size of 10. Unfortunately some
+cards have a deviating field size (e.g. 8) 
+and there is no automatic way to check for 
+this.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># open a keyfile</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># the field size of the card</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">field_size</span>
 <span class="go">10</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># some keywords use 8 chars per field</span>
@@ -585,17 +588,17 @@ negative!</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>arg1</strong> : int</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>iCard</strong> : int</p>
 <blockquote>
 <div><p>card index</p>
 </div></blockquote>
-<p><strong>arg2</strong> : int</p>
+<p><strong>iField</strong> : int</p>
 <blockquote>
-<div><p>optional field index</p>
+<div><p>field index</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>size of field</p>
+<div><p>number of chars to read</p>
 </div></blockquote>
 </td>
 </tr>
@@ -620,9 +623,9 @@ negative!</p>
 <span class="go">2000001</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">get_card_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> 
 <span class="go">&#39;engine part number one &#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">get_card_value</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">get_card_value</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
 <span class="go">&#39;engine par&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">get_card_value</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">get_card_value</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span> 
 <span class="go">&#39;engine part number one&#39;</span>
 </pre></div>
 </div>
@@ -641,7 +644,7 @@ negative!</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>size of fields in characters</p>
+<div><p>number of chars to read</p>
 </div></blockquote>
 </td>
 </tr>
@@ -653,7 +656,7 @@ negative!</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if name not found</p>
+<div><p>if name not found in the previous comment line</p>
 </div></blockquote>
 </td>
 </tr>
@@ -803,14 +806,14 @@ keywords name.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="qd.cae.dyna.Keyword.line_index">
-<code class="descname">line_index</code><a class="headerlink" href="#qd.cae.dyna.Keyword.line_index" title="Permalink to this definition">¶</a></dt>
+<dt id="qd.cae.dyna.Keyword.position">
+<code class="descname">position</code><a class="headerlink" href="#qd.cae.dyna.Keyword.position" title="Permalink to this definition">¶</a></dt>
 <dd><p class="rubric">Notes</p>
-<p>Line index of the <cite>Keyword</cite>. This is used for sorting
+<p>Line index of the <code class="docutils literal"><span class="pre">Keyword</span></code>. This is used for sorting
 before writing to a file.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">line_index</span> <span class="o">=</span> <span class="mi">438</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">line_index</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">438</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">position</span>
 <span class="go">438</span>
 </pre></div>
 </div>
@@ -872,7 +875,7 @@ global formatting rules.
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>field size</p>
+<div><p>size of field in chars</p>
 </div></blockquote>
 <p><strong>format_field</strong> : bool</p>
 <blockquote>
@@ -945,7 +948,7 @@ global formatting rules.</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>size of field</p>
+<div><p>number of chars to read</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1000,7 +1003,7 @@ global formatting rules.</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>size of field</p>
+<div><p>number of chars to read</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1047,13 +1050,13 @@ global formatting rules.</p>
 </div></blockquote>
 <p><strong>field_size</strong> : int</p>
 <blockquote>
-<div><p>size of field</p>
+<div><p>number of chars to read</p>
 </div></blockquote>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
 <blockquote class="last">
-<div><p>if name not found</p>
+<div><p>if name not found in the previous comment line</p>
 </div></blockquote>
 </td>
 </tr>

@@ -95,7 +95,7 @@ NodeKeyword::load()
 
     } catch (std::exception& err) {
       std::cout << "Parsing error in line: "
-                << (static_cast<size_t>(line_index) + iLine) << '\n'
+                << (static_cast<size_t>(position) + 1 + iLine) << '\n'
                 << "error:" << err.what() << '\n'
                 << "line :" << line << '\n';
     }
