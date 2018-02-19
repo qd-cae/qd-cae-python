@@ -30,7 +30,8 @@ Version 0.7.0
 
 The `KeyFile` class was rewritten entirely with a ton of new features, such as keyword creation and manipulation. The main idea was to create or read a `KeyFile` and preserve its whole structure including comments. We will make a few tutorials to explain enitre the capabilities and limits.
 
-For more info see the [Documentation](https://qd-cae.github.io/qd-cae-python/build/html/index.html).
+For more info see the [Documentation](https://qd-cae.github.io/qd-cae-python/build/html/index.html) an [Introduction](http://www.qd-eng.de/index.php/2018/02/19/manipulating-ls-dyna-keyfiles-in-python/). We also plan to do more tutorials.
+
 
 qd.cae.dyna
  - The `KeyFile` class can now read all keywords
