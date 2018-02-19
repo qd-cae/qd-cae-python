@@ -252,6 +252,7 @@ class TestDynaModule(unittest.TestCase):
         self.assertTrue(os.path.isfile("./binout.h5"))
         os.remove("./binout.h5")
 
+    '''
     def test_keyfile(self):
 
         # test encryption detection
@@ -289,6 +290,7 @@ class TestDynaModule(unittest.TestCase):
         np.testing.assert_array_almost_equal(node.get_coords()[0],
                                              [2, 2, 2],
                                              decimal=1)
+    '''
 
     def test_raw_d3plot(self):
 

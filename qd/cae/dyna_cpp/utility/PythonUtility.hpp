@@ -135,6 +135,30 @@ container_to_vector(U _container, const std::string& error_message = "")
   return res;
 }
 
+/** Try to convert a string to a python number
+ *
+ * @param _str string to convert
+ * @return obj python object
+ *
+ * If the conversion to integer or float fails,
+ * a python string is returned.
+ */
+inline pybind11::object
+try_number_conversion(const std::string& _str)
+{
+
+  switch (get_string_type(_str)) {
+    case (StringType::INTEGER):
+      return pybind11::int_(std::stoi(_str));
+      break;
+    case (StringType::FLOAT):
+      return pybind11::float_(std::stof(_str));
+      break;
+    default:
+      return pybind11::str(_str);
+  }
+}
+
 /** Returns an empty numpy array
  *
  * @param size_t ndims

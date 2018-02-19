@@ -4,7 +4,6 @@
 
 // includes
 #include <dyna_cpp/db/FEMFile.hpp>
-#include <dyna_cpp/utility/PythonUtility.hpp>
 
 #include <algorithm>
 #include <cstdint>
@@ -103,6 +102,8 @@ private:
   bool own_nel10;               // dunno anymore
   bool own_external_numbers_I8; // if 64bit integers written, not 32
   bool own_has_internal_energy;
+  bool own_has_temperatures;
+  bool own_has_mass_scaling_info; // true if dyna_it%10 != 0
 
   int32_t wordPosition; // tracker of word position in file
   int32_t wordsToRead;
@@ -199,6 +200,7 @@ public:
   */
 
   bool displacement_is_read() const;
+  /*
   bool is_d3plot() const { return true; };
   bool is_keyFile() const { return false; };
   D3plot* get_d3plot() { return this; };
@@ -207,6 +209,7 @@ public:
     throw(std::invalid_argument(
       "You can not get a keyfile handle from a d3plot ... for now."));
   };
+  */
 };
 
 /** Tells whether displacements were loaded.

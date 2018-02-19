@@ -1,4 +1,5 @@
 
+import numpy as np
 from .RawD3plot import RawD3plot
 
 
@@ -158,7 +159,7 @@ class ArrayD3plot(RawD3plot):
                 shell_results = self["elem_shell_results_layers"]
                 shape = [shell_results.shape[0],
                          shell_ids.shape[0],
-                         shell_results.shape[2]
+                         shell_results.shape[2],
                          shell_results.shape[3]]
                 shell_results_filled = np.empty(shape, dtype=np.float32)
                 # shell_results_filled[:, :, :] = np.nan # debug

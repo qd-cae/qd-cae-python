@@ -291,6 +291,72 @@ MathUtility::mises_stress(const std::vector<T>& _stress_vector)
                    _stress_vector[5] * _stress_vector[5]));
 }
 
+/** Converts negative indexes into positive ones python style
+ *
+ * @param _index index
+ * @param _size max size of a container
+ *
+ * E.g. -1 -> last etc.
+ */
+template<typename T,
+         typename std::enable_if<std::is_integral<T>::value &&
+                                 std::is_signed<T>::value>::type* = nullptr>
+inline T
+index_treatment(T _index, size_t _size)
+{
+
+  if (_index < 0)
+    _index = static_cast<T>(_size) - _index;
+
+  return _index;
+}
+
+/** Converts negative indexes into positive ones python style
+ *
+ * @param _index index
+ * @param _size max size of a container
+ *
+ * Unsigned types are always positive. This empty function ensures,
+ * that no performance penalty is happening when we use unsigned
+ * types.
+ */
+template<typename T,
+         typename std::enable_if<std::is_integral<T>::value &&
+                                 std::is_unsigned<T>::value>::type* = nullptr>
+inline T
+index_treatment(T _index, size_t _size)
+{
+  return _index;
+}
+
+/** Checks if argument is non negative and returns it back.
+ *
+ * @param _number
+ *
+ */
+template<typename T,
+         typename std::enable_if<std::is_integral<T>::value &&
+                                 std::is_signed<T>::value>::type* = nullptr>
+void
+check_non_negative(T _number)
+{
+  if (_number < 0)
+    throw(std::invalid_argument("Argument may not be negative."));
+}
+
+/** Checks if argument is non negative and returns it back.
+ *
+ * @param _number
+ *
+ * Does nothing for unsigned integrals, thus has no overhead of being used.
+ */
+template<typename T,
+         typename std::enable_if<std::is_integral<T>::value &&
+                                 std::is_unsigned<T>::value>::type* = nullptr>
+void
+check_non_negative(T _number)
+{}
+
 } // namespace qd
 
 #endif

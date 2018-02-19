@@ -5,6 +5,7 @@
 #include <dyna_cpp/db/Part.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 
+#include <iterator>
 #include <set>
 
 namespace qd {
@@ -12,25 +13,17 @@ namespace qd {
 /**
  * Constructor
  */
-Part::Part(int32_t _partID, std::string _partName, FEMFile* _femfile)
+Part::Part(int32_t _partID, const std::string& _partName, FEMFile* _femfile)
   : partID(_partID)
   , femfile(_femfile)
   , partName(trim_copy(_partName))
-{
-}
-
-/**
- * Destructor
- */
-Part::~Part()
-{
-}
+{}
 
 /**
  * Assign a part name.
  */
 void
-Part::set_name(std::string _name)
+Part::set_name(const std::string& _name)
 {
   this->partName = trim_copy(_name);
 }
@@ -39,22 +32,24 @@ Part::set_name(std::string _name)
  * Get the id of the part.
  */
 int32_t
-Part::get_partID()
+Part::get_partID() const
 {
   return this->partID;
 }
 
-/**
- * Get the name of the part.
+/** Get the name of the part.
+ *
+ * @return name
  */
 std::string
-Part::get_name()
+Part::get_name() const
 {
   return this->partName;
 }
 
-/**
- * Add a node to a part.
+/**  Add a node to a part.
+ *
+ * @param _element
  */
 void
 Part::add_element(std::shared_ptr<Element> _element)
@@ -110,6 +105,22 @@ Part::get_elements(Element::ElementType _etype)
 
     return _elems;
   }
+}
+
+/** Remove an element
+ *
+ * @param _element : element to remove
+ *
+ * Does nothing if element not referenced
+ */
+void
+Part::remove_element(std::shared_ptr<Element> _element)
+{
+  elements.erase(
+    std::remove_if(elements.begin(),
+                   elements.end(),
+                   [_element](auto elem) { return elem == _element; }),
+    elements.end());
 }
 
 } // namespace qd

@@ -3,9 +3,8 @@
 #define NODE_HPP
 
 // includes
-#include <dyna_cpp/utility/PythonUtility.hpp>
-
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace qd {
@@ -13,9 +12,12 @@ namespace qd {
 // forward declarations
 class Element;
 class DB_Nodes;
+class DB_Elements;
 
 class Node
 {
+  friend class DB_Elements;
+
 private:
   int32_t nodeID;
   std::vector<std::shared_ptr<Element>> elements;
@@ -25,9 +27,16 @@ private:
   std::vector<std::vector<float>> accel;
   DB_Nodes* db_nodes;
 
+  void remove_element(std::shared_ptr<Element> _element);
+
 public:
   explicit Node(int32_t _nodeID,
-                std::vector<float> _coords,
+                const std::vector<float>& _coords,
+                DB_Nodes* db_nodes);
+  explicit Node(int32_t _nodeID,
+                float _x,
+                float _y,
+                float _z,
                 DB_Nodes* db_nodes);
   ~Node();
   bool operator<(const Node& other) const;
@@ -40,6 +49,7 @@ public:
   void add_disp(std::vector<float>);
   void add_vel(std::vector<float>);
   void add_accel(std::vector<float>);
+  void set_coords(float _x, float _y, float _z);
 
   inline void clear_disp() { this->disp.clear(); }
   inline void clear_vel() { this->vel.clear(); }

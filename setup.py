@@ -21,10 +21,11 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
-version = "0.6.8"
+use_openmp = True
+version = "0.7"
 # =============================== #
 is_windows = (platform.system() == "Windows")
-is_linux = (platform.system() == "Linux")
+is_linux = (platform.system() in ["Linux", "Darwin"])
 # =============================== #
 
 
@@ -46,7 +47,12 @@ def setup_dyna_cpp():
         "qd/cae/dyna_cpp/dyna/D3plot.cpp",
         "qd/cae/dyna_cpp/dyna/RawD3plot.cpp",
         "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
-        "qd/cae/dyna_cpp/dyna/DynaKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/Keyword.cpp",
+        "qd/cae/dyna_cpp/dyna/NodeKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/ElementKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/PartKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/IncludeKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/IncludePathKeyword.cpp",
         "qd/cae/dyna_cpp/utility/FileUtility.cpp",
         "qd/cae/dyna_cpp/utility/TextUtility.cpp"]
 
@@ -70,6 +76,9 @@ def setup_dyna_cpp():
             compiler_args.append("/DQD_DEBUG")
         if measure_time:
             compiler_args.append("/DQD_MEASURE_TIME")
+        if use_openmp:
+            compiler_args.append("/openmp")
+
     else:
         raise RuntimeError("Could not determine os (windows or linux)")
 
@@ -245,7 +254,7 @@ if __name__ == "__main__":
                        },
           package_data={
               'qd.cae.resources': ['*.js', 'html.template'],
-              'qd.cae.beta': ['meta_remote_control', 'meta_remote_control.exe']
+              'qd.cae.beta': ['meta_remote_control', 'meta_remote_control.exe', 'msvcr71.dll']
           },
           ext_package='qd.cae',  # where to place c extensions
           ext_modules=[dyna_extension],

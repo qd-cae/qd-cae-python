@@ -13,16 +13,22 @@
 
 namespace qd {
 
-/*
- * Constructor.
+/**  Constructor.
+ *
+ * @param _elementID
+ * @param _elementType
+ * @param _node_indexes
+ * @param _db_elements : parent database
  */
-Element::Element(const int32_t _elementID,
-                 const Element::ElementType _elementType,
-                 const std::vector<size_t>& _node_indexes,
+Element::Element(int32_t _elementID,
+                 int32_t _part_id,
+                 Element::ElementType _elementType,
+                 const std::vector<int32_t>& _node_ids,
                  DB_Elements* _db_elements)
   : elementID(_elementID)
+  , part_id(_part_id)
   , is_rigid(false)
-  , nodes(_node_indexes)
+  , node_ids(_node_ids)
   , elemType(_elementType)
   , db_elements(_db_elements)
 {
@@ -34,8 +40,19 @@ Element::Element(const int32_t _elementID,
   this->check();
 }
 
-/*
- * Comparator.
+/** Element destructor
+ *
+ */
+Element::~Element()
+{
+#ifdef QD_DEBUG
+// std::cout << "Element " << elementID << " erased\n";
+#endif
+}
+
+/**  Comparison by id
+ *
+ * @param other
  */
 bool
 Element::operator<(const Element& other) const
@@ -96,15 +113,9 @@ Element::get_nodes() const
   DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
   std::vector<std::shared_ptr<Node>> node_vec;
 
-  for (const auto node_index : this->nodes) {
-    auto _node = db_nodes->get_nodeByIndex(node_index);
-    if (_node != nullptr) {
-      node_vec.push_back(_node);
-    } else {
-      throw(std::invalid_argument(
-        "Node with index:" + std::to_string(node_index) + " in Element:" +
-        std::to_string(this->elementID) + " was not found in DB."));
-    }
+  for (const auto node_id : this->node_ids) {
+    auto _node = db_nodes->get_nodeByID(node_id);
+    node_vec.push_back(_node);
   }
 
   return node_vec;
@@ -117,11 +128,6 @@ Element::get_nodes() const
 std::vector<int32_t>
 Element::get_node_ids() const
 {
-  std::vector<int32_t> node_ids;
-  DB_Nodes* db_nodes = db_elements->get_db_nodes();
-  for (size_t iNode = 0; iNode < this->nodes.size(); ++iNode) {
-    node_ids.push_back(db_nodes->get_id_from_index<int32_t>(nodes[iNode]));
-  }
   return node_ids;
 }
 
@@ -132,7 +138,14 @@ Element::get_node_ids() const
 std::vector<size_t>
 Element::get_node_indexes() const
 {
-  return this->nodes;
+  auto db_nodes = db_elements->get_db_nodes();
+
+  std::vector<size_t> node_indexes;
+  node_indexes.reserve(node_ids.size());
+  for (auto node_id : node_ids)
+    node_indexes.push_back(db_nodes->get_index_from_id(node_id));
+
+  return node_indexes;
 }
 
 /** Append a value to the series of plastic strain
@@ -230,6 +243,16 @@ Element::get_energy() const
   return this->energy;
 }
 
+/** Get the element's part id
+ *
+ * @return part_id
+ */
+int32_t
+Element::get_part_id() const
+{
+  return part_id;
+}
+
 /*
  * Get the coordinates of the element, which is
  * the average of all nodes.
@@ -239,18 +262,18 @@ Element::get_coords() const
 {
 
   std::vector<std::vector<float>> coords_elem;
-  if (this->nodes.size() > 0) {
+  if (this->node_ids.size() > 0) {
 
     DB_Nodes* db_nodes = this->db_elements->get_db_nodes();
 
     std::shared_ptr<Node> current_node =
-      db_nodes->get_nodeByIndex(this->nodes[0]);
+      db_nodes->get_nodeByID(this->node_ids[0]);
     coords_elem = current_node->get_coords();
 
-    for (size_t iNode = 1; iNode < this->nodes.size(); ++iNode) {
+    for (size_t iNode = 1; iNode < this->node_ids.size(); ++iNode) {
 
       auto node_coords =
-        db_nodes->get_nodeByIndex(this->nodes[iNode])->get_coords();
+        db_nodes->get_nodeByID(this->node_ids[iNode])->get_coords();
       for (size_t iTimestep = 0; iTimestep < node_coords.size(); ++iTimestep) {
         coords_elem[iTimestep][0] += node_coords[iTimestep][0];
         coords_elem[iTimestep][1] += node_coords[iTimestep][1];
@@ -258,7 +281,7 @@ Element::get_coords() const
       }
     }
 
-    float _nodes_size = (float)this->nodes.size();
+    float _nodes_size = (float)this->node_ids.size();
     for (size_t iTimestep = 0; iTimestep < coords_elem.size(); ++iTimestep) {
       coords_elem[iTimestep][0] /= _nodes_size;
       coords_elem[iTimestep][1] /= _nodes_size;
@@ -277,7 +300,7 @@ Element::get_coords() const
 float
 Element::get_estimated_element_size() const
 {
-  if (this->nodes.size() < 1)
+  if (this->node_ids.size() < 1)
     throw(std::invalid_argument("Element with id " +
                                 std::to_string(this->elementID) +
                                 " has no nodes and thus no size."));
@@ -286,29 +309,29 @@ Element::get_estimated_element_size() const
 
 #ifdef QD_DEBUG
   std::shared_ptr<Node> current_node =
-    db_nodes->get_nodeByIndex(this->nodes[0]);
+    db_nodes->get_nodeByID(this->node_ids[0]);
   if (current_node == nullptr) {
     throw(std::invalid_argument("Could not find node 0 of an element."));
   }
   auto basis_coords = current_node->get_coords()[0];
 #else
   auto basis_coords =
-    db_nodes->get_nodeByIndex(this->nodes[0])->get_coords()[0];
+    db_nodes->get_nodeByID(this->node_ids[0])->get_coords()[0];
 #endif
 
   float maxdist = -1.;
   std::vector<float> ncoords;
-  for (size_t iNode = 1; iNode < this->nodes.size(); ++iNode) {
+  for (size_t iNode = 1; iNode < this->node_ids.size(); ++iNode) {
 
 #ifdef QD_DEBUG
-    current_node = db_nodes->get_nodeByIndex(this->nodes[iNode]);
+    current_node = db_nodes->get_nodeByID(this->node_ids[iNode]);
     if (current_node == nullptr) {
       throw(std::invalid_argument("Could not find node " +
                                   std::to_string(iNode) + " of an element."));
     }
     ncoords = current_node->get_coords()[0];
 #else
-    ncoords = db_nodes->get_nodeByIndex(this->nodes[iNode])->get_coords()[0];
+    ncoords = db_nodes->get_nodeByID(this->node_ids[iNode])->get_coords()[0];
 #endif
 
     ncoords = MathUtility::v_subtr(ncoords, basis_coords);
@@ -320,49 +343,49 @@ Element::get_estimated_element_size() const
   }
 
   if (this->elemType == SHELL) {
-    if (this->nodes.size() == 3) {
+    if (this->node_ids.size() == 3) {
       return sqrt(maxdist); // tria
-    } else if (this->nodes.size() == 4) {
+    } else if (this->node_ids.size() == 4) {
       return sqrt(maxdist) / 1.41421356237f; // quad
     } else {
       throw(std::invalid_argument(
-        "Unknown node number:" + std::to_string(this->nodes.size()) +
+        "Unknown node number:" + std::to_string(this->node_ids.size()) +
         " of element +" + std::to_string(this->elementID) + "+ for shells."));
     }
   } else if (this->elemType == SOLID) {
-    if (this->nodes.size() == 4) {
+    if (this->node_ids.size() == 4) {
       return sqrt(maxdist); // tria
-    } else if (this->nodes.size() == 8) {
+    } else if (this->node_ids.size() == 8) {
       return sqrt(maxdist) / 1.73205080757f; // hexa
-    } else if (this->nodes.size() == 5) {
+    } else if (this->node_ids.size() == 5) {
       return sqrt(maxdist); // pyramid ... difficult to handle
-    } else if (this->nodes.size() == 6) {
+    } else if (this->node_ids.size() == 6) {
       return sqrt(maxdist) / 1.41421356237f; // penta
     } else {
       throw(std::invalid_argument(
-        "Unknown node number:" + std::to_string(this->nodes.size()) +
+        "Unknown node number:" + std::to_string(this->node_ids.size()) +
         " of element +" + std::to_string(this->elementID) + "+ for solids."));
     }
   } else if (this->elemType == BEAM) {
-    if (this->nodes.size() != 2)
+    if (this->node_ids.size() != 2)
       throw(std::invalid_argument(
-        "Unknown node number:" + std::to_string(this->nodes.size()) +
+        "Unknown node number:" + std::to_string(this->node_ids.size()) +
         " of element +" + std::to_string(this->elementID) + "+ for beams."));
     return sqrt(maxdist); // beam
   } else if (this->elemType == TSHELL) {
     // for the moment we take the solid computation since I dont know how the 8
     // nodes are actually arranged.
-    if (this->nodes.size() == 4) {
+    if (this->node_ids.size() == 4) {
       return sqrt(maxdist); // tria
-    } else if (this->nodes.size() == 8) {
+    } else if (this->node_ids.size() == 8) {
       return sqrt(maxdist) / 1.73205080757f; // hexa
-    } else if (this->nodes.size() == 5) {
+    } else if (this->node_ids.size() == 5) {
       return sqrt(maxdist); // pyramid ... difficult to handle
-    } else if (this->nodes.size() == 6) {
+    } else if (this->node_ids.size() == 6) {
       return sqrt(maxdist) / 1.41421356237f; // penta
     } else {
       throw(std::invalid_argument(
-        "Unknown node number:" + std::to_string(this->nodes.size()) +
+        "Unknown node number:" + std::to_string(this->node_ids.size()) +
         " of element +" + std::to_string(this->elementID) + "+ for solids."));
     }
   }
@@ -420,28 +443,28 @@ void
 Element::check() const
 {
   if (this->elemType == SHELL) {
-    if ((this->nodes.size() < 3) || (this->nodes.size() > 4))
+    if ((this->node_ids.size() < 3) || (this->node_ids.size() > 4))
       throw(std::runtime_error(
         "A shell element must have 3 or 4 nodes. Element has " +
-        std::to_string(this->nodes.size())));
+        std::to_string(this->node_ids.size())));
     return;
   } else if (this->elemType == SOLID) {
-    if ((this->nodes.size() < 4) || (this->nodes.size() > 8) ||
-        (this->nodes.size() == 7))
+    if ((this->node_ids.size() < 4) || (this->node_ids.size() > 8) ||
+        (this->node_ids.size() == 7))
       throw(std::runtime_error(
         "A solid element must have 4,5,6 or 8 nodes. Element has " +
-        std::to_string(this->nodes.size())));
+        std::to_string(this->node_ids.size())));
     return;
   } else if (this->elemType == BEAM) {
-    if (this->nodes.size() != 2)
+    if (this->node_ids.size() != 2)
       throw(std::runtime_error(
         "A beam element must have exactly 2 nodes. Element has " +
-        std::to_string(this->nodes.size())));
+        std::to_string(this->node_ids.size())));
   } else if (this->elemType == TSHELL) {
-    if ((this->nodes.size() != 8) && (this->nodes.size() != 6))
+    if ((this->node_ids.size() != 8) && (this->node_ids.size() != 6))
       throw(std::runtime_error(
         "A thick shell element must have 6 or 8 nodes. Element has " +
-        std::to_string(this->nodes.size())));
+        std::to_string(this->node_ids.size())));
   }
 }
 
@@ -491,6 +514,22 @@ void
 Element::clear_history_vars()
 {
   this->history_vars.clear();
+}
+
+/** Remove a node from the element
+ *
+ * @param _node_index
+ *
+ * Does nothing if index does not exist.
+ */
+void
+Element::remove_node(int32_t _node_id)
+{
+  node_ids.erase(
+    std::remove_if(node_ids.begin(),
+                   node_ids.end(),
+                   [_node_id](auto iNode) { return iNode == _node_id; }),
+    node_ids.end());
 }
 
 } // namespace qd

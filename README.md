@@ -25,6 +25,32 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 18.02.2018*
+Version 0.7.0
+
+The `KeyFile` class was rewritten entirely with a ton of new features, such as keyword creation and manipulation. The main idea was to create or read a `KeyFile` and preserve its whole structure including comments. We will make a few tutorials to explain enitre the capabilities and limits.
+
+For more info see the [Documentation](https://qd-cae.github.io/qd-cae-python/build/html/index.html) an [Introduction](http://www.qd-eng.de/index.php/2018/02/19/manipulating-ls-dyna-keyfiles-in-python/). We also plan to do more tutorials.
+
+
+qd.cae.dyna
+ - The `KeyFile` class can now read all keywords
+   - using `filepath=""` creates an empty `KeyFile` 
+   - using `read_keywords=True` reads all keywords as generic keywords
+   - using `parse_mesh=True` creates the mesh specific keywords below and loads the mesh. If `parse_mesh=False`, then also the mesh keywords are treated as generic keywords.
+   - using `load_includes` ... loads the includes of course
+ - Added new classes related to the `KeyFile` enhancement:
+   - `Keyword`: Generic keyword class for all keywords
+   - `NodeKeyword`: if `parse_mesh=True` then this class is used for nodes keywords
+   - `ElementKeyword`: if `parse_mesh=True` then this class is used for element keywords
+   - `PartKeyword`: if `parse_mesh=True` then this class is used for part keywords
+   - `IncludeKeyword`: handles include keywords
+   - `IncludePathKeyword`: handles include path keywords
+ - `KeyFile.save` preserves the file structure including comments
+ - Note: While one can add mesh entities to a `KeyFile`, one can currently not delete them
+ - Note: `KeyFile` reading performance has not been tuned yet ... 
+ - Fix: `D3plot` can now read files with temperature field
+
 *Changelog 24.11.2017*
 Version 0.6.8
 
@@ -32,15 +58,6 @@ qd.cae.dyna
  - `D3plot.plot` and `Part.plot` function was fixed and works now again
  - few minor improvements and changes in the background
 
-*Changelog 12.11.2017*
-Version 0.6.7
-
-qd.cae.dyna
- - `RawD3plot` now also reads the information, whether an element was deleted.
- - `RawD3plot.save_hdf5` and `Binout.save_hdf5` have now a compression argument, which is by default enabled (`"gzip"`).
- - `Binout` now automatically detects string data when performing `Binout.read`
- - `Binout.to_string` was made a private function (removed for users)
- - `Binout.save_hdf5` saves the binout to an HDF5 file  (yay)
 
 # Documentation
 
@@ -93,9 +110,10 @@ If you are bold enough to compile it yourself, then follow the [compilation guid
 
 # License
 
-*This library is a free gift from and to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share their code as a thank you back to the community. If one does not want to share ones code (usually due to commercial reasons), then there is also the possibility to provide a closed-source licensing scheme against financial compensation, so that this project can go on.*
+*This library is a free gift from and to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share their code as well. As long as one is not selling their code, in which is library is embedded, we will not demand the disclosure though. Against financial compensation we can also provide professional support or a different license.*
 
 # Authors
 
 - codie (C. Diez)
 - towelie (D. Toewe)
+- (?)

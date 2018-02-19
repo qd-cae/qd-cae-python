@@ -7,7 +7,6 @@
 #include <dyna_cpp/dyna/RawD3plot.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/MathUtility.hpp>
-//#include <dyna_cpp/utility/PythonUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 
 #ifdef QD_USE_FEMZIP
@@ -76,6 +75,8 @@ RawD3plot::RawD3plot()
   , own_nel10(false)
   , own_external_numbers_I8(false)
   , own_has_internal_energy(false)
+  , own_has_temperatures(false)
+  , own_has_mass_scaling_info(false)
   , own_nDeletionVars(0)
   , wordPosition(0)
   , wordsToRead(0)
@@ -140,6 +141,8 @@ RawD3plot::RawD3plot(std::string _filename, bool _useFemzip)
   , own_nel10(false)
   , own_external_numbers_I8(false)
   , own_has_internal_energy(false)
+  , own_has_temperatures(false)
+  , own_has_mass_scaling_info(false)
   , own_nDeletionVars(0)
   , wordPosition(0)
   , wordsToRead(0)
@@ -250,6 +253,12 @@ RawD3plot::read_header()
   this->dyna_iv = this->buffer->read_int(21);
   this->dyna_ia = this->buffer->read_int(22);
   this->dyna_it = this->buffer->read_int(19);
+  if (this->dyna_it != 0) {
+    own_has_temperatures = (this->dyna_it % 10) != 0;
+  }
+  if (this->dyna_it >= 10) {
+    own_has_mass_scaling_info = (this->dyna_it / 10) == 1;
+  }
 
   this->dyna_nel2 = this->buffer->read_int(28);
   this->dyna_nel4 = this->buffer->read_int(31);
@@ -378,12 +387,9 @@ RawD3plot::read_header()
   // ale
   if (this->dyna_ialemat != 0)
     throw(std::runtime_error("ALE can not be handled."));
-  // thick shells not implemented
-  // if (this->dyna_nelth > 0)
-  //  throw(std::runtime_error("Can not handle thick shell elements."));
   // no temps
-  if (this->dyna_it != 0)
-    throw(std::runtime_error("dyna_it != 0: Can not handle temperatures."));
+  if (own_has_temperatures)
+    throw(std::runtime_error("Can not handle temperatures in file."));
   //
   if (own_external_numbers_I8)
     throw(
@@ -535,7 +541,9 @@ RawD3plot::read_airbag_section()
     std::string _tmp_string;
     _tmp_string.resize(8);
 
-    for (size_t iString = 0; iString < dyna_airbag_nlist_size; ++iString) {
+    for (size_t iString = 0;
+         iString < static_cast<size_t>(dyna_airbag_nlist_size);
+         ++iString) {
       for (size_t iChar = 0; iChar < 8; ++iChar)
         _tmp_string[iChar] = (char)char_buffer[iString * 8 + iChar];
       airbag_all_variable_names[iString] = _tmp_string;
@@ -572,8 +580,8 @@ RawD3plot::read_airbag_section()
     }
 
     // state geometry var names
-    for (int32_t ii = static_cast<size_t>(dyna_airbag_ngeom) +
-                      static_cast<size_t>(dyna_airbag_state_nvars);
+    for (size_t ii = static_cast<size_t>(dyna_airbag_ngeom) +
+                     static_cast<size_t>(dyna_airbag_state_nvars);
          ii < dyna_airbag_nlist.size();
          ++ii) {
       if (dyna_airbag_nlist[ii] == 1)
@@ -1102,7 +1110,9 @@ RawD3plot::read_states()
 
   // Calculate loop properties
   size_t iState = 0;
-  int32_t nVarsNodes = dyna_ndim * (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp;
+  int32_t nVarsNodes =
+    (dyna_ndim * (dyna_iu + dyna_iv + dyna_ia) + own_has_mass_scaling_info) *
+    dyna_numnp;
   int32_t nVarsElems = dyna_nel2 * dyna_nv1d +
                        (dyna_nel4 - dyna_numrbe) * dyna_nv2d +
                        dyna_nel8 * dyna_nv3d + dyna_nelth * dyna_nv3dt;
@@ -1178,6 +1188,10 @@ RawD3plot::read_states()
       if (dyna_iu)
         read_states_displacement();
 
+      // NODE - MASS SCALING
+      if (own_has_mass_scaling_info)
+        read_states_nodes_mass_scaling();
+
       // NODE - VEL
       if (dyna_iv)
         read_states_velocity();
@@ -1222,6 +1236,43 @@ RawD3plot::read_states()
   timesteps_tensor.resize({ timesteps.size() });
   std::copy(
     timesteps.begin(), timesteps.end(), timesteps_tensor.get_data().begin());
+}
+
+/** Read the node mass scaling ifo
+ *
+ * How long does it take an engineer to find out someone is writing
+ * mass scaling between disp and vel field ... I can tell u ...
+ */
+void
+RawD3plot::read_states_nodes_mass_scaling()
+{
+
+  if (!own_has_mass_scaling_info)
+    return;
+
+  const std::string var_name = "node_mass_scaling";
+
+  // compute offsets
+  int32_t start = this->wordPosition + 1 // time
+                  + dyna_nglbv + dyna_iu * dyna_ndim * dyna_numnp;
+
+  wordsToRead = dyna_numnp;
+
+#ifdef QD_DEBUG
+  std::cout << "> read_states_nodes_mass_scaling at " << start << std::endl;
+#endif
+
+  // do the magic thing
+  auto& tensor = float_data[var_name];
+  auto shape = tensor.get_shape();
+  if (shape.size() == 0) {
+    shape = { 0, static_cast<size_t>(dyna_numnp) };
+  }
+  shape[0]++; // increase timestep count
+  auto offset = tensor.size();
+  tensor.resize(shape);
+
+  this->buffer->read_array(start, wordsToRead, tensor.get_data(), offset);
 }
 
 /** Read the nodal displacement in the state section
@@ -1271,7 +1322,8 @@ RawD3plot::read_states_velocity()
     return;
 
   int32_t start =
-    1 + dyna_nglbv + (dyna_iu)*dyna_numnp * dyna_ndim + wordPosition;
+    wordPosition + 1 + dyna_nglbv +
+    (dyna_iu * dyna_ndim + own_has_mass_scaling_info) * dyna_numnp;
 
   wordsToRead = dyna_numnp * dyna_ndim;
 
@@ -1303,8 +1355,9 @@ RawD3plot::read_states_acceleration()
   if (dyna_ia != 1)
     return;
 
-  int32_t start = 1 + dyna_nglbv +
-                  (dyna_iu + dyna_iv) * dyna_numnp * dyna_ndim + wordPosition;
+  int32_t start =
+    wordPosition + 1 + dyna_nglbv +
+    ((dyna_iu + dyna_iv) * dyna_ndim + own_has_mass_scaling_info) * dyna_numnp;
   wordsToRead = dyna_numnp * dyna_ndim;
 
 #ifdef QD_DEBUG
@@ -1333,9 +1386,11 @@ RawD3plot::read_states_elem8()
   if ((dyna_nv3d <= 0) || (dyna_nel8 <= 0))
     return;
 
-  int32_t start = this->wordPosition + 1 // time
-                  + dyna_nglbv +
-                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim;
+  int32_t start =
+    this->wordPosition + 1 // time
+    + dyna_nglbv +
+    ((dyna_iu + dyna_iv + dyna_ia) * dyna_ndim + own_has_mass_scaling_info) *
+      dyna_numnp;
 
   wordsToRead = dyna_nv3d * dyna_nel8;
 
@@ -1374,7 +1429,9 @@ RawD3plot::read_states_elem4()
   // prepare looping
   int32_t start =
     this->wordPosition + 1 // time
-    + dyna_nglbv + (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
+    + dyna_nglbv +
+    ((dyna_iu + dyna_iv + dyna_ia) * dyna_ndim + own_has_mass_scaling_info) *
+      dyna_numnp +
     dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt + dyna_nv1d * dyna_nel2;
 
   wordsToRead = dyna_nv2d * (dyna_nel4 - dyna_numrbe);
@@ -1445,10 +1502,12 @@ RawD3plot::read_states_elem4th()
     return;
 
   // prepare looping
-  int32_t start = this->wordPosition + 1 // time
-                  + dyna_nglbv +
-                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
-                  dyna_nv3d * dyna_nel8;
+  int32_t start =
+    this->wordPosition + 1 // time
+    + dyna_nglbv +
+    ((dyna_iu + dyna_iv + dyna_ia) * dyna_ndim + own_has_mass_scaling_info) *
+      dyna_numnp +
+    dyna_nv3d * dyna_nel8; // solids
 
   wordsToRead = dyna_nelth * dyna_nv3dt;
 
@@ -1518,10 +1577,12 @@ RawD3plot::read_states_elem2()
     return;
 
   // prepare looping
-  int32_t start = this->wordPosition + 1 // time
-                  + dyna_nglbv +
-                  (dyna_iu + dyna_iv + dyna_ia) * dyna_numnp * dyna_ndim +
-                  dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt;
+  int32_t start =
+    this->wordPosition + 1 // time
+    + dyna_nglbv +
+    ((dyna_iu + dyna_iv + dyna_ia) * dyna_ndim + own_has_mass_scaling_info) *
+      dyna_numnp +
+    dyna_nv3d * dyna_nel8 + dyna_nelth * dyna_nv3dt;
 
   wordsToRead = dyna_nv1d * dyna_nel2;
 

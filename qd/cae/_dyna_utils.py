@@ -10,7 +10,8 @@ import numpy as np
 from base64 import b64encode
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from .dyna_cpp import Element, QD_Part
+#from .dyna_cpp import Element, QD_Part
+from .dyna_cpp import *
 
 
 def _read_file(filepath):

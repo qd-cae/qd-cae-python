@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 #include "dyna_cpp/dyna/D3plotBuffer.hpp"
 #include "dyna_cpp/utility/FileUtility.hpp"
@@ -75,7 +76,7 @@ D3plotBuffer::get_bufferFromFile(std::string filepath)
   fStream.read(&state_buffer[0], _bufferSize);
   fStream.close();
 
-  return state_buffer;
+  return std::move(state_buffer);
 }
 
 /*

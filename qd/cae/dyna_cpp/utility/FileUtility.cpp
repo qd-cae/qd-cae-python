@@ -24,6 +24,25 @@
 
 namespace qd {
 
+/** Join filepaths correctly
+ *
+ * @param _path1 : path to first file
+ * @param _path2 : path to secon file
+ * @return combined_path : joined path
+ */
+std::string
+join_path(const std::string& _path1, const std::string& _path2)
+{
+  if (_path1.empty())
+    return _path2;
+
+  auto last_char = _path1[_path1.size() - 1];
+  if (last_char == '/' || last_char == '\\')
+    return _path1 + _path2;
+  else
+    return _path1 + '/' + _path2;
+}
+
 /** Read the lines of a text file into a vector
  * @param filepath : path of the text file
  *
@@ -92,6 +111,10 @@ read_binary_file(const std::string& filepath)
   return data;
 }
 
+/** Delete a file
+ *
+ * @param _path : path to file to delete
+ */
 void
 delete_file(const std::string& _path)
 {
@@ -99,6 +122,20 @@ delete_file(const std::string& _path)
   if (remove(_path.c_str()) != 0) {
     throw(std::runtime_error("Deletion of file " + _path + " failed."));
   }
+}
+
+/** Save data to a file
+ * @param _filepath
+ * @param _data
+ */
+void
+save_file(const std::string& _filepath, const std::string& _data)
+{
+
+  std::ofstream fs;
+  fs.open(_filepath);
+  fs << _data;
+  fs.close();
 }
 
 /** Compute the entropy of a file buffer
@@ -129,12 +166,33 @@ get_entropy(const std::vector<char>& _buffer)
     if (freq > 0.)
       entropy += freq * log2(freq);
   }
-  
+
   return std::abs(entropy);
 }
 
 /* === WINDOWS === */
 #ifdef _WIN32
+
+auto s2ws = [](const std::string& s) {
+  int len;
+  int slength = (int)s.length() + 1;
+  len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+  wchar_t* buf = new wchar_t[len];
+  MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+  std::wstring r(buf);
+  delete[] buf;
+  return r;
+};
+
+auto ws2s = [](const std::wstring& text) {
+  std::locale const loc("");
+  wchar_t const* from = text.c_str();
+  std::size_t const len = text.size();
+  std::vector<char> buffer(len + 1);
+  std::use_facet<std::ctype<wchar_t>>(loc).narrow(
+    from, from + len, '_', &buffer[0]);
+  return std::string(&buffer[0], &buffer[len]);
+};
 
 bool
 check_ExistanceAndAccess(const std::string& filepath)
@@ -212,9 +270,8 @@ find_dyna_result_files(const std::string& _base_filepath)
     std::string fname(FindFileData.cFileName);
     if ((fname.substr(0, base_filename.size()) ==
          base_filename) // case sensitivity check
-        &&
-        string_has_only_numbers(fname,
-                                base_filename.size())) // number ending only
+        && string_has_only_numbers(fname,
+                                   base_filename.size())) // number ending only
       files.push_back(directory + fname);
 
   } while (FindNextFile(hFind, &FindFileData) != 0);
