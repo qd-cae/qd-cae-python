@@ -2,6 +2,10 @@
 #ifndef CONTAINER_HPP
 #define CONTAINER_HPP
 
+#include <algorithm>
+#include <vector>
+
+
 namespace qd {
 
 /** Remove multiple vector indexes fast

@@ -43,7 +43,6 @@ NodeKeyword::load()
     return;
 
   // extra card treatment
-  size_t nAdditionalLines = 0;
   auto keyword_name_lower = to_lower_copy(get_keyword_name());
 
   // extract node data

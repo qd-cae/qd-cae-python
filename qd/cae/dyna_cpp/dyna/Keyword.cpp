@@ -212,18 +212,12 @@ Keyword::change_field_size_byLine(size_t _iLine,
 
     auto new_line = std::string(new_size, ' ');
 
-    auto copy_size =
-      new_field_size > old_field_size ? old_field_size : new_field_size;
-
     // copy full fields
     size_t iField;
     size_t nFields = line.size() / old_field_size;
     for (iField = 0; iField < nFields; ++iField) {
       auto val = get_card_value_byLine(line, iField, old_field_size);
       set_card_value_byLine(new_line, iField, val, new_field_size);
-      // auto start = line.begin() + iField * old_field_size;
-      // auto end = start + copy_size;
-      // std::copy(start, end, new_line.begin() + iField * new_field_size);
     }
     // copy rest
     auto rest = line.size() % old_field_size;

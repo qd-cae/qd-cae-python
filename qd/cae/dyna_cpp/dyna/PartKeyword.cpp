@@ -112,7 +112,7 @@ PartKeyword::load()
           // if ircs field is 1, then we have another card line
           if (is_part_inertia && iCardCount == 0) {
             const auto flag_ircs =
-              trim(lines[iLine].substr(4 * field_size, field_size));
+              trim_copy(lines[iLine].substr(4 * field_size, field_size));
             if (flag_ircs.empty() || std::stod(flag_ircs) == 1)
               one_more_card = true;
           }

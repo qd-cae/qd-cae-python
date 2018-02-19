@@ -55,7 +55,7 @@ public:
     int32_t _id,
     int32_t _part_id,
     const std::vector<size_t>& _node_indexes);
-  std::shared_ptr<Element> DB_Elements::add_elementByNodeID(
+  std::shared_ptr<Element> add_elementByNodeID(
     const Element::ElementType _eType,
     int32_t _elementID,
     int32_t _part_id,

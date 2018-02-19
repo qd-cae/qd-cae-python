@@ -22,7 +22,8 @@ IncludePathKeyword::IncludePathKeyword(const std::vector<std::string> _lines,
 bool
 IncludePathKeyword::is_relative() const
 {
-  auto name = to_lower(get_keyword_name());
+  auto name = get_keyword_name();
+  to_lower(name);
   if (name.compare(0, 17, "*include_path_rel") == 0)
     return true;
   else

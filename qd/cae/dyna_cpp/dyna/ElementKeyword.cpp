@@ -63,6 +63,9 @@ ElementKeyword::load()
     case (Element::ElementType::TSHELL):
       parse_elem4th(keyword_name, lines);
       break;
+
+    default:
+      break;
   }
 }
 

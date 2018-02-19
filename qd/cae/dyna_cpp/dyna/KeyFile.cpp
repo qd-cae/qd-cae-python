@@ -29,7 +29,12 @@ KeyFile::KeyFile(bool _read_generic_keywords,
                  bool _load_includes,
                  double _encryption_detection,
                  KeyFile* _parent_kf)
-  : KeyFile("", _parse_mesh, _load_includes, _encryption_detection, _parent_kf)
+  : FEMFile("")
+  , parent_kf(_parent_kf)
+  , load_includes(_load_includes)
+  , read_generic_keywords(_read_generic_keywords)
+  , parse_mesh(_parse_mesh)
+  , encryption_detection_threshold(_encryption_detection)
 {}
 
 /** Constructor for reading a LS-Dyna input file.
@@ -162,8 +167,6 @@ KeyFile::load(bool _load_mesh)
   // allocate last block
   if (!line_buffer.empty() && !last_keyword.empty()) {
 
-    auto kw_type = Keyword::determine_keyword_type(last_keyword);
-
     auto kw = create_keyword(line_buffer,
                              Keyword::determine_keyword_type(last_keyword),
                              iLine - line_buffer.size() + 1);
@@ -276,12 +279,12 @@ KeyFile::transfer_comment_header(std::vector<std::string>& _old,
                                  std::vector<std::string>& _new)
 {
 
-  size_t iCount = 0;
   size_t nTransferLines = 0;
-  if (_old.size() > 0)
+  if (_old.size() > 0) {
     for (size_t iCount = _old.size() - 1; iCount > 0 && _old[iCount][0] == '$';
          --iCount)
       ++nTransferLines;
+  }
 
   _new.resize(nTransferLines);
   std::copy(_old.end() - nTransferLines, _old.end(), _new.begin());
