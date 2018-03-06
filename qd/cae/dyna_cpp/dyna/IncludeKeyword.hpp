@@ -25,6 +25,7 @@ public:
   IncludeKeyword(KeyFile* _parent_kf,
                  const std::vector<std::string> _lines,
                  int64_t _iLine);
+  void load();
   void load(bool _load_mesh);
 
   // getters

@@ -1242,7 +1242,10 @@ PYBIND11_MODULE(dyna_cpp, m)
          &IncludeKeyword::get_includes,
          pybind11::return_value_policy::take_ownership,
          include_keyword_get_includes_docs)
-    .def("load", &IncludeKeyword::load, include_keyword_load_docs);
+    // .def("load", &IncludeKeyword::load, include_keyword_load_docs)
+    .def("load",
+         [](std::shared_ptr<IncludeKeyword> self) { self->load(); },
+         include_keyword_load_docs);
 
   // KeyFile
   pybind11::class_<KeyFile, FEMFile, std::shared_ptr<KeyFile>> keyfile_py(

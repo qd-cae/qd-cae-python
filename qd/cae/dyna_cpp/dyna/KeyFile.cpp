@@ -526,16 +526,24 @@ std::string
 KeyFile::str() const
 {
 
-  std::map<int64_t, std::shared_ptr<Keyword>> kwrds_sorted;
+  std::vector<std::shared_ptr<Keyword>> kwrds_sorted;
   for (auto& kv : keywords) {
     for (auto kw : kv.second) {
-      kwrds_sorted.insert(std::make_pair(kw->get_position(), kw));
+      kwrds_sorted.push_back(kw);
+      // kw->get_position()
     }
   }
 
+  std::sort(kwrds_sorted.begin(),
+            kwrds_sorted.end(),
+            [](std::shared_ptr<Keyword>& instance1,
+               std::shared_ptr<Keyword>& instance2) {
+              return instance1->get_position() > instance2->get_position();
+            });
+
   std::stringstream ss;
   for (auto kv : kwrds_sorted)
-    ss << kv.second->str();
+    ss << kv->str();
 
   return std::move(ss.str());
 }
@@ -548,6 +556,7 @@ void
 KeyFile::save_txt(const std::string& _filepath)
 {
   save_file(_filepath, str());
+  set_filepath(_filepath);
 }
 
 } // namespace qd

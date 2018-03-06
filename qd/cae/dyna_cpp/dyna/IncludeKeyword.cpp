@@ -17,9 +17,19 @@ IncludeKeyword::IncludeKeyword(KeyFile* _parent_kf,
   , parent_kf(_parent_kf)
 {}
 
-/** Load the includes in the
+/** Load the includes internally
  *
  *
+ */
+void
+IncludeKeyword::load()
+{
+  load(parent_kf->get_parse_mesh());
+}
+
+/** Load the include files
+ *
+ * @param _load_mesh : overwrite to prevent loading the mesh internally
  */
 void
 IncludeKeyword::load(bool _load_mesh)
@@ -29,6 +39,9 @@ IncludeKeyword::load(bool _load_mesh)
 
   if (iLine == lines.size())
     return;
+
+  // update parent search dirs
+  parent_kf->get_include_dirs(true);
 
   // create keywords
   for (; iLine < lines.size(); ++iLine) {

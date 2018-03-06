@@ -38,7 +38,8 @@ std::vector<std::string>
 IncludePathKeyword::get_include_dirs()
 {
   std::vector<std::string> dir_filepaths;
-  for (auto iLine = iCard_to_iLine(0, false); iLine < lines.size(); ++iLine) {
+  for (auto iLine = get_line_index_of_next_card(0); iLine < lines.size();
+       ++iLine) {
     auto line = trim_copy(lines[iLine]);
 
     // stop if an empty line is hit
