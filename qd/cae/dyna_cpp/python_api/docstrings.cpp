@@ -1467,14 +1467,15 @@ const char* keyfile_remove_keyword_description = R"qddoc(
 )qddoc";
 
 const char* keyfile_add_keyword_description = R"qddoc(
-    add_keyword(lines, position=0)
+    add_keyword(lines, position=-1)
 
     Parameters
     ----------
     lines : str or list of str
         keyword definition
     position : int
-        where to position the keyword in the KeyFile
+        where to position the keyword in the KeyFile, a negative value 
+        means at the end
 
     Notes
     -----

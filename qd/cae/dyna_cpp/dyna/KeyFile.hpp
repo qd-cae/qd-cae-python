@@ -41,6 +41,7 @@ private:
   bool read_generic_keywords;
   bool parse_mesh;
   bool has_linebreak_at_eof;
+  int64_t max_position;
 
   double encryption_detection_threshold;
   std::vector<std::string> include_dirs;
@@ -54,10 +55,16 @@ private:
   std::vector<std::shared_ptr<IncludeKeyword>> include_keywords;
   std::vector<std::shared_ptr<IncludePathKeyword>> include_path_keywords;
 
+  // std::shared_ptr<Keyword> create_keyword(
+  //   const std::vector<std::string>& _lines,
+  //   Keyword::KeywordType _keyword_type,
+  //   size_t _iLine);
+
+  template<typename T>
   std::shared_ptr<Keyword> create_keyword(
     const std::vector<std::string>& _lines,
     Keyword::KeywordType _keyword_type,
-    size_t _iLine);
+    T _iLine);
 
   void transfer_comment_header(std::vector<std::string>& _old,
                                std::vector<std::string>& _new);
@@ -189,6 +196,90 @@ KeyFile::get_master_keyfile()
     return this;
   } else
     return parent_kf->get_master_keyfile();
+}
+
+/** Create a keyword from it's line buffer
+ *
+ * @param _lines : buffer
+ * @param _keyword_type : type if the keyword
+ * @param _iLine : line index of the block
+ * @param _insert_into_buffer : whether to insert typed keywords into their
+ * buffers
+ *
+ * The *typed* keywords not inserted into the loading buffers are not loaded
+ * automatically and require to call the "load" function
+ */
+template<typename T>
+std::shared_ptr<Keyword>
+KeyFile::create_keyword(const std::vector<std::string>& _lines,
+                        Keyword::KeywordType _keyword_type,
+                        T _iLine)
+{
+  static_assert(std::is_integral<T>::value, "Integer number required.");
+
+  if (_iLine < 0)
+    _iLine = max_position + 1;
+  auto position = static_cast<int64_t>(_iLine);
+
+  if (parse_mesh) {
+
+    switch (_keyword_type) {
+      case (Keyword::KeywordType::NODE): {
+        auto kw = std::make_shared<NodeKeyword>(
+          parent_kf->get_db_nodes(), _lines, position);
+        node_keywords.push_back(kw);
+        max_position = std::max(position, max_position);
+        return kw;
+        break;
+      }
+      case (Keyword::KeywordType::ELEMENT): {
+        auto kw = std::make_shared<ElementKeyword>(
+          parent_kf->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
+        element_keywords.push_back(kw);
+        max_position = std::max(position, max_position);
+        return kw;
+        break;
+      }
+      case (Keyword::KeywordType::PART): {
+        auto kw = std::make_shared<PartKeyword>(
+          parent_kf->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
+        part_keywords.push_back(kw);
+        max_position = std::max(position, max_position);
+        return kw;
+        break;
+      }
+      default:
+        // nothing
+        break;
+    }
+  }
+
+  if (load_includes) {
+
+    // *INCLUDE_PATH
+    if (_keyword_type == Keyword::KeywordType::INCLUDE_PATH) {
+      auto kw = std::make_shared<IncludePathKeyword>(
+        _lines, static_cast<int64_t>(_iLine));
+      include_path_keywords.push_back(kw);
+      max_position = std::max(position, max_position);
+      return kw;
+    }
+
+    // *INCLUDE
+    if (_keyword_type == Keyword::KeywordType::INCLUDE) {
+      auto kw = std::make_shared<IncludeKeyword>(
+        parent_kf, _lines, static_cast<int64_t>(_iLine));
+      include_keywords.push_back(kw);
+      max_position = std::max(position, max_position);
+      return kw;
+    }
+  }
+
+  if (read_generic_keywords) {
+    max_position = std::max(position, max_position);
+    return std::make_shared<Keyword>(_lines, _iLine);
+  } else
+    return nullptr;
 }
 
 } // namespace qd

@@ -25,6 +25,18 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 07.03.2018*
+Version 0.7.1
+
+This is a bugfix version.
+
+qd.cae.dyna:
+  - Fix: loading includes manually could lead to a bug 
+  - Fix: if `load_includes=False`, includes are now treated as generic keywords 
+  - Fix: add_part could cause a segfault
+  - Fix: `KeyFile.save` did only write one keyword, if they had the same `KeyFile.position``.
+  - Fix: Adding a `Keyword` without a `position` specified simply appends the `Keyword` to the end of the file.
+
 *Changelog 18.02.2018*
 Version 0.7.0
 
@@ -51,12 +63,6 @@ qd.cae.dyna
  - Note: `KeyFile` reading performance has not been tuned yet ... 
  - Fix: `D3plot` can now read files with temperature field
 
-*Changelog 24.11.2017*
-Version 0.6.8
-
-qd.cae.dyna
- - `D3plot.plot` and `Part.plot` function was fixed and works now again
- - few minor improvements and changes in the background
 
 
 # Documentation

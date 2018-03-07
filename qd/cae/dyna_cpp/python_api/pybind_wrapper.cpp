@@ -1363,7 +1363,7 @@ PYBIND11_MODULE(dyna_cpp, m)
              self->add_keyword(string_to_lines(lines, true), position));
          },
          "lines"_a,
-         "position"_a = 0,
+         "position"_a = -1,
          pybind11::return_value_policy::take_ownership)
     .def("add_keyword",
          [](std::shared_ptr<KeyFile> self,
@@ -1373,7 +1373,7 @@ PYBIND11_MODULE(dyna_cpp, m)
            return cast_kw(self->add_keyword(lines, position));
          },
          "lines"_a,
-         "position"_a = 0,
+         "position"_a = -1,
          pybind11::return_value_policy::take_ownership,
          keyfile_add_keyword_description)
     .def("get_includes",

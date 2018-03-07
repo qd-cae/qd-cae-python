@@ -35,6 +35,7 @@ KeyFile::KeyFile(bool _read_generic_keywords,
   , read_generic_keywords(_read_generic_keywords)
   , parse_mesh(_parse_mesh)
   , has_linebreak_at_eof(true)
+  , max_position(0)
   , encryption_detection_threshold(_encryption_detection)
 {}
 
@@ -54,6 +55,7 @@ KeyFile::KeyFile(const std::string& _filepath,
   , read_generic_keywords(_read_generic_keywords)
   , parse_mesh(_parse_mesh)
   , has_linebreak_at_eof(true)
+  , max_position(0)
   , encryption_detection_threshold(_encryption_detection)
 {
   // check encryption
@@ -296,78 +298,6 @@ KeyFile::transfer_comment_header(std::vector<std::string>& _old,
   std::copy(_old.end() - nTransferLines, _old.end(), _new.begin());
   //_new = std::vector<std::string>(_old.end() - nTransferLines, _old.end());
   _old.resize(_old.size() - nTransferLines);
-}
-
-/** Create a keyword from it's line buffer
- *
- * @param _lines : buffer
- * @param _keyword_type : type if the keyword
- * @param _iLine : line index of the block
- * @param _insert_into_buffer : whether to insert typed keywords into their
- * buffers
- *
- * The *typed* keywords not inserted into the loading buffers are not loaded
- * automatically and require to call the "load" function
- */
-std::shared_ptr<Keyword>
-KeyFile::create_keyword(const std::vector<std::string>& _lines,
-                        Keyword::KeywordType _keyword_type,
-                        size_t _iLine)
-{
-
-  if (parse_mesh) {
-
-    switch (_keyword_type) {
-      case (Keyword::KeywordType::NODE): {
-        auto kw = std::make_shared<NodeKeyword>(
-          parent_kf->get_db_nodes(), _lines, static_cast<int64_t>(_iLine));
-        node_keywords.push_back(kw);
-        return kw;
-        break;
-      }
-      case (Keyword::KeywordType::ELEMENT): {
-        auto kw = std::make_shared<ElementKeyword>(
-          parent_kf->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
-        element_keywords.push_back(kw);
-        return kw;
-        break;
-      }
-      case (Keyword::KeywordType::PART): {
-        auto kw = std::make_shared<PartKeyword>(
-          parent_kf->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
-        part_keywords.push_back(kw);
-        return kw;
-        break;
-      }
-      default:
-        // nothing
-        break;
-    }
-  }
-
-  if (load_includes) {
-
-    // *INCLUDE_PATH
-    if (_keyword_type == Keyword::KeywordType::INCLUDE_PATH) {
-      auto kw = std::make_shared<IncludePathKeyword>(
-        _lines, static_cast<int64_t>(_iLine));
-      include_path_keywords.push_back(kw);
-      return kw;
-    }
-
-    // *INCLUDE
-    if (_keyword_type == Keyword::KeywordType::INCLUDE) {
-      auto kw = std::make_shared<IncludeKeyword>(
-        parent_kf, _lines, static_cast<int64_t>(_iLine));
-      include_keywords.push_back(kw);
-      return kw;
-    }
-  }
-
-  if (read_generic_keywords)
-    return std::make_shared<Keyword>(_lines, _iLine);
-  else
-    return nullptr;
 }
 
 /** Update the include path
