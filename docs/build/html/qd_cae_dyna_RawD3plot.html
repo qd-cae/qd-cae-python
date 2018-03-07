@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>RawD3plot &mdash; qd 0.7 documentation</title>
+  <title>RawD3plot &mdash; qd 0.7.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.7 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.7.1 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.7
+                0.7.1
               </div>
             
           
@@ -303,20 +303,73 @@ other files. The class automatically reads all data!</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_raw_data</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.RawD3plot.get_raw_data" title="qd.cae.dyna.RawD3plot.get_raw_data"><code class="xref py py-obj docutils literal"><span class="pre">get_raw_data</span></code></a>(key)</td>
+<td>Get a variable from its name</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_raw_keys</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.RawD3plot.get_raw_keys" title="qd.cae.dyna.RawD3plot.get_raw_keys"><code class="xref py py-obj docutils literal"><span class="pre">get_raw_keys</span></code></a>()</td>
+<td>Get the names of the raw data fields</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.RawD3plot.info" title="qd.cae.dyna.RawD3plot.info"><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></a>()</td>
+<td>Prints a summary of the header data of the d3plot, which involves node info, element info, written state data and so forth.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_hdf5</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.RawD3plot.save_hdf5" title="qd.cae.dyna.RawD3plot.save_hdf5"><code class="xref py py-obj docutils literal"><span class="pre">save_hdf5</span></code></a>(filepath[,&nbsp;overwrite,&nbsp;compression])</td>
+<td>Save the raw d3plot to HDF5</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="qd.cae.dyna.RawD3plot.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>filepath</em>, <em>use_femzip=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a RawD3plot file object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote>
+<div><p>path to either the (first) d3plot or a d3plot in hdf5 format</p>
+</div></blockquote>
+<p><strong>use_femzip</strong> : bool</p>
+<blockquote>
+<div><p>use femzip decompression for a compressed d3plot</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>instance</strong> : RawD3plot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote>
+<div><p>in case of an invalid filepath or locked file</p>
+</div></blockquote>
+<p><strong>RuntimeError</strong></p>
+<blockquote class="last">
+<div><p>if anything goes wrong (internal checks) during reading</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The constructor first checks, if the file is a hdf5 file and
+then tries to open it as a casual D3plot.
+If LS-Dyna writes multiple files (one for each timestep),
+give the filepath to the first file. The library finds all
+other files. The class automatically reads all data!</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">RawD3plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># read an arbitrary d3plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#read femzip compressed file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span><span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># save file as HDF5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">save_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># open HDF5 d3plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot._get_float_data">
 <code class="descname">_get_float_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_float_data" title="Permalink to this definition">¶</a></dt>
@@ -653,7 +706,7 @@ so forth.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7',
+            VERSION:'0.7.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

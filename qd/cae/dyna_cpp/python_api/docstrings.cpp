@@ -1474,8 +1474,8 @@ const char* keyfile_add_keyword_description = R"qddoc(
     lines : str or list of str
         keyword definition
     position : int
-        where to position the keyword in the KeyFile, a negative value 
-        means at the end
+        where to position the keyword in the KeyFile, if negative it is 
+        appended to the end
 
     Notes
     -----

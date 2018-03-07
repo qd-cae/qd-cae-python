@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>KeyFile &mdash; qd 0.7 documentation</title>
+  <title>KeyFile &mdash; qd 0.7.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.7 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.7.1 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.7
+                0.7.1
               </div>
             
           
@@ -271,77 +271,310 @@ with the function <code class="docutils literal"><span class="pre">qd.cae.dyna.g
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">add_keyword</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.add_keyword" title="qd.cae.dyna.KeyFile.add_keyword"><code class="xref py py-obj docutils literal"><span class="pre">add_keyword</span></code></a>(lines[,&nbsp;position])</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByID</span></code></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByIndex</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_elementByIndex" title="qd.cae.dyna.KeyFile.get_elementByIndex"><code class="xref py py-obj docutils literal"><span class="pre">get_elementByIndex</span></code></a>(element_type,&nbsp;index)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_elements" title="qd.cae.dyna.KeyFile.get_elements"><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></a>([element_filter])</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_include_dirs</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_includes</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_filepath" title="qd.cae.dyna.KeyFile.get_filepath"><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_include_dirs" title="qd.cae.dyna.KeyFile.get_include_dirs"><code class="xref py py-obj docutils literal"><span class="pre">get_include_dirs</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nParts</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_includes" title="qd.cae.dyna.KeyFile.get_includes"><code class="xref py py-obj docutils literal"><span class="pre">get_includes</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_nElements" title="qd.cae.dyna.KeyFile.get_nElements"><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></a>([element_filter])</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByIndex</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_nNodes" title="qd.cae.dyna.KeyFile.get_nNodes"><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByName</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_nParts" title="qd.cae.dyna.KeyFile.get_nParts"><code class="xref py py-obj docutils literal"><span class="pre">get_nParts</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">keys</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_nodeByID" title="qd.cae.dyna.KeyFile.get_nodeByID"><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></a>(id)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_parts</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">remove_keyword</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_nodeByIndex" title="qd.cae.dyna.KeyFile.get_nodeByIndex"><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></a>(index)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_nodes" title="qd.cae.dyna.KeyFile.get_nodes"><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_partByID" title="qd.cae.dyna.KeyFile.get_partByID"><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></a>(id)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_partByIndex" title="qd.cae.dyna.KeyFile.get_partByIndex"><code class="xref py py-obj docutils literal"><span class="pre">get_partByIndex</span></code></a>(index)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_partByName" title="qd.cae.dyna.KeyFile.get_partByName"><code class="xref py py-obj docutils literal"><span class="pre">get_partByName</span></code></a>(name)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.get_parts" title="qd.cae.dyna.KeyFile.get_parts"><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.keys" title="qd.cae.dyna.KeyFile.keys"><code class="xref py py-obj docutils literal"><span class="pre">keys</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.plot" title="qd.cae.dyna.KeyFile.plot"><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></a>([export_filepath])</td>
+<td>Plot the KeyFile geometry.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.plot_parts" title="qd.cae.dyna.KeyFile.plot_parts"><code class="xref py py-obj docutils literal"><span class="pre">plot_parts</span></code></a>(parts[,&nbsp;export_filepath])</td>
+<td>Plot a selected group of parts</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.remove_keyword" title="qd.cae.dyna.KeyFile.remove_keyword"><code class="xref py py-obj docutils literal"><span class="pre">remove_keyword</span></code></a>(name,&nbsp;index)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.KeyFile.save" title="qd.cae.dyna.KeyFile.save"><code class="xref py py-obj docutils literal"><span class="pre">save</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
+<dt id="qd.cae.dyna.KeyFile.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>filepath=&quot;&quot;</em>, <em>read_keywords=True</em>, <em>parse_mesh=True</em>, <em>load_includes=True</em>, <em>encryption_detection=0.7</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote>
+<div><p>path to the keyfile</p>
+</div></blockquote>
+<p><strong>read_keywords</strong> : bool</p>
+<blockquote>
+<div><p>whether to read all keywords</p>
+</div></blockquote>
+<p><strong>parse_mesh</strong> : bool</p>
+<blockquote>
+<div><p>whether the mesh keywords shall be parsed</p>
+</div></blockquote>
+<p><strong>load_includes</strong> : bool</p>
+<blockquote>
+<div><p>load all includes within the file</p>
+</div></blockquote>
+<p><strong>encryption_detection</strong> : float</p>
+<blockquote>
+<div><p>detection threshold for encrypted include files. 
+Must be between 0 and 1.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>keyfile</strong> : KeyFile</p>
+<blockquote>
+<div><p>instance</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote>
+<div><p>in case of a wrong filepath or invalid encryption threshold</p>
+</div></blockquote>
+<p><strong>RuntimeError</strong></p>
+<blockquote class="last">
+<div><p>if anything goes wrong during reading</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>If <code class="docutils literal"><span class="pre">read_keywords=True</span></code> every keyword found will be loaded
+and made accessible by the generic <code class="docutils literal"><span class="pre">Keyword</span></code> class. If at 
+the same time <code class="docutils literal"><span class="pre">parse_mesh=False</span></code> then also the mesh itself 
+is treated as generic keywords.</p>
+<p>If <code class="docutils literal"><span class="pre">parse_mesh=True</span></code>, then the mesh keywords are loaded and
+parsed. Also the mesh specific keyword classes are used (see 
+the keyword classes).</p>
+<p>The argument <code class="docutils literal"><span class="pre">encryption_detection</span></code> is used to skip encrypted 
+include files. It is simply tested against the entropy of every
+include divided by 8 for normalization. Encrypted files usually
+have a very high entropy. The entropy of a file can be tested 
+with the function <code class="docutils literal"><span class="pre">qd.cae.dyna.get_file_entropy</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># load keyfile and parse the mesh</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">,</span> <span class="n">parse_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get some mesh data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">keyfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># check the keywords</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[&#39;*NODE&#39;, &#39;*ELEMENT_SHELL&#39;, ...]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get all part keywords</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_keywords</span> <span class="o">=</span> <span class="n">keyfile</span><span class="p">[</span><span class="s2">&quot;*PART&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>One can also create empty keyfiles and built them.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keyfile</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="n">parse_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span> <span class="o">=</span> <span class="n">keyfile</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;*NODE&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kw</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="qd.cae.dyna.KeyFile.add_keyword">
-<code class="descname">add_keyword</code><span class="sig-paren">(</span><em>lines</em>, <em>position=0</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.add_keyword" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_keyword</code><span class="sig-paren">(</span><em>lines</em>, <em>position=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.KeyFile.add_keyword" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -352,7 +585,8 @@ with the function <code class="docutils literal"><span class="pre">qd.cae.dyna.g
 </div></blockquote>
 <p><strong>position</strong> : int</p>
 <blockquote class="last">
-<div><p>where to position the keyword in the KeyFile</p>
+<div><p>where to position the keyword in the KeyFile, a negative value 
+means at the end</p>
 </div></blockquote>
 </td>
 </tr>
@@ -998,7 +1232,7 @@ of mesh entities is not supported yet.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7',
+            VERSION:'0.7.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

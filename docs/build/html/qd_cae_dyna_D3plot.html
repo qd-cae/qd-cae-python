@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>D3plot &mdash; qd 0.7 documentation</title>
+  <title>D3plot &mdash; qd 0.7.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.7 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.7.1 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.7
+                0.7.1
               </div>
             
           
@@ -256,77 +256,255 @@ in the constructor or with the member function.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.clear" title="qd.cae.dyna.D3plot.clear"><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></a>(vars)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">compare_scatter</span></code></td>
-<td></td>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.compare_scatter" title="qd.cae.dyna.D3plot.compare_scatter"><code class="xref py py-obj docutils literal"><span class="pre">compare_scatter</span></code></a>(filepath_list,&nbsp;element_result)</td>
+<td>Compare the scatter between mutliple d3plot files</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByID</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByIndex</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nParts</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nTimesteps</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByIndex</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_partByName</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_timesteps</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_title</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">plot_parts</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">read_states</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_elementByIndex" title="qd.cae.dyna.D3plot.get_elementByIndex"><code class="xref py py-obj docutils literal"><span class="pre">get_elementByIndex</span></code></a>(element_type,&nbsp;index)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
 </tr>
 </tbody>
 </table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_elements" title="qd.cae.dyna.D3plot.get_elements"><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></a>([element_filter])</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_filepath" title="qd.cae.dyna.D3plot.get_filepath"><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nElements" title="qd.cae.dyna.D3plot.get_nElements"><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></a>([element_filter])</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nNodes" title="qd.cae.dyna.D3plot.get_nNodes"><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nParts" title="qd.cae.dyna.D3plot.get_nParts"><code class="xref py py-obj docutils literal"><span class="pre">get_nParts</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nTimesteps" title="qd.cae.dyna.D3plot.get_nTimesteps"><code class="xref py py-obj docutils literal"><span class="pre">get_nTimesteps</span></code></a>()</td>
+<td>Get the number of timesteps of the d3plot.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nodeByID" title="qd.cae.dyna.D3plot.get_nodeByID"><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></a>(id)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nodeByIndex" title="qd.cae.dyna.D3plot.get_nodeByIndex"><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></a>(index)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nodes" title="qd.cae.dyna.D3plot.get_nodes"><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_partByID" title="qd.cae.dyna.D3plot.get_partByID"><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></a>(id)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_partByIndex" title="qd.cae.dyna.D3plot.get_partByIndex"><code class="xref py py-obj docutils literal"><span class="pre">get_partByIndex</span></code></a>(index)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_partByName" title="qd.cae.dyna.D3plot.get_partByName"><code class="xref py py-obj docutils literal"><span class="pre">get_partByName</span></code></a>(name)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_parts" title="qd.cae.dyna.D3plot.get_parts"><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></a>()</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_timesteps" title="qd.cae.dyna.D3plot.get_timesteps"><code class="xref py py-obj docutils literal"><span class="pre">get_timesteps</span></code></a>()</td>
+<td>Get the simulation time of the written states.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_title" title="qd.cae.dyna.D3plot.get_title"><code class="xref py py-obj docutils literal"><span class="pre">get_title</span></code></a>()</td>
+<td>Get the title of the d3plot, which is part of the header data.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.info" title="qd.cae.dyna.D3plot.info"><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></a>()</td>
+<td>Prints a summary of the header data of the D3plot, which involves node info, element info, written state data and so forth.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.plot" title="qd.cae.dyna.D3plot.plot"><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></a>([iTimestep,&nbsp;element_result,&nbsp;…])</td>
+<td>Plot the D3plot, currently shells only!</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.plot_parts" title="qd.cae.dyna.D3plot.plot_parts"><code class="xref py py-obj docutils literal"><span class="pre">plot_parts</span></code></a>(parts[,&nbsp;iTimestep,&nbsp;…])</td>
+<td>Plot a selected group of parts.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.read_states" title="qd.cae.dyna.D3plot.read_states"><code class="xref py py-obj docutils literal"><span class="pre">read_states</span></code></a>(vars)</td>
+<td><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="qd.cae.dyna.D3plot.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>filepath</em>, <em>use_femzip=False</em>, <em>read_states=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote>
+<div><p>path to the d3plot</p>
+</div></blockquote>
+<p><strong>use_femzip</strong> : bool</p>
+<blockquote>
+<div><p>whether to use femzip for decompression</p>
+</div></blockquote>
+<p><strong>read_states</strong> : str or list of str</p>
+<blockquote>
+<div><p>read state information directly (saves time), 
+see the function <code class="docutils literal"><span class="pre">read_states</span></code></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>D3plot d3plot</strong> : instance</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
+<blockquote>
+<div><p>in case of an invalid filepath or locked file</p>
+</div></blockquote>
+<p><strong>RuntimeError</strong></p>
+<blockquote class="last">
+<div><p>if anything goes wrong (internal checks) during reading</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>If LS-Dyna writes multiple files (one for each timestep),
+give the filepath to the first file. The library finds all
+other files.
+Please read state information with the read_states flag 
+in the constructor or with the member function.</p>
+<p class="rubric">Examples</p>
+<p>Read the plain geometry data</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read a compressed d3plot</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span> <span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read d3plot with state data at once.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mises_stress max&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.clear">
 <code class="descname">clear</code><span class="sig-paren">(</span><em>vars</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.clear" title="Permalink to this definition">¶</a></dt>
@@ -1136,7 +1314,7 @@ treatment of these layers:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7',
+            VERSION:'0.7.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

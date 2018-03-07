@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Binout &mdash; qd 0.7 documentation</title>
+  <title>Binout &mdash; qd 0.7.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.7 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.7.1 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/>
         <link rel="prev" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.7
+                0.7.1
               </div>
             
           
@@ -226,14 +226,49 @@ pattern will be loaded.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">read</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.Binout.read" title="qd.cae.dyna.Binout.read"><code class="xref py py-obj docutils literal"><span class="pre">read</span></code></a>(…)</td>
+<td>Read all data from Binout (top to low level)</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_hdf5</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.Binout.save_hdf5" title="qd.cae.dyna.Binout.save_hdf5"><code class="xref py py-obj docutils literal"><span class="pre">save_hdf5</span></code></a>(filepath[,&nbsp;compression])</td>
+<td>Save a binout as HDF5</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="qd.cae.dyna.Binout.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for a binout</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote class="last">
+<div><p>path to the binout or pattern</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The class loads the file given in the filepath. By giving a
+search pattern such as: “binout*”, all files with that
+pattern will be loaded.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads a single binout</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout0000&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">filelist</span>
+<span class="go">[&#39;path/to/binout0000&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads multiple files</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout*&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">filelist</span>
+<span class="go">[&#39;path/to/binout0000&#39;,&#39;path/to/binout0001&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="method">
 <dt id="qd.cae.dyna.Binout.read">
 <code class="descname">read</code><span class="sig-paren">(</span><em>path) Read all data from Binout (top to low level</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.read" title="Permalink to this definition">¶</a></dt>
@@ -364,7 +399,7 @@ identification or id-labels.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7',
+            VERSION:'0.7.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
