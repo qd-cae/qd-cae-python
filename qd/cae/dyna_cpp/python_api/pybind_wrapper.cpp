@@ -1204,15 +1204,6 @@ PYBIND11_MODULE(dyna_cpp, m)
 
   part_keyword_py
     .def("add_part",
-         (std::shared_ptr<Part>(PartKeyword::*)(
-           int64_t, const std::string&, const std::vector<std::string>&)) &
-           PartKeyword::add_part<int64_t>,
-         "id"_a,
-         "name"_a = "",
-         "additional_lines"_a = std::vector<std::string>(),
-         pybind11::return_value_policy::take_ownership,
-         part_keyword_add_part_docs)
-    .def("add_part",
          [](std::shared_ptr<PartKeyword> self,
             int64_t part_id,
             const std::string& name,
@@ -1223,6 +1214,15 @@ PYBIND11_MODULE(dyna_cpp, m)
          "name"_a = "",
          "additional_lines"_a = "",
          pybind11::return_value_policy::take_ownership)
+    .def("add_part",
+         (std::shared_ptr<Part>(PartKeyword::*)(
+           int64_t, const std::string&, const std::vector<std::string>&)) &
+           PartKeyword::add_part<int64_t>,
+         "id"_a,
+         "name"_a = "",
+         "additional_lines"_a = std::vector<std::string>(),
+         pybind11::return_value_policy::take_ownership,
+         part_keyword_add_part_docs)
     .def("get_parts", &PartKeyword::get_parts, part_keyword_get_parts_docs)
     .def("get_nParts", &PartKeyword::get_nParts, part_keyword_get_nParts_docs)
     .def("load", &PartKeyword::load, part_keyword_load_docs);

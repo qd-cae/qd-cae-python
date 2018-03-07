@@ -3,6 +3,7 @@
 import os
 import sys
 import math
+import filecmp
 import numpy as np
 sys.path.append(os.path.join(os.path.realpath(__file__), ".."))
 
@@ -252,45 +253,275 @@ class TestDynaModule(unittest.TestCase):
         self.assertTrue(os.path.isfile("./binout.h5"))
         os.remove("./binout.h5")
 
-    '''
     def test_keyfile(self):
 
         # test encryption detection
-        # two values for windows or linux file endings ...
-        self.assertTrue(self.is_almost_equal(
-            get_file_entropy("test/keyfile.key"), 4.019002, 1E-6) or self.is_almost_equal(
-            get_file_entropy("test/keyfile.key"), 3.927457, 1E-6))
-        # np.testing.assert_almost_equal(get_file_entropy(
-        #    "test/keyfile.key"), 3.927457, decimal=6)
-        np.testing.assert_almost_equal(get_file_entropy(
-            "test/keyfile_include1.key"), 2.095140, decimal=6)
         np.testing.assert_almost_equal(get_file_entropy(
             "test/keyfile_include2.key"), 7.715498, decimal=6)
 
-        # load file
+        # file loading (arguments)
         kf = KeyFile("test/keyfile.key")
+        self.assertEqual(len(kf.keys()), 8)
+        self.assertEqual(len(kf.get_includes()), 0)
+        self.assertEqual(kf.get_nNodes(), 0)
+        self.assertTrue(isinstance(kf["*INCLUDE"][0], Keyword))
+        self.assertTrue(isinstance(kf["*NODE"][0], Keyword))
+        self.assertTrue(isinstance(kf["*PART"][0], Keyword))
+        self.assertTrue(isinstance(kf["*ELEMENT_SHELL"][0], Keyword))
 
-        # test node
-        node1, node2 = kf.get_nodeByID([1, 2])
-        np.testing.assert_array_almost_equal(node1.get_coords()[0],
-                                             [1, 1, 1],
-                                             decimal=1)
-        np.testing.assert_array_almost_equal(node2.get_coords()[0],
-                                             [2, 2, 2],
-                                             decimal=1)
-
-        # test include loading
-        kf = KeyFile("test/keyfile.key", load_includes=False)
-        with self.assertRaises(ValueError):
-            kf.get_nodeByID(2)
-
-        # test include loading
         kf = KeyFile("test/keyfile.key", load_includes=True)
-        node = kf.get_nodeByID(2)
+        self.assertEqual(len(kf.keys()), 8)
+        self.assertEqual(len(kf.get_includes()), 1)
+        self.assertEqual(kf.get_nNodes(), 0)
+        self.assertTrue(isinstance(kf["*INCLUDE"][0], IncludeKeyword))
+        self.assertTrue(isinstance(kf["*NODE"][0], Keyword))
+        self.assertTrue(isinstance(kf["*PART"][0], Keyword))
+        self.assertTrue(isinstance(kf["*ELEMENT_SHELL"][0], Keyword))
+
+        kf = KeyFile("test/keyfile.key", load_includes=True, parse_mesh=True)
+        self.assertEqual(len(kf.keys()), 8)
+        self.assertEqual(len(kf.get_includes()), 1)
+        self.assertEqual(kf.get_nNodes(), 5)
+        self.assertTrue(isinstance(kf["*INCLUDE"][0], Keyword))
+        self.assertTrue(isinstance(kf["*NODE"][0], NodeKeyword))
+        self.assertTrue(isinstance(kf["*PART"][0], PartKeyword))
+        self.assertTrue(isinstance(kf["*ELEMENT_SHELL"][0], ElementKeyword))
+
+        kf = KeyFile("test/keyfile.key", read_keywords=False)
+        self.assertEqual(len(kf.keys()), 0)
+        self.assertEqual(len(kf.get_includes()), 0)
+        self.assertEqual(kf.get_nNodes(), 0)
+
+        with self.assertRaises(ValueError):
+            KeyFile("test/invalid.key")
+        with self.assertRaises(ValueError):
+            KeyFile("test/invalid.key",
+                    parse_mesh=True)
+
+        # saving
+        kf = KeyFile("test/keyfile.key")
+        self.assertEqual(kf.get_filepath(), "test/keyfile.key")
+        kf.save("test/tmp.key")
+        self.assertEqual(kf.get_filepath(), "test/tmp.key")
+        self.assertTrue(filecmp.cmp("test/keyfile.key", "test/tmp.key"))
+        os.remove("test/tmp.key")
+
+        # Generic Keywords
+        kf = KeyFile("test/keyfile.key")
+        kwrds = kf["*PART"]
+        self.assertEqual(len(kwrds), 1)
+        kw = kwrds[0]
+
+        # getter
+        self.assertEqual(kw["pid"], 1)
+        self.assertEqual(kw.get_card_valueByName("pid"), 1)
+        self.assertEqual(kw["secid"], 1)
+        self.assertEqual(kw.get_card_valueByName("secid"), 1)
+        self.assertEqual(kw["mid"], 1)
+        self.assertEqual(kw.get_card_valueByName("mid"), 1)
+        self.assertEqual(kw[1, 0], 1)
+        self.assertEqual(kw.get_card_valueByIndex(1, 0), 1)
+        self.assertEqual(kw[1, 1], 1)
+        self.assertEqual(kw.get_card_valueByIndex(1, 1), 1)
+        self.assertEqual(kw[1, 2], 1)
+        self.assertEqual(kw.get_card_valueByIndex(1, 2), 1)
+        # self.assertEqual(kw[1, 0, 50], "1       1") # TODO fix this
+        self.assertEqual(kw[0, 0], "Iam beauti")
+        self.assertEqual(kw.get_card_valueByIndex(0, 0), "Iam beauti")
+        self.assertEqual(kw[0, 0, 80], "Iam beautiful")
+        self.assertEqual(kw.get_card_valueByIndex(0, 0, 80), "Iam beautiful")
+        with self.assertRaises(ValueError):
+            kw["error"]
+        with self.assertRaises(ValueError):
+            kw.get_card_valueByName("error")
+        with self.assertRaises(ValueError):
+            kw.get_card_valueByIndex(100, 0)
+
+        # setter
+        kw["pid"] = 100
+        self.assertEqual(kw["pid"], 100)
+        kw.set_card_valueByName("pid", 200)
+        self.assertEqual(kw["pid"], 200)
+        kw["pid"] = 12345678912
+        self.assertEqual(kw["pid"], 1234567891)
+        kw.set_card_valueByName("pid", 12345678912)
+        self.assertEqual(kw["pid"], 1234567891)
+        self.assertEqual(kw["secid"], 1)
+
+        kw[1, 0] = 300
+        self.assertEqual(kw[1, 0], 300)
+        kw.set_card_valueByIndex(1, 0, 400)
+        self.assertEqual(kw[1, 0], 400)
+        kw[1, 0] = 12345678912
+        self.assertEqual(kw[1, 0], 1234567891)
+        self.assertEqual(kw[1, 1], 1)
+        kw[0, 0, 30] = "Hihihi   "
+        self.assertEqual(kw[0, 0, 30], "Hihihi")
+        kw.set_card_valueByDict({(1, 0): "yoy", "mid": "ok"})
+        self.assertEqual(kw[1, 0], "yoy")
+        self.assertEqual(kw["mid"], "ok")
+
+        # line manipulation
+        line_data = ["*PART",
+                     "$ heading",
+                     "Iam beautiful",
+                     "$    pid      secid       mid",
+                     "       1          1         1",
+                     "       "]
+
+        kf = KeyFile("test/keyfile.key")
+        kw = kf["*PART"][0]
+
+        self.assertEqual(len(kw), len(line_data))
+        self.assertCountEqual(kw.get_lines(), line_data)
+        for iLine, line in enumerate(line_data):
+            self.assertEqual(kw.get_line(iLine), line)
+
+        kw.insert_line(1, "$ another comment")
+        self.assertEqual(kw.get_line(1), "$ another comment")
+
+        kw.append_line("$ changed comment")
+        self.assertEqual(kw.get_line(7), "$ changed comment")
+
+        kw.remove_line(7)
+        kw.remove_line(1)
+        self.assertEqual(len(kw), len(line_data))
+
+        kw.append_line("blubber")
+        kw.set_lines(line_data)
+        self.assertCountEqual(kw.get_lines(), line_data)
+
+        # str
+        kf = KeyFile("test/keyfile.key")
+        kw = kf["*PART"][0]
+        kw_data = '*PART\n$ heading\nIam beautiful\n$    pid      secid       mid\n       1          1         1\n       \n'
+        self.assertEqual(str(kw), kw_data)
+
+        # reformatting
+        Keyword.name_delimiter_used = True
+        Keyword.name_delimiter = '|'
+        Keyword.name_spacer = '-'
+        Keyword.name_alignment = Keyword.align.right
+        Keyword.field_alignment = Keyword.align.right
+
+        kw.reformat_all([0])
+        kw_data = '*PART\n$ heading\nIam beautiful\n$------pid|----secid|------mid\n         1         1         1\n          \n'
+        self.assertEqual(str(kw), kw_data)
+
+        kw.reformat_field(0, 0, 80)
+        kw_data = '*PART\n$------------------------------------------------------------------------heading\n                                                                   Iam beautiful\n$------pid|----secid|------mid\n         1         1         1\n          \n'
+        self.assertEqual(str(kw), kw_data)
+
+        # NodeKeyword
+        kf = KeyFile("test/keyfile.key", load_includes=True, parse_mesh=True)
+        kw = kf["*NODE"][0]
+        self.assertEqual(kw.get_nNodes(), 4)
+        self.assertEqual(len(kw.get_nodes()), 4)
+        self.assertCountEqual(kw.get_node_ids(), [1, 3, 4, 5])
+        node = kw.add_node(6, 4., 4., 4., "       0       0")
+        self.assertEqual(node.get_id(), 6)
         np.testing.assert_array_almost_equal(node.get_coords()[0],
-                                             [2, 2, 2],
-                                             decimal=1)
-    '''
+                                             [4., 4., 4.],
+                                             decimal=3)
+
+        node_kw_data = "*NODE\n$ some comment line\n$     id              x               y               z\n       1               0               0               0       0       0\n       3               0               1               0       0       0\n       4               0               1               1       0       0\n       5               1               0               0       0       0\n       6               4               4               4       0       0\n\n"
+        self.assertEqual(str(kw), node_kw_data)
+        kw.append_line(
+            "       7              8.              8.              8.       0       0")
+        kw.load()
+        self.assertEqual(kw.get_nNodes(), 6)
+        node = kf.get_nodeByID(7)
+        np.testing.assert_array_almost_equal(node.get_coords()[0],
+                                             [8., 8., 8.],
+                                             decimal=3)
+
+        # PartKeyword
+        kf = KeyFile("test/keyfile.key", load_includes=True, parse_mesh=True)
+        kw = kf["*PART"][0]
+        self.assertEqual(kw.get_nParts(), 1)
+        self.assertEqual(len(kw.get_parts()), 1)
+        part = kw.get_parts()[0]
+        self.assertEqual(part.get_name(), "Iam beautiful")
+        self.assertEqual(part.get_id(), 1)
+        part = kw.add_part(2, "new part", "        1         1")
+
+        part_data = "*PART\n$ heading\n                                                         Iam beautiful\n$    pid      secid       mid\n         1        1         1\n                                                              new part\n         2        1         1\n"
+        self.assertEqual(str(kw), part_data)
+        self.assertEqual(kw.get_nParts(), 2)
+        self.assertEqual(kw.get_parts()[1].get_name(), "new part")
+
+        # ElementKeyword
+        kf = KeyFile("test/keyfile.key", load_includes=True, parse_mesh=True)
+        kw = kf["*ELEMENT_SHELL"][0]
+        self.assertEqual(kw.get_nElements(), 1)
+        self.assertEqual(len(kw.get_elements()), 1)
+
+        elem = kw.get_elements()[0]
+        self.assertEqual(elem.get_type(), Element.shell)
+        self.assertEqual(elem.get_id(), 1)
+
+        elem = kw.add_elementByNodeID(2, 1, [1, 2, 3, 4])
+        elem_data = "*ELEMENT_SHELL\n$    eid     pid      n1      n2      n3      n4      n5      n6      n7      n8\n       1       1       1       2       3       4       1       1       1       1\n       2       1       1       2       3       4\n\n"
+        self.assertEqual(str(kw), elem_data)
+        self.assertEqual(elem.get_type(), Element.shell)
+        self.assertCountEqual([node.get_id()
+                               for node in elem.get_nodes()], [1, 2, 3, 4])
+
+        # IncludePathKeyword
+        kf = KeyFile("test/keyfile.key", load_includes=True)
+
+        kw = kf.add_keyword("*INCLUDE_PATH_RELATIVE")
+        kw.append_line("subdir")
+        self.assertCountEqual(kw.get_include_dirs(), ["subdir"])
+        self.assertCountEqual(
+            kw.get_lines(), ["*INCLUDE_PATH_RELATIVE", "subdir"])
+
+        kw = kf.add_keyword("*INCLUDE_PATH")
+        kw.append_line("C:/absolute/path")
+        self.assertCountEqual(kw.get_include_dirs(), ["C:/absolute/path"])
+        self.assertCountEqual(
+            kw.get_lines(), ["*INCLUDE_PATH", "C:/absolute/path"])
+
+        self.assertEqual(kf.get_include_dirs(), [
+                         'C:/absolute/path', 'test/', 'test/subdir'])
+
+        # IncludeKeyword
+        kf = KeyFile("test/keyfile.key", load_includes=True)
+
+        kw = kf.add_keyword("*INCLUDE_PATH_RELATIVE")
+        kw.append_line("keyfile_include_dir")
+
+        kw = kf["*INCLUDE"][0]
+        self.assertEqual(len(kw.get_includes()), 1)
+        inc_kf = kw.get_includes()[0]
+        self.assertEqual(len(inc_kf.keys()), 3)
+
+        kw.append_line("keyfile_include3.key")
+        kw.load()
+        self.assertEqual(len(kw.get_includes()), 2)
+        self.assertEqual(len(kw.get_includes()[1].keys()), 3)
+
+        # test mesh
+        kf = KeyFile("test/keyfile.key", load_includes=True, parse_mesh=True)
+        node_coords = np.array(
+            [[0., 0., 0.], [2., 2., 2.], [0., 1., 0.], [0., 1., 1.], [1., 0., 0.]])
+        nodes = kf.get_nodeByID([1, 2, 3, 4, 5])
+        for iNode, node in enumerate(nodes):
+            np.testing.assert_array_almost_equal(node.get_coords()[0],
+                                                 node_coords[iNode],
+                                                 decimal=3)
+
+        elem_nodes = np.array([[1, 2, 3, 4], [1, 2]])
+        elems = [(Element.shell, 1), (Element.beam, 1)]
+        for iElem, (etype, eid) in enumerate(elems):
+            self.assertCountEqual(elem_nodes[iElem],
+                                  [node.get_id()
+                                   for node in kf.get_elementByID(etype, eid).get_nodes()])
+
+        part = kf.get_partByID(1)
+        self.assertEqual(part.get_name(), "Iam beautiful")
+        self.assertEqual(len(part.get_elements()), 2)
+        self.assertEqual(len(part.get_nodes()), 4)
 
     def test_raw_d3plot(self):
 

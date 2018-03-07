@@ -41,7 +41,8 @@ IncludeKeyword::load(bool _load_mesh)
     return;
 
   // update parent search dirs
-  parent_kf->get_include_dirs(true);
+  auto master = parent_kf->get_master_keyfile();
+  auto dirs = master->get_include_dirs(true);
 
   // create keywords
   for (; iLine < lines.size(); ++iLine) {
@@ -50,7 +51,7 @@ IncludeKeyword::load(bool _load_mesh)
     if (line.empty() || is_comment(line))
       break;
 
-    auto fpath = parent_kf->resolve_include_filepath(line);
+    auto fpath = master->resolve_include_filepath(line);
     auto kf =
       std::make_shared<KeyFile>(fpath,
                                 parent_kf->get_read_generic_keywords(),
@@ -59,9 +60,11 @@ IncludeKeyword::load(bool _load_mesh)
                                 parent_kf->get_encryption_detection_threshold(),
                                 parent_kf);
 
-    kf->load(_load_mesh);
-    includes.push_back(kf);
-    unresolved_filepaths.push_back(line);
+    auto is_ok = kf->load(_load_mesh);
+    if (is_ok) {
+      includes.push_back(kf);
+      unresolved_filepaths.push_back(line);
+    }
   }
 
   // handle trailing lines

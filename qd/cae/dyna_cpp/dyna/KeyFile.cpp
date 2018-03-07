@@ -30,10 +30,11 @@ KeyFile::KeyFile(bool _read_generic_keywords,
                  double _encryption_detection,
                  KeyFile* _parent_kf)
   : FEMFile("")
-  , parent_kf(_parent_kf)
+  , parent_kf(_parent_kf != nullptr ? _parent_kf : this)
   , load_includes(_load_includes)
   , read_generic_keywords(_read_generic_keywords)
   , parse_mesh(_parse_mesh)
+  , has_linebreak_at_eof(true)
   , encryption_detection_threshold(_encryption_detection)
 {}
 
@@ -48,15 +49,13 @@ KeyFile::KeyFile(const std::string& _filepath,
                  double _encryption_detection,
                  KeyFile* _parent_kf)
   : FEMFile(_filepath)
-  , parent_kf(_parent_kf)
+  , parent_kf(_parent_kf != nullptr ? _parent_kf : this)
   , load_includes(_load_includes)
   , read_generic_keywords(_read_generic_keywords)
   , parse_mesh(_parse_mesh)
+  , has_linebreak_at_eof(true)
   , encryption_detection_threshold(_encryption_detection)
 {
-  if (parent_kf == nullptr)
-    parent_kf = this;
-
   // check encryption
   if (encryption_detection_threshold < 0 || encryption_detection_threshold > 1)
     throw(std::invalid_argument(
@@ -66,17 +65,20 @@ KeyFile::KeyFile(const std::string& _filepath,
 /** Parse a keyfile
  *
  * @param _load_mesh : whether the mesh shall loaded
+ * @return success : whether loading the data was successful
  *
  * The parameter can be used to prevent the loading of the mesh,
  * even though we use parse_mesh. We need this for includes.
  */
-void
+bool
 KeyFile::load(bool _load_mesh)
 {
 
   // read file
   auto my_filepath = resolve_include_filepath(get_filepath());
   std::vector<char> char_buffer = read_binary_file(my_filepath);
+  has_linebreak_at_eof = char_buffer.back() == '\n';
+
 #ifdef QD_DEBUG
   std::cout << "done." << std::endl;
 #endif
@@ -88,7 +90,7 @@ KeyFile::load(bool _load_mesh)
               << " with normalized entropy of "
               << (get_entropy(char_buffer) / 8) << std::endl;
 #endif
-    return;
+    return false;
   }
 
   // convert buffer into blocks
@@ -182,7 +184,9 @@ KeyFile::load(bool _load_mesh)
 
     // do the thing
     for (auto& include_kw : include_keywords) {
-      include_kw->load(false); // prevent loading the mesh here
+
+      // Note: prevent loading the mesh here
+      include_kw->load(false);
     }
   }
 
@@ -197,6 +201,8 @@ KeyFile::load(bool _load_mesh)
     // load elements
     load_elements();
   }
+
+  return true;
 }
 
 /** Loads the nodes from the keywords into the database
@@ -339,20 +345,23 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
     }
   }
 
-  // *INCLUDE_PATH
-  if (_keyword_type == Keyword::KeywordType::INCLUDE_PATH) {
-    auto kw = std::make_shared<IncludePathKeyword>(
-      _lines, static_cast<int64_t>(_iLine));
-    include_path_keywords.push_back(kw);
-    return kw;
-  }
+  if (load_includes) {
 
-  // *INCLUDE
-  if (_keyword_type == Keyword::KeywordType::INCLUDE) {
-    auto kw = std::make_shared<IncludeKeyword>(
-      parent_kf, _lines, static_cast<int64_t>(_iLine));
-    include_keywords.push_back(kw);
-    return kw;
+    // *INCLUDE_PATH
+    if (_keyword_type == Keyword::KeywordType::INCLUDE_PATH) {
+      auto kw = std::make_shared<IncludePathKeyword>(
+        _lines, static_cast<int64_t>(_iLine));
+      include_path_keywords.push_back(kw);
+      return kw;
+    }
+
+    // *INCLUDE
+    if (_keyword_type == Keyword::KeywordType::INCLUDE) {
+      auto kw = std::make_shared<IncludeKeyword>(
+        parent_kf, _lines, static_cast<int64_t>(_iLine));
+      include_keywords.push_back(kw);
+      return kw;
+    }
   }
 
   if (read_generic_keywords)
@@ -434,11 +443,12 @@ KeyFile::resolve_include_filepath(const std::string& _filepath)
     return _filepath;
 
   for (const auto& dir : include_dirs) {
-    if (check_ExistanceAndAccess(dir + _filepath))
-      return dir + _filepath;
+    auto full_path = join_path(dir, _filepath);
+    if (check_ExistanceAndAccess(full_path))
+      return full_path;
   }
 
-  throw(std::runtime_error("Can not find anywhere:" + _filepath));
+  throw(std::invalid_argument("Can not find: " + _filepath));
 }
 
 /** Get all child include files
@@ -530,7 +540,6 @@ KeyFile::str() const
   for (auto& kv : keywords) {
     for (auto kw : kv.second) {
       kwrds_sorted.push_back(kw);
-      // kw->get_position()
     }
   }
 
@@ -538,14 +547,19 @@ KeyFile::str() const
             kwrds_sorted.end(),
             [](std::shared_ptr<Keyword>& instance1,
                std::shared_ptr<Keyword>& instance2) {
-              return instance1->get_position() > instance2->get_position();
+              return instance1->get_position() < instance2->get_position();
             });
 
   std::stringstream ss;
   for (auto kv : kwrds_sorted)
     ss << kv->str();
 
-  return std::move(ss.str());
+  auto str = ss.str();
+
+  if (!has_linebreak_at_eof && str.back() == '\n')
+    str.pop_back();
+
+  return std::move(str);
 }
 
 /** Save a keyfile again

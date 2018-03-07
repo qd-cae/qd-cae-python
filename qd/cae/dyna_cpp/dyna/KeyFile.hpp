@@ -40,6 +40,7 @@ private:
   bool load_includes;
   bool read_generic_keywords;
   bool parse_mesh;
+  bool has_linebreak_at_eof;
 
   double encryption_detection_threshold;
   std::vector<std::string> include_dirs;
@@ -79,7 +80,7 @@ public:
           double _encryption_detection = 0.7,
           KeyFile* _parent_kf = nullptr);
 
-  void load(bool _load_mesh = true);
+  bool load(bool _load_mesh = true);
 
   // keywords
   inline std::vector<std::string> keys();
@@ -105,6 +106,9 @@ public:
   {
     return encryption_detection_threshold;
   }
+
+  // utility
+  inline KeyFile* get_master_keyfile();
 };
 
 /** Get all keywords with a specific name
@@ -172,6 +176,19 @@ KeyFile::keys()
   for (const auto& kv : keywords)
     list.push_back(kv.first);
   return list;
+}
+
+/** Get the uppermost keyfile (owning the mesh)
+ *
+ * @return master
+ */
+KeyFile*
+KeyFile::get_master_keyfile()
+{
+  if (parent_kf == this) {
+    return this;
+  } else
+    return parent_kf->get_master_keyfile();
 }
 
 } // namespace qd

@@ -58,6 +58,8 @@ PartKeyword::add_part(T _part_id, const std::string& _name)
   auto part_id_i32 = static_cast<int32_t>(_part_id);
   auto part = db_parts->add_partByID(part_id_i32, _name);
   part_ids.push_back(part_id_i32);
+  comments_between_card0_and_card1.push_back("");
+  unparsed_data.push_back("");
   return part;
 }
 
@@ -79,7 +81,14 @@ PartKeyword::add_part(T _part_id,
   auto part_id_i32 = static_cast<int32_t>(_part_id);
   auto part = db_parts->add_partByID(part_id_i32, _name);
   part_ids.push_back(part_id_i32);
-  unparsed_data.push_back(str_concat_lines(_additional_lines));
+  comments_between_card0_and_card1.push_back("");
+
+  if (_additional_lines.size() != 0) {
+    unparsed_data.push_back(str_concat_lines(_additional_lines));
+  } else {
+    unparsed_data.push_back("");
+  }
+
   return part;
 }
 
