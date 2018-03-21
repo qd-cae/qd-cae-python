@@ -5,7 +5,6 @@
 #include "dyna_cpp/db/DB_Nodes.hpp"
 #include "dyna_cpp/db/Element.hpp"
 #include "dyna_cpp/db/FEMFile.hpp"
-#include "dyna_cpp/dyna/D3plot.hpp"
 #include "dyna_cpp/utility/TextUtility.hpp"
 
 #include <algorithm>

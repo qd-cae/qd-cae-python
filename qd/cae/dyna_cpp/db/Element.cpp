@@ -3,7 +3,6 @@
 #include "dyna_cpp/db/DB_Elements.hpp"
 #include "dyna_cpp/db/DB_Nodes.hpp"
 #include "dyna_cpp/db/Node.hpp"
-#include "dyna_cpp/dyna/D3plot.hpp"
 #include "dyna_cpp/utility/MathUtility.hpp"
 
 #include <algorithm> // std::max
