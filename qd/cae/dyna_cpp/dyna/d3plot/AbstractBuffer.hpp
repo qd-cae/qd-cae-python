@@ -162,17 +162,21 @@ AbstractBuffer::read_float_array(int32_t _iWord,
 std::string
 AbstractBuffer::read_str(int32_t iWord, int32_t wordLength)
 {
-  // if(this->bufferSize <= (iWord+wordLength)*this->wordSize){
-  //  throw("read_str tries to read beyond the buffer size.");
-  std::stringstream res;
-  for (int32_t ii = iWord * this->wordSize;
-       ii < (iWord + wordLength) * this->wordSize;
-       ii++) {
-    res << char(std::bitset<8>(this->current_buffer[ii]).to_ulong());
-  }
+#ifdef QD_DEBUG
+  if (this->bufferSize <= (iWord + wordLength) * this->wordSize) {
+    throw(
+      std::invalid_argument("read_str tries to read beyond the buffer size."));
+#endif
 
-  return res.str();
-}
+    std::stringstream res;
+    for (int32_t ii = iWord * this->wordSize;
+         ii < (iWord + wordLength) * this->wordSize;
+         ii++) {
+      res << char(std::bitset<8>(this->current_buffer[ii]).to_ulong());
+    }
+
+    return res.str();
+  }
 
 } // namespace qd
 

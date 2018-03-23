@@ -54,7 +54,8 @@ def setup_dyna_cpp():
         "qd/cae/dyna_cpp/dyna/keyfile/IncludeKeyword.cpp",
         "qd/cae/dyna_cpp/dyna/keyfile/IncludePathKeyword.cpp",
         "qd/cae/dyna_cpp/utility/FileUtility.cpp",
-        "qd/cae/dyna_cpp/utility/TextUtility.cpp"]
+        "qd/cae/dyna_cpp/utility/TextUtility.cpp",
+        "qd/cae/dyna_cpp/parallel/WorkQueue.cpp"]
 
     # linux compiler args
     if is_linux:

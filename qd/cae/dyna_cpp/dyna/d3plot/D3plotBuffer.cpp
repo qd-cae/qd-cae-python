@@ -141,7 +141,6 @@ D3plotBuffer::init_nextState()
 
 /*
  * Get the next state buffer
- *
  */
 void
 D3plotBuffer::read_nextState()
