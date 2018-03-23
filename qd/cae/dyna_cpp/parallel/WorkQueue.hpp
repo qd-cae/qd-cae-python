@@ -42,8 +42,9 @@ private:
   WorkQueue(const WorkQueue&) = delete;
 
 public:
-  explicit WorkQueue(int64_t numWorkers = -1);
+  explicit WorkQueue();
   virtual ~WorkQueue();
+  void init_workers(size_t num_workers = 0);
   void abort();
   void stop();
   void wait_for_completion();

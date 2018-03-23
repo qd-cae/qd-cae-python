@@ -1,21 +1,17 @@
 
 #include <dyna_cpp/parallel/WorkQueue.hpp>
 
+#ifdef QD_DEBUG
+#include <iostream>
+#endif
+
 namespace qd {
 
 /**  Constructors a new work queue object
  *
  * @param num_workers : number of workers. If <1 all cores are used.
  */
-WorkQueue::WorkQueue(int64_t num_workers)
-{
-  if (num_workers < 1) {
-    num_workers = std::thread::hardware_concurrency() + 1;
-  }
-  while (num_workers--) {
-    m_workers.emplace_back(std::thread(&WorkQueue::do_work, this));
-  }
-}
+WorkQueue::WorkQueue() {}
 
 /** Will abort all pending jobs and run any in-progress jobs to completion
  * upon destruction.
@@ -23,7 +19,33 @@ WorkQueue::WorkQueue(int64_t num_workers)
  */
 WorkQueue::~WorkQueue()
 {
+#ifdef QD_DEBUG
+  std::cout << "Killing " << m_workers.size() << " unterminated threads.\n";
+#endif
   abort();
+}
+
+/** Initialize a certain amount of workers
+ *
+ * @param num_workers : number of workers to spawn
+ *
+ * By default one more thread than cores is allocated to
+ * ensure a high workload. If there are already enough workers running,
+ * nothing happens.
+ */
+void
+WorkQueue::init_workers(size_t num_workers)
+{
+  if (num_workers == 0) {
+    num_workers = std::thread::hardware_concurrency() + 1;
+  }
+
+  for (size_t iThread = m_workers.size(); iThread < num_workers; ++iThread)
+    m_workers.emplace_back(std::thread(&WorkQueue::do_work, this));
+
+#ifdef QD_DEBUG
+  std::cout << "Initialized " << m_workers.size() << " threads.\n";
+#endif
 }
 
 /** worker thread function, for picking jobs.
@@ -53,6 +75,9 @@ WorkQueue::do_work()
 void
 WorkQueue::join_all()
 {
+#ifdef QD_DEBUG
+  std::cout << "Joining " << m_workers.size() << " threads.\n";
+#endif
   for (auto& thread : m_workers) {
     thread.join();
   }

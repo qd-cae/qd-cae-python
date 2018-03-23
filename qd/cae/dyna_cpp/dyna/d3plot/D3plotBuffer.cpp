@@ -14,11 +14,9 @@ namespace qd {
 /*
  * Constructor
  */
-D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t _wordSize)
-  : AbstractBuffer(_wordSize)
+D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t word_size)
+  : AbstractBuffer(word_size)
   , iStateFile(0)
-  , bufferSize(0)
-  , wordSize(_wordSize)
 {
 
   // Check File
@@ -27,17 +25,16 @@ D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t _wordSize)
                                 "\" does not exist or is locked."));
   }
 
-  this->d3plots = find_dyna_result_files(_d3plot_path);
+  _d3plots = find_dyna_result_files(_d3plot_path);
 #ifdef QD_DEBUG
   std::cout << "Found result files:" << std::endl;
-  for (size_t ii = 0; ii < this->d3plots.size(); ++ii) {
-    std::cout << this->d3plots[ii] << std::endl;
+  for (size_t ii = 0; ii < _d3plots.size(); ++ii) {
+    std::cout << _d3plots[ii] << std::endl;
   }
   std::cout << "End of file list." << std::endl;
 #endif
-  // this->d3plots = globVector(_d3plot_path+"*");
 
-  if (this->d3plots.size() < 1)
+  if (_d3plots.size() < 1)
     throw(std::invalid_argument(
       "No D3plot result file could be found with the given path:" +
       _d3plot_path));
@@ -49,10 +46,12 @@ D3plotBuffer::D3plotBuffer(std::string _d3plot_path, int32_t _wordSize)
 D3plotBuffer::~D3plotBuffer()
 {
   // clean up futures
-  while (state_buffers.size() != 0) {
-    state_buffers.back().get();
-    state_buffers.pop_back();
+  /*
+  while (file_buffer_q.size() != 0) {
+    file_buffer_q.back().get();
+    file_buffer_q.pop_back();
   }
+  */
 }
 
 /*
@@ -69,12 +68,15 @@ D3plotBuffer::get_bufferFromFile(std::string filepath)
   std::ifstream fStream;
   fStream.open(filepath.c_str(), std::ios::binary | std::ios::in);
   fStream.seekg(0, std::ios::end);
-  std::streamoff _bufferSize = fStream.tellg();
+  std::streamoff bufferSize = fStream.tellg();
   fStream.seekg(0, std::ios::beg);
-  // std::cout << "Filesize: " << *bufferSize << endl; // DEBUG
-  state_buffer.reserve(_bufferSize);
-  fStream.read(&state_buffer[0], _bufferSize);
+  state_buffer.reserve(bufferSize);
+  fStream.read(&state_buffer[0], bufferSize);
   fStream.close();
+
+#ifdef QD_DEBUG
+  std::cout << "Loaded file: " << filepath << '\n';
+#endif
 
   return std::move(state_buffer);
 }
@@ -86,8 +88,8 @@ D3plotBuffer::get_bufferFromFile(std::string filepath)
 void
 D3plotBuffer::read_geometryBuffer()
 {
-
-  this->current_buffer = D3plotBuffer::get_bufferFromFile(d3plots[0]);
+  if (_current_buffer.size() == 0)
+    _current_buffer = D3plotBuffer::get_bufferFromFile(_d3plots[0]);
 };
 
 /*
@@ -119,24 +121,49 @@ void
 D3plotBuffer::init_nextState()
 {
 
-  if (this->current_buffer.size() == 0) {
-    this->current_buffer = D3plotBuffer::get_bufferFromFile(d3plots[0]);
-  }
+  if (_current_buffer.size() == 0)
+    _current_buffer = D3plotBuffer::get_bufferFromFile(_d3plots[0]);
 
 // empty remaining data (prevents memory leak)
 #ifdef QD_DEBUG
   std::cout << "Emptying previous IO-Buffers" << std::endl;
 #endif
-  while (state_buffers.size() != 0) {
-    state_buffers.back().get();
-    state_buffers.pop_back();
+  while (_file_buffer_q.size() != 0) {
+    _file_buffer_q.back().get();
+    _file_buffer_q.pop_back();
+  }
+
+  // heuristic measurement
+  //
+  // load disp only (D3plot)
+  //
+  //                (small)      (big)
+  // |-----------|-----------|-----------|
+  // | n_threads | time (rl) | time (sr) |
+  // |-----------|-----------|-----------|
+  // |     1     |  4.72 s   |  16.5 s   |
+  // |     2     |  3.2  s   |  16.5 s   |
+  // |     3     |  2.8  s   |  16.5 s   | <--- This is ok
+  // |     4     |  2.61 s   |  16.5 s   |
+  // |     5     |  2.54 s   |  16.5 s   |
+  // |-----------|-----------|-----------|
+  //
+  // There is only a difference for smaller files ...
+  // In RawD3plot, both times are more similar
+  constexpr size_t n_threads = 3;
+
+  _work_queue.init_workers(n_threads);
+  for (size_t iFile = 1; iFile < _d3plots.size(); ++iFile) {
+    _file_buffer_q.push_back(
+      _work_queue.submit(D3plotBuffer::get_bufferFromFile, _d3plots[iFile]));
   }
 
   // preload buffers
-  for (size_t iFile = d3plots.size() - 1; iFile > 0; --iFile) {
-    state_buffers.push_back(
-      std::async(D3plotBuffer::get_bufferFromFile, d3plots[iFile]));
-  }
+  // for (size_t iFile = _d3plots.size() - 1; iFile > 0; --iFile)
+  // {
+  //   file_buffer_q.push_back(
+  //     std::async();
+  // }
 }
 
 /*
@@ -154,18 +181,18 @@ D3plotBuffer::read_nextState()
     return;
   }
 
-  if (iStateFile >= d3plots.size()) {
+  if (iStateFile >= _d3plots.size()) {
     throw(std::invalid_argument("There are no more state-files to be read."));
   }
 
 #ifdef QD_DEBUG
-  std::cout << "Loading state-file:" << d3plots[iStateFile] << std::endl;
+  std::cout << "Loading state-file:" << _d3plots[iStateFile] << std::endl;
 #endif
 
-  this->current_buffer = state_buffers.back().get();
-  state_buffers.pop_back();
+  _current_buffer = _file_buffer_q.front().get();
+  _file_buffer_q.pop_front();
+
   iStateFile++;
-  return;
 }
 
 /*
@@ -176,7 +203,7 @@ void
 D3plotBuffer::rewind_nextState()
 {
   iStateFile = 0;
-  this->current_buffer = D3plotBuffer::get_bufferFromFile(d3plots[0]);
+  _current_buffer = D3plotBuffer::get_bufferFromFile(_d3plots[0]);
 }
 
 /*
@@ -186,7 +213,7 @@ D3plotBuffer::rewind_nextState()
 bool
 D3plotBuffer::has_nextState()
 {
-  if (state_buffers.size() > 0)
+  if (_file_buffer_q.size() > 0)
     return true;
   return false;
 }
@@ -198,18 +225,20 @@ D3plotBuffer::has_nextState()
 void
 D3plotBuffer::end_nextState()
 {
-
-  this->current_buffer.clear();
+  _current_buffer.clear();
+  _file_buffer_q.clear();
+  _work_queue.abort();
 }
 
 /*
- * Close the file ... just releases buffer.
+ * Close the file ... releases buffers.
  */
 void
 D3plotBuffer::finish_reading()
 {
-
-  this->current_buffer.clear();
+  _current_buffer.clear();
+  _file_buffer_q.clear();
+  _work_queue.abort();
 }
 
 } // namespace qd

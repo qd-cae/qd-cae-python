@@ -89,14 +89,14 @@ FemzipBuffer::read_geometryBuffer()
   int32_t l2 = 0;
   wrapinput(2, argv, p1, p2, &l1, &l2);
 
-  this->current_buffer.reserve(sizeof(int32_t) * this->size_geo);
+  this->_current_buffer.reserve(sizeof(int32_t) * this->size_geo);
   geometry_read(p1,
                 p2,
                 &l1,
                 &l2,
                 &this->ier,
                 &this->pos,
-                (int32_t*)&this->current_buffer[0],
+                (int32_t*)&this->_current_buffer[0],
                 &this->size_geo);
   this->check_ier("Femzip Error while reading geometry.");
 }
@@ -118,13 +118,13 @@ FemzipBuffer::read_partBuffer()
   this->pos = 0;
   part_titles_read(&this->ier,
                    &this->pos,
-                   (int32_t*)&this->current_buffer[0],
+                   (int32_t*)&this->_current_buffer[0],
                    &this->size_titles);
-  this->current_buffer.reserve(sizeof(int32_t) * this->size_geo);
+  this->_current_buffer.reserve(sizeof(int32_t) * this->size_geo);
   this->pos = 0;
   part_titles_read(&this->ier,
                    &this->pos,
-                   (int32_t*)&this->current_buffer[0],
+                   (int32_t*)&this->_current_buffer[0],
                    &this->size_titles);
   check_ier("Femzip Error during part_titles_read.");
 }
@@ -172,24 +172,43 @@ retry:
 
   this->timese = NULL;
 
-  // preload timestep
-  this->next_state_buffer = std::async(
-    [](int32_t _iTimestep, int32_t _size_state) {
-      int32_t _ier = 0;
-      int32_t _pos = 0;
-      std::vector<char> state_buffer(sizeof(int32_t) * _size_state);
-      states_read(
-        &_ier, &_pos, &_iTimestep, (int32_t*)&state_buffer[0], &_size_state);
-      if (_ier != 0) {
-        if (state_buffer.size() != 0) {
-          state_buffer = std::vector<char>();
-        }
-      }
+  // q timesteps
+  constexpr size_t n_threads = 1; // not more! otherwise racing begins!
+  _work_queue.init_workers(n_threads);
 
-      return std::move(state_buffer);
-    },
-    this->iTimeStep,
-    this->size_state);
+  _state_buffers.clear();
+  for (int32_t iStep = 1; iStep <= nTimeStep; ++iStep) {
+    _state_buffers.push_back(_work_queue.submit(_load_next_timestep, (*this)));
+  }
+}
+
+/** Loads the next/specified timestep (I think it can not handle skips!)
+ *
+ * @param fz_buffer : own instance ... hack for submit function
+ */
+std::vector<char>
+FemzipBuffer::_load_next_timestep(FemzipBuffer& fz_buffer)
+{
+#ifdef QD_DEBUG
+  std::cout << "Loading femzip step " << fz_buffer.iTimeStep << "/"
+            << fz_buffer.nTimeStep << '\n';
+#endif
+
+  int32_t _ier = 0;
+  int32_t _pos = 0;
+  std::vector<char> state_buffer(sizeof(int32_t) * fz_buffer.size_state);
+  states_read(&_ier,
+              &_pos,
+              &(fz_buffer.iTimeStep),
+              (int32_t*)&state_buffer[0],
+              &(fz_buffer.size_state));
+  if (_ier != 0) {
+    if (state_buffer.size() != 0) {
+      state_buffer = std::vector<char>();
+    }
+  }
+
+  return std::move(state_buffer);
 }
 
 /*
@@ -204,31 +223,14 @@ FemzipBuffer::read_nextState()
             << std::endl;
 #endif
 
-  this->current_buffer = this->next_state_buffer.get();
-  if (this->current_buffer.size() == 0) {
+  this->_current_buffer = this->_state_buffers.front().get();
+  this->_state_buffers.pop_front();
+
+  if (this->_current_buffer.size() == 0) {
     throw(std::invalid_argument("FEMZIP Error during state reading."));
   }
 
   this->iTimeStep++;
-
-  // preload timestep
-  this->next_state_buffer = std::async(
-    [](int32_t _iTimestep, int32_t _size_state) {
-      int32_t _ier = 0;
-      int32_t _pos = 0;
-      std::vector<char> state_buffer(sizeof(int32_t) * _size_state);
-      states_read(
-        &_ier, &_pos, &_iTimestep, (int32_t*)&state_buffer[0], &_size_state);
-      if (_ier != 0) {
-        if (state_buffer.size() != 0) {
-          state_buffer = std::vector<char>();
-        }
-      }
-
-      return std::move(state_buffer);
-    },
-    this->iTimeStep,
-    this->size_state);
 }
 
 /*
@@ -237,7 +239,8 @@ FemzipBuffer::read_nextState()
 bool
 FemzipBuffer::has_nextState()
 {
-  return this->iTimeStep <= this->nTimeStep;
+  // return this->iTimeStep <= this->nTimeStep;
+  return _state_buffers.size() != 0;
 }
 
 /*
@@ -276,15 +279,17 @@ FemzipBuffer::rewind_nextState()
 void
 FemzipBuffer::end_nextState()
 {
-
   states_close(&this->ier,
                &this->pos,
-               (int32_t*)&this->current_buffer[0],
+               (int32_t*)&this->_current_buffer[0],
                &this->size_geo);
-  current_buffer.clear();
+  this->check_ier("Femzip Error when stopping state reading");
 
-  close_read(&this->ier);
-  this->check_ier("Femzip Error during state of file.");
+  _current_buffer.clear();
+  _work_queue.abort();
+  _state_buffers.clear();
+
+  finish_reading();
 }
 
 /*
@@ -293,16 +298,16 @@ FemzipBuffer::end_nextState()
 void
 FemzipBuffer::finish_reading()
 {
-
   close_read(&this->ier);
-  this->check_ier("Femzip Error during closing of file.");
+  this->check_ier("Femzip Error when terminating reading.");
 }
 
-/*
- * Check for error
+/** Check for a femzip error
+ *
+ * @param message : error message to pop
  */
 void
-FemzipBuffer::check_ier(std::string message)
+FemzipBuffer::check_ier(const std::string& message)
 {
   if (this->ier != 0) {
     throw(std::invalid_argument(message));

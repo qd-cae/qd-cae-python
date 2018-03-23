@@ -2,21 +2,23 @@
 #ifndef FEMZIPBUFFER_HPP
 #define FEMZIPBUFFER_HPP
 
-#include "dyna_cpp/dyna/d3plot/AbstractBuffer.hpp"
-
+#include <deque>
 #include <future>
 #include <string>
+
+#include <dyna_cpp/dyna/d3plot/AbstractBuffer.hpp>
+#include <dyna_cpp/parallel/WorkQueue.hpp>
 
 namespace qd {
 
 class FemzipBuffer : public AbstractBuffer
 {
-
-  /* PRIVATE */
 private:
   std::string filepath;
+  std::deque<std::future<std::vector<char>>> _state_buffers;
+  // std::future<std::vector<char>> next_state_buffer;
 
-  std::future<std::vector<char>> next_state_buffer;
+  WorkQueue _work_queue;
 
   // general
   int32_t filetype; // = 1;
@@ -37,7 +39,8 @@ private:
   // config
   int32_t adjust;
 
-  void check_ier(std::string);
+  void check_ier(const std::string&);
+  static std::vector<char> _load_next_timestep(FemzipBuffer& fz_buffer);
 
   /* PUBLIC */
 public:
