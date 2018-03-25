@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include <Eigen/Dense>
+#include <dyna_cpp/math/Tensor.hpp>
 
 namespace qd {
 
@@ -66,7 +66,7 @@ public:
   int32_t dyna_numprop; // number of properties dude!!!
 
   int32_t dyna_numrbe;         // number of rigid body shell elems
-  Eigen::VectorXi dyna_irbtyp; // rigid body material type numbers (internal)
+  Tensor<int32_t> dyna_irbtyp; // rigid body material type numbers (internal)
 
   // just for checks ... can not be handled.
   int32_t dyna_nmsph;   // #nodes of sph

@@ -11,14 +11,18 @@
 
 namespace qd {
 
+// helper function
+static std::vector<char>
+_load_next_timestep(int32_t _iTimestep, int32_t _size_state);
+
 class FemzipBuffer : public AbstractBuffer
 {
 private:
   std::string filepath;
-  std::deque<std::future<std::vector<char>>> _state_buffers;
-  // std::future<std::vector<char>> next_state_buffer;
+  std::future<std::vector<char>> _next_buffer;
+  // std::deque<std::future<std::vector<char>>> _state_buffers;
 
-  WorkQueue _work_queue;
+  // WorkQueue _work_queue;
 
   // general
   int32_t filetype; // = 1;
@@ -40,7 +44,6 @@ private:
   int32_t adjust;
 
   void check_ier(const std::string&);
-  static std::vector<char> _load_next_timestep(FemzipBuffer& fz_buffer);
 
   /* PUBLIC */
 public:

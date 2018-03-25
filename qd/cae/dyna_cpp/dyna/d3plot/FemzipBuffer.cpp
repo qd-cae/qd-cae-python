@@ -3,6 +3,7 @@
 #include <dyna_cpp/utility/FileUtility.hpp>
 
 #include <bitset>
+#include <chrono>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -172,6 +173,10 @@ retry:
 
   this->timese = NULL;
 
+  // fetch next timestep
+  _next_buffer = std::async(_load_next_timestep, iTimeStep, size_state);
+
+  /*
   // q timesteps
   constexpr size_t n_threads = 1; // not more! otherwise racing begins!
   _work_queue.init_workers(n_threads);
@@ -180,6 +185,7 @@ retry:
   for (int32_t iStep = 1; iStep <= nTimeStep; ++iStep) {
     _state_buffers.push_back(_work_queue.submit(_load_next_timestep, (*this)));
   }
+  */
 }
 
 /** Loads the next/specified timestep (I think it can not handle skips!)
@@ -187,21 +193,14 @@ retry:
  * @param fz_buffer : own instance ... hack for submit function
  */
 std::vector<char>
-FemzipBuffer::_load_next_timestep(FemzipBuffer& fz_buffer)
+_load_next_timestep(int32_t _iTimestep, int32_t _size_state)
 {
-#ifdef QD_DEBUG
-  std::cout << "Loading femzip step " << fz_buffer.iTimeStep << "/"
-            << fz_buffer.nTimeStep << '\n';
-#endif
 
   int32_t _ier = 0;
   int32_t _pos = 0;
-  std::vector<char> state_buffer(sizeof(int32_t) * fz_buffer.size_state);
-  states_read(&_ier,
-              &_pos,
-              &(fz_buffer.iTimeStep),
-              (int32_t*)&state_buffer[0],
-              &(fz_buffer.size_state));
+  std::vector<char> state_buffer(sizeof(int32_t) * _size_state);
+  states_read(
+    &_ier, &_pos, &_iTimestep, (int32_t*)&state_buffer[0], &_size_state);
   if (_ier != 0) {
     if (state_buffer.size() != 0) {
       state_buffer = std::vector<char>();
@@ -223,8 +222,14 @@ FemzipBuffer::read_nextState()
             << std::endl;
 #endif
 
-  this->_current_buffer = this->_state_buffers.front().get();
-  this->_state_buffers.pop_front();
+  _current_buffer = _next_buffer.get();
+  _next_buffer = std::async(_load_next_timestep, iTimeStep, size_state);
+
+  /*
+  // BUGGY
+  _current_buffer = _state_buffers.front().get();
+  _state_buffers.pop_front();
+  */
 
   if (this->_current_buffer.size() == 0) {
     throw(std::invalid_argument("FEMZIP Error during state reading."));
@@ -239,8 +244,8 @@ FemzipBuffer::read_nextState()
 bool
 FemzipBuffer::has_nextState()
 {
-  // return this->iTimeStep <= this->nTimeStep;
-  return _state_buffers.size() != 0;
+  return this->iTimeStep <= this->nTimeStep;
+  // return _state_buffers.size() != 0;
 }
 
 /*
@@ -286,8 +291,8 @@ FemzipBuffer::end_nextState()
   this->check_ier("Femzip Error when stopping state reading");
 
   _current_buffer.clear();
-  _work_queue.abort();
-  _state_buffers.clear();
+  // _work_queue.abort();
+  // _state_buffers.clear();
 
   finish_reading();
 }

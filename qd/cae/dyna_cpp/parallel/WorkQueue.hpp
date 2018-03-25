@@ -54,7 +54,7 @@ public:
     -> std::future<decltype(function(args...))>;
 };
 
-/** Helper function for non-void return functions
+/** Helper function for non-void/void return functions
  *
  * @param data : pair of promise and function
  * @param args : forwarded arguments to called function
@@ -128,7 +128,7 @@ WorkQueue::submit(FunctionObject&& function, Args&&... args)
 
         execute_and_set_data<ReturnType, Args...>(data, args...);
 
-        /*
+        /* C++17 only
         if constexpr (std::is_same<ReturnType, void>::value) {
           // data->second(std::forward<Args>(args)...);
           data->second(std::forward<Args>(args)...);
