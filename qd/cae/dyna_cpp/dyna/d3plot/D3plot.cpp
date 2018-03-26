@@ -655,7 +655,12 @@ D3plot::read_geometry()
 #endif
   int32_t nRigidShells = 0;
   db_elems->reserve(Element::SHELL, buffer_elems4.size());
-  for (size_t ii = 0; ii < buffer_elems4.size(); ++ii) {
+
+  auto buffer_elems4_size = static_cast<long>(buffer_elems4.size());
+#pragma omp parallel for schedule(dynamic)
+  for (long ii = 0; ii < buffer_elems4_size; ++ii) {
+    // for (size_t ii = 0; ii < buffer_elems4.size(); ++ii) {
+
     auto elem = db_elems->add_element_byD3plot(
       Element::SHELL, buffer_numbering[3][ii], buffer_elems4[ii]);
 

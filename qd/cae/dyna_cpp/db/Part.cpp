@@ -25,6 +25,7 @@ Part::Part(int32_t _partID, const std::string& _partName, FEMFile* _femfile)
 void
 Part::set_name(const std::string& _name)
 {
+  std::lock_guard<std::mutex> lock(_part_mutex);
   this->partName = trim_copy(_name);
 }
 
@@ -54,6 +55,7 @@ Part::get_name() const
 void
 Part::add_element(std::shared_ptr<Element> _element)
 {
+  std::lock_guard<std::mutex> lock(_part_mutex);
   this->elements.push_back(_element);
 }
 
@@ -116,6 +118,7 @@ Part::get_elements(Element::ElementType _etype)
 void
 Part::remove_element(std::shared_ptr<Element> _element)
 {
+  std::lock_guard<std::mutex> lock(_part_mutex);
   elements.erase(
     std::remove_if(elements.begin(),
                    elements.end(),

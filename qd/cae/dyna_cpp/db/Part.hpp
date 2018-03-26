@@ -5,7 +5,9 @@
 // includes
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <vector>
+
 
 #include <dyna_cpp/db/Element.hpp>
 
@@ -25,6 +27,8 @@ private:
   FEMFile* femfile;
   std::string partName;
   std::vector<std::shared_ptr<Element>> elements;
+
+  std::mutex _part_mutex;
 
   void remove_element(std::shared_ptr<Element> _element);
 

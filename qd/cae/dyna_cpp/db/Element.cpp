@@ -66,6 +66,7 @@ Element::operator<(const Element& other) const
 void
 Element::set_is_rigid(bool _is_rigid)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->is_rigid = _is_rigid;
 }
 
@@ -153,6 +154,7 @@ Element::get_node_indexes() const
 void
 Element::add_plastic_strain(float _platic_strain)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->plastic_strain.push_back(_platic_strain);
 }
 
@@ -162,6 +164,7 @@ Element::add_plastic_strain(float _platic_strain)
 void
 Element::add_energy(float _energy)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->energy.push_back(_energy);
 }
 
@@ -178,6 +181,7 @@ Element::add_strain(std::vector<float> _strain)
                                 std::to_string(_strain.size()) + "!=6"));
 #endif
 
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->strain.push_back(_strain);
 }
 
@@ -194,6 +198,7 @@ Element::add_stress(std::vector<float> _stress)
                                 std::to_string(_stress.size()) + "!=6"));
 #endif
 
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->stress.push_back(_stress);
 }
 
@@ -203,6 +208,7 @@ Element::add_stress(std::vector<float> _stress)
 void
 Element::add_stress_mises(float _stress_mises)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->stress_mises.push_back(_stress_mises);
 }
 
@@ -212,6 +218,8 @@ Element::add_stress_mises(float _stress_mises)
 void
 Element::add_history_vars(std::vector<float> vars, size_t iTimestep)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
+
   if (iTimestep < this->history_vars.size()) {
     for (size_t ii = 0; ii < vars.size(); ++ii) {
       this->history_vars[iTimestep].push_back(vars[ii]);
@@ -482,6 +490,7 @@ Element::check() const
 void
 Element::clear_energy()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->energy.clear();
 }
 
@@ -490,6 +499,7 @@ Element::clear_energy()
 void
 Element::clear_plastic_strain()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->plastic_strain.clear();
 }
 
@@ -498,6 +508,7 @@ Element::clear_plastic_strain()
 void
 Element::clear_stress()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->stress.clear();
 }
 
@@ -506,6 +517,7 @@ Element::clear_stress()
 void
 Element::clear_stress_mises()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->stress_mises.clear();
 }
 
@@ -514,6 +526,7 @@ Element::clear_stress_mises()
 void
 Element::clear_strain()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->strain.clear();
 }
 
@@ -522,6 +535,7 @@ Element::clear_strain()
 void
 Element::clear_history_vars()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->history_vars.clear();
 }
 
@@ -534,6 +548,7 @@ Element::clear_history_vars()
 void
 Element::remove_node(int32_t _node_id)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   node_ids.erase(
     std::remove_if(node_ids.begin(),
                    node_ids.end(),

@@ -53,6 +53,7 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
     std::make_shared<Element>(_element_id, _part_id, _eType, _node_ids, this);
 
   switch (_eType) {
+
     case (Element::SHELL):
 #pragma omp critical
     {
