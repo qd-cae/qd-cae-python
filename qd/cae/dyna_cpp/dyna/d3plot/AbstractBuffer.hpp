@@ -40,24 +40,24 @@ public:
   virtual void finish_reading() = 0;
 
   // Vars
-  inline int32_t read_int(int32_t _iWord);
-  inline float read_float(int32_t _iWord);
+  inline int32_t read_int(int32_t _iWord) const;
+  inline float read_float(int32_t _iWord) const;
   inline void read_float_array(int32_t _iWord,
                                int32_t _length,
-                               std::vector<float>& _buffer);
-  inline std::string read_str(int32_t _iWord, int32_t _length);
+                               std::vector<float>& _buffer) const;
+  inline std::string read_str(int32_t _iWord, int32_t _length) const;
   template<typename T>
   void read_array(int32_t _iWord,
                   int32_t _length,
                   std::vector<T>& _buffer,
-                  size_t _buffer_beginning = 0);
+                  size_t _buffer_beginning = 0) const;
 };
 
 /*
  * read an int32_t from the current buffer
  */
 int32_t
-AbstractBuffer::read_int(int32_t iWord)
+AbstractBuffer::read_int(int32_t iWord) const
 {
 
 #ifdef QD_DEBUG
@@ -80,7 +80,7 @@ AbstractBuffer::read_int(int32_t iWord)
  * read a float from the current buffer
  */
 float
-AbstractBuffer::read_float(int32_t iWord)
+AbstractBuffer::read_float(int32_t iWord) const
 {
 
 #ifdef QD_DEBUG
@@ -102,7 +102,7 @@ void
 AbstractBuffer::read_array(int32_t _iWord,
                            int32_t _length,
                            std::vector<T>& _buffer,
-                           size_t _buffer_beginning)
+                           size_t _buffer_beginning) const
 {
 
 #ifdef QD_DEBUG
@@ -132,7 +132,7 @@ AbstractBuffer::read_array(int32_t _iWord,
 void
 AbstractBuffer::read_float_array(int32_t _iWord,
                                  int32_t _length,
-                                 std::vector<float>& _buffer)
+                                 std::vector<float>& _buffer) const
 {
 
 #ifdef QD_DEBUG
@@ -160,7 +160,7 @@ AbstractBuffer::read_float_array(int32_t _iWord,
  * read a string from the current buffer
  */
 std::string
-AbstractBuffer::read_str(int32_t iWord, int32_t wordLength)
+AbstractBuffer::read_str(int32_t iWord, int32_t wordLength) const
 {
 #ifdef QD_DEBUG
   if (this->_current_buffer.capacity() <=

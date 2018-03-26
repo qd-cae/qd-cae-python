@@ -1751,23 +1751,35 @@ D3plot::read_states_displacement()
   int32_t start = wordPosition + dyna_nglbv + 1;
 
   wordsToRead = dyna_numnp * dyna_ndim;
-  size_t iNode = 0;
+  // size_t iNode = 0;
 
 #ifdef QD_DEBUG
   std::cout << "> read_states_displacement at " << start << std::endl;
 #endif
 
   DB_Nodes* db_nodes = this->get_db_nodes();
-  std::vector<float> _disp(dyna_ndim);
 
-  for (int32_t ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
-    auto node = db_nodes->get_nodeByIndex(iNode);
+#pragma omp parallel
+  {
+    std::vector<float> disp_tmp(dyna_ndim);
 
-    buffer->read_float_array(ii, dyna_ndim, _disp);
-    node->add_disp(_disp);
-
-    ++iNode;
+#pragma omp for schedule(dynamic, 1)
+    for (int32_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
+      auto ii = start + iNode * dyna_ndim;
+      buffer->read_float_array(ii, dyna_ndim, disp_tmp);
+      db_nodes->get_nodeByIndex(iNode)->add_disp(disp_tmp);
+    }
   }
+
+  // old
+  // for (int32_t ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
+  //   auto node = db_nodes->get_nodeByIndex(iNode);
+
+  //   buffer->read_float_array(ii, dyna_ndim, _disp);
+  //   node->add_disp(_disp);
+
+  //   ++iNode;
+  // }
 }
 
 /*
@@ -1790,18 +1802,18 @@ D3plot::read_states_velocity()
   std::cout << "> read_states_velocity at " << start << std::endl;
 #endif
 
-  size_t iNode = 0;
-
   DB_Nodes* db_nodes = this->get_db_nodes();
-  std::vector<float> _vel(dyna_ndim);
 
-  for (int32_t ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
-    auto node = db_nodes->get_nodeByIndex(iNode);
+#pragma omp parallel
+  {
+    std::vector<float> vel_tmp(dyna_ndim);
 
-    buffer->read_float_array(ii, dyna_ndim, _vel);
-    node->add_vel(_vel);
-
-    ++iNode;
+#pragma omp for schedule(dynamic, 1)
+    for (int32_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
+      auto ii = start + iNode * dyna_ndim;
+      buffer->read_float_array(ii, dyna_ndim, vel_tmp);
+      db_nodes->get_nodeByIndex(iNode)->add_vel(vel_tmp);
+    }
   }
 }
 
@@ -1828,15 +1840,17 @@ D3plot::read_states_acceleration()
   int32_t iNode = 0;
 
   DB_Nodes* db_nodes = this->get_db_nodes();
-  std::vector<float> _accel(dyna_ndim);
 
-  for (int32_t ii = start; ii < start + wordsToRead; ii += dyna_ndim) {
-    auto node = db_nodes->get_nodeByIndex(iNode);
+#pragma omp parallel
+  {
+    std::vector<float> accel_tmp(dyna_ndim);
 
-    buffer->read_float_array(ii, dyna_ndim, _accel);
-    node->add_accel(_accel);
-
-    ++iNode;
+#pragma omp for schedule(dynamic, 1)
+    for (int32_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
+      auto ii = start + iNode * dyna_ndim;
+      buffer->read_float_array(ii, dyna_ndim, accel_tmp);
+      db_nodes->get_nodeByIndex(iNode)->add_accel(accel_tmp);
+    }
   }
 }
 

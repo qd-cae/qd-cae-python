@@ -5,6 +5,7 @@
 // includes
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -23,6 +24,11 @@ class FEMFile;
 class DB_Elements
 {
 private:
+  std::mutex _elem2_mutex;
+  std::mutex _elem4_mutex;
+  std::mutex _elem4th_mutex;
+  std::mutex _elem8_mutex;
+
   FEMFile* femfile;
   DB_Nodes* db_nodes;
   DB_Parts* db_parts;

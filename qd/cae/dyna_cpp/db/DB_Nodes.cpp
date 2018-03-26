@@ -45,17 +45,22 @@ DB_Nodes::add_node(int32_t _nodeID, const std::vector<float>& coords)
     throw(std::invalid_argument("Node-ID may not be negative!"));
   }
 
-  // Check if node already is in map
-  if (this->id2index_nodes.count(_nodeID) != 0)
-    throw(std::invalid_argument("Trying to insert a node with same id twice: " +
-                                std::to_string(_nodeID)));
-
-  // Create and add new node
   std::shared_ptr<Node> node = std::make_shared<Node>(_nodeID, coords, this);
 
-  id2index_nodes.insert(
-    std::pair<int32_t, size_t>(_nodeID, this->nodes.size()));
-  this->nodes.push_back(node);
+#pragma omp critical
+  {
+    // std::lock_guard<std::mutex> lock(_node_mutex);
+
+    // check if node already is in map
+    if (this->id2index_nodes.count(_nodeID) != 0)
+      throw(
+        std::invalid_argument("Trying to insert a node with same id twice: " +
+                              std::to_string(_nodeID)));
+
+    id2index_nodes.insert(
+      std::pair<int32_t, size_t>(_nodeID, this->nodes.size()));
+    this->nodes.push_back(node);
+  }
 
   return std::move(node);
 }
@@ -75,18 +80,24 @@ DB_Nodes::add_node(int32_t _nodeID, float _x, float _y, float _z)
     throw(std::invalid_argument("Node-ID may not be negative!"));
   }
 
-  // Check if node already is in map
-  if (this->id2index_nodes.count(_nodeID) != 0)
-    throw(std::invalid_argument("Trying to insert a node with same id twice: " +
-                                std::to_string(_nodeID)));
-
   // Create and add new node
   std::shared_ptr<Node> node =
     std::make_shared<Node>(_nodeID, _x, _y, _z, this);
 
-  id2index_nodes.insert(
-    std::pair<int32_t, size_t>(_nodeID, this->nodes.size()));
-  this->nodes.push_back(node);
+#pragma omp critical
+  {
+    // std::lock_guard<std::mutex> lock(_node_mutex);
+
+    // Check if node already is in map
+    if (this->id2index_nodes.count(_nodeID) != 0)
+      throw(
+        std::invalid_argument("Trying to insert a node with same id twice: " +
+                              std::to_string(_nodeID)));
+
+    id2index_nodes.insert(
+      std::pair<int32_t, size_t>(_nodeID, this->nodes.size()));
+    this->nodes.push_back(node);
+  }
 
   return std::move(node);
 }
@@ -121,8 +132,8 @@ DB_Nodes::add_node_byKeyFile(int32_t _id, float _x, float _y, float _z)
   }
 }
 
-/*
- * Get the owning d3plot of the db.
+/** Get the owning d3plot of the db.
+ *
  */
 FEMFile*
 DB_Nodes::get_femfile()
@@ -137,9 +148,12 @@ DB_Nodes::get_femfile()
 size_t
 DB_Nodes::get_nNodes() const
 {
+#ifdef QD_DEBUG
   if (this->id2index_nodes.size() != this->nodes.size())
     throw(std::runtime_error("Node database encountered error: "
                              "id2index_nodes.size() != nodes.size()"));
+#endif
+
   return this->nodes.size();
 }
 

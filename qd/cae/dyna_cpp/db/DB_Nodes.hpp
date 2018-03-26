@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -25,6 +26,8 @@ class DB_Nodes
   friend FEMFile;
 
 private:
+  std::mutex _node_mutex;
+
   FEMFile* femfile;
   std::unordered_map<int32_t, size_t> id2index_nodes;
   std::vector<std::shared_ptr<Node>> nodes;

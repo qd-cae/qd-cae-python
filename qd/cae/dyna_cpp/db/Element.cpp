@@ -441,29 +441,39 @@ Element::get_history_vars() const
 void
 Element::check() const
 {
-  if (this->elemType == SHELL) {
-    if ((this->node_ids.size() < 3) || (this->node_ids.size() > 4))
-      throw(std::runtime_error(
-        "A shell element must have 3 or 4 nodes. Element has " +
-        std::to_string(this->node_ids.size())));
-    return;
-  } else if (this->elemType == SOLID) {
-    if ((this->node_ids.size() < 4) || (this->node_ids.size() > 8) ||
-        (this->node_ids.size() == 7))
-      throw(std::runtime_error(
-        "A solid element must have 4,5,6 or 8 nodes. Element has " +
-        std::to_string(this->node_ids.size())));
-    return;
-  } else if (this->elemType == BEAM) {
-    if (this->node_ids.size() != 2)
-      throw(std::runtime_error(
-        "A beam element must have exactly 2 nodes. Element has " +
-        std::to_string(this->node_ids.size())));
-  } else if (this->elemType == TSHELL) {
-    if ((this->node_ids.size() != 8) && (this->node_ids.size() != 6))
-      throw(std::runtime_error(
-        "A thick shell element must have 6 or 8 nodes. Element has " +
-        std::to_string(this->node_ids.size())));
+  switch (elemType) {
+    case (SHELL):
+      if ((this->node_ids.size() < 3) || (this->node_ids.size() > 4))
+        throw(std::runtime_error(
+          "A shell element must have 3 or 4 nodes. Element has " +
+          std::to_string(this->node_ids.size())));
+      break;
+
+    case (SOLID):
+      if ((this->node_ids.size() < 4) || (this->node_ids.size() > 8) ||
+          (this->node_ids.size() == 7))
+        throw(std::runtime_error(
+          "A solid element must have 4,5,6 or 8 nodes. Element has " +
+          std::to_string(this->node_ids.size())));
+      break;
+
+    case (BEAM):
+      if (this->node_ids.size() != 2)
+        throw(std::runtime_error(
+          "A beam element must have exactly 2 nodes. Element has " +
+          std::to_string(this->node_ids.size())));
+      break;
+
+    case (TSHELL):
+      if ((this->node_ids.size() != 8) && (this->node_ids.size() != 6))
+        throw(std::runtime_error(
+          "A thick shell element must have 6 or 8 nodes. Element has " +
+          std::to_string(this->node_ids.size())));
+      break;
+
+    default:
+      throw(std::runtime_error("Unknown element type during element check."));
+      break;
   }
 }
 
