@@ -76,7 +76,7 @@ Tensor<T>::get_offset(const std::vector<size_t> indexes)
   size_t entry_index = 0;
   for (size_t ii = 0; ii < indexes.size(); ++ii) {
     size_t offset = std::accumulate(
-      begin(shape) + ii + 1, end(shape), 1, std::multiplies<>());
+      std::begin(_shape) + ii + 1, std::end(_shape), 1, std::multiplies<>());
     entry_index += indexes[ii] * offset;
   }
 

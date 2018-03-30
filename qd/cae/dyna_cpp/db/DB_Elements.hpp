@@ -76,9 +76,9 @@ public:
   std::vector<std::shared_ptr<Element>> get_elements(
     const Element::ElementType _type = Element::NONE);
   template<typename T>
-  T get_element_id_from_index(Element::ElementType _type, size_t _index) const;
+  T get_element_id_from_index(Element::ElementType _type, size_t _index);
   template<typename T>
-  size_t get_element_index_from_id(Element::ElementType _type, T _id) const;
+  size_t get_element_index_from_id(Element::ElementType _type, T _id);
 
   template<typename T>
   std::shared_ptr<Element> get_elementByID(Element::ElementType _eType, T _id);
@@ -102,7 +102,7 @@ public:
  */
 template<typename T>
 size_t
-DB_Elements::get_element_index_from_id(Element::ElementType _type, T _id) const
+DB_Elements::get_element_index_from_id(Element::ElementType _type, T _id)
 {
 
   switch (_type) {
@@ -159,7 +159,7 @@ DB_Elements::get_element_index_from_id(Element::ElementType _type, T _id) const
 template<typename T>
 T
 DB_Elements::get_element_id_from_index(Element::ElementType _type,
-                                       size_t _index) const
+                                       size_t _index)
 {
   return this->get_elementByIndex(_type, _index)->get_elementID();
 }
@@ -210,7 +210,6 @@ DB_Elements::get_elementByID(Element::ElementType _elementType,
  *
  */
 template<typename T>
-// typename std::enable_if<std::is_integral<T>::value>::type
 std::shared_ptr<Element>
 DB_Elements::get_elementByIndex(Element::ElementType _type, T _index)
 {

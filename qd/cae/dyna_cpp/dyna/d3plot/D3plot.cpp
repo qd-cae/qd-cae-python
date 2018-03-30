@@ -131,7 +131,7 @@ D3plot::D3plot(std::string _filename,
 #else
     if (_useFemzip) {
       throw(std::invalid_argument(
-        "d3plot.cpp was compiled without femzip support."));
+        "D3plot.cpp was compiled without femzip support."));
     }
     const int32_t bytesPerWord = 4;
     return std::move(std::make_unique<D3plotBuffer>(_filename, bytesPerWord));
@@ -634,13 +634,17 @@ D3plot::read_geometry()
   std::cout << this->get_db_nodes()->get_nNodes() << " done." << std::endl;
 #endif
 
+  DB_Elements* db_elems = this->get_db_elements();
+
 // Beams
 #ifdef QD_DEBUG
   std::cout << "Adding beams ... ";
 #endif
-  DB_Elements* db_elems = this->get_db_elements();
   db_elems->reserve(Element::BEAM, buffer_elems2.size());
-  for (size_t ii = 0; ii < buffer_elems2.size(); ++ii) {
+
+  const auto buffer_elems2_size = static_cast<int64_t>(buffer_elems2.size());
+#pragma omp parallel for schedule(dynamic)
+  for (int64_t ii = 0; ii < buffer_elems2_size; ++ii) {
     db_elems->add_element_byD3plot(
       Element::BEAM, buffer_numbering[2][ii], buffer_elems2[ii]);
   }
@@ -656,9 +660,9 @@ D3plot::read_geometry()
   int32_t nRigidShells = 0;
   db_elems->reserve(Element::SHELL, buffer_elems4.size());
 
-  auto buffer_elems4_size = static_cast<long>(buffer_elems4.size());
+  const auto buffer_elems4_size = static_cast<int64_t>(buffer_elems4.size());
 #pragma omp parallel for schedule(dynamic)
-  for (long ii = 0; ii < buffer_elems4_size; ++ii) {
+  for (int64_t ii = 0; ii < buffer_elems4_size; ++ii) {
     // for (size_t ii = 0; ii < buffer_elems4.size(); ++ii) {
 
     auto elem = db_elems->add_element_byD3plot(
@@ -686,7 +690,10 @@ D3plot::read_geometry()
   std::cout << "Adding solids ... ";
 #endif
   db_elems->reserve(Element::SOLID, buffer_elems8.size());
-  for (size_t ii = 0; ii < buffer_elems8.size(); ++ii) {
+
+  const auto buffer_elems8_size = static_cast<int64_t>(buffer_elems8.size());
+#pragma omp parallel for schedule(dynamic)
+  for (int64_t ii = 0; ii < buffer_elems8_size; ++ii) {
     db_elems->add_element_byD3plot(
       Element::SOLID, buffer_numbering[1][ii], buffer_elems8[ii]);
   }
@@ -700,7 +707,11 @@ D3plot::read_geometry()
   std::cout << "Adding thick shells ... ";
 #endif
   db_elems->reserve(Element::TSHELL, buffer_elems4th.size());
-  for (size_t ii = 0; ii < buffer_elems4th.size(); ++ii) {
+
+  const auto buffer_elems4th_size =
+    static_cast<int64_t>(buffer_elems4th.size());
+#pragma omp parallel for schedule(dynamic)
+  for (int64_t ii = 0; ii < buffer_elems4th_size; ++ii) {
     db_elems->add_element_byD3plot(
       Element::TSHELL, buffer_numbering[4][ii], buffer_elems4th[ii]);
   }
@@ -1768,7 +1779,7 @@ D3plot::read_states_displacement()
   {
     std::vector<float> disp_tmp(dyna_ndim);
 
-#pragma omp for schedule(dynamic, 1)
+#pragma omp for schedule(dynamic)
     for (int32_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
       auto ii = start + iNode * dyna_ndim;
       buffer->read_float_array(ii, dyna_ndim, disp_tmp);
@@ -1813,7 +1824,7 @@ D3plot::read_states_velocity()
   {
     std::vector<float> vel_tmp(dyna_ndim);
 
-#pragma omp for schedule(dynamic, 1)
+#pragma omp for schedule(dynamic)
     for (int32_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
       auto ii = start + iNode * dyna_ndim;
       buffer->read_float_array(ii, dyna_ndim, vel_tmp);
@@ -1850,7 +1861,7 @@ D3plot::read_states_acceleration()
   {
     std::vector<float> accel_tmp(dyna_ndim);
 
-#pragma omp for schedule(dynamic, 1)
+#pragma omp for schedule(dynamic)
     for (int32_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
       auto ii = start + iNode * dyna_ndim;
       buffer->read_float_array(ii, dyna_ndim, accel_tmp);
@@ -1967,136 +1978,149 @@ D3plot::read_states_elem4(size_t iState)
     iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
   int32_t iLayerSize = dyna_neips + iHistoryOffset;
 
-  // helpful vars
-  // vectors
-  std::vector<float> tmp_vec6(6);
-  std::vector<float> layers_stress_mises(dyna_maxint);
-  std::vector<float> layers_plastic_strain(dyna_maxint);
-  // matrices
-  std::vector<std::vector<float>> layers_stress(
-    6, std::vector<float>(dyna_maxint));
-  std::vector<std::vector<float>> layers_strain(6, std::vector<float>(2));
-  std::vector<std::vector<float>> layers_history(
-    this->history_shell_read.size(), std::vector<float>(dyna_maxint));
+  const auto nElements_shell = static_cast<int64_t>(
+    get_db_elements()->get_nElements(Element::ElementType::SHELL));
 
-  // Do the thing ...
-  size_t iElement = 0;
-  for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
-    // get element (and check for rigidity)
-    auto element =
-      this->get_db_elements()->get_elementByIndex(Element::SHELL, iElement);
-    if (element->get_is_rigid()) {
-      // does not increment ii, but iElement!!!!!
-      continue;
-    }
+#pragma omp parallel
+  {
 
-    // LOOP: LAYERS
-    for (int32_t iLayer = 0; iLayer < dyna_maxint; ++iLayer) {
-      int32_t layerStart = ii + iLayer * iLayerSize;
+    // helpful vars
+    // vectors
+    std::vector<float> tmp_vec6(6);
+    std::vector<float> layers_stress_mises(dyna_maxint);
+    std::vector<float> layers_plastic_strain(dyna_maxint);
+    // matrices
+    std::vector<std::vector<float>> layers_stress(
+      6, std::vector<float>(dyna_maxint));
+    std::vector<std::vector<float>> layers_strain(6, std::vector<float>(2));
+    std::vector<std::vector<float>> layers_history(
+      this->history_shell_read.size(), std::vector<float>(dyna_maxint));
 
-      // LAYER: PLASTIC_STRAIN
-      if ((this->plastic_strain_read) && (dyna_ioshl2)) {
+    // Do the thing ...
+    // size_t iElement = 0;
+    // for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
+#pragma omp for schedule(dynamic)
+    for (int64_t iElement = 0; iElement < nElements_shell; ++iElement) {
 
-        layers_plastic_strain[iLayer] =
-          this->buffer->read_float(layerStart + iPlastStrainOffset);
+      auto ii = start + iElement * dyna_nv2d;
+
+      // get element (and check for rigidity)
+      auto element =
+        this->get_db_elements()->get_elementByIndex(Element::SHELL, iElement);
+      if (element->get_is_rigid()) {
+        // does not increment ii, but iElement!!!!!
+        continue;
       }
 
-      // LAYER: STRESS TENSOR AND MISES
-      if ((this->stress_read || this->stress_mises_read) && (dyna_ioshl1)) {
-        layers_stress[0][iLayer] = this->buffer->read_float(layerStart);
-        layers_stress[1][iLayer] = this->buffer->read_float(layerStart + 1);
-        layers_stress[2][iLayer] = this->buffer->read_float(layerStart + 2);
-        layers_stress[3][iLayer] = this->buffer->read_float(layerStart + 3);
-        layers_stress[4][iLayer] = this->buffer->read_float(layerStart + 4);
-        layers_stress[5][iLayer] = this->buffer->read_float(layerStart + 5);
+      // LOOP: LAYERS
+      for (int32_t iLayer = 0; iLayer < dyna_maxint; ++iLayer) {
+        int32_t layerStart = ii + iLayer * iLayerSize;
 
-        // stress mises calculation
-        if (this->stress_mises_read) {
-          tmp_vec6[0] = layers_stress[0][iLayer];
-          tmp_vec6[1] = layers_stress[1][iLayer];
-          tmp_vec6[2] = layers_stress[2][iLayer];
-          tmp_vec6[3] = layers_stress[3][iLayer];
-          tmp_vec6[4] = layers_stress[4][iLayer];
-          tmp_vec6[5] = layers_stress[5][iLayer];
-          layers_stress_mises[iLayer] = MathUtility::mises_stress(tmp_vec6);
+        // LAYER: PLASTIC_STRAIN
+        if ((this->plastic_strain_read) && (dyna_ioshl2)) {
+
+          layers_plastic_strain[iLayer] =
+            this->buffer->read_float(layerStart + iPlastStrainOffset);
         }
 
-      } // end:stress
+        // LAYER: STRESS TENSOR AND MISES
+        if ((this->stress_read || this->stress_mises_read) && (dyna_ioshl1)) {
+          layers_stress[0][iLayer] = this->buffer->read_float(layerStart);
+          layers_stress[1][iLayer] = this->buffer->read_float(layerStart + 1);
+          layers_stress[2][iLayer] = this->buffer->read_float(layerStart + 2);
+          layers_stress[3][iLayer] = this->buffer->read_float(layerStart + 3);
+          layers_stress[4][iLayer] = this->buffer->read_float(layerStart + 4);
+          layers_stress[5][iLayer] = this->buffer->read_float(layerStart + 5);
 
-      // LAYERS: HISTORY SHELL
-      if (this->dyna_neips) {
-        int32_t iHistoryStart = layerStart + iHistoryOffset - 1;
+          // stress mises calculation
+          if (this->stress_mises_read) {
+            tmp_vec6[0] = layers_stress[0][iLayer];
+            tmp_vec6[1] = layers_stress[1][iLayer];
+            tmp_vec6[2] = layers_stress[2][iLayer];
+            tmp_vec6[3] = layers_stress[3][iLayer];
+            tmp_vec6[4] = layers_stress[4][iLayer];
+            tmp_vec6[5] = layers_stress[5][iLayer];
+            layers_stress_mises[iLayer] = MathUtility::mises_stress(tmp_vec6);
+          }
 
-        for (size_t iHistoryVar = 0;
-             iHistoryVar < this->history_shell_read.size();
-             ++iHistoryVar) {
+        } // end:stress
 
-          // history vars start with index 1 and not 0, thus the -1
-          layers_history[iHistoryVar][iLayer] = this->buffer->read_float(
-            iHistoryStart + history_shell_read[iHistoryVar]);
+        // LAYERS: HISTORY SHELL
+        if (this->dyna_neips) {
+          int32_t iHistoryStart = layerStart + iHistoryOffset - 1;
 
-        } // loop:history
-      }   // if:history
+          for (size_t iHistoryVar = 0;
+               iHistoryVar < this->history_shell_read.size();
+               ++iHistoryVar) {
 
-    } // loop:layers
+            // history vars start with index 1 and not 0, thus the -1
+            layers_history[iHistoryVar][iLayer] = this->buffer->read_float(
+              iHistoryStart + history_shell_read[iHistoryVar]);
 
-    // add layer vars (if requested)
-    if (dyna_ioshl2 && this->plastic_strain_read)
-      element->add_plastic_strain(compute_state_var_from_mode(
-        layers_plastic_strain, this->plastic_strain_read));
-    if (dyna_ioshl1 && this->stress_read)
-      element->add_stress(
-        compute_state_var_from_mode(layers_stress, this->stress_read));
-    if (dyna_ioshl1 && this->stress_mises_read)
-      element->add_stress_mises(compute_state_var_from_mode(
-        layers_stress_mises, this->stress_mises_read));
-    if (this->history_shell_read.size())
-      element->add_history_vars(
-        compute_state_var_from_mode(layers_history, this->history_shell_mode),
-        iState);
+          } // loop:history
+        }   // if:history
 
-    // STRAIN TENSOR
-    if (dyna_istrn && this->strain_read) {
+      } // loop:layers
 
-      int32_t strainStart = this->own_has_internal_energy ? ii + dyna_nv2d - 13
-                                                          : ii + dyna_nv2d - 12;
+      // add layer vars (if requested)
+      if (dyna_ioshl2 && this->plastic_strain_read)
+        element->add_plastic_strain(compute_state_var_from_mode(
+          layers_plastic_strain, this->plastic_strain_read));
+      if (dyna_ioshl1 && this->stress_read)
+        element->add_stress(
+          compute_state_var_from_mode(layers_stress, this->stress_read));
+      if (dyna_ioshl1 && this->stress_mises_read)
+        element->add_stress_mises(compute_state_var_from_mode(
+          layers_stress_mises, this->stress_mises_read));
+      if (this->history_shell_read.size())
+        element->add_history_vars(
+          compute_state_var_from_mode(layers_history, this->history_shell_mode),
+          iState);
 
-      layers_strain[0][0] = this->buffer->read_float(strainStart);
-      layers_strain[1][0] = this->buffer->read_float(strainStart + 1);
-      layers_strain[2][0] = this->buffer->read_float(strainStart + 2);
-      layers_strain[3][0] = this->buffer->read_float(strainStart + 3);
-      layers_strain[4][0] = this->buffer->read_float(strainStart + 4);
-      layers_strain[5][0] = this->buffer->read_float(strainStart + 5);
-      layers_strain[0][1] = this->buffer->read_float(strainStart + 6);
-      layers_strain[1][1] = this->buffer->read_float(strainStart + 7);
-      layers_strain[2][1] = this->buffer->read_float(strainStart + 8);
-      layers_strain[3][1] = this->buffer->read_float(strainStart + 9);
-      layers_strain[4][1] = this->buffer->read_float(strainStart + 10);
-      layers_strain[5][1] = this->buffer->read_float(strainStart + 11);
+      // STRAIN TENSOR
+      if (dyna_istrn && this->strain_read) {
 
-      element->add_strain(
-        compute_state_var_from_mode(layers_strain, this->strain_read));
-    }
+        int32_t strainStart = this->own_has_internal_energy
+                                ? ii + dyna_nv2d - 13
+                                : ii + dyna_nv2d - 12;
 
-    // INTERNAL ENERGY
-    if (this->energy_read && this->own_has_internal_energy) {
-      element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
-    }
+        layers_strain[0][0] = this->buffer->read_float(strainStart);
+        layers_strain[1][0] = this->buffer->read_float(strainStart + 1);
+        layers_strain[2][0] = this->buffer->read_float(strainStart + 2);
+        layers_strain[3][0] = this->buffer->read_float(strainStart + 3);
+        layers_strain[4][0] = this->buffer->read_float(strainStart + 4);
+        layers_strain[5][0] = this->buffer->read_float(strainStart + 5);
+        layers_strain[0][1] = this->buffer->read_float(strainStart + 6);
+        layers_strain[1][1] = this->buffer->read_float(strainStart + 7);
+        layers_strain[2][1] = this->buffer->read_float(strainStart + 8);
+        layers_strain[3][1] = this->buffer->read_float(strainStart + 9);
+        layers_strain[4][1] = this->buffer->read_float(strainStart + 10);
+        layers_strain[5][1] = this->buffer->read_float(strainStart + 11);
 
-    /*
-    // internal energy (a little complicated ... but that's dyna)
-    if (this->energy_read && dyna_ioshl4) {
-      if (dyna_istrn == 1) {
-        if (dyna_nv2d >= 45)
-          element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
-      } else {
+        element->add_strain(
+          compute_state_var_from_mode(layers_strain, this->strain_read));
+      }
+
+      // INTERNAL ENERGY
+      if (this->energy_read && this->own_has_internal_energy) {
         element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
       }
-    }
-    */
 
-    ii += dyna_nv2d;
-  } // for elements
+      /*
+      // internal energy (a little complicated ... but that's dyna)
+      if (this->energy_read && dyna_ioshl4) {
+        if (dyna_istrn == 1) {
+          if (dyna_nv2d >= 45)
+            element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
+        } else {
+          element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
+        }
+      }
+      */
+
+      ii += dyna_nv2d;
+    } // for elements
+  }   // pragma omp parallel
 }
 
 /** Read the state data of the thick shell elements

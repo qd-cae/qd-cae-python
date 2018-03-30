@@ -62,6 +62,9 @@ public:
   void end_nextState();
   // Close
   void finish_reading();
+
+  // static functions
+  static bool is_femzip_compressed(const std::string& filepath);
 };
 
 } // namespace qd

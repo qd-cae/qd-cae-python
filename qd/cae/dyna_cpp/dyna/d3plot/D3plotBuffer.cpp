@@ -142,15 +142,17 @@ D3plotBuffer::init_nextState()
   // | n_threads | time (rl) | time (sr) |
   // |-----------|-----------|-----------|
   // |     1     |  4.72 s   |  16.5 s   |
-  // |     2     |  3.2  s   |  16.5 s   |
-  // |     3     |  2.8  s   |  16.5 s   | <--- This is ok
+  // |     2     |  3.2  s   |  16.5 s   | <--- This is ok
+  // |     3     |  2.8  s   |  16.5 s   |
   // |     4     |  2.61 s   |  16.5 s   |
   // |     5     |  2.54 s   |  16.5 s   |
   // |-----------|-----------|-----------|
   //
+  // !OUTDATED BENCHMARK
+  //
   // There is only a difference for smaller files ...
   // In RawD3plot, both times are more similar
-  constexpr size_t n_threads = 3;
+  constexpr size_t n_threads = 2;
 
   _work_queue.init_workers(n_threads);
   for (size_t iFile = 1; iFile < _d3plots.size(); ++iFile) {
