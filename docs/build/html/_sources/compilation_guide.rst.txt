@@ -36,7 +36,7 @@ Note that in contrast to windows, on Linux the library can be compiled for both,
 
     g++ --version
 
-You will need **g++ version 4.9 or higher**. If your compiler is fine, just install as follows:
+You will need **g++ version 5.4 or higher**. If your compiler is fine, just install as follows:
 
 .. code-block:: bash
 
@@ -49,7 +49,7 @@ As a little hint, if you want force python to take your modern compiler version 
 
 .. code-block:: bash
 
-    sudo CC=g++-4.9 python setup.py install
+    sudo CC=g++-5.4 python setup.py install
 
 
 Compilation with FEMZIP support
