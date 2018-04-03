@@ -25,6 +25,13 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 03.04.2018*
+Version 0.7.2
+
+qd.cae.dyna 🐰
+ - Parallelized many internal functions 🐇 This speeds up running scripts opnening result files chached by the OS (e.g. rerunning a script multiple times).
+ - Compilation on linux now requires at least g++-5.4 due to newer features 🥚
+
 *Changelog 07.03.2018*
 Version 0.7.1
 

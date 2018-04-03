@@ -23,8 +23,8 @@ before_install:
   
 install:
   # new gcc
-  - sudo apt-get install -qq g++-6
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
+  - sudo apt-get install -qq g++-5.4
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5.4 90
   # python packages
   #- python3 -m pip install --only-binary=numpy numpy
   
@@ -51,7 +51,7 @@ install:
   #- python setup.py install
   
   - python -m pip install -r requirements.txt
-  - CC=gcc-6 CXX=g++-6 python setup.py install
+  - CC=gcc-5.4 CXX=g++-5.4 python setup.py install
   #- sudo python3 -m pip install -r requirements.txt
   #- sudo CC=gcc-6 CXX=g++-6 python3 setup.py install
 
