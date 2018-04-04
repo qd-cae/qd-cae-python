@@ -174,7 +174,8 @@ retry:
   this->timese = NULL;
 
   // fetch next timestep
-  _next_buffer = std::async(_load_next_timestep, iTimeStep, size_state);
+  if (iTimeStep + 1 <= nTimeStep)
+    _next_buffer = std::async(_load_next_timestep, iTimeStep, size_state);
 
   /*
   // q timesteps
@@ -223,7 +224,8 @@ FemzipBuffer::read_nextState()
 #endif
 
   _current_buffer = _next_buffer.get();
-  _next_buffer = std::async(_load_next_timestep, iTimeStep, size_state);
+  if (iTimeStep + 1 <= nTimeStep)
+    _next_buffer = std::async(_load_next_timestep, iTimeStep, size_state);
 
   /*
   // BUGGY
