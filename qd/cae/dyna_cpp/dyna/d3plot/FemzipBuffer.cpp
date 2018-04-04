@@ -323,18 +323,18 @@ FemzipBuffer::check_ier(const std::string& message)
  *
  * @return is_compressed
  */
-bool
-FemzipBuffer::is_femzip_compressed(const std::string& filepath)
-{
-  try {
-    auto buffer = std::make_unique<FemzipBuffer>(_filename);
-    buffer->read_geometryBuffer();
-    buffer->free_geometryBuffer();
-    buffer->finish_reading();
-    return true;
-  } catch (...) {
-    return false;
-  }
-}
+// bool
+// FemzipBuffer::is_femzip_compressed(const std::string& filepath)
+// {
+//   try {
+//     auto buffer = std::make_unique<FemzipBuffer>(filepath);
+//     buffer->read_geometryBuffer();
+//     buffer->free_geometryBuffer();
+//     buffer->finish_reading();
+//     return true;
+//   } catch (...) {
+//     return false;
+//   }
+// }
 
 } // anemspace qd

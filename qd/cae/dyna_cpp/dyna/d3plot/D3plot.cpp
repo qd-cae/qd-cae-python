@@ -2000,7 +2000,7 @@ D3plot::read_states_elem4(size_t iState)
     // size_t iElement = 0;
     // for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
 #pragma omp for schedule(dynamic)
-    for (int64_t iElement = 0; iElement < nElements_shell; ++iElement) {
+    for (int32_t iElement = 0; iElement < nElements_shell; ++iElement) {
 
       auto ii = start + iElement * dyna_nv2d;
 
