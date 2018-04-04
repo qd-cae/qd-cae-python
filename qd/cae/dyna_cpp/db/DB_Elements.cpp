@@ -53,19 +53,26 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
     std::make_shared<Element>(_element_id, _part_id, _eType, _node_ids, this);
 
   switch (_eType) {
+
     case (Element::SHELL):
-      // check uniqueness
+#pragma omp critical
+    {
+      // std::lock_guard<std::mutex> lock(_elem4_mutex);
+
       if (id2index_elements4.find(_element_id) != id2index_elements4.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
           std::to_string(_element_id)));
-      // insert
       id2index_elements4.insert(
         std::pair<int32_t, size_t>(_element_id, elements4.size()));
       elements4.push_back(element);
-      break;
+    } break;
 
     case (Element::SOLID):
+#pragma omp critical
+    {
+      // std::lock_guard<std::mutex> lock(_elem8_mutex);
+
       if (id2index_elements8.find(_element_id) != id2index_elements8.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
@@ -74,9 +81,14 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
       id2index_elements8.insert(
         std::pair<int32_t, size_t>(_element_id, elements8.size()));
       elements8.push_back(element);
-      break;
+
+    } break;
 
     case (Element::BEAM):
+#pragma omp critical
+    {
+      // std::lock_guard<std::mutex> lock(_elem2_mutex);
+
       if (id2index_elements2.find(_element_id) != id2index_elements2.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
@@ -85,9 +97,13 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
       this->id2index_elements2.insert(
         std::pair<int32_t, size_t>(_element_id, elements2.size()));
       this->elements2.push_back(element);
-      break;
+    } break;
 
     case (Element::TSHELL):
+#pragma omp critical
+    {
+      // std::lock_guard<std::mutex> lock(_elem4th_mutex);
+
       if (id2index_elements4th.find(_element_id) != id2index_elements4th.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
@@ -96,7 +112,7 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
       id2index_elements4th.insert(
         std::pair<int32_t, size_t>(_element_id, this->elements4th.size()));
       elements4th.push_back(element);
-      break;
+    } break;
 
     default:
       throw(std::invalid_argument(

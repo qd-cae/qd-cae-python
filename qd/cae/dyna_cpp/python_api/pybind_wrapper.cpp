@@ -7,13 +7,13 @@
 #include <dyna_cpp/db/Node.hpp>
 #include <dyna_cpp/db/Part.hpp>
 //#include <dyna_cpp/dyna/Binout.hpp>
-#include <dyna_cpp/dyna/D3plot.hpp>
-#include <dyna_cpp/dyna/ElementKeyword.hpp>
-#include <dyna_cpp/dyna/KeyFile.hpp>
-#include <dyna_cpp/dyna/Keyword.hpp>
-#include <dyna_cpp/dyna/NodeKeyword.hpp>
-#include <dyna_cpp/dyna/PartKeyword.hpp>
-#include <dyna_cpp/dyna/RawD3plot.hpp>
+#include <dyna_cpp/dyna/d3plot/D3plot.hpp>
+#include <dyna_cpp/dyna/d3plot/RawD3plot.hpp>
+#include <dyna_cpp/dyna/keyfile/ElementKeyword.hpp>
+#include <dyna_cpp/dyna/keyfile/KeyFile.hpp>
+#include <dyna_cpp/dyna/keyfile/Keyword.hpp>
+#include <dyna_cpp/dyna/keyfile/NodeKeyword.hpp>
+#include <dyna_cpp/dyna/keyfile/PartKeyword.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
@@ -363,28 +363,34 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("get_nodes",
          &DB_Nodes::get_nodes,
          pybind11::return_value_policy::take_ownership,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          dbnodes_get_nodes_docs)
     .def("get_nodeByID",
          (std::shared_ptr<Node>(DB_Nodes::*)(long)) &
            DB_Nodes::get_nodeByID<long>,
          "id"_a,
          pybind11::return_value_policy::reference_internal,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          dbnodes_get_nodeByID_docs)
     .def("get_nodeByID",
-         //(std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(pybind11::list)) &
-         // DB_Nodes::get_nodeByID,
          [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::list _ids) {
-           return _db_nodes->get_nodeByID(qd::py::container_to_vector<int32_t>(
-             _ids, "An entry of the list was not a fully fledged integer."));
+
+           auto tmp = qd::py::container_to_vector<int32_t>(
+             _ids, "An entry of the list was not a fully fledged integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_nodes->get_nodeByID(tmp);
          },
          "id"_a,
          pybind11::return_value_policy::reference_internal)
     .def("get_nodeByID",
-         //(std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(pybind11::tuple))
-         //& DB_Nodes::get_nodeByID,
          [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::tuple _ids) {
-           return _db_nodes->get_nodeByID(qd::py::container_to_vector<int32_t>(
-             _ids, "An entry of the list was not a fully fledged integer."));
+
+           auto tmp = qd::py::container_to_vector<int32_t>(
+             _ids, "An entry of the list was not a fully fledged integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_nodes->get_nodeByID(tmp);
          },
          "id"_a,
          pybind11::return_value_policy::reference_internal)
@@ -394,26 +400,28 @@ PYBIND11_MODULE(dyna_cpp, m)
          "index"_a,
          pybind11::return_value_policy::reference_internal,
          dbnodes_get_nodeByIndex_docs)
-    .def(
-      "get_nodeByIndex",
-      //(std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(pybind11::list)) &
-      //  DB_Nodes::get_nodeByIndex,
-      [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::list _indexes) {
-        return _db_nodes->get_nodeByIndex(qd::py::container_to_vector<int32_t>(
-          _indexes, "An entry of the list was not a fully fledged integer."));
-      },
-      "index"_a,
-      pybind11::return_value_policy::reference_internal)
-    .def(
-      "get_nodeByIndex",
-      //(std::vector<std::shared_ptr<Node>>(DB_Nodes::*)(pybind11::tuple)) &
-      //  DB_Nodes::get_nodeByIndex,
-      [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::tuple _indexes) {
-        return _db_nodes->get_nodeByIndex(qd::py::container_to_vector<int32_t>(
-          _indexes, "An entry of the list was not a fully fledged integer."));
-      },
-      "index"_a,
-      pybind11::return_value_policy::reference_internal);
+    .def("get_nodeByIndex",
+         [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::list _indexes) {
+
+           auto tmp = qd::py::container_to_vector<int32_t>(
+             _indexes, "An entry of the list was not a fully fledged integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_nodes->get_nodeByIndex(tmp);
+         },
+         "index"_a,
+         pybind11::return_value_policy::reference_internal)
+    .def("get_nodeByIndex",
+         [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::tuple _indexes) {
+
+           auto tmp = qd::py::container_to_vector<int32_t>(
+             _indexes, "An entry of the list was not a fully fledged integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_nodes->get_nodeByIndex(tmp);
+         },
+         "index"_a,
+         pybind11::return_value_policy::reference_internal);
 
   // DB_Elements
   pybind11::class_<DB_Elements, std::shared_ptr<DB_Elements>> db_elements_py(
@@ -428,6 +436,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          &DB_Elements::get_elements,
          "element_type"_a = Element::NONE,
          pybind11::return_value_policy::take_ownership,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          get_elements_docs)
     .def(
       "get_elementByID",
@@ -435,33 +444,32 @@ PYBIND11_MODULE(dyna_cpp, m)
         DB_Elements::get_elementByID<long>,
       "element_type"_a,
       "id"_a,
+      pybind11::call_guard<pybind11::gil_scoped_release>(),
       pybind11::return_value_policy::reference_internal)
     .def("get_elementByID",
-         // (std::vector<std::shared_ptr<Element>>(DB_Elements::*)(
-         // Element::ElementType, pybind11::list))
-         // &DB_Elements::get_elementByID<long>,
          [](std::shared_ptr<DB_Elements> _db_elems,
             Element::ElementType _eType,
             pybind11::list _list) {
-           return _db_elems->get_elementByID(
-             _eType,
-             qd::py::container_to_vector<long>(
-               _list, "An entry of the id list was not an integer."));
+
+           auto tmp = qd::py::container_to_vector<long>(
+             _list, "An entry of the id list was not an integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_elems->get_elementByID(_eType, tmp);
          },
          "element_type"_a,
          "id"_a,
          pybind11::return_value_policy::reference_internal)
     .def("get_elementByID",
-         //(std::vector<std::shared_ptr<Element>>(DB_Elements::*)(
-         //  Element::ElementType, pybind11::tuple)) &
-         //  DB_Elements::get_elementByID<long>,
          [](std::shared_ptr<DB_Elements> _db_elems,
             Element::ElementType _eType,
             pybind11::tuple _list) {
-           return _db_elems->get_elementByID(
-             _eType,
-             qd::py::container_to_vector<long>(
-               _list, "An entry of the id list was not an integer."));
+
+           auto tmp = qd::py::container_to_vector<long>(
+             _list, "An entry of the id list was not an integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_elems->get_elementByID(_eType, tmp);
          },
          "element_type"_a,
          "id"_a,
@@ -475,31 +483,29 @@ PYBIND11_MODULE(dyna_cpp, m)
       pybind11::return_value_policy::reference_internal,
       dbelems_get_elementByIndex_docs)
     .def("get_elementByIndex",
-         //(std::vector<std::shared_ptr<Element>>(DB_Elements::*)(
-         //  Element::ElementType, pybind11::list)) &
-         //  DB_Elements::get_elementByIndex<long>,
          [](std::shared_ptr<DB_Elements> _db_elems,
             Element::ElementType _eType,
             pybind11::tuple _list) {
-           return _db_elems->get_elementByIndex(
-             _eType,
-             qd::py::container_to_vector<long>(
-               _list, "An entry of the index list was not an integer."));
+
+           auto tmp = qd::py::container_to_vector<long>(
+             _list, "An entry of the index list was not an integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_elems->get_elementByIndex(_eType, tmp);
          },
          "element_type"_a,
          "index"_a,
          pybind11::return_value_policy::reference_internal)
     .def("get_elementByIndex",
-         //(std::vector<std::shared_ptr<Element>>(DB_Elements::*)(
-         //  Element::ElementType, pybind11::tuple)) &
-         //  DB_Elements::get_elementByIndex<long>,
          [](std::shared_ptr<DB_Elements> _db_elems,
             Element::ElementType _eType,
             pybind11::list _list) {
-           return _db_elems->get_elementByIndex(
-             _eType,
-             qd::py::container_to_vector<long>(
-               _list, "An entry of the index list was not an integer."));
+
+           auto tmp = qd::py::container_to_vector<long>(
+             _list, "An entry of the index list was not an integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_elems->get_elementByIndex(_eType, tmp);
          },
          "element_type"_a,
          "index"_a,
@@ -516,6 +522,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("get_parts",
          &DB_Parts::get_parts,
          pybind11::return_value_policy::reference_internal,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          dbparts_get_parts_docs)
     .def("get_partByID",
          (std::shared_ptr<Part>(DB_Parts::*)(long)) &
@@ -524,20 +531,24 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal,
          dbparts_get_partByID_docs)
     .def("get_partByID",
-         //(std::vector<std::shared_ptr<Part>>(DB_Parts::*)(pybind11::list)) &
-         //  DB_Parts::get_partByID,
          [](std::shared_ptr<DB_Parts> _db_parts, pybind11::list _list) {
-           return _db_parts->get_partByID(
-             qd::py::container_to_vector<int32_t>(_list));
+
+           auto tmp = qd::py::container_to_vector<int32_t>(
+             _list, "An entry of the index list was not an integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_parts->get_partByID(tmp);
          },
          "id"_a,
          pybind11::return_value_policy::reference_internal)
     .def("get_partByID",
-         //(std::vector<std::shared_ptr<Part>>(DB_Parts::*)(pybind11::tuple)) &
-         //  DB_Parts::get_partByID,
          [](std::shared_ptr<DB_Parts> _db_parts, pybind11::tuple _list) {
-           return _db_parts->get_partByID(
-             qd::py::container_to_vector<int32_t>(_list));
+
+           auto tmp = qd::py::container_to_vector<int32_t>(
+             _list, "An entry of the index list was not an integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_parts->get_partByID(tmp);
          },
          "id"_a,
          pybind11::return_value_policy::reference_internal)
@@ -548,20 +559,24 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal,
          dbparts_get_partByIndex_docs)
     .def("get_partByIndex",
-         //(std::vector<std::shared_ptr<Part>>(DB_Parts::*)(pybind11::list)) &
-         //  DB_Parts::get_partByIndex,
          [](std::shared_ptr<DB_Parts> _db_parts, pybind11::list _list) {
-           return _db_parts->get_partByIndex(
-             qd::py::container_to_vector<int32_t>(_list));
+
+           auto tmp = qd::py::container_to_vector<int32_t>(
+             _list, "An entry of the index list was not an integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_parts->get_partByIndex(tmp);
          },
          "index"_a,
          pybind11::return_value_policy::reference_internal)
     .def("get_partByIndex",
-         //(std::vector<std::shared_ptr<Part>>(DB_Parts::*)(pybind11::tuple)) &
-         //  DB_Parts::get_partByIndex,
          [](std::shared_ptr<DB_Parts> _db_parts, pybind11::tuple _list) {
-           return _db_parts->get_partByIndex(
-             qd::py::container_to_vector<int32_t>(_list));
+
+           auto tmp = qd::py::container_to_vector<int32_t>(
+             _list, "An entry of the index list was not an integer.");
+
+           pybind11::gil_scoped_release release;
+           return _db_parts->get_partByIndex(tmp);
          },
          "index"_a,
          pybind11::return_value_policy::reference_internal)
@@ -569,6 +584,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          &DB_Parts::get_partByName,
          "name"_a,
          pybind11::return_value_policy::reference_internal,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          dbparts_get_partByName_docs);
 
   // FEMFile
@@ -578,6 +594,7 @@ PYBIND11_MODULE(dyna_cpp, m)
   femfile_py.def("get_filepath",
                  &FEMFile::get_filepath,
                  pybind11::return_value_policy::take_ownership,
+                 pybind11::call_guard<pybind11::gil_scoped_release>(),
                  femfile_get_filepath_docs);
 
   // D3plot
@@ -588,68 +605,87 @@ PYBIND11_MODULE(dyna_cpp, m)
          "filepath"_a,
          "read_states"_a = std::string(),
          "use_femzip"_a = false,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          d3plot_constructor)
-    .def( // pybind11::init<std::string, pybind11::list, bool>(),
+    .def(
       pybind11::init(
         [](std::string _filepath, pybind11::list _variables, bool _use_femzip) {
-          return std::make_shared<D3plot>(
-            _filepath,
-            qd::py::container_to_vector<std::string>(
-              _variables, "An entry of read_states was not of type str"),
-            _use_femzip);
+
+          auto tmp = qd::py::container_to_vector<std::string>(
+            _variables, "An entry of read_states was not of type str");
+
+          pybind11::gil_scoped_release release;
+          return std::make_shared<D3plot>(_filepath, tmp, _use_femzip);
+
         }),
       "filepath"_a,
       "read_states"_a = pybind11::list(),
       "use_femzip"_a = false)
-    .def( // pybind11::init<std::string, pybind11::tuple, bool>(),
-      pybind11::init([](std::string _filepath,
-                        pybind11::tuple _variables,
-                        bool _use_femzip) {
-        return std::make_shared<D3plot>(
-          _filepath,
-          qd::py::container_to_vector<std::string>(
-            _variables, "An entry of read_states was not of type str"),
-          _use_femzip);
-      }),
-      "filepath"_a,
-      "read_states"_a = pybind11::tuple(),
-      "use_femzip"_a = false)
+    .def(pybind11::init([](std::string _filepath,
+                           pybind11::tuple _variables,
+                           bool _use_femzip) {
+
+           auto tmp = qd::py::container_to_vector<std::string>(
+             _variables, "An entry of read_states was not of type str");
+
+           pybind11::gil_scoped_release release;
+           return std::make_shared<D3plot>(_filepath, tmp, _use_femzip);
+
+         }),
+         "filepath"_a,
+         "read_states"_a = pybind11::tuple(),
+         "use_femzip"_a = false)
     .def("info", &D3plot::info, d3plot_info_docs)
     .def("read_states",
          (void (D3plot::*)(const std::string&)) & D3plot::read_states,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          d3plot_read_states_docs)
     .def("read_states",
-         //(void (D3plot::*)(pybind11::list)) & D3plot::read_states)
          [](std::shared_ptr<D3plot> _d3plot, pybind11::list _list) {
-           _d3plot->read_states(qd::py::container_to_vector<std::string>(
-             _list, "An entry of read_states was not of type str"));
+
+           auto tmp = qd::py::container_to_vector<std::string>(
+             _list, "An entry of read_states was not of type str");
+
+           pybind11::gil_scoped_release release;
+           _d3plot->read_states(tmp);
+
          })
     .def("read_states",
-         //(void (D3plot::*)(pybind11::tuple)) & D3plot::read_states)
          [](std::shared_ptr<D3plot> _d3plot, pybind11::tuple _list) {
-           _d3plot->read_states(qd::py::container_to_vector<std::string>(
-             _list, "An entry of read_states was not of type str"));
+
+           auto tmp = qd::py::container_to_vector<std::string>(
+             _list, "An entry of read_states was not of type str");
+
+           pybind11::gil_scoped_release release;
+           _d3plot->read_states(tmp);
+
          })
     .def("clear",
-         //(void (D3plot::*)(pybind11::list)) & D3plot::clear,
          [](std::shared_ptr<D3plot> _d3plot, pybind11::list _list) {
-           _d3plot->clear(qd::py::container_to_vector<std::string>(
-             _list, "An entry of list was not of type str"));
+
+           auto tmp = qd::py::container_to_vector<std::string>(
+             _list, "An entry of read_states was not of type str");
+
+           pybind11::gil_scoped_release release;
+           _d3plot->clear(tmp);
          },
          "variables"_a = pybind11::list(),
          d3plot_clear_docs)
     .def("clear",
-         //(void (D3plot::*)(pybind11::tuple)) & D3plot::clear,
          [](std::shared_ptr<D3plot> _d3plot, pybind11::tuple _list) {
-           _d3plot->clear(qd::py::container_to_vector<std::string>(
-             _list, "An entry of list was not of type str"));
+
+           auto tmp = qd::py::container_to_vector<std::string>(
+             _list, "An entry of read_states was not of type str");
+
+           pybind11::gil_scoped_release release;
+           _d3plot->clear(tmp);
          },
          "variables"_a = pybind11::tuple())
     .def("clear",
          (void (D3plot::*)(const std::string&)) & D3plot::clear,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          "variables"_a = pybind11::str())
     .def("get_timesteps",
-         //&D3plot::get_timesteps_py,
          [](std::shared_ptr<D3plot> _d3plot) {
            return qd::py::vector_to_nparray(_d3plot->get_timesteps());
          },
@@ -679,6 +715,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def(pybind11::init<std::string, bool>(),
          "filepath"_a,
          "use_femzip"_a = false,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_constructor_description)
     .def(pybind11::init<>())
     .def("_get_string_names",
@@ -689,6 +726,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          &RawD3plot::get_string_data,
          "name"_a,
          pybind11::return_value_policy::take_ownership,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_get_string_data_docs)
     .def("_get_int_names",
          &RawD3plot::get_int_names,
@@ -696,7 +734,12 @@ PYBIND11_MODULE(dyna_cpp, m)
          rawd3plot_get_int_names_docs)
     .def("_get_int_data",
          [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
-           return qd::py::tensor_to_nparray(_d3plot->get_int_data(_entry_name));
+
+           pybind11::gil_scoped_release release;
+           auto& data = _d3plot->get_int_data(_entry_name);
+           pybind11::gil_scoped_acquire acquire;
+
+           return qd::py::tensor_to_nparray(data);
          },
          "name"_a,
          pybind11::return_value_policy::take_ownership,
@@ -707,8 +750,12 @@ PYBIND11_MODULE(dyna_cpp, m)
          rawd3plot_get_float_names_docs)
     .def("_get_float_data",
          [](std::shared_ptr<RawD3plot> _d3plot, std::string _entry_name) {
-           return qd::py::tensor_to_nparray(
-             _d3plot->get_float_data(_entry_name));
+
+           pybind11::gil_scoped_release release;
+           auto& data = _d3plot->get_float_data(_entry_name);
+           pybind11::gil_scoped_acquire acquire;
+
+           return qd::py::tensor_to_nparray(data);
          },
          "name"_a,
          pybind11::return_value_policy::take_ownership,
@@ -722,6 +769,7 @@ PYBIND11_MODULE(dyna_cpp, m)
            for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
              shape_sizet[ii] = _data.shape()[ii];
 
+           pybind11::gil_scoped_release release;
            _d3plot->set_float_data(_entry_name, shape_sizet, _data.data());
 
          },
@@ -736,6 +784,7 @@ PYBIND11_MODULE(dyna_cpp, m)
            for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
              shape_sizet[ii] = _data.shape()[ii];
 
+           pybind11::gil_scoped_release release;
            _d3plot->set_int_data(_entry_name, shape_sizet, _data.data());
 
          },
@@ -746,8 +795,10 @@ PYBIND11_MODULE(dyna_cpp, m)
             std::string _entry_name,
             pybind11::list _data) {
 
-           _d3plot->set_string_data(
-             _entry_name, qd::py::container_to_vector<std::string>(_data));
+           auto data = qd::py::container_to_vector<std::string>(_data);
+
+           pybind11::gil_scoped_release release;
+           _d3plot->set_string_data(_entry_name, data);
          },
          "name"_a,
          "data"_a)
@@ -756,8 +807,10 @@ PYBIND11_MODULE(dyna_cpp, m)
             std::string _entry_name,
             pybind11::tuple _data) {
 
-           _d3plot->set_string_data(
-             _entry_name, qd::py::container_to_vector<std::string>(_data));
+           auto data = qd::py::container_to_vector<std::string>(_data);
+
+           pybind11::gil_scoped_release release;
+           _d3plot->set_string_data(_entry_name, data);
          },
          "name"_a,
          "data"_a)
@@ -906,11 +959,11 @@ PYBIND11_MODULE(dyna_cpp, m)
              default:
                throw(std::invalid_argument(
                  "Invalid number of arguments. Valid are:\n"
-                 "- card index (int)\n"
-                 "- card and field index (int,int)\n"
-                 "- card index, field index and field size (int,int,int)\n"
-                 "- field name (str)\n"
-                 "- field name and field size (str,int)\n"));
+                 " - card index (int)\n"
+                 " - card and field index (int,int)\n"
+                 " - card index, field index and field size (int,int,int)\n"
+                 " - field name (str)\n"
+                 " - field name and field size (str,int)\n"));
                break;
            }
          },
@@ -1137,17 +1190,23 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("get_nodes",
          &NodeKeyword::get_nodes,
          pybind11::return_value_policy::take_ownership,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          node_keyword_get_nodes_docs)
     .def("get_node_ids",
          &NodeKeyword::get_node_ids,
          pybind11::return_value_policy::take_ownership,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          node_keyword_get_node_ids_docs)
-    .def("load", &NodeKeyword::load, node_keyword_load_docs);
+    .def("load",
+         &NodeKeyword::load,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         node_keyword_load_docs);
 
   element_keyword_py
     .def("get_elements",
          &ElementKeyword::get_elements,
          pybind11::return_value_policy::take_ownership,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          element_keyword_get_elements_docs)
     .def("get_nElements",
          &ElementKeyword::get_nElements,
@@ -1200,7 +1259,10 @@ PYBIND11_MODULE(dyna_cpp, m)
          "additional_card_data"_a = "",
          pybind11::return_value_policy::take_ownership,
          element_keyword_add_elementByNodeIndex_docs)
-    .def("load", &ElementKeyword::load, element_keyword_load_docs);
+    .def("load",
+         &ElementKeyword::load,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         element_keyword_load_docs);
 
   part_keyword_py
     .def("add_part",
@@ -1223,9 +1285,15 @@ PYBIND11_MODULE(dyna_cpp, m)
          "additional_lines"_a = std::vector<std::string>(),
          pybind11::return_value_policy::take_ownership,
          part_keyword_add_part_docs)
-    .def("get_parts", &PartKeyword::get_parts, part_keyword_get_parts_docs)
+    .def("get_parts",
+         &PartKeyword::get_parts,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         part_keyword_get_parts_docs)
     .def("get_nParts", &PartKeyword::get_nParts, part_keyword_get_nParts_docs)
-    .def("load", &PartKeyword::load, part_keyword_load_docs);
+    .def("load",
+         &PartKeyword::load,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         part_keyword_load_docs);
 
   include_path_keyword_py
     .def("is_relative",
@@ -1245,6 +1313,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     // .def("load", &IncludeKeyword::load, include_keyword_load_docs)
     .def("load",
          [](std::shared_ptr<IncludeKeyword> self) { self->load(); },
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          include_keyword_load_docs);
 
   // KeyFile
@@ -1274,6 +1343,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          "parse_mesh"_a = false,
          "load_includes"_a = false,
          "encryption_detection"_a = 0.7,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
          keyfile_constructor)
     .def("__str__",
          &KeyFile::str,
@@ -1339,7 +1409,11 @@ PYBIND11_MODULE(dyna_cpp, m)
          &KeyFile::keys,
          pybind11::return_value_policy::take_ownership,
          keyfile_keys_description)
-    .def("save", &KeyFile::save_txt, "filepath"_a, keyfile_save_description)
+    .def("save",
+         &KeyFile::save_txt,
+         "filepath"_a,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         keyfile_save_description)
     .def("remove_keyword",
          [](std::shared_ptr<KeyFile> self,
             const std::string& name,
@@ -1380,10 +1454,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          &KeyFile::get_includes,
          pybind11::return_value_policy::take_ownership,
          keyfile_get_includes_description)
-    .def("get_includes",
-         &KeyFile::get_includes,
-         pybind11::return_value_policy::take_ownership,
-         keyfile_get_includes_description)
     .def("get_include_dirs",
          [](std::shared_ptr<KeyFile> self) {
            return self->get_include_dirs(true);
@@ -1406,6 +1476,7 @@ PYBIND11_MODULE(dyna_cpp, m)
           return get_entropy(buffer);
         },
         pybind11::return_value_policy::take_ownership,
+        pybind11::call_guard<pybind11::gil_scoped_release>(),
         module_get_file_entropy_description);
 
   // return m.ptr();

@@ -5,6 +5,7 @@
 // includes
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
@@ -43,6 +44,8 @@ private:
   std::vector<std::vector<float>> history_vars;
   ElementType elemType;
   DB_Elements* db_elements;
+
+  std::mutex _element_mutex;
 
   void remove_node(int32_t _node_id);
 

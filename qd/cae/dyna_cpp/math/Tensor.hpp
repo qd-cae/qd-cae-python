@@ -14,20 +14,26 @@ template<typename T>
 class Tensor
 {
 private:
-  std::vector<size_t> shape;
-  std::vector<T> data;
+  std::vector<size_t> _shape;
+  std::vector<T> _data;
   size_t get_offset(const std::vector<size_t> indexes);
 
 public:
   Tensor();
   Tensor(std::initializer_list<size_t> list);
+  const std::vector<size_t>& get_shape() const;
   void set(const std::vector<size_t>& indexes, T value);
   void set(std::initializer_list<size_t> indexes, T value);
   void resize(const std::vector<size_t>& _new_shape);
+  void reshape(const std::vector<size_t>& new_shape);
   void push_back(T _value);
+
   size_t size() const;
-  std::vector<T>& get_data();
-  std::vector<size_t> get_shape() const;
+  std::vector<T>& get_data() &;
+  std::vector<T>&& move_data() &&;
+  void shrink_to_fit();
+  void reserve(size_t n_elements);
+
   void print() const;
 };
 
@@ -44,11 +50,11 @@ Tensor<T>::Tensor()
  */
 template<typename T>
 Tensor<T>::Tensor(std::initializer_list<size_t> list)
-  : shape(list)
-  , data(std::accumulate(begin(list),
-                         end(list),
-                         static_cast<size_t>(1),
-                         std::multiplies<>()))
+  : _shape(list)
+  , _data(std::accumulate(begin(list),
+                          end(list),
+                          static_cast<size_t>(1),
+                          std::multiplies<>()))
 {}
 
 /** Compute the array offset from indexes
@@ -60,21 +66,21 @@ template<typename T>
 inline size_t
 Tensor<T>::get_offset(const std::vector<size_t> indexes)
 {
-  if (data.size() == 0)
+  if (_data.size() == 0)
     throw(std::invalid_argument("Tensor index too large."));
 
-  if (indexes.size() != shape.size())
+  if (indexes.size() != _shape.size())
     throw(std::invalid_argument(
       "Tensor index dimension different from tensor dimension."));
 
   size_t entry_index = 0;
   for (size_t ii = 0; ii < indexes.size(); ++ii) {
     size_t offset = std::accumulate(
-      begin(shape) + ii + 1, end(shape), 1, std::multiplies<>());
+      std::begin(_shape) + ii + 1, std::end(_shape), 1, std::multiplies<>());
     entry_index += indexes[ii] * offset;
   }
 
-  if (entry_index > data.size())
+  if (entry_index > _data.size())
     throw(std::invalid_argument("Tensor index too large."));
 
   return entry_index;
@@ -90,7 +96,7 @@ template<typename T>
 inline void
 Tensor<T>::set(const std::vector<size_t>& indexes, T value)
 {
-  data[this->get_offset(indexes)] = value;
+  _data[this->get_offset(indexes)] = value;
 }
 
 /** set an entry in the tensor
@@ -116,7 +122,7 @@ template<typename T>
 inline size_t
 Tensor<T>::size() const
 {
-  return this->data.size();
+  return _data.size();
 }
 
 /** Resize a tensor
@@ -131,8 +137,30 @@ Tensor<T>::resize(const std::vector<size_t>& _new_shape)
                                          end(_new_shape),
                                          static_cast<size_t>(1),
                                          std::multiplies<>());
-  this->data.resize(_new_data_len);
-  this->shape = _new_shape;
+  _data.resize(_new_data_len);
+  _shape = _new_shape;
+}
+
+/** Reshaoe the tensor
+ *
+ * @param new_shape
+ *
+ * Checks for correct shape.
+ */
+template<typename T>
+void
+Tensor<T>::reshape(const std::vector<size_t>& new_shape)
+{
+  size_t new_data_len = std::accumulate(begin(new_shape),
+                                        end(new_shape),
+                                        static_cast<size_t>(1),
+                                        std::multiplies<>());
+
+  if (_data.size() != new_data_len)
+    throw(
+      std::invalid_argument("Tensor reshape does not match container size."));
+
+  _shape = new_shape;
 }
 
 /** push a new value into the back of the data buffer
@@ -141,9 +169,9 @@ Tensor<T>::resize(const std::vector<size_t>& _new_shape)
  */
 template<typename T>
 inline void
-Tensor<T>::push_back(T _value)
+Tensor<T>::push_back(T value)
 {
-  this->data.push_back(_value);
+  _data.push_back(value);
 }
 
 /** Get the underlying buffer of the tensor
@@ -152,20 +180,51 @@ Tensor<T>::push_back(T _value)
  */
 template<typename T>
 inline std::vector<T>&
-Tensor<T>::get_data()
+Tensor<T>::get_data() &
 {
-  return this->data;
+  return _data;
 };
+
+/** Move the underlying data buffer out of the tensor
+ *
+ * @return data : 1-dimensional data buffer
+ */
+template<typename T>
+inline std::vector<T>&&
+Tensor<T>::move_data() &&
+{
+  _shape.clear();
+  return std::move(_data);
+}
 
 /** Get the shape of a tensor
  *
  * @return shape : shape of the tensor
  */
 template<typename T>
-inline std::vector<size_t>
+inline const std::vector<size_t>&
 Tensor<T>::get_shape() const
 {
-  return this->shape;
+  return _shape;
+}
+
+/** Shrink the data buffer to fit the data
+ *
+ */
+template<typename T>
+inline void
+Tensor<T>::shrink_to_fit()
+{
+  _data.shrink_to_fit();
+}
+
+/** Reserve enough space for n_elements
+ */
+template<typename T>
+inline void
+Tensor<T>::reserve(size_t n_elements)
+{
+  _data.reserve(n_elements);
 }
 
 /** Print the linear memory of the tensor
@@ -174,7 +233,7 @@ template<typename T>
 void
 Tensor<T>::print() const
 {
-  for (const auto entry : data)
+  for (const auto entry : _data)
     std::cout << entry << " ";
   std::cout << std::endl;
 }

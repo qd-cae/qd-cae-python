@@ -22,7 +22,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 debugging_mode = False
 measure_time = False
 use_openmp = True
-version = "0.7.1"
+version = "0.7.2"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() in ["Linux", "Darwin"])
@@ -43,18 +43,19 @@ def setup_dyna_cpp():
         "qd/cae/dyna_cpp/db/Element.cpp",
         "qd/cae/dyna_cpp/db/Node.cpp",
         "qd/cae/dyna_cpp/db/Part.cpp",
-        "qd/cae/dyna_cpp/dyna/D3plotBuffer.cpp",
-        "qd/cae/dyna_cpp/dyna/D3plot.cpp",
-        "qd/cae/dyna_cpp/dyna/RawD3plot.cpp",
-        "qd/cae/dyna_cpp/dyna/KeyFile.cpp",
-        "qd/cae/dyna_cpp/dyna/Keyword.cpp",
-        "qd/cae/dyna_cpp/dyna/NodeKeyword.cpp",
-        "qd/cae/dyna_cpp/dyna/ElementKeyword.cpp",
-        "qd/cae/dyna_cpp/dyna/PartKeyword.cpp",
-        "qd/cae/dyna_cpp/dyna/IncludeKeyword.cpp",
-        "qd/cae/dyna_cpp/dyna/IncludePathKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/d3plot/D3plotBuffer.cpp",
+        "qd/cae/dyna_cpp/dyna/d3plot/D3plot.cpp",
+        "qd/cae/dyna_cpp/dyna/d3plot/RawD3plot.cpp",
+        "qd/cae/dyna_cpp/dyna/keyfile/KeyFile.cpp",
+        "qd/cae/dyna_cpp/dyna/keyfile/Keyword.cpp",
+        "qd/cae/dyna_cpp/dyna/keyfile/NodeKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/keyfile/ElementKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/keyfile/PartKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/keyfile/IncludeKeyword.cpp",
+        "qd/cae/dyna_cpp/dyna/keyfile/IncludePathKeyword.cpp",
         "qd/cae/dyna_cpp/utility/FileUtility.cpp",
-        "qd/cae/dyna_cpp/utility/TextUtility.cpp"]
+        "qd/cae/dyna_cpp/utility/TextUtility.cpp",
+        "qd/cae/dyna_cpp/parallel/WorkQueue.cpp"]
 
     # linux compiler args
     if is_linux:
@@ -87,13 +88,13 @@ def setup_dyna_cpp():
 
 def setup_dyna_cpp_binout(srcs, compiler_args):
 
-    srcs = ["qd/cae/dyna_cpp/dyna/Binout.cpp",
-            "qd/cae/dyna_cpp/dyna/lsda/lsda.c",
-            "qd/cae/dyna_cpp/dyna/lsda/btree.c",
-            "qd/cae/dyna_cpp/dyna/lsda/lsdatable.c",
-            "qd/cae/dyna_cpp/dyna/lsda/lsdatypes.c",
-            "qd/cae/dyna_cpp/dyna/lsda/trans.c",
-            "qd/cae/dyna_cpp/dyna/lsda/lsdaf2c.c"] + srcs
+    srcs = ["qd/cae/dyna_cpp/dyna/binout/Binout.cpp",
+            "qd/cae/dyna_cpp/dyna/binout/lsda/lsda.c",
+            "qd/cae/dyna_cpp/dyna/binout/lsda/btree.c",
+            "qd/cae/dyna_cpp/dyna/binout/lsda/lsdatable.c",
+            "qd/cae/dyna_cpp/dyna/binout/lsda/lsdatypes.c",
+            "qd/cae/dyna_cpp/dyna/binout/lsda/trans.c",
+            "qd/cae/dyna_cpp/dyna/binout/lsda/lsdaf2c.c"] + srcs
 
     if is_linux:
         compiler_args += ["-fpermissive"]
@@ -113,7 +114,7 @@ def setup_dyna_cpp_femzip(srcs, lib_dirs, libs, compiler_args):
     # windows
     if is_windows and os.path.isdir(os.path.join(femzip_path_windows)):
 
-        srcs.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
+        srcs.append("qd/cae/dyna_cpp/dyna/d3plot/FemzipBuffer.cpp")
         lib_dirs.append(os.path.join(femzip_path_windows))
         libs += ['femunziplib_standard_dyna', 'ipp_zlibd', 'ippcoremt',
                  'ippdcmt', 'ippsmt', 'ifwin', 'ifconsol', 'ippvmmt', 'libmmd',
@@ -123,7 +124,7 @@ def setup_dyna_cpp_femzip(srcs, lib_dirs, libs, compiler_args):
     # linux
     elif is_linux and os.path.isdir(femzip_path_linux):
 
-        srcs.append("qd/cae/dyna_cpp/dyna/FemzipBuffer.cpp")
+        srcs.append("qd/cae/dyna_cpp/dyna/d3plot/FemzipBuffer.cpp")
         lib_dirs.append(femzip_path_linux)
         libs += ['femunzip_dyna_standard', 'ipp_z', 'ippcore',
                  'ippdc', 'ipps', 'ifcore_pic', 'ifcoremt', 'imf',
