@@ -14,6 +14,7 @@
 #include <dyna_cpp/dyna/keyfile/Keyword.hpp>
 #include <dyna_cpp/dyna/keyfile/NodeKeyword.hpp>
 #include <dyna_cpp/dyna/keyfile/PartKeyword.hpp>
+#include <dyna_cpp/math/Tensor.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 #include <dyna_cpp/utility/PythonUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
@@ -164,6 +165,39 @@ PYBIND11_MODULE(dyna_cpp, m)
   // disable sigantures for documentation
   pybind11::options options;
   options.disable_function_signatures();
+
+  // Tensor
+  pybind11::class_<Tensor<float>> tensor_f32_py(
+    m, "Tensor_f32", pybind11::buffer_protocol());
+  tensor_f32_py
+    .def_buffer([](Tensor<float>& m) -> pybind11::buffer_info {
+
+      const auto& shape = m.get_shape();
+      std::vector<size_t> strides(shape.size());
+      if (strides.size() != 0)
+        strides.back() = sizeof(float);
+      for (int32_t iDim = static_cast<int32_t>(strides.size()) - 2; iDim >= 0;
+           --iDim)
+        strides[iDim] = strides[iDim + 1] * shape[iDim];
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                          // Pointer to buffer
+        sizeof(float),                                // Size of one scalar
+        pybind11::format_descriptor<float>::format(), // Python struct-style
+        shape.size(),                                 // Number of dims
+        shape,                                        // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<float>::print);
+
+  m.def("test_tensor", [](std::vector<size_t> shape) {
+    Tensor<float> tensor;
+    tensor.resize(shape);
+    for (auto& entry : tensor.get_data())
+      entry = 1.f;
+    return tensor;
+  });
 
   // Node
   pybind11::class_<Node, std::shared_ptr<Node>> node_py(

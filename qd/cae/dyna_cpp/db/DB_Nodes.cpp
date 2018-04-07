@@ -177,4 +177,39 @@ DB_Nodes::get_nodes()
   return this->nodes;
 }
 
+/** Get nodal data as arrays
+ *
+ * @param name : name of the field
+ * @return tensor : data as tensor
+ */
+Tensor<float>
+DB_Nodes::get_node_coords() const
+{
+  // no data
+  if (nodes.size() == 0)
+    return Tensor<float>();
+
+  // do the thing
+  const auto& first_node_data = nodes[0]->get_disp();
+
+  if (first_node_data.size() == 0)
+    return Tensor<float>();
+
+  const auto nTimesteps = first_node_data.size();
+  const auto nDims = first_node_data[0].size();
+
+  Tensor<float> tensor{ nodes.size(), nTimesteps, nDims };
+  auto& tensor_data = tensor.get_data();
+
+  for (size_t iNode = 0; iNode < nodes.size(); ++iNode) {
+    const auto& series = nodes[iNode]->get_disp();
+    for (size_t iStep = 0; iStep < series.size(); ++iStep)
+      std::copy(series[iStep].begin(),
+                series[iStep].end(),
+                tensor_data.begin() + iNode * iStep * nDims);
+  }
+
+  return std::move(tensor);
+}
+
 } // namespace qd
