@@ -1774,13 +1774,14 @@ D3plot::read_states_displacement()
 #endif
 
   DB_Nodes* db_nodes = this->get_db_nodes();
+  const auto nNodes = static_cast<int32_t>(db_nodes->get_nNodes());
 
 #pragma omp parallel
   {
     std::vector<float> disp_tmp(dyna_ndim);
 
 #pragma omp for schedule(dynamic)
-    for (int32_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
+    for (int32_t iNode = 0; iNode < nNodes; ++iNode) {
       auto ii = start + iNode * dyna_ndim;
       buffer->read_float_array(ii, dyna_ndim, disp_tmp);
       db_nodes->get_nodeByIndex(iNode)->add_disp(disp_tmp);
@@ -1819,13 +1820,14 @@ D3plot::read_states_velocity()
 #endif
 
   DB_Nodes* db_nodes = this->get_db_nodes();
+  const auto nNodes = static_cast<int64_t>(db_nodes->get_nNodes());
 
 #pragma omp parallel
   {
     std::vector<float> vel_tmp(dyna_ndim);
 
 #pragma omp for schedule(dynamic)
-    for (int32_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
+    for (int32_t iNode = 0; iNode < nNodes; ++iNode) {
       auto ii = start + iNode * dyna_ndim;
       buffer->read_float_array(ii, dyna_ndim, vel_tmp);
       db_nodes->get_nodeByIndex(iNode)->add_vel(vel_tmp);
@@ -1853,16 +1855,15 @@ D3plot::read_states_acceleration()
   std::cout << "> read_states_acceleration at " << start << std::endl;
 #endif
 
-  int32_t iNode = 0;
-
   DB_Nodes* db_nodes = this->get_db_nodes();
+  const auto nNodes = static_cast<int64_t>(db_nodes->get_nNodes());
 
 #pragma omp parallel
   {
     std::vector<float> accel_tmp(dyna_ndim);
 
 #pragma omp for schedule(dynamic)
-    for (int32_t iNode = 0; iNode < db_nodes->get_nNodes(); ++iNode) {
+    for (int32_t iNode = 0; iNode < nNodes; ++iNode) {
       auto ii = start + iNode * dyna_ndim;
       buffer->read_float_array(ii, dyna_ndim, accel_tmp);
       db_nodes->get_nodeByIndex(iNode)->add_accel(accel_tmp);

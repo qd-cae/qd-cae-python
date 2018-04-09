@@ -11,9 +11,7 @@
 
 namespace qd {
 
-// helper function
-static std::vector<char>
-_load_next_timestep(int32_t _iTimestep, int32_t _size_state);
+
 
 class FemzipBuffer : public AbstractBuffer
 {
@@ -44,6 +42,10 @@ private:
   int32_t adjust;
 
   void check_ier(const std::string&);
+  
+  // helper function
+  static std::vector<char>
+  _load_next_timestep(int32_t _iTimestep, int32_t _size_state);
 
   /* PUBLIC */
 public:
