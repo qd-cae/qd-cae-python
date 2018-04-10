@@ -173,12 +173,22 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def_buffer([](Tensor<float>& m) -> pybind11::buffer_info {
 
       const auto& shape = m.get_shape();
+
+      // std::vector<size_t> strides(shape.size());
+      // if (strides.size() != 0)
+      //   strides.back() = sizeof(float);
+
+      // for (int32_t iDim = static_cast<int32_t>(strides.size()) - 2; iDim >=
+      // 0;
+      //            --iDim)
+      //         strides[iDim] = strides[iDim + 1] * shape[iDim];
+
       std::vector<size_t> strides(shape.size());
       if (strides.size() != 0)
-        strides.back() = sizeof(float);
-      for (int32_t iDim = static_cast<int32_t>(strides.size()) - 2; iDim >= 0;
-           --iDim)
-        strides[iDim] = strides[iDim + 1] * shape[iDim];
+        strides[0] = sizeof(float);
+
+      for (int32_t iDim = 1; iDim < strides.size(); ++iDim)
+        strides[iDim] = strides[iDim - 1] * shape[iDim];
 
       return pybind11::buffer_info(
         m.get_data().data(),                          // Pointer to buffer
@@ -189,7 +199,8 @@ PYBIND11_MODULE(dyna_cpp, m)
         strides // Strides (in bytes) for each index
       );
     })
-    .def("print", &Tensor<float>::print);
+    .def("print", &Tensor<float>::print)
+    .def("shape", &Tensor<float>::get_shape);
 
   m.def("test_tensor", [](std::vector<size_t> shape) {
     Tensor<float> tensor;
@@ -198,6 +209,31 @@ PYBIND11_MODULE(dyna_cpp, m)
       entry = 1.f;
     return tensor;
   });
+
+  pybind11::class_<Tensor<int32_t>> tensor_i32_py(
+    m, "Tensor_i32", pybind11::buffer_protocol());
+  tensor_i32_py
+    .def_buffer([](Tensor<int32_t>& m) -> pybind11::buffer_info {
+
+      const auto& shape = m.get_shape();
+      std::vector<size_t> strides(shape.size());
+      if (strides.size() != 0)
+        strides.back() = sizeof(int32_t);
+      for (int32_t iDim = static_cast<int32_t>(strides.size()) - 2; iDim >= 0;
+           --iDim)
+        strides[iDim] = strides[iDim + 1] * shape[iDim];
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                            // Pointer to buffer
+        sizeof(int32_t),                                // Size of one scalar
+        pybind11::format_descriptor<int32_t>::format(), // Python struct-style
+        shape.size(),                                   // Number of dims
+        shape,                                          // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<int32_t>::print)
+    .def("shape", &Tensor<int32_t>::get_shape);
 
   // Node
   pybind11::class_<Node, std::shared_ptr<Node>> node_py(
@@ -384,7 +420,12 @@ PYBIND11_MODULE(dyna_cpp, m)
          &Part::get_elements,
          "element_filter"_a = Element::ElementType::NONE,
          pybind11::return_value_policy::reference_internal,
-         part_get_elements_docs);
+         part_get_elements_docs)
+    .def("get_element_node_ids",
+         &Part::get_element_node_ids,
+         "element_type"_a,
+         "nNodes"_a,
+         pybind11::return_value_policy::reference_internal);
 
   // DB_Nodes
   pybind11::class_<DB_Nodes, std::shared_ptr<DB_Nodes>> db_nodes_py(
@@ -455,7 +496,10 @@ PYBIND11_MODULE(dyna_cpp, m)
            return _db_nodes->get_nodeByIndex(tmp);
          },
          "index"_a,
-         pybind11::return_value_policy::reference_internal);
+         pybind11::return_value_policy::reference_internal)
+    .def("get_node_coords", [](std::shared_ptr<DB_Nodes> db_nodes) {
+      return db_nodes->get_node_coords();
+    });
 
   // DB_Elements
   pybind11::class_<DB_Elements, std::shared_ptr<DB_Elements>> db_elements_py(

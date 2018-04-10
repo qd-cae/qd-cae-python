@@ -62,6 +62,7 @@ public:
   inline int32_t get_nodeID() const;
   inline std::vector<std::shared_ptr<Element>> get_elements();
 
+  inline const std::vector<float>& get_position() const;
   inline std::vector<std::vector<float>> get_coords() const;
   inline const std::vector<std::vector<float>>& get_disp() const;
   inline const std::vector<std::vector<float>>& get_vel() const;
@@ -116,6 +117,16 @@ std::vector<std::shared_ptr<Element>>
 Node::get_elements()
 {
   return elements;
+}
+
+/** Get the position of the node
+ *
+ * @return position
+ */
+inline const std::vector<float>&
+Node::get_position() const
+{
+  return coords;
 }
 
 /** Get the coordinates of the node over time

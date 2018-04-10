@@ -190,7 +190,7 @@ DB_Nodes::get_node_coords() const
     return Tensor<float>();
 
   // do the thing
-  const auto& first_node_data = nodes[0]->get_disp();
+  const auto& first_node_data = nodes[0]->get_coords();
 
   if (first_node_data.size() == 0)
     return Tensor<float>();
@@ -198,7 +198,8 @@ DB_Nodes::get_node_coords() const
   const auto nTimesteps = first_node_data.size();
   const auto nDims = first_node_data[0].size();
 
-  Tensor<float> tensor{ nodes.size(), nTimesteps, nDims };
+  Tensor<float> tensor;
+  tensor.resize({ nodes.size(), nTimesteps, nDims });
   auto& tensor_data = tensor.get_data();
 
   for (size_t iNode = 0; iNode < nodes.size(); ++iNode) {
