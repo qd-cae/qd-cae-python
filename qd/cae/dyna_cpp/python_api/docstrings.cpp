@@ -399,6 +399,40 @@ const char* element_get_is_rigid_docs = R"qddoc(
         (0L,)
 )qddoc";
 
+const char* element_get_part_id_docs = R"qddoc(
+    get_part_id()
+
+    Returns
+    -------
+    part_id : int
+        id of the part, to which the element belongs
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> element = part.get_elements()[0]
+        >>> element.get_part_id()
+        1
+)qddoc";
+
+const char* element_get_node_ids_docs = R"qddoc(
+    get_node_ids()
+
+    Returns
+    -------
+    node_ids : list of int
+        list of node ids belonging to the element
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> element = d3plot.get_elementByID(Element.shell, 1)
+        >>> element.get_node_ids()
+        [1, 55, 21, 33]
+        
+)qddoc";
+
 /* ----------------------- PART ---------------------- */
 const char* part_get_id_docs = R"qddoc(
     get_id()
@@ -478,6 +512,58 @@ const char* part_get_elements_docs = R"qddoc(
         49123
         >>> len( part.get_elements(Element.shell) )
         45123
+)qddoc";
+
+const char* part_get_element_node_ids_docs = R"qddoc(
+    get_element_node_ids(element_type, nNodes)
+
+    Get the node ids of all the elements belonging to the part.
+
+    Parameters
+    ----------
+    element_type : Element.type
+        Element type. May be beam, shell or solid.
+    nNodes : int
+        number of nodes (e.g. 3 for tria with Element.shell)
+
+    Returns
+    -------
+    element_node_ids : np.ndarray
+        every row contains the node ids for every element
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> tria_node_ids = part.get_element_node_ids(Element.shell, nNodes=3)
+        >>> tria_node_ids[0]
+        array([ 102,  109,   98,   99])
+)qddoc";
+
+const char* part_get_element_node_indexes_docs = R"qddoc(
+    get_element_node_indexes(element_type, nNodes)
+
+    Get the node indexes of all respective elements.
+
+    Parameters
+    ----------
+    element_type : Element.type
+        Element type. May be beam, shell or solid.
+    nNodes : int
+        number of nodes (e.g. 3 for tria with Element.shell)
+
+    Returns
+    -------
+    element_node_indexes : np.ndarray
+        every row contains the node indexes for every element
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> tria_node_indexes = part.get_element_node_ids(Element.shell, nNodes=3)
+        >>> tria_node_indexes[0]
+        array([ 347,  354,  343,  344])
 )qddoc";
 
 /* ----------------------- DB_NODES ---------------------- */
@@ -581,6 +667,20 @@ const char* dbnodes_get_nNodes_docs = R"qddoc(
     --------
         >>> femfile.get_nNodes()
         43145
+)qddoc";
+
+const char* dbnodes_get_node_coords_docs = R"qddoc(
+    get_node_coords()
+
+    Returns
+    -------
+    node_coords : np.ndarray
+        coordinates of all nodes
+
+    Examples
+    --------
+        >>> d3plot.get_node_coords().shape
+        (4915, 3)
 )qddoc";
 
 /* ----------------------- DB_ELEMENTS ---------------------- */
