@@ -203,11 +203,17 @@ DB_Nodes::get_node_coords() const
   auto& tensor_data = tensor.get_data();
 
   for (size_t iNode = 0; iNode < nodes.size(); ++iNode) {
-    const auto& series = nodes[iNode]->get_disp();
-    for (size_t iStep = 0; iStep < series.size(); ++iStep)
-      std::copy(series[iStep].begin(),
-                series[iStep].end(),
-                tensor_data.begin() + iNode * iStep * nDims);
+    const auto& series = nodes[iNode]->get_coords();
+    const auto offset = iNode * nTimesteps * nDims;
+    for (size_t iStep = 0; iStep < series.size(); ++iStep){
+      const auto offset2 = offset+iStep*nDims;
+      tensor_data[offset2] = series[iStep][0];
+      tensor_data[offset2+1] = series[iStep][1];
+      tensor_data[offset2+2] = series[iStep][2];
+      // std::copy(series[iStep].begin(),
+      //           series[iStep].end(),
+      //           tensor_data.begin() + iNode * nTimesteps * nDims);
+    }
   }
 
   return std::move(tensor);

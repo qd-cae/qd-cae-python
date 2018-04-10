@@ -183,18 +183,23 @@ PYBIND11_MODULE(dyna_cpp, m)
       //            --iDim)
       //         strides[iDim] = strides[iDim + 1] * shape[iDim];
 
-      std::vector<size_t> strides(shape.size());
+      // compute strides
+      std::vector<pybind11::ssize_t> strides(shape.size());
       if (strides.size() != 0)
-        strides[0] = sizeof(float);
+        strides.back() = static_cast<pybind11::ssize_t>(sizeof(float));
+      for (int32_t iDim = strides.size()-2; iDim >=0; --iDim)
+        strides[iDim] = strides[iDim + 1] * static_cast<pybind11::ssize_t>(shape[iDim+1]);
 
-      for (int32_t iDim = 1; iDim < strides.size(); ++iDim)
-        strides[iDim] = strides[iDim - 1] * shape[iDim];
+      // cast shape
+      std::vector<pybind11::ssize_t> shape2(shape.size());
+      for(size_t ii=0; ii<shape.size(); ++ii)
+        shape2[ii] = static_cast<pybind11::ssize_t>(shape[ii]);
 
       return pybind11::buffer_info(
         m.get_data().data(),                          // Pointer to buffer
-        sizeof(float),                                // Size of one scalar
+        (pybind11::ssize_t) sizeof(float),            // Size of one scalar
         pybind11::format_descriptor<float>::format(), // Python struct-style
-        shape.size(),                                 // Number of dims
+        static_cast<pybind11::ssize_t>(shape.size()), // Number of dims
         shape,                                        // Buffer dimensions
         strides // Strides (in bytes) for each index
       );
@@ -205,8 +210,9 @@ PYBIND11_MODULE(dyna_cpp, m)
   m.def("test_tensor", [](std::vector<size_t> shape) {
     Tensor<float> tensor;
     tensor.resize(shape);
+    float val=0.;
     for (auto& entry : tensor.get_data())
-      entry = 1.f;
+      entry = val++;
     return tensor;
   });
 
