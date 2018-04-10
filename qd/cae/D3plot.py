@@ -85,7 +85,7 @@ class D3plot(QD_D3plot):
         # base run element coords
         if not pid_filter_list:
             pid_filter_list = [part.get_id() for part in self.get_parts()]
-        base_mesh_coords, base_mesh_results = _extract_elem_coord(
+        base_mesh_coords, base_mesh_results = _extract_elem_coords(
             self.get_partByID(pid_filter_list),
             element_result=eval_function,
             element_type="shell")
@@ -122,9 +122,9 @@ class D3plot(QD_D3plot):
                 distances * _d3plot_elem_results[mapping_indexes], axis=1)
 
             # update min and max
-            element_result_max = np.maximum(
+            element_result_max = np.max(
                 _d3plot_elem_results, element_result_max)
-            element_result_min = np.minimum(
+            element_result_min = np.min(
                 _d3plot_elem_results, element_result_min)
 
         # compute scatter
