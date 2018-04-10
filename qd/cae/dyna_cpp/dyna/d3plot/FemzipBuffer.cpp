@@ -175,7 +175,7 @@ retry:
 
   // fetch next timestep
   if (iTimeStep + 1 <= nTimeStep)
-    _next_buffer = std::async(_load_next_timestep, iTimeStep, size_state);
+    _next_buffer = std::async(FemzipBuffer::_load_next_timestep, iTimeStep, size_state);
 
   /*
   // q timesteps
@@ -194,7 +194,7 @@ retry:
  * @param fz_buffer : own instance ... hack for submit function
  */
 std::vector<char>
-_load_next_timestep(int32_t _iTimestep, int32_t _size_state)
+FemzipBuffer::_load_next_timestep(int32_t _iTimestep, int32_t _size_state)
 {
 
   int32_t _ier = 0;
@@ -225,7 +225,7 @@ FemzipBuffer::read_nextState()
 
   _current_buffer = _next_buffer.get();
   if (iTimeStep + 1 <= nTimeStep)
-    _next_buffer = std::async(_load_next_timestep, iTimeStep, size_state);
+    _next_buffer = std::async(FemzipBuffer::_load_next_timestep, iTimeStep, size_state);
 
   /*
   // BUGGY
