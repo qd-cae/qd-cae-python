@@ -21,6 +21,7 @@ private:
 public:
   Tensor();
   Tensor(std::initializer_list<size_t> list);
+  Tensor(std::vector<size_t> list, const T* data);
   const std::vector<size_t>& get_shape() const;
   void set(const std::vector<size_t>& indexes, T value);
   void set(std::initializer_list<size_t> indexes, T value);
@@ -56,6 +57,21 @@ Tensor<T>::Tensor(std::initializer_list<size_t> list)
                           static_cast<size_t>(1),
                           std::multiplies<>()))
 {}
+
+/** Create a tensor from a shape and data
+ *
+ * @param list : shape of the tensor given by initializer list
+ */
+template<typename T>
+Tensor<T>::Tensor(std::vector<size_t> list, const T* data)
+  : _shape(list)
+  , _data(std::accumulate(std::begin(list),
+                          std::end(list),
+                          static_cast<size_t>(1),
+                          std::multiplies<>()))
+{
+  std::copy(data, data + _data.size(), _data.begin());
+}
 
 /** Compute the array offset from indexes
  *
