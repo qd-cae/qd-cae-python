@@ -68,8 +68,9 @@ namespace detail {
 template<typename T>
 struct type_caster<qd::Tensor<T>>
 {
-public:
   PYBIND11_TYPE_CASTER(qd::Tensor<T>, _("Tensor<T>"));
+
+public:
 
   // Conversion part 1 (Python -> C++)
   bool load(pybind11::handle src, bool convert)
@@ -89,15 +90,15 @@ public:
     for (int i = 0; i < n_dims; i++)
       shape[i] = buf.shape()[i];
 
-    value = qd::Tensor<T>(shape, buf.data());
+    value = qd::Tensor<T>(shape, buf.data()); // copies! TODO fix
 
     return true;
   }
 
-  // Conversion part 2 (C++ -> Python)
+  // Conversion part 2 (C++ -> Python)  
   static pybind11::handle cast(qd::Tensor<T>& src,
-                               pybind11::return_value_policy policy,
-                               pybind11::handle parent)
+                               const pybind11::return_value_policy& policy,
+                               pybind11::handle& parent)
   {
 
     const auto& shape = src.get_shape();
@@ -107,7 +108,9 @@ public:
 
     return a.release();
   }
+
 };
+
 
 } // namespace detail
 } // namespace pybind11
@@ -160,6 +163,10 @@ PYBIND11_MODULE(dyna_cpp, m)
   // disable sigantures for documentation
   pybind11::options options;
   options.disable_function_signatures();
+
+  // Tensor
+  // pybind11::class_<Tensor<int32_t>, std::shared_ptr<Tensor<int32_t>>> tensor_i32_py(
+  //   m, "Tensor<int32_t>");
 
   // Node
   pybind11::class_<Node, std::shared_ptr<Node>> node_py(
@@ -351,19 +358,19 @@ PYBIND11_MODULE(dyna_cpp, m)
          &Part::get_elements,
          "element_filter"_a = Element::ElementType::NONE,
          pybind11::return_value_policy::reference_internal,
-         part_get_elements_docs)
-    .def("get_element_node_ids",
-         &Part::get_element_node_ids,
-         "element_type"_a,
-         "nNodes"_a,
-         pybind11::return_value_policy::reference_internal,
-         part_get_element_node_ids_docs)
-    .def("get_element_node_indexes",
-         &Part::get_element_node_indexes,
-         "element_type"_a,
-         "nNodes"_a,
-         pybind11::return_value_policy::reference_internal,
-         part_get_element_node_indexes_docs);
+         part_get_elements_docs);
+    // .def("get_element_node_ids",
+    //      &Part::get_element_node_ids,
+    //      "element_type"_a,
+    //      "nNodes"_a,
+    //      pybind11::return_value_policy::reference_internal,
+    //      part_get_element_node_ids_docs);
+    // .def("get_element_node_indexes",
+    //      &Part::get_element_node_indexes,
+    //      "element_type"_a,
+    //      "nNodes"_a,
+    //      pybind11::return_value_policy::reference_internal,
+    //      part_get_element_node_indexes_docs);
 
   // DB_Nodes
   pybind11::class_<DB_Nodes, std::shared_ptr<DB_Nodes>> db_nodes_py(
@@ -434,11 +441,11 @@ PYBIND11_MODULE(dyna_cpp, m)
            return _db_nodes->get_nodeByIndex(tmp);
          },
          "index"_a,
-         pybind11::return_value_policy::reference_internal)
-    .def("get_node_coords",
-         &DB_Nodes::get_node_coords,
-         pybind11::return_value_policy::take_ownership,
-         dbnodes_get_node_coords_docs);
+         pybind11::return_value_policy::reference_internal);
+    // .def("get_node_coords",
+    //      &DB_Nodes::get_node_coords,
+    //     //  pybind11::return_value_policy::take_ownership,
+    //      dbnodes_get_node_coords_docs);
 
   // DB_Elements
   pybind11::class_<DB_Elements, std::shared_ptr<DB_Elements>> db_elements_py(

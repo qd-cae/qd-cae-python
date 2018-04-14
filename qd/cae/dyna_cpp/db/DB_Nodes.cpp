@@ -216,7 +216,7 @@ DB_Nodes::get_node_coords() const
     }
   }
 
-  return std::move(tensor);
+  return tensor;
 }
 
 } // namespace qd

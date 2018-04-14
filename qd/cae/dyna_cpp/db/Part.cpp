@@ -134,7 +134,7 @@ Part::remove_element(std::shared_ptr<Element> _element)
  */
 Tensor<int32_t>
 Part::get_element_node_ids(Element::ElementType element_type,
-                           size_t nNodes) const
+                           size_t nNodes)
 {
   // allocate
   Tensor<int32_t> tensor{ elements.size(), nNodes };
@@ -156,7 +156,7 @@ Part::get_element_node_ids(Element::ElementType element_type,
   // resize
   tensor.resize({ iElement, nNodes });
 
-  return std::move(tensor);
+  return tensor;
 }
 
 /** Get the indexes of the parts elements

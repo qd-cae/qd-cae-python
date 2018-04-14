@@ -10,8 +10,26 @@
 
 namespace qd {
 
+#ifdef QD_DEBUG
+template<class D>
+struct traced
+{
+public:
+    traced() = default;
+    traced(traced const&) { std::cout << typeid(D).name() << " copy ctor\n"; }
+
+protected:
+    ~traced() = default;
+};
+#endif
+
+#ifdef QD_DEBUG
+template<typename T>
+class Tensor : public traced<Tensor<T>>
+#else 
 template<typename T>
 class Tensor
+#endif
 {
 private:
   std::vector<size_t> _shape;
@@ -36,6 +54,7 @@ public:
   void reserve(size_t n_elements);
 
   void print() const;
+
 };
 
 /** Create an empty tensor
