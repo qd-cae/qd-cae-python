@@ -126,4 +126,71 @@ Part::remove_element(std::shared_ptr<Element> _element)
     elements.end());
 }
 
+/** Get the node ids of the elements
+ *
+ * @param element_type
+ * @param nNodes : number of nodes (e.g. 3 for tria)
+ * @return ids
+ */
+Tensor<int32_t>
+Part::get_element_node_ids(Element::ElementType element_type,
+                           size_t nNodes)
+{
+  // allocate
+  Tensor<int32_t> tensor{ elements.size(), nNodes };
+  auto& tensor_data = tensor.get_data();
+
+  // copy
+  size_t iElement = 0;
+  for (auto& element : elements) {
+
+    if (element->get_elementType() == element_type &&
+        element->get_nNodes() == nNodes) {
+      const auto& elem_node_ids = element->get_node_ids();
+      std::copy(elem_node_ids.begin(),
+                elem_node_ids.end(),
+                tensor_data.begin() + iElement++ * nNodes);
+    }
+  }
+
+  // resize
+  tensor.resize({ iElement, nNodes });
+
+  return tensor;
+}
+
+/** Get the indexes of the parts elements
+ *
+ * @param element_type
+ * @param nNodes : number of nodes (e.g. 3 for tria)
+ * @return indexes
+ */
+Tensor<int32_t>
+Part::get_element_node_indexes(Element::ElementType element_type,
+                               size_t nNodes) const
+{
+  auto db_nodes = femfile->get_db_nodes();
+
+  // allocate
+  Tensor<int32_t> tensor{ elements.size(), nNodes };
+  auto& tensor_data = tensor.get_data();
+
+  // copy
+  size_t iEntry = 0;
+  for (auto& element : elements) {
+
+    if (element->get_elementType() == element_type &&
+        element->get_nNodes() == nNodes) {
+      const auto& elem_node_ids = element->get_node_ids();
+      for (auto id : elem_node_ids)
+        tensor_data[iEntry++] = db_nodes->get_index_from_id(id);
+    }
+  }
+
+  // resize
+  tensor.resize({ iEntry / nNodes, nNodes });
+
+  return std::move(tensor);
+}
+
 } // namespace qd

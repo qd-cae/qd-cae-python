@@ -8,8 +8,8 @@
 #include <mutex>
 #include <vector>
 
-
 #include <dyna_cpp/db/Element.hpp>
+#include <dyna_cpp/math/Tensor.hpp>
 
 namespace qd {
 
@@ -44,6 +44,10 @@ public:
   std::vector<std::shared_ptr<Node>> get_nodes();
   std::vector<std::shared_ptr<Element>> get_elements(
     Element::ElementType _etype = Element::NONE);
+  Tensor<int32_t> get_element_node_ids(Element::ElementType element_type,
+                                       size_t nNodes);
+  Tensor<int32_t> get_element_node_indexes(Element::ElementType element_type,
+                                           size_t nNodes) const;
 };
 
 } // namespace qd

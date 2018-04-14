@@ -19,9 +19,9 @@ except ImportError:
 femzip_path_windows = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
 femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
-debugging_mode = False
+debugging_mode = True
 measure_time = False
-use_openmp = True
+use_openmp = False
 version = "0.7.2"
 # =============================== #
 is_windows = (platform.system() == "Windows")
@@ -68,6 +68,8 @@ def setup_dyna_cpp():
             compiler_args.append("-DQD_DEBUG")
         if measure_time:
             compiler_args.append("-DQD_MEASURE_TIME")
+        if use_openmp:
+            compiler_args.append("-fopenmp")
 
     # windowscompiler args
     elif is_windows:

@@ -177,4 +177,46 @@ DB_Nodes::get_nodes()
   return this->nodes;
 }
 
+/** Get nodal data as arrays
+ *
+ * @param name : name of the field
+ * @return tensor : data as tensor
+ */
+Tensor<float>
+DB_Nodes::get_node_coords() const
+{
+  // no data
+  if (nodes.size() == 0)
+    return Tensor<float>();
+
+  // do the thing
+  const auto& first_node_data = nodes[0]->get_coords();
+
+  if (first_node_data.size() == 0)
+    return Tensor<float>();
+
+  const auto nTimesteps = first_node_data.size();
+  const auto nDims = first_node_data[0].size();
+
+  Tensor<float> tensor;
+  tensor.resize({ nodes.size(), nTimesteps, nDims });
+  auto& tensor_data = tensor.get_data();
+
+  for (size_t iNode = 0; iNode < nodes.size(); ++iNode) {
+    const auto& series = nodes[iNode]->get_coords();
+    const auto offset = iNode * nTimesteps * nDims;
+    for (size_t iStep = 0; iStep < series.size(); ++iStep){
+      const auto offset2 = offset+iStep*nDims;
+      tensor_data[offset2] = series[iStep][0];
+      tensor_data[offset2+1] = series[iStep][1];
+      tensor_data[offset2+2] = series[iStep][2];
+      // std::copy(series[iStep].begin(),
+      //           series[iStep].end(),
+      //           tensor_data.begin() + iNode * nTimesteps * nDims);
+    }
+  }
+
+  return tensor;
+}
+
 } // namespace qd

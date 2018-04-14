@@ -62,10 +62,11 @@ public:
   inline int32_t get_nodeID() const;
   inline std::vector<std::shared_ptr<Element>> get_elements();
 
+  inline const std::vector<float>& get_position() const;
   inline std::vector<std::vector<float>> get_coords() const;
-  inline std::vector<std::vector<float>> get_disp() const;
-  inline std::vector<std::vector<float>> get_vel() const;
-  inline std::vector<std::vector<float>> get_accel() const;
+  inline const std::vector<std::vector<float>>& get_disp() const;
+  inline const std::vector<std::vector<float>>& get_vel() const;
+  inline const std::vector<std::vector<float>>& get_accel() const;
 };
 
 /** Clear the displacements
@@ -118,6 +119,16 @@ Node::get_elements()
   return elements;
 }
 
+/** Get the position of the node
+ *
+ * @return position
+ */
+inline const std::vector<float>&
+Node::get_position() const
+{
+  return coords;
+}
+
 /** Get the coordinates of the node over time
  *
  * @return ret : time series of coordinates
@@ -149,7 +160,7 @@ Node::get_coords() const
  *
  * @return displacement
  */
-std::vector<std::vector<float>>
+const std::vector<std::vector<float>>&
 Node::get_disp() const
 {
   return this->disp;
@@ -159,7 +170,7 @@ Node::get_disp() const
  *
  * @return velocity
  */
-std::vector<std::vector<float>>
+const std::vector<std::vector<float>>&
 Node::get_vel() const
 {
   return this->vel;
@@ -169,7 +180,7 @@ Node::get_vel() const
  *
  * @return acceleration
  */
-std::vector<std::vector<float>>
+const std::vector<std::vector<float>>&
 Node::get_accel() const
 {
   return this->accel;

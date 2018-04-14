@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <dyna_cpp/db/Node.hpp>
+#include <dyna_cpp/math/Tensor.hpp>
 #include <dyna_cpp/utility/containers.hpp>
 
 namespace qd {
@@ -63,6 +64,9 @@ public:
     const std::vector<T>& _ids);
   template<typename T>
   std::shared_ptr<Node> get_nodeByIndex_nothrow(T _index);
+
+  // array data
+  Tensor<float> get_node_coords() const;
 };
 
 /** Get the node index from it's id

@@ -104,6 +104,16 @@ Element::get_elementID() const
   return this->elementID;
 }
 
+/** Get the number of nodes
+ *
+ * @return nNodes : number of nodes
+ */
+size_t
+Element::get_nNodes() const
+{
+  return node_ids.size();
+}
+
 /** Get the nodes of the elements.
  * @return std::vector<std::shared_ptr<Node>> nodes
  */
@@ -125,7 +135,7 @@ Element::get_nodes() const
  *
  * @return vector<int32_t> node_ids
  */
-std::vector<int32_t>
+const std::vector<int32_t>&
 Element::get_node_ids() const
 {
   return node_ids;

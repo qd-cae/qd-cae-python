@@ -10,8 +10,26 @@
 
 namespace qd {
 
+#ifdef QD_DEBUG
+template<class D>
+struct traced
+{
+public:
+    traced() = default;
+    traced(traced const&) { std::cout << typeid(D).name() << " copy ctor\n"; }
+
+protected:
+    ~traced() = default;
+};
+#endif
+
+#ifdef QD_DEBUG
+template<typename T>
+class Tensor : public traced<Tensor<T>>
+#else 
 template<typename T>
 class Tensor
+#endif
 {
 private:
   std::vector<size_t> _shape;
@@ -21,6 +39,7 @@ private:
 public:
   Tensor();
   Tensor(std::initializer_list<size_t> list);
+  Tensor(std::vector<size_t> list, const T* data);
   const std::vector<size_t>& get_shape() const;
   void set(const std::vector<size_t>& indexes, T value);
   void set(std::initializer_list<size_t> indexes, T value);
@@ -35,6 +54,7 @@ public:
   void reserve(size_t n_elements);
 
   void print() const;
+
 };
 
 /** Create an empty tensor
@@ -56,6 +76,21 @@ Tensor<T>::Tensor(std::initializer_list<size_t> list)
                           static_cast<size_t>(1),
                           std::multiplies<>()))
 {}
+
+/** Create a tensor from a shape and data
+ *
+ * @param list : shape of the tensor given by initializer list
+ */
+template<typename T>
+Tensor<T>::Tensor(std::vector<size_t> list, const T* data)
+  : _shape(list)
+  , _data(std::accumulate(std::begin(list),
+                          std::end(list),
+                          static_cast<size_t>(1),
+                          std::multiplies<>()))
+{
+  std::copy(data, data + _data.size(), _data.begin());
+}
 
 /** Compute the array offset from indexes
  *
