@@ -8,20 +8,9 @@
 #include <numeric>
 #include <vector>
 
+#include <dyna_cpp/utility/debug.hpp>
+
 namespace qd {
-
-#ifdef QD_DEBUG
-template<class D>
-struct traced
-{
-public:
-    traced() = default;
-    traced(traced const&) { std::cout << typeid(D).name() << " copy ctor\n"; }
-
-protected:
-    ~traced() = default;
-};
-#endif
 
 #ifdef QD_DEBUG
 template<typename T>
