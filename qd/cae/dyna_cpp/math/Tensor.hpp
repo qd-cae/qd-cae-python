@@ -46,6 +46,9 @@ public:
 
 };
 
+template<typename T>
+using Tensor_ptr = std::shared_ptr<Tensor<T>>;
+
 /** Create an empty tensor
  *
  */

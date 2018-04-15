@@ -70,6 +70,8 @@ def setup_dyna_cpp():
             compiler_args.append("-DQD_MEASURE_TIME")
         if use_openmp:
             compiler_args.append("-fopenmp")
+        else:
+            compiler_args.append("-Wno-unknown-pragmas")
 
     # windowscompiler args
     elif is_windows:

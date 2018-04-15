@@ -521,7 +521,8 @@ RawD3plot::read_airbag_section()
     this->buffer->read_array(
       wordPosition, dyna_airbag_nlist_size, dyna_airbag_nlist);
 
-    auto& tensor_nlist = int_data["airbag_variable_type_flag"];
+    auto tensor_nlist = std::make_shared<Tensor<int32_t>>();
+    int_data.insert(std::make_pair("airbag_variable_type_flag", tensor_nlist));
     tensor_nlist.resize({ dyna_airbag_nlist.size() });
     std::copy(dyna_airbag_nlist.begin(),
               dyna_airbag_nlist.end(),
@@ -693,7 +694,8 @@ RawD3plot::read_geometry_nodes()
   wordsToRead = dyna_numnp * dyna_ndim;
 
   // init tensor
-  auto& tensor = float_data["node_coordinates"];
+  auto tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair("node_coordinates", tensor));
   tensor.resize(
     { static_cast<size_t>(dyna_numnp), static_cast<size_t>(dyna_ndim) });
 
@@ -723,7 +725,8 @@ RawD3plot::read_geometry_elem8()
   const int32_t nVarsElem8 = 9;
 
   // allocate ids
-  auto& elem8_nodes = int_data["elem_solid_data"];
+  auto elem8_nodes = std::make_shared<Tensor<int32_t>>();
+  int_data.insert(std::make_pair("elem_solid_data", elem8_nodes));
   elem8_nodes.resize(
     { static_cast<size_t>(dyna_nel8), static_cast<size_t>(nVarsElem8) });
 
@@ -756,7 +759,8 @@ RawD3plot::read_geometry_elem4()
   const int32_t nVarsElem4 = 5;
 
   // allocate
-  auto& elem4_nodes = int_data["elem_shell_data"];
+  auto elem4_nodes = std::make_shared<Tensor<int32_t>>();
+  int_data.insert(std::make_pair("elem_shell_data", elem4_nodes));
   elem4_nodes.resize(
     { static_cast<size_t>(dyna_nel4), static_cast<size_t>(nVarsElem4) });
 
@@ -787,7 +791,8 @@ RawD3plot::read_geometry_elem2()
   const int32_t nVarsElem2 = 6;
 
   // allocate
-  auto& elem2_nodes = int_data["elem_beam_data"];
+  auto elem2_nodes = std::make_shared<Tensor<int32_t>>();
+  int_data.insert(std::make_pair("elem_beam_data", elem2_nodes));
   elem2_nodes.resize(
     { static_cast<size_t>(dyna_nel2), static_cast<size_t>(nVarsElem2) });
 
@@ -819,7 +824,8 @@ RawD3plot::read_geometry_elem4th()
   const int32_t nVarsElem4th = 9;
 
   // allocate
-  auto& elem4th_nodes = int_data["elem_tshell_data"];
+  auto elem4th_nodes = std::make_shared<Tensor<int32_t>>();
+  int_data.insert(std::make_pair("elem_tshell_data", elem4th_nodes));
   elem4th_nodes.resize(
     { static_cast<size_t>(dyna_nelth), static_cast<size_t>(nVarsElem4th) });
 
@@ -911,7 +917,8 @@ RawD3plot::read_geometry_numbering()
   // wordPosition += 16; // header length is 16
   wordsToRead = dyna_numnp;
   if (dyna_numnp > 0) {
-    auto& node_ids = this->int_data["node_ids"];
+    auto node_ids = std::make_shared<Tensor<int32_t>>();
+    int_data.insert(std::make_pair("node_ids", node_ids));
     node_ids.resize({ static_cast<size_t>(dyna_numnp) });
     this->buffer->read_array<int32_t>(
       wordPosition, wordsToRead, node_ids.get_data());
@@ -921,7 +928,8 @@ RawD3plot::read_geometry_numbering()
   wordPosition += wordsToRead;
   wordsToRead = dyna_nel8;
   if (dyna_nel8 > 0) {
-    auto& elem_solid_ids = this->int_data["elem_solid_ids"];
+    auto elem_solid_ids = std::make_shared<Tensor<int32_t>>();
+    int_data.insert(std::make_pair("elem_solid_ids", elem_solid_ids));
     elem_solid_ids.resize({ static_cast<size_t>(dyna_nel8) });
     this->buffer->read_array<int32_t>(
       wordPosition, wordsToRead, elem_solid_ids.get_data());
@@ -931,7 +939,8 @@ RawD3plot::read_geometry_numbering()
   wordPosition += wordsToRead;
   wordsToRead = dyna_nel2;
   if (dyna_nel2 > 0) {
-    auto& elem_beam_ids = this->int_data["elem_beam_ids"];
+    auto elem_beam_ids = std::make_shared<Tensor<int32_t>>();
+    int_data.insert(std::make_pair("elem_beam_ids", elem_beam_ids));
     elem_beam_ids.resize({ static_cast<size_t>(dyna_nel2) });
     this->buffer->read_array<int32_t>(
       wordPosition, wordsToRead, elem_beam_ids.get_data());
@@ -941,7 +950,8 @@ RawD3plot::read_geometry_numbering()
   wordPosition += wordsToRead;
   wordsToRead = dyna_nel4;
   if (dyna_nel4 > 0) {
-    auto& elem_shell_ids = this->int_data["elem_shell_ids"];
+    auto elem_shell_ids = std::make_shared<Tensor<int32_t>>();
+    int_data.insert(std::make_pair("elem_shell_ids", elem_shell_ids));
     elem_shell_ids.resize({ static_cast<size_t>(dyna_nel4) });
     this->buffer->read_array<int32_t>(
       wordPosition, wordsToRead, elem_shell_ids.get_data());
@@ -951,7 +961,8 @@ RawD3plot::read_geometry_numbering()
   wordPosition += wordsToRead;
   wordsToRead = dyna_nelth;
   if (dyna_nelth > 0) {
-    auto& elem_tshell_ids = this->int_data["elem_tshell_ids"];
+    auto elem_tshell_ids = std::make_shared<Tensor<int32_t>>();
+    int_data.insert(std::make_pair("elem_tshell_ids", elem_tshell_ids));
     elem_tshell_ids.resize({ static_cast<size_t>(dyna_nelth) });
     this->buffer->read_array<int32_t>(
       wordPosition, wordsToRead, elem_tshell_ids.get_data());
@@ -1031,7 +1042,8 @@ RawD3plot::read_geometry_airbag()
       wordPosition += dyna_airbag_des;
     }
 
-    auto& tensor = int_data["airbag_geometry"];
+    auto tensor = std::make_shared<Tensor<int32_t>>();
+    int_data.insert(std::make_pair("airbag_geometry", tensor));
     tensor.resize({ static_cast<size_t>(dyna_airbag_npartgas),
                     static_cast<size_t>(dyna_airbag_ngeom) });
 
@@ -1232,7 +1244,8 @@ RawD3plot::read_states()
   this->buffer->end_nextState();
 
   // save some state variable data
-  auto& timesteps_tensor = float_data["timesteps"];
+  auto timesteps_tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair("timesteps", tensor));
   timesteps_tensor.resize({ timesteps.size() });
   std::copy(
     timesteps.begin(), timesteps.end(), timesteps_tensor.get_data().begin());
@@ -1263,7 +1276,8 @@ RawD3plot::read_states_nodes_mass_scaling()
 #endif
 
   // do the magic thing
-  auto& tensor = float_data[var_name];
+  auto tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair(var_name, tensor));
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
     shape = { 0, static_cast<size_t>(dyna_numnp) };
@@ -1297,7 +1311,8 @@ RawD3plot::read_states_displacement()
 #endif
 
   // do the magic thing
-  auto& tensor = float_data[var_name];
+  auto tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair(var_name, tensor));
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
     shape = { 0, static_cast<size_t>(dyna_numnp), 3 };
@@ -1331,7 +1346,8 @@ RawD3plot::read_states_velocity()
   std::cout << "> read_states_velocity at " << start << std::endl;
 #endif
 
-  auto& tensor = float_data[var_name];
+  auto tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair(var_name, tensor));
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
     shape = { 0, static_cast<size_t>(dyna_numnp), 3 };
@@ -1364,7 +1380,8 @@ RawD3plot::read_states_acceleration()
   std::cout << "> read_states_acceleration at " << start << std::endl;
 #endif
 
-  auto& tensor = float_data[var_name];
+  auto tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair(var_name, tensor));
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
     shape = { 0, static_cast<size_t>(dyna_numnp), 3 };
@@ -1383,6 +1400,8 @@ void
 RawD3plot::read_states_elem8()
 {
 
+  const std::string var_name = "elem_solid_results";
+
   if ((dyna_nv3d <= 0) || (dyna_nel8 <= 0))
     return;
 
@@ -1399,7 +1418,8 @@ RawD3plot::read_states_elem8()
 #endif
 
   // allocate
-  auto& tensor = float_data["elem_solid_results"];
+  auto tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair(var_name, tensor));
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
     shape = {
@@ -1452,7 +1472,9 @@ RawD3plot::read_states_elem4()
   size_t nNormalVars_unsigned = static_cast<size_t>(nNormalVars);
 
   // allocate
-  auto& shell_layer_vars = float_data["elem_shell_results_layers"];
+  auto shell_layer_vars = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair("elem_shell_results_layers", 
+                                   shell_layer_vars));
   auto shape = shell_layer_vars.get_shape();
   if (shape.size() == 0) {
     shape = { 0,
@@ -1464,7 +1486,9 @@ RawD3plot::read_states_elem4()
   auto offset_shell_layer_vars = shell_layer_vars.size();
   shell_layer_vars.resize(shape);
 
-  auto& shell_vars = float_data["elem_shell_results"];
+  auto shell_vars = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair("elem_shell_results", 
+                                   shell_vars));
   auto shape2 = shell_vars.get_shape();
   if (shape2.size() == 0) {
     shape2 = {
@@ -1527,7 +1551,9 @@ RawD3plot::read_states_elem4th()
   size_t nNormalVars_unsigned = static_cast<size_t>(nNormalVars);
 
   // allocate
-  auto& tshell_layer_vars = float_data["elem_tshell_results_layers"];
+  auto tshell_layer_vars = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair("elem_tshell_results_layers", 
+                                   tshell_layer_vars));
   auto shape = tshell_layer_vars.get_shape();
   if (shape.size() == 0) {
     shape = { 0,
@@ -1539,7 +1565,9 @@ RawD3plot::read_states_elem4th()
   auto offset_tshell_layer_vars = tshell_layer_vars.size();
   tshell_layer_vars.resize(shape);
 
-  auto& tshell_vars = float_data["elem_tshell_results"];
+  auto tshell_vars = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair("elem_tshell_results", 
+                                   tshell_vars));
   auto shape2 = tshell_vars.get_shape();
   if (shape2.size() == 0) {
     shape2 = {
@@ -1591,7 +1619,9 @@ RawD3plot::read_states_elem2()
 #endif
 
   // allocate
-  auto& tensor = float_data["elem_beam_results"];
+  auto tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair("elem_beam_results", 
+                                   tensor));
   auto shape = tensor.get_shape();
   if (shape.size() == 0) {
     shape = {
@@ -1624,7 +1654,9 @@ RawD3plot::read_states_elem_deletion()
   // Node deletion info
   if (dyna_mdlopt == 1) {
 
-    auto& tensor = float_data["node_deletion_info"];
+    auto tensor = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair("node_deletion_info", 
+                                   tensor));
 
     auto shape = tensor.get_shape();
     if (shape.size() == 0)
@@ -1658,7 +1690,9 @@ RawD3plot::read_states_elem_deletion()
       if (wordsToRead < 1)
         continue;
 
-      auto& tensor = float_data[field_name];
+      auto tensor = std::make_shared<Tensor<float>>();
+      float_data.insert(std::make_pair(field_name, 
+                                       tensor));
 
       auto shape = tensor.get_shape();
       if (shape.size() == 0)
@@ -1743,7 +1777,9 @@ RawD3plot::read_states_airbag()
   wordsToRead = dyna_airbag_npartgas * dyna_airbag_state_geom;
 
   // allocate
-  auto& tensor_float = float_data["airbag_geom_state_float_results"];
+  auto tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair("airbag_geom_state_float_results", 
+                                    tensor));
   auto shape = tensor_float.get_shape();
   if (shape.size() == 0) {
     shape = { 0,
@@ -1755,7 +1791,9 @@ RawD3plot::read_states_airbag()
   tensor_float.resize(shape);
   auto& tensor_float_vec = tensor_float.get_data();
 
-  auto& tensor_int = int_data["airbag_geom_state_int_results"];
+  auto tensor_int = std::make_shared<Tensor<int32_t>>();
+  int_data.insert(std::make_pair("airbag_geom_state_int_results", 
+                                  tensor_int));
   shape = tensor_int.get_shape();
   if (shape.size() == 0) {
     shape = { 0,
@@ -1804,7 +1842,9 @@ RawD3plot::read_states_airbag()
   // 14. z velocity
 
   // allocate
-  auto& tensor_float2 = float_data["airbag_particle_float_results"];
+  auto tensor_float2 = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair("airbag_particle_float_results", 
+                                    tensor_float2));
   shape = tensor_float2.get_shape();
   if (shape.size() == 0) {
     shape = {
@@ -1818,7 +1858,9 @@ RawD3plot::read_states_airbag()
   tensor_float2.resize(shape);
   auto& tensor_float_vec2 = tensor_float2.get_data();
 
-  auto& tensor_int2 = int_data["airbag_particle_int_results"];
+  auto tensor_int2 = std::make_shared<Tensor<int32_t>>();
+  int_data.insert(std::make_pair("airbag_particle_int_results", 
+                                    tensor_int2));
   shape = tensor_int2.get_shape();
   if (shape.size() == 0) {
     shape = {
@@ -1940,9 +1982,10 @@ RawD3plot::get_int_names() const
  * @param _data : data array
  */
 void
-RawD3plot::set_int_data(const std::string& _name, Tensor<int32_t> _data)
+RawD3plot::set_int_data(const std::string& _name, 
+                        std::shared_ptr<Tensor<int32_t>> _data)
 {
-  this->int_data[_name] = _data;
+  int_data.insert(std::make_pair(_name, _data));
 }
 
 /** Get float data from the file
@@ -1950,7 +1993,7 @@ RawD3plot::set_int_data(const std::string& _name, Tensor<int32_t> _data)
  * @param _name : variable name
  * @return ret : tensor
  */
-Tensor<float>&
+std::shared_ptr<Tensor<float>>
 RawD3plot::get_float_data(const std::string& _name)
 {
   auto it = this->float_data.find(_name);
@@ -1987,7 +2030,8 @@ RawD3plot::set_float_data(const std::string& _name,
                           const float* _data_ptr)
 {
 
-  auto& tensor = this->float_data[_name];
+  auto tensor = std::make_shared<Tensor<float>>();
+  float_data.insert(std::make_pair(_name, tensor));
 
   if (_shape.size() < 1)
     return;
@@ -2012,7 +2056,8 @@ RawD3plot::set_int_data(const std::string& _name,
                         const int* _data_ptr)
 {
 
-  auto& tensor = this->int_data[_name];
+  auto tensor = std::make_shared<Tensor<int32_t>>();
+  int_data.insert(std::make_pair(_name, tensor));
 
   if (_shape.size() < 1)
     return;
