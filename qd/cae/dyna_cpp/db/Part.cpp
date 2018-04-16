@@ -132,13 +132,13 @@ Part::remove_element(std::shared_ptr<Element> _element)
  * @param nNodes : number of nodes (e.g. 3 for tria)
  * @return ids
  */
-Tensor<int32_t>
-Part::get_element_node_ids(Element::ElementType element_type,
-                           size_t nNodes)
+std::shared_ptr<Tensor<int32_t>>
+Part::get_element_node_ids(Element::ElementType element_type, size_t nNodes)
 {
   // allocate
-  Tensor<int32_t> tensor{ elements.size(), nNodes };
-  auto& tensor_data = tensor.get_data();
+  auto tensor = std::make_shared<Tensor<int32_t>>();
+  tensor->resize({ elements.size(), nNodes });
+  auto& tensor_data = tensor->get_data();
 
   // copy
   size_t iElement = 0;
@@ -154,7 +154,7 @@ Part::get_element_node_ids(Element::ElementType element_type,
   }
 
   // resize
-  tensor.resize({ iElement, nNodes });
+  tensor->resize({ iElement, nNodes });
 
   return tensor;
 }
@@ -165,15 +165,16 @@ Part::get_element_node_ids(Element::ElementType element_type,
  * @param nNodes : number of nodes (e.g. 3 for tria)
  * @return indexes
  */
-Tensor<int32_t>
+std::shared_ptr<Tensor<int32_t>>
 Part::get_element_node_indexes(Element::ElementType element_type,
                                size_t nNodes) const
 {
   auto db_nodes = femfile->get_db_nodes();
 
   // allocate
-  Tensor<int32_t> tensor{ elements.size(), nNodes };
-  auto& tensor_data = tensor.get_data();
+  auto tensor = std::make_shared<Tensor<int32_t>>();
+  tensor->resize({ elements.size(), nNodes });
+  auto& tensor_data = tensor->get_data();
 
   // copy
   size_t iEntry = 0;
@@ -188,7 +189,7 @@ Part::get_element_node_indexes(Element::ElementType element_type,
   }
 
   // resize
-  tensor.resize({ iEntry / nNodes, nNodes });
+  tensor->resize({ iEntry / nNodes, nNodes });
 
   return std::move(tensor);
 }
