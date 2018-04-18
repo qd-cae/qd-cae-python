@@ -25,6 +25,14 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 18.04.2018*
+Version 0.7.2
+
+This is a bugfix version.
+
+qd.cae.dyna:
+ - Fix: Reading a `KeyFile` with `parse_mesh=True` and *SOLID in the new format was skipping lines wrongly
+
 *Changelog 07.03.2018*
 Version 0.7.1
 
@@ -36,33 +44,6 @@ qd.cae.dyna:
   - Fix: add_part could cause a segfault
   - Fix: `KeyFile.save` did only write one keyword, if they had the same `KeyFile.position``.
   - Fix: Adding a `Keyword` without a `position` specified simply appends the `Keyword` to the end of the file.
-
-*Changelog 18.02.2018*
-Version 0.7.0
-
-The `KeyFile` class was rewritten entirely with a ton of new features, such as keyword creation and manipulation. The main idea was to create or read a `KeyFile` and preserve its whole structure including comments. We will make a few tutorials to explain enitre the capabilities and limits.
-
-For more info see the [Documentation](https://qd-cae.github.io/qd-cae-python/build/html/index.html) an [Introduction](http://www.qd-eng.de/index.php/2018/02/19/manipulating-ls-dyna-keyfiles-in-python/). We also plan to do more tutorials.
-
-
-qd.cae.dyna
- - The `KeyFile` class can now read all keywords
-   - using `filepath=""` creates an empty `KeyFile` 
-   - using `read_keywords=True` reads all keywords as generic keywords
-   - using `parse_mesh=True` creates the mesh specific keywords below and loads the mesh. If `parse_mesh=False`, then also the mesh keywords are treated as generic keywords.
-   - using `load_includes` ... loads the includes of course
- - Added new classes related to the `KeyFile` enhancement:
-   - `Keyword`: Generic keyword class for all keywords
-   - `NodeKeyword`: if `parse_mesh=True` then this class is used for nodes keywords
-   - `ElementKeyword`: if `parse_mesh=True` then this class is used for element keywords
-   - `PartKeyword`: if `parse_mesh=True` then this class is used for part keywords
-   - `IncludeKeyword`: handles include keywords
-   - `IncludePathKeyword`: handles include path keywords
- - `KeyFile.save` preserves the file structure including comments
- - Note: While one can add mesh entities to a `KeyFile`, one can currently not delete them
- - Note: `KeyFile` reading performance has not been tuned yet ... 
- - Fix: `D3plot` can now read files with temperature field
-
 
 
 # Documentation
