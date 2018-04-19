@@ -291,14 +291,6 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
   else if (_keyword_name_lower.find("dof", 13) != std::string::npos)
     ++nAdditionalLines;
 
-  // determine solid
-  if (iLine < lines.size()) {
-    const auto& line_trimmed = trim_copy(lines[iLine]);
-    if (line_trimmed.size() > 3 * field_size) {
-      old_solid_format = true;
-    }
-  }
-
 #ifdef QD_DEBUG
   std::cout << "ElementKeyword\nname: " << _keyword_name_lower
             << "\nnAdditionalLines: " << nAdditionalLines
@@ -310,7 +302,7 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
   int32_t part_id;
   std::vector<int32_t> node_ids(8);
   std::string remaining_data;
-  for (; iLine < lines.size(); iLine += old_solid_format + nAdditionalLines) {
+  for (; iLine < lines.size(); iLine += 1 + nAdditionalLines) {
 
     const auto& line = lines[iLine];
     auto line_trimmed = trim_copy(line);
@@ -332,8 +324,7 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
         node_ids[6] = std::stoi(line.substr(8 * field_size, field_size));
         node_ids[7] = std::stoi(line.substr(9 * field_size, field_size));
       } else {
-        ++iLine;
-        const auto& next_line = lines[iLine];
+        const auto& next_line = lines[++iLine];
         node_ids[0] = std::stoi(next_line.substr(0, field_size));
         node_ids[1] = std::stoi(next_line.substr(1 * field_size, field_size));
         node_ids[2] = std::stoi(next_line.substr(2 * field_size, field_size));
