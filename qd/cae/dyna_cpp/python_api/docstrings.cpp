@@ -683,6 +683,34 @@ const char* dbnodes_get_node_coords_docs = R"qddoc(
         (4915, 3)
 )qddoc";
 
+const char* dbnodes_get_node_velocity_docs = R"qddoc(
+    get_node_velocity()
+
+    Returns
+    -------
+    node_velocity : np.ndarray
+        Velocity of all nodes
+
+    Examples
+    --------
+        >>> d3plot.get_node_velocity().shape
+        (4915,1,3)
+)qddoc";
+
+const char* dbnodes_get_node_acceleration_docs = R"qddoc(
+    get_node_acceleration()
+
+    Returns
+    -------
+    node_acceleration : np.ndarray
+        Accelration of all nodes
+
+    Examples
+    --------
+        >>> d3plot.get_node_acceleration().shape
+        (4915,1,3)
+)qddoc";
+
 /* ----------------------- DB_ELEMENTS ---------------------- */
 const char* dbelems_description = R"qddoc(
 

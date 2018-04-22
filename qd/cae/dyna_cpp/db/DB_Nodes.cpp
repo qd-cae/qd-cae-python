@@ -219,4 +219,80 @@ DB_Nodes::get_node_coords() const
   return std::move(tensor);
 }
 
+Tensor<float>
+DB_Nodes::get_node_velocity() const
+{
+  // no data
+  if (nodes.size() == 0)
+    return Tensor<float>();
+
+  // do the thing
+  const auto& first_node_data = nodes[0]->get_vel();
+
+  if (first_node_data.size() == 0)
+    return Tensor<float>();
+
+  const auto nTimesteps = first_node_data.size();
+  const auto nDims = first_node_data[0].size();
+
+  Tensor<float> tensor;
+  tensor.resize({ nodes.size(), nTimesteps, nDims });
+  auto& tensor_data = tensor.get_data();
+
+  for (size_t iNode = 0; iNode < nodes.size(); ++iNode) {
+    const auto& series = nodes[iNode]->get_vel();
+    const auto offset = iNode * nTimesteps * nDims;
+    for (size_t iStep = 0; iStep < series.size(); ++iStep){
+      const auto offset2 = offset+iStep*nDims;
+      tensor_data[offset2] = series[iStep][0];
+      tensor_data[offset2+1] = series[iStep][1];
+      tensor_data[offset2+2] = series[iStep][2];
+      // std::copy(series[iStep].begin(),
+      //           series[iStep].end(),
+      //           tensor_data.begin() + iNode * nTimesteps * nDims);
+    }
+  }
+
+  return std::move(tensor);
+}
+
+Tensor<float>
+DB_Nodes::get_node_acceleration() const
+{
+  // no data
+  if (nodes.size() == 0)
+    return Tensor<float>();
+
+  // do the thing
+  const auto& first_node_data = nodes[0]->get_accel();
+
+  if (first_node_data.size() == 0)
+    return Tensor<float>();
+
+  
+  const auto nTimesteps = first_node_data.size();
+  const auto nDims = first_node_data[0].size();
+  std::cout << nTimesteps << std::endl;
+  
+  Tensor<float> tensor;
+  tensor.resize({ nodes.size(), nTimesteps, nDims });
+  auto& tensor_data = tensor.get_data();
+
+  for (size_t iNode = 0; iNode < nodes.size(); ++iNode) {
+    const auto& series = nodes[iNode]->get_accel();
+    const auto offset = iNode * nTimesteps * nDims;
+    for (size_t iStep = 0; iStep < series.size(); ++iStep){
+      const auto offset2 = offset+iStep*nDims;
+      tensor_data[offset2] = series[iStep][0];
+      tensor_data[offset2+1] = series[iStep][1];
+      tensor_data[offset2+2] = series[iStep][2];
+      // std::copy(series[iStep].begin(),
+      //           series[iStep].end(),
+      //           tensor_data.begin() + iNode * nTimesteps * nDims);
+    }
+  }
+
+  return std::move(tensor);
+}
+
 } // namespace qd

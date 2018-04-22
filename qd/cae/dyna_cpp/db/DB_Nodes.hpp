@@ -67,6 +67,12 @@ public:
 
   // array data
   Tensor<float> get_node_coords() const;
+
+  // array data
+  Tensor<float> get_node_velocity() const;
+
+  // array data
+  Tensor<float> get_node_acceleration() const; 
 };
 
 /** Get the node index from it's id

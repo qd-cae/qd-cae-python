@@ -435,10 +435,21 @@ PYBIND11_MODULE(dyna_cpp, m)
          },
          "index"_a,
          pybind11::return_value_policy::reference_internal)
+
     .def("get_node_coords",
          &DB_Nodes::get_node_coords,
          pybind11::return_value_policy::take_ownership,
-         dbnodes_get_node_coords_docs);
+         dbnodes_get_node_coords_docs)
+
+    .def("get_node_velocity",
+         &DB_Nodes::get_node_velocity,
+         pybind11::return_value_policy::take_ownership,
+         dbnodes_get_node_velocity_docs)
+
+    .def("get_node_acceleration",
+         &DB_Nodes::get_node_acceleration,
+         pybind11::return_value_policy::take_ownership,
+         dbnodes_get_node_acceleration_docs);
 
   // DB_Elements
   pybind11::class_<DB_Elements, std::shared_ptr<DB_Elements>> db_elements_py(

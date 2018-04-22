@@ -160,6 +160,10 @@ class TestDynaModule(unittest.TestCase):
                                for node in nodes_indexes_v2], node_matching_ids)
         # .. TODO Error stoff
 
+        # Node Velocity and Acceleration Testing
+        self.assertCountEqual (d3plot.get_node_velocity().shape,(4915,1,3))
+        self.assertCountEqual (d3plot.get_node_acceleration().shape,(4915,1,3))
+
         # Shell Element
         element_ids = [1, 2]
         element_ids_shell_v1 = [d3plot.get_elementByID(
