@@ -272,7 +272,6 @@ DB_Nodes::get_node_acceleration() const
   
   const auto nTimesteps = first_node_data.size();
   const auto nDims = first_node_data[0].size();
-  std::cout << nTimesteps << std::endl;
   
   Tensor<float> tensor;
   tensor.resize({ nodes.size(), nTimesteps, nDims });
