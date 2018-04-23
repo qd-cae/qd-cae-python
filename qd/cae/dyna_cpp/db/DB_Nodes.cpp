@@ -294,4 +294,22 @@ DB_Nodes::get_node_acceleration() const
   return std::move(tensor);
 }
 
+Tensor<int32_t>
+DB_Nodes::get_node_ids() const
+{
+  // no data
+  if (nodes.size() == 0)
+    return Tensor<int32_t>();
+  
+  Tensor<int32_t> tensor;
+  tensor.resize({nodes.size()});  // <- allocate memory
+  auto& tensor_data = tensor.get_data();
+
+  for (size_t iNode = 0; iNode < nodes.size(); ++iNode) {
+    tensor_data[iNode] = nodes[iNode]->get_nodeID();
+  }
+
+  return std::move(tensor);
+}
+
 } // namespace qd

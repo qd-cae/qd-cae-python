@@ -163,6 +163,7 @@ class TestDynaModule(unittest.TestCase):
         # Node Velocity and Acceleration Testing
         self.assertCountEqual (d3plot.get_node_velocity().shape,(4915,1,3))
         self.assertCountEqual (d3plot.get_node_acceleration().shape,(4915,1,3))
+        self.assertCountEqual (d3plot.get_node_ids().shape,[4915])
 
         # Shell Element
         element_ids = [1, 2]

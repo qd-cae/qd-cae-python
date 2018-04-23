@@ -73,6 +73,10 @@ public:
 
   // array data
   Tensor<float> get_node_acceleration() const; 
+
+  // array data
+  Tensor<int32_t> get_node_ids() const; 
+
 };
 
 /** Get the node index from it's id

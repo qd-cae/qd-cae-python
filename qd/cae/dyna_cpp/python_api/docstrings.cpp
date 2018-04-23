@@ -711,6 +711,20 @@ const char* dbnodes_get_node_acceleration_docs = R"qddoc(
         (4915,1,3)
 )qddoc";
 
+const char* dbnodes_get_node_ids_docs = R"qddoc(
+    get_node_ids()
+
+    Returns
+    -------
+    node_ids : np.ndarray
+        Ids of all nodes
+
+    Examples
+    --------
+        >>> d3plot.get_node_ids().shape
+        (100001)
+)qddoc";
+
 /* ----------------------- DB_ELEMENTS ---------------------- */
 const char* dbelems_description = R"qddoc(
 
