@@ -291,18 +291,9 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
   else if (_keyword_name_lower.find("dof", 13) != std::string::npos)
     ++nAdditionalLines;
 
-  // determine solid
-  if (iLine < lines.size()) {
-    const auto& line_trimmed = trim_copy(lines[iLine]);
-    if (line_trimmed.size() > 3 * field_size) {
-      old_solid_format = true;
-    }
-  }
-
 #ifdef QD_DEBUG
   std::cout << "ElementKeyword\nname: " << _keyword_name_lower
-            << "\nnAdditionalLines: " << nAdditionalLines
-            << "\nold_solid_format: " << old_solid_format << '\n';
+            << "\nnAdditionalLines: " << nAdditionalLines << '\n';
 #endif
 
   // extract node data
@@ -310,7 +301,7 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
   int32_t part_id;
   std::vector<int32_t> node_ids(8);
   std::string remaining_data;
-  for (; iLine < lines.size(); iLine += old_solid_format + nAdditionalLines) {
+  for (; iLine < lines.size(); iLine += 1 + nAdditionalLines) {
 
     const auto& line = lines[iLine];
     auto line_trimmed = trim_copy(line);

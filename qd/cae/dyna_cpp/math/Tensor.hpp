@@ -5,6 +5,7 @@
 #include <functional>
 #include <initializer_list>
 #include <iostream>
+#include <memory>
 #include <numeric>
 #include <vector>
 
@@ -15,7 +16,7 @@ namespace qd {
 #ifdef QD_DEBUG
 template<typename T>
 class Tensor : public traced<Tensor<T>>
-#else 
+#else
 template<typename T>
 class Tensor
 #endif
@@ -43,7 +44,6 @@ public:
   void reserve(size_t n_elements);
 
   void print() const;
-
 };
 
 template<typename T>

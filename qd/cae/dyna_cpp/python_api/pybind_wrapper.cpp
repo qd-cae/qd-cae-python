@@ -59,7 +59,6 @@ shape_to_strides(const std::vector<size_t>& shape)
   return std::move(strides);
 }
 
-/*
 namespace pybind11 {
 namespace detail {
 
@@ -69,7 +68,6 @@ struct type_caster<qd::Tensor<T>>
   PYBIND11_TYPE_CASTER(qd::Tensor<T>, _("Tensor<T>"));
 
 public:
-
   // Conversion part 1 (Python -> C++)
   bool load(pybind11::handle src, bool convert)
   {
@@ -93,8 +91,8 @@ public:
     return true;
   }
 
-  // Conversion part 2 (C++ -> Python)  
-  static pybind11::handle cast(qd::Tensor<T>& src,
+  // Conversion part 2 (C++ -> Python)
+  static pybind11::handle cast(qd::Tensor<T> src,
                                const pybind11::return_value_policy& policy,
                                pybind11::handle& parent)
   {
@@ -106,12 +104,10 @@ public:
 
     return a.release();
   }
-
 };
 
 } // namespace detail
 } // namespace pybind11
-*/
 
 namespace qd {
 
@@ -163,8 +159,11 @@ PYBIND11_MODULE(dyna_cpp, m)
   options.disable_function_signatures();
 
   // Tensor
-  pybind11::class_<Tensor<float>, std::shared_ptr<Tensor<float>>> tensor_f32_py(
-    m, "Tensor_f32", pybind11::buffer_protocol());
+
+  pybind11::class_<Tensor<float>> tensor_f32_py(m, "Tensor_f32");
+  // pybind11::class_<Tensor<float>> tensor_f32_py(
+  //   m, "Tensor_f32", pybind11::buffer_protocol());
+  /*
   tensor_f32_py
     .def_buffer([](Tensor<float>& m) -> pybind11::buffer_info {
 
@@ -190,10 +189,12 @@ PYBIND11_MODULE(dyna_cpp, m)
     })
     .def("print", &Tensor<float>::print)
     .def("shape", &Tensor<float>::get_shape);
+  */
 
-    
-  pybind11::class_<Tensor<int32_t>, std::shared_ptr<Tensor<int32_t>>> tensor_i32_py(
-    m, "Tensor_i32", pybind11::buffer_protocol());
+  pybind11::class_<Tensor<int32_t>> tensor_i32_py(m, "Tensor_i32");
+  // pybind11::class_<Tensor<int32_t>> tensor_i32_py(
+  //   m, "Tensor_i32", pybind11::buffer_protocol());
+  /*
   tensor_i32_py
     .def_buffer([](Tensor<int32_t>& m) -> pybind11::buffer_info {
 
@@ -218,7 +219,8 @@ PYBIND11_MODULE(dyna_cpp, m)
       );
     })
     .def("print", &Tensor<int32_t>::print)
-.def("shape", &Tensor<int32_t>::get_shape);
+    .def("shape", &Tensor<int32_t>::get_shape);
+  */
 
   // Node
   pybind11::class_<Node, std::shared_ptr<Node>> node_py(
@@ -411,18 +413,18 @@ PYBIND11_MODULE(dyna_cpp, m)
          "element_filter"_a = Element::ElementType::NONE,
          pybind11::return_value_policy::reference_internal,
          part_get_elements_docs);
-    // .def("get_element_node_ids",
-    //      &Part::get_element_node_ids,
-    //      "element_type"_a,
-    //      "nNodes"_a,
-    //      pybind11::return_value_policy::reference_internal,
-    //      part_get_element_node_ids_docs);
-    // .def("get_element_node_indexes",
-    //      &Part::get_element_node_indexes,
-    //      "element_type"_a,
-    //      "nNodes"_a,
-    //      pybind11::return_value_policy::reference_internal,
-    //      part_get_element_node_indexes_docs);
+  // .def("get_element_node_ids",
+  //      &Part::get_element_node_ids,
+  //      "element_type"_a,
+  //      "nNodes"_a,
+  //      pybind11::return_value_policy::reference_internal,
+  //      part_get_element_node_ids_docs);
+  // .def("get_element_node_indexes",
+  //      &Part::get_element_node_indexes,
+  //      "element_type"_a,
+  //      "nNodes"_a,
+  //      pybind11::return_value_policy::reference_internal,
+  //      part_get_element_node_indexes_docs);
 
   // DB_Nodes
   pybind11::class_<DB_Nodes, std::shared_ptr<DB_Nodes>> db_nodes_py(
@@ -493,11 +495,11 @@ PYBIND11_MODULE(dyna_cpp, m)
            return _db_nodes->get_nodeByIndex(tmp);
          },
          "index"_a,
-         pybind11::return_value_policy::reference_internal);
-    // .def("get_node_coords",
-    //      &DB_Nodes::get_node_coords,
-    //     //  pybind11::return_value_policy::take_ownership,
-    //      dbnodes_get_node_coords_docs);
+         pybind11::return_value_policy::reference_internal)
+    .def("get_node_coords",
+         &DB_Nodes::get_node_coords,
+         //  pybind11::return_value_policy::take_ownership,
+         dbnodes_get_node_coords_docs);
 
   // DB_Elements
   pybind11::class_<DB_Elements, std::shared_ptr<DB_Elements>> db_elements_py(
