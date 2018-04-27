@@ -100,7 +100,12 @@ public:
     const auto& shape = src.get_shape();
     auto strides = shape_to_strides<T>(shape);
 
-    pybind11::array a(shape, std::move(strides), src.get_data().data());
+    // keps data vector alive
+    auto holder = pybind11::capsule(src.get_data(), []() {});
+    // auto holder = pybind11::cast(src);
+
+    pybind11::array a(
+      shape, std::move(strides), src.get_data()->data(), holder);
 
     return a.release();
   }
@@ -159,8 +164,7 @@ PYBIND11_MODULE(dyna_cpp, m)
   options.disable_function_signatures();
 
   // Tensor
-
-  pybind11::class_<Tensor<float>> tensor_f32_py(m, "Tensor_f32");
+  // pybind11::class_<Tensor<float>> tensor_f32_py(m, "Tensor_f32");
   // pybind11::class_<Tensor<float>> tensor_f32_py(
   //   m, "Tensor_f32", pybind11::buffer_protocol());
   /*
@@ -191,7 +195,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("shape", &Tensor<float>::get_shape);
   */
 
-  pybind11::class_<Tensor<int32_t>> tensor_i32_py(m, "Tensor_i32");
+  // pybind11::class_<Tensor<int32_t>> tensor_i32_py(m, "Tensor_i32");
   // pybind11::class_<Tensor<int32_t>> tensor_i32_py(
   //   m, "Tensor_i32", pybind11::buffer_protocol());
   /*

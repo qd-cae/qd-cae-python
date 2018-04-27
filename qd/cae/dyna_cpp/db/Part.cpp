@@ -149,7 +149,7 @@ Part::get_element_node_ids(Element::ElementType element_type, size_t nNodes)
       const auto& elem_node_ids = element->get_node_ids();
       std::copy(elem_node_ids.begin(),
                 elem_node_ids.end(),
-                tensor_data.begin() + iElement++ * nNodes);
+                tensor_data->begin() + iElement++ * nNodes);
     }
   }
 
@@ -184,7 +184,7 @@ Part::get_element_node_indexes(Element::ElementType element_type,
         element->get_nNodes() == nNodes) {
       const auto& elem_node_ids = element->get_node_ids();
       for (auto id : elem_node_ids)
-        tensor_data[iEntry++] = db_nodes->get_index_from_id(id);
+        tensor_data->operator[](iEntry++) = db_nodes->get_index_from_id(id);
     }
   }
 

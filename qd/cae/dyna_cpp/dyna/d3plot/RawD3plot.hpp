@@ -69,9 +69,8 @@ private:
   int32_t dyna_extra;   // double header length indicator
   int32_t dyna_numprop; // number of properties dude!!!
 
-  int32_t dyna_numrbe; // number of rigid body shell elems
-  std::shared_ptr<Tensor<int32_t>>
-    dyna_irbtyp; // rigid body material type numbers (internal)
+  int32_t dyna_numrbe;         // number of rigid body shell elems
+  Tensor<int32_t> dyna_irbtyp; // rigid body material type numbers (internal)
 
   // just for checks ... can not be handled.
   int32_t dyna_nmsph;   // #nodes of sph
@@ -112,8 +111,8 @@ private:
   std::unique_ptr<AbstractBuffer> buffer;
 
   // Data
-  std::map<std::string, std::shared_ptr<Tensor<int32_t>>> int_data;
-  std::map<std::string, std::shared_ptr<Tensor<float>>> float_data;
+  std::map<std::string, Tensor<int32_t>> int_data;
+  std::map<std::string, Tensor<float>> float_data;
   std::map<std::string, std::vector<std::string>> string_data;
 
   // header and metadata
@@ -156,11 +155,11 @@ public:
 
   std::string get_title() const;
 
-  Tensor_ptr<int32_t> get_int_data(const std::string& _name);
+  Tensor<int32_t>& get_int_data(const std::string& _name);
   std::vector<std::string> get_int_names() const;
   std::vector<std::string> get_string_data(const std::string& _name);
   std::vector<std::string> get_string_names() const;
-  Tensor_ptr<float> get_float_data(const std::string& _name);
+  Tensor<float>& get_float_data(const std::string& _name);
   std::vector<std::string> get_float_names() const;
   void set_float_data(const std::string& _name,
                       std::vector<size_t> _shape,
@@ -168,7 +167,7 @@ public:
   void set_int_data(const std::string& _name,
                     std::vector<size_t> _shape,
                     const int* _data_ptr);
-  void set_int_data(const std::string& _name, Tensor_ptr<int32_t> _data);
+  void set_int_data(const std::string& _name, Tensor<int32_t>& _data);
   void set_string_data(const std::string& _name,
                        const std::vector<std::string>& _data);
 };
