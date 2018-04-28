@@ -811,49 +811,28 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<RawD3plot> self, std::string& name) {
            auto tensor = self->get_int_data(name);
 
-           //  pybind11::array_t<int32_t> arr(pybind11::cast(tensor));
-           //  return arr.release();
+           auto tensor_py = pybind11::cast(tensor);
+           pybind11::array_t<int32_t> a(tensor_py);
 
-           pybind11::array a(tensor->get_shape(),
-                             shape_to_strides<int32_t>(tensor->get_shape()),
-                             tensor->get_data().data(),
-                             pybind11::cast(tensor));
            return a.release();
+
          },
-         //  &RawD3plot::get_int_data,
          "name"_a,
-         //  pybind11::call_guard<pybind11::gil_scoped_release>(),
-         pybind11::return_value_policy::take_ownership,
          rawd3plot_get_int_data_docs)
     .def("_get_float_names",
          &RawD3plot::get_float_names,
          pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_get_float_names_docs)
     .def("_get_float_data",
-         //  &RawD3plot::get_float_data,
          [](std::shared_ptr<RawD3plot> self, std::string& name) {
            auto tensor = self->get_float_data(name);
 
-           // auto ndarray = pybind11::module::import("numpy").attr("ndarray")
-           // auto ret = ndarray()
-
-           //  pybind11::array_t<float> arr(pybind11::cast(tensor),
-           //                               tensor->get_data().data());
-           //  return arr.release();
-
-           //  pybind11::array a(tensor->get_shape(),
-           //                    shape_to_strides<float>(tensor->get_shape()),
-           //                    tensor->get_data().data());
-
            auto tensor_py = pybind11::cast(tensor);
            pybind11::array_t<float> a(tensor_py);
-           tensor_py.dec_ref();
-           //  return a.release();
-           return a.release();
+
+           return a;
          },
          "name"_a,
-         //  pybind11::return_value_policy::,
-         //  pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_get_float_data_docs)
     .def("_set_float_data",
          [](std::shared_ptr<RawD3plot> _d3plot,
