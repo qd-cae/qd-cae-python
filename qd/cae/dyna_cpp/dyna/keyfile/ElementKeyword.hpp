@@ -17,6 +17,9 @@ private:
   std::vector<std::string> unparsed_element_data;
   std::vector<std::string> trailing_lines;
 
+  // solid only
+  bool old_solid_format = false;
+
   Element::ElementType determine_element_type(
     const std::string& _keyword_name) const;
   void parse_elem2(const std::string& _keyword_name_lower,
