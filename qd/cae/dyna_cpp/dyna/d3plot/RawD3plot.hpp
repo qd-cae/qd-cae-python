@@ -152,8 +152,12 @@ public:
   explicit RawD3plot();
   explicit RawD3plot(std::string filepath, bool _use_femzip = false);
   virtual ~RawD3plot();
-  void info() const;
 
+  // disallow copy
+  RawD3plot(const RawD3plot&) = delete;
+  RawD3plot& operator=(const RawD3plot&) = delete;
+
+  void info() const;
   std::string get_title() const;
 
   Tensor_ptr<int32_t> get_int_data(const std::string& _name);

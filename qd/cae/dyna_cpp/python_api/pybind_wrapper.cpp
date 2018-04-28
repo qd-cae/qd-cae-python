@@ -93,7 +93,7 @@ public:
     return true;
   }
 
-  // Conversion part 2 (C++ -> Python)  
+  // Conversion part 2 (C++ -> Python)
   static pybind11::handle cast(qd::Tensor<T>& src,
                                const pybind11::return_value_policy& policy,
                                pybind11::handle& parent)
@@ -191,9 +191,8 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("print", &Tensor<float>::print)
     .def("shape", &Tensor<float>::get_shape);
 
-    
-  pybind11::class_<Tensor<int32_t>, std::shared_ptr<Tensor<int32_t>>> tensor_i32_py(
-    m, "Tensor_i32", pybind11::buffer_protocol());
+  pybind11::class_<Tensor<int32_t>, std::shared_ptr<Tensor<int32_t>>>
+    tensor_i32_py(m, "Tensor_i32", pybind11::buffer_protocol());
   tensor_i32_py
     .def_buffer([](Tensor<int32_t>& m) -> pybind11::buffer_info {
 
@@ -218,7 +217,7 @@ PYBIND11_MODULE(dyna_cpp, m)
       );
     })
     .def("print", &Tensor<int32_t>::print)
-.def("shape", &Tensor<int32_t>::get_shape);
+    .def("shape", &Tensor<int32_t>::get_shape);
 
   // Node
   pybind11::class_<Node, std::shared_ptr<Node>> node_py(
@@ -411,18 +410,18 @@ PYBIND11_MODULE(dyna_cpp, m)
          "element_filter"_a = Element::ElementType::NONE,
          pybind11::return_value_policy::reference_internal,
          part_get_elements_docs);
-    // .def("get_element_node_ids",
-    //      &Part::get_element_node_ids,
-    //      "element_type"_a,
-    //      "nNodes"_a,
-    //      pybind11::return_value_policy::reference_internal,
-    //      part_get_element_node_ids_docs);
-    // .def("get_element_node_indexes",
-    //      &Part::get_element_node_indexes,
-    //      "element_type"_a,
-    //      "nNodes"_a,
-    //      pybind11::return_value_policy::reference_internal,
-    //      part_get_element_node_indexes_docs);
+  // .def("get_element_node_ids",
+  //      &Part::get_element_node_ids,
+  //      "element_type"_a,
+  //      "nNodes"_a,
+  //      pybind11::return_value_policy::reference_internal,
+  //      part_get_element_node_ids_docs);
+  // .def("get_element_node_indexes",
+  //      &Part::get_element_node_indexes,
+  //      "element_type"_a,
+  //      "nNodes"_a,
+  //      pybind11::return_value_policy::reference_internal,
+  //      part_get_element_node_indexes_docs);
 
   // DB_Nodes
   pybind11::class_<DB_Nodes, std::shared_ptr<DB_Nodes>> db_nodes_py(
@@ -494,10 +493,10 @@ PYBIND11_MODULE(dyna_cpp, m)
          },
          "index"_a,
          pybind11::return_value_policy::reference_internal);
-    // .def("get_node_coords",
-    //      &DB_Nodes::get_node_coords,
-    //     //  pybind11::return_value_policy::take_ownership,
-    //      dbnodes_get_node_coords_docs);
+  // .def("get_node_coords",
+  //      &DB_Nodes::get_node_coords,
+  //     //  pybind11::return_value_policy::take_ownership,
+  //      dbnodes_get_node_coords_docs);
 
   // DB_Elements
   pybind11::class_<DB_Elements, std::shared_ptr<DB_Elements>> db_elements_py(
@@ -809,18 +808,52 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::take_ownership,
          rawd3plot_get_int_names_docs)
     .def("_get_int_data",
-         &RawD3plot::get_int_data,
+         [](std::shared_ptr<RawD3plot> self, std::string& name) {
+           auto tensor = self->get_int_data(name);
+
+           //  pybind11::array_t<int32_t> arr(pybind11::cast(tensor));
+           //  return arr.release();
+
+           pybind11::array a(tensor->get_shape(),
+                             shape_to_strides<int32_t>(tensor->get_shape()),
+                             tensor->get_data().data(),
+                             pybind11::cast(tensor));
+           return a.release();
+         },
+         //  &RawD3plot::get_int_data,
          "name"_a,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         //  pybind11::call_guard<pybind11::gil_scoped_release>(),
+         pybind11::return_value_policy::take_ownership,
          rawd3plot_get_int_data_docs)
     .def("_get_float_names",
          &RawD3plot::get_float_names,
          pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_get_float_names_docs)
     .def("_get_float_data",
-         &RawD3plot::get_float_data,
+         //  &RawD3plot::get_float_data,
+         [](std::shared_ptr<RawD3plot> self, std::string& name) {
+           auto tensor = self->get_float_data(name);
+
+           // auto ndarray = pybind11::module::import("numpy").attr("ndarray")
+           // auto ret = ndarray()
+
+           //  pybind11::array_t<float> arr(pybind11::cast(tensor),
+           //                               tensor->get_data().data());
+           //  return arr.release();
+
+           //  pybind11::array a(tensor->get_shape(),
+           //                    shape_to_strides<float>(tensor->get_shape()),
+           //                    tensor->get_data().data());
+
+           auto tensor_py = pybind11::cast(tensor);
+           pybind11::array_t<float> a(tensor_py);
+           tensor_py.dec_ref();
+           //  return a.release();
+           return a.release();
+         },
          "name"_a,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         //  pybind11::return_value_policy::,
+         //  pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_get_float_data_docs)
     .def("_set_float_data",
          [](std::shared_ptr<RawD3plot> _d3plot,

@@ -22,7 +22,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 debugging_mode = True
 measure_time = False
 use_openmp = False
-version = "0.7.2"
+version = "0.8.0"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() in ["Linux", "Darwin"])
@@ -60,12 +60,14 @@ def setup_dyna_cpp():
     # linux compiler args
     if is_linux:
         compiler_args = ["-std=c++14",
-                         "-O3",
                          "-fPIC",
                          "-DQD_VERSION=\"" + version + "\""]
 
         if debugging_mode:
             compiler_args.append("-DQD_DEBUG")
+            compiler_args.append("-O0")
+        else:
+            compiler_args.append("-O3")
         if measure_time:
             compiler_args.append("-DQD_MEASURE_TIME")
         if use_openmp:
