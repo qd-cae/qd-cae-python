@@ -169,15 +169,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def_buffer([](Tensor<float>& m) -> pybind11::buffer_info {
 
       const auto& shape = m.get_shape();
-
-      // compute strides
-      std::vector<pybind11::ssize_t> strides(shape.size());
-      if (strides.size() != 0)
-        strides.back() = static_cast<pybind11::ssize_t>(sizeof(float));
-      for (int32_t iDim = static_cast<int32_t>(strides.size()) - 2; iDim >= 0;
-           --iDim)
-        strides[iDim] =
-          strides[iDim + 1] * static_cast<pybind11::ssize_t>(shape[iDim + 1]);
+      auto strides = shape_to_strides<float>(shape);
 
       return pybind11::buffer_info(
         m.get_data().data(),                          // Pointer to buffer
@@ -197,15 +189,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def_buffer([](Tensor<int32_t>& m) -> pybind11::buffer_info {
 
       const auto& shape = m.get_shape();
-
-      // compute strides
-      std::vector<pybind11::ssize_t> strides(shape.size());
-      if (strides.size() != 0)
-        strides.back() = static_cast<pybind11::ssize_t>(sizeof(int32_t));
-      for (int32_t iDim = static_cast<int32_t>(strides.size()) - 2; iDim >= 0;
-           --iDim)
-        strides[iDim] =
-          strides[iDim + 1] * static_cast<pybind11::ssize_t>(shape[iDim + 1]);
+      auto strides = shape_to_strides<int32_t>(shape);
 
       return pybind11::buffer_info(
         m.get_data().data(),                            // Pointer to buffer
@@ -218,6 +202,26 @@ PYBIND11_MODULE(dyna_cpp, m)
     })
     .def("print", &Tensor<int32_t>::print)
     .def("shape", &Tensor<int32_t>::get_shape);
+
+  pybind11::class_<Tensor<size_t>, std::shared_ptr<Tensor<size_t>>>
+    tensor_size_t_py(m, "Tensor_size_t", pybind11::buffer_protocol());
+  tensor_size_t_py
+    .def_buffer([](Tensor<size_t>& m) -> pybind11::buffer_info {
+
+      const auto& shape = m.get_shape();
+      auto strides = shape_to_strides<size_t>(shape);
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                           // Pointer to buffer
+        (pybind11::ssize_t)sizeof(size_t),             // Size of one scalar
+        pybind11::format_descriptor<size_t>::format(), // Python struct-style
+        static_cast<pybind11::ssize_t>(shape.size()),  // Number of dims
+        shape,                                         // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<size_t>::print)
+    .def("shape", &Tensor<size_t>::get_shape);
 
   // Node
   pybind11::class_<Node, std::shared_ptr<Node>> node_py(
@@ -809,13 +813,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          rawd3plot_get_int_names_docs)
     .def("_get_int_data",
          [](std::shared_ptr<RawD3plot> self, std::string& name) {
-           auto tensor = self->get_int_data(name);
-
-           auto tensor_py = pybind11::cast(tensor);
-           pybind11::array_t<int32_t> a(tensor_py);
-
-           return a.release();
-
+           return py::tensor_to_nparray(self->get_int_data(name));
          },
          "name"_a,
          rawd3plot_get_int_data_docs)
@@ -825,12 +823,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          rawd3plot_get_float_names_docs)
     .def("_get_float_data",
          [](std::shared_ptr<RawD3plot> self, std::string& name) {
-           auto tensor = self->get_float_data(name);
-
-           auto tensor_py = pybind11::cast(tensor);
-           pybind11::array_t<float> a(tensor_py);
-
-           return a;
+           return py::tensor_to_nparray(self->get_float_data(name));
          },
          "name"_a,
          rawd3plot_get_float_data_docs)

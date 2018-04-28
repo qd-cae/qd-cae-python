@@ -47,7 +47,7 @@ public:
   std::shared_ptr<Tensor<int32_t>> get_element_node_ids(
     Element::ElementType element_type,
     size_t nNodes);
-  std::shared_ptr<Tensor<int32_t>> get_element_node_indexes(
+  std::shared_ptr<Tensor<size_t>> get_element_node_indexes(
     Element::ElementType element_type,
     size_t nNodes) const;
 };

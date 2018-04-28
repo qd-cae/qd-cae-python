@@ -165,14 +165,14 @@ Part::get_element_node_ids(Element::ElementType element_type, size_t nNodes)
  * @param nNodes : number of nodes (e.g. 3 for tria)
  * @return indexes
  */
-std::shared_ptr<Tensor<int32_t>>
+std::shared_ptr<Tensor<size_t>>
 Part::get_element_node_indexes(Element::ElementType element_type,
                                size_t nNodes) const
 {
   auto db_nodes = femfile->get_db_nodes();
 
   // allocate
-  auto tensor = std::make_shared<Tensor<int32_t>>();
+  auto tensor = std::make_shared<Tensor<size_t>>();
   tensor->resize({ elements.size(), nNodes });
   auto& tensor_data = tensor->get_data();
 

@@ -21,33 +21,6 @@ extern "C" {
 
 #include <dyna_cpp/math/Tensor.hpp>
 
-// Python3
-#if PY_MAJOR_VERSION >= 3
-#define PyInt_Check(arg) PyLong_Check(arg)
-inline int
-isPyStr(PyObject* arg)
-{
-  return PyUnicode_Check(arg);
-}
-inline char*
-PyStr2char(PyObject* arg)
-{
-  return PyUnicode_AsUTF8(arg);
-}
-// Python 2
-#else
-inline int
-isPyStr(PyObject* arg)
-{
-  return PyString_Check(arg);
-}
-inline char*
-PyStr2char(PyObject* arg)
-{
-  return PyString_AsString(arg);
-}
-#endif
-
 // namespaces
 namespace qd {
 namespace py {
@@ -82,7 +55,7 @@ template<
 inline bool
 is_type(PyObject* obj)
 {
-  return isPyStr(obj) != 0;
+  return pybind11::isinstance<pybind11::str>(obj);
 }
 
 template<typename T,
@@ -90,7 +63,7 @@ template<typename T,
 inline bool
 is_type(PyObject* obj)
 {
-  return PyObject_isIntegral(obj) != 0;
+  return pybind11::isinstance<pybind11::int_>(obj);
 }
 
 template<
@@ -99,7 +72,7 @@ template<
 inline bool
 is_type(PyObject* obj)
 {
-  return PyFloat_Check(obj) != 0;
+  return pybind11::isinstance<pybind11::float_>(obj);
 }
 
 /** Convert a python list or tuple to a vector
@@ -240,39 +213,41 @@ vector_to_nparray(const std::vector<std::vector<T>>& _data)
 
 /** Convert an internal tensor to numpy
  *
- * @param _tensor : tensor
+ * @param tensor
  * @return ret : numpy array
  */
 template<typename T>
 pybind11::array_t<T>
-tensor_to_nparray(qd::Tensor<T>& _tensor)
+tensor_to_nparray_copy(std::shared_ptr<qd::Tensor<T>>& tensor)
 {
 
-  if (_tensor.size() == 0) {
+  if (tensor.size() == 0) {
     return std::move(create_empty_array<T>(1));
   }
 
-  // array allocation
-  // pybind11::array_t<T, py::array::c_style> _array(tensor.get_shape());
-
-  // compute shape
-  // auto shape = tensor.get_shape();
-  auto data = _tensor.get_data();
-  // std::vector<size_t> strides(shape.size());
-  // strides[0] = sizeof(T);
-  // for (size_t ii = 1; ii < strides.size(); ++ii) {
-  //  strides[ii] = strides[ii - 1] * shape[ii - 1];
-  //}
+  auto data = tensor.get_data();
 
   pybind11::array_t<T, pybind11::array::c_style> ret;
-  ret.resize(_tensor.get_shape());
+  ret.resize(tensor.get_shape());
   std::copy(data.begin(), data.end(), ret.mutable_data());
 
   // do the thing
   return ret;
+}
 
-  // std::copy(
-  //  _data[iRow].begin(), _data[iRow].end(), (T*)_array.mutable_data() + pos);
+/** Convert an internal tensor to numpy
+ *
+ * @param tensor
+ * @return ret : numpy array
+ */
+template<typename T>
+inline pybind11::array_t<T>
+tensor_to_nparray(std::shared_ptr<qd::Tensor<T>>& tensor)
+{
+  auto tensor_py = pybind11::cast(tensor);
+  pybind11::array_t<T> ret(tensor_py);
+
+  return ret;
 }
 
 } // end:namespace:py
