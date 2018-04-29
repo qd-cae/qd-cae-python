@@ -986,14 +986,12 @@ const char* d3plot_description = R"qddoc(
 )qddoc";
 
 const char* d3plot_constructor = R"qddoc(
-    __init__(filepath, use_femzip=False, read_states=[])
+    __init__(filepath, read_states=[])
 
     Parameters
     ----------
     filepath : str
         path to the d3plot
-    use_femzip : bool
-        whether to use femzip for decompression
     read_states : str or list of str
         read state information directly (saves time), 
         see the function ``read_states``
@@ -1025,7 +1023,7 @@ const char* d3plot_constructor = R"qddoc(
         
         Read a compressed d3plot
 
-        >>> d3plot = D3plot("path/to/d3plot.fz", use_femzip=True)
+        >>> d3plot = D3plot("path/to/d3plot.fz")
         
         Read d3plot with state data at once.
 

@@ -147,7 +147,9 @@ RawD3plot::RawD3plot(std::string _filename)
   , wordPosition(0)
   , wordsToRead(0)
   , wordPositionStates(0)
+  , _is_femzipped(false)
   , femzip_state_offset(0)
+  , buffer(nullptr)
 {
 // check for femzip
 #ifdef QD_USE_FEMZIP
@@ -162,8 +164,6 @@ RawD3plot::RawD3plot(std::string _filename)
   const int32_t bytesPerWord = 4;
   buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
 #endif
-
-  // --> Constructor starts here ...
 
   this->buffer->read_geometryBuffer(); // deallocated in read_geometry
 

@@ -681,40 +681,33 @@ PYBIND11_MODULE(dyna_cpp, m)
   pybind11::class_<D3plot, FEMFile, std::shared_ptr<D3plot>> d3plot_py(
     m, "QD_D3plot", d3plot_description);
   d3plot_py
-    .def(pybind11::init<std::string, std::string, bool>(),
+    .def(pybind11::init<std::string, std::string>(),
          "filepath"_a,
          "read_states"_a = std::string(),
-         "use_femzip"_a = false,
          pybind11::call_guard<pybind11::gil_scoped_release>(),
          d3plot_constructor)
-    .def(
-      pybind11::init(
-        [](std::string _filepath, pybind11::list _variables, bool _use_femzip) {
-
-          auto tmp = qd::py::container_to_vector<std::string>(
-            _variables, "An entry of read_states was not of type str");
-
-          pybind11::gil_scoped_release release;
-          return std::make_shared<D3plot>(_filepath, tmp, _use_femzip);
-
-        }),
-      "filepath"_a,
-      "read_states"_a = pybind11::list(),
-      "use_femzip"_a = false)
-    .def(pybind11::init([](std::string _filepath,
-                           pybind11::tuple _variables,
-                           bool _use_femzip) {
+    .def(pybind11::init([](std::string _filepath, pybind11::list _variables) {
 
            auto tmp = qd::py::container_to_vector<std::string>(
              _variables, "An entry of read_states was not of type str");
 
            pybind11::gil_scoped_release release;
-           return std::make_shared<D3plot>(_filepath, tmp, _use_femzip);
+           return std::make_shared<D3plot>(_filepath, tmp);
 
          }),
          "filepath"_a,
-         "read_states"_a = pybind11::tuple(),
-         "use_femzip"_a = false)
+         "read_states"_a = pybind11::list())
+    .def(pybind11::init([](std::string _filepath, pybind11::tuple _variables) {
+
+           auto tmp = qd::py::container_to_vector<std::string>(
+             _variables, "An entry of read_states was not of type str");
+
+           pybind11::gil_scoped_release release;
+           return std::make_shared<D3plot>(_filepath, tmp);
+
+         }),
+         "filepath"_a,
+         "read_states"_a = pybind11::tuple())
     .def("info", &D3plot::info, d3plot_info_docs)
     .def("read_states",
          (void (D3plot::*)(const std::string&)) & D3plot::read_states,
