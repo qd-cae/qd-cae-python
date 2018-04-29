@@ -82,12 +82,11 @@ RawD3plot::RawD3plot()
   , wordPosition(0)
   , wordsToRead(0)
   , wordPositionStates(0)
-  , useFemzip(false)
   , femzip_state_offset(0)
   , buffer(nullptr)
 {}
 
-RawD3plot::RawD3plot(std::string _filename, bool _useFemzip)
+RawD3plot::RawD3plot(std::string _filename)
   : dyna_ndim(-1)
   , dyna_icode(-1)
   , dyna_numnp(-1)
@@ -148,34 +147,22 @@ RawD3plot::RawD3plot(std::string _filename, bool _useFemzip)
   , wordPosition(0)
   , wordsToRead(0)
   , wordPositionStates(0)
-  , useFemzip(_useFemzip)
   , femzip_state_offset(0)
-  , buffer([](std::string _filename,
-              bool _useFemzip) -> std::unique_ptr<AbstractBuffer> {
-
-// WTF is this ?!?!?!
-// This is a lambda for initialization of the buffer variable
-// Since the buffer is a std::unique_ptr I need to do it in the
-// initializer list. And since it is a little bit more complicated,
-// I need to use a lambda function
+{
+// check for femzip
 #ifdef QD_USE_FEMZIP
-    if (_useFemzip) {
-      return std::move((std::make_unique<FemzipBuffer>(_filename)));
-    } else {
-      const int32_t bytesPerWord = 4;
-      return std::move(std::make_unique<D3plotBuffer>(_filename, bytesPerWord));
-    }
+  _is_femzipped = FemzipBuffer::is_femzipped(_filename);
+  if (_is_femzipped) {
+    buffer = std::make_shared<FemzipBuffer>(_filename);
+  } else {
+    constexpr int32_t bytesPerWord = 4;
+    buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
+  }
 #else
-    if (_useFemzip) {
-      throw(std::invalid_argument(
-        "d3plot.cpp was compiled without femzip support."));
-    }
-    const int32_t bytesPerWord = 4;
-    return std::move(std::make_unique<D3plotBuffer>(_filename, bytesPerWord));
+  const int32_t bytesPerWord = 4;
+  buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
 #endif
 
-  }(_filename, _useFemzip))
-{
   // --> Constructor starts here ...
 
   this->buffer->read_geometryBuffer(); // deallocated in read_geometry
@@ -667,7 +654,7 @@ RawD3plot::read_geometry()
   /* === PARTS === */
   this->buffer->free_geometryBuffer();
   this->buffer->read_partBuffer();
-  if (this->useFemzip)
+  if (this->_is_femzipped)
     wordPosition = 1; // don't ask me why not 0 ...
 
   this->read_part_names(); // directly creates parts
@@ -1170,11 +1157,11 @@ RawD3plot::read_states()
     this->buffer->read_nextState();
 
     // Not femzip case
-    if ((!this->useFemzip) && firstFileDone) {
+    if ((!this->_is_femzipped) && firstFileDone) {
       wordPosition = 0;
     }
     // femzip case
-    if (this->useFemzip) {
+    if (this->_is_femzipped) {
       // 0 = endmark
       // 1 = ntype = 90001
       // 2 = numprop

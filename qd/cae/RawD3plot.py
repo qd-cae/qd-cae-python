@@ -8,15 +8,13 @@ from qd.cae.dyna import QD_RawD3plot
 class RawD3plot(QD_RawD3plot):
     __doc__ = QD_RawD3plot.__doc__
 
-    def __init__(self, filepath, use_femzip=False):
+    def __init__(self, filepath):
         ''' Create a RawD3plot file object
 
         Parameters
         ----------
         filepath : str
             path to either the (first) d3plot or a d3plot in hdf5 format
-        use_femzip : bool
-            use femzip decompression for a compressed d3plot
 
         Returns
         -------
@@ -43,7 +41,7 @@ class RawD3plot(QD_RawD3plot):
             >>> # read an arbitrary d3plot
             >>> raw_d3plot = RawD3plot("path/to/d3plot")
             >>> #read femzip compressed file
-            >>> raw_d3plot = RawD3plot("path/to/d3plot.fz",use_femzip=True)
+            >>> raw_d3plot = RawD3plot("path/to/d3plot.fz")
             >>> # save file as HDF5
             >>> raw_d3plot.save_hdf5("path/to/d3plot.h5")
             >>> # open HDF5 d3plot
@@ -54,7 +52,7 @@ class RawD3plot(QD_RawD3plot):
             super(RawD3plot, self).__init__()
             self._load_hdf5(filepath)
         else:
-            super(RawD3plot, self).__init__(filepath, use_femzip=use_femzip)
+            super(RawD3plot, self).__init__(filepath)
 
     def get_raw_keys(self):
         ''' Get the names of the raw data fields

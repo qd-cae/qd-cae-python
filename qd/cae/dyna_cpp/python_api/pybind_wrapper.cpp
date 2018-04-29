@@ -8,6 +8,7 @@
 #include <dyna_cpp/db/Part.hpp>
 //#include <dyna_cpp/dyna/Binout.hpp>
 #include <dyna_cpp/dyna/d3plot/D3plot.hpp>
+#include <dyna_cpp/dyna/d3plot/FemzipBuffer.hpp>
 #include <dyna_cpp/dyna/d3plot/RawD3plot.hpp>
 #include <dyna_cpp/dyna/keyfile/ElementKeyword.hpp>
 #include <dyna_cpp/dyna/keyfile/KeyFile.hpp>
@@ -791,9 +792,8 @@ PYBIND11_MODULE(dyna_cpp, m)
   pybind11::class_<RawD3plot, std::shared_ptr<RawD3plot>> raw_d3plot_py(
     m, "QD_RawD3plot");
   raw_d3plot_py
-    .def(pybind11::init<std::string, bool>(),
+    .def(pybind11::init<std::string>(),
          "filepath"_a,
-         "use_femzip"_a = false,
          pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_constructor_description)
     .def(pybind11::init<>())
@@ -1545,6 +1545,9 @@ PYBIND11_MODULE(dyna_cpp, m)
         pybind11::return_value_policy::take_ownership,
         pybind11::call_guard<pybind11::gil_scoped_release>(),
         module_get_file_entropy_description);
+  m.def("is_femzipped",
+        &FemzipBuffer::is_femzipped,
+        pybind11::return_value_policy::take_ownership);
 
   // return m.ptr();
 }

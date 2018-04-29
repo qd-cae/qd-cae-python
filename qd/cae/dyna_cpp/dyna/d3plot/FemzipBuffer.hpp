@@ -11,8 +11,6 @@
 
 namespace qd {
 
-
-
 class FemzipBuffer : public AbstractBuffer
 {
 private:
@@ -42,10 +40,10 @@ private:
   int32_t adjust;
 
   void check_ier(const std::string&);
-  
+
   // helper function
-  static std::vector<char>
-  _load_next_timestep(int32_t _iTimestep, int32_t _size_state);
+  static std::vector<char> _load_next_timestep(int32_t _iTimestep,
+                                               int32_t _size_state);
 
   /* PUBLIC */
 public:
@@ -66,7 +64,7 @@ public:
   void finish_reading();
 
   // static functions
-  // static bool is_femzip_compressed(const std::string& filepath);
+  static bool is_femzipped(const std::string& filepath);
 };
 
 } // namespace qd

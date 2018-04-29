@@ -1198,14 +1198,12 @@ const char* d3plot_clear_docs = R"qddoc(
 /* ----------------------- RAW D3PLOT ---------------------- */
 
 const char* rawd3plot_constructor_description = R"qddoc(
-    RawD3plot(filepath, use_femzip=False)
+    RawD3plot(filepath)
 
     Parameters
     ----------
     filepath : str
         path to the file
-    use_femzip : bool
-        whether to use femzip decompression
 
     Returns
     -------
@@ -1230,7 +1228,7 @@ const char* rawd3plot_constructor_description = R"qddoc(
         >>> # read an arbitrary d3plot
         >>> raw_d3plot = RawD3plot("path/to/d3plot")
         >>> #read femzip compressed file
-        >>> raw_d3plot = RawD3plot("path/to/d3plot.fz",use_femzip=True)
+        >>> raw_d3plot = RawD3plot("path/to/d3plot.fz")
 )qddoc";
 
 const char* rawd3plot_get_int_names_docs = R"qddoc(

@@ -106,10 +106,10 @@ private:
   int32_t wordsToRead;
   int32_t wordPositionStates; // remembers where states begin
 
-  bool useFemzip; // femzip usage?
+  bool _is_femzipped; // femzip usage?
   int32_t femzip_state_offset;
 
-  std::unique_ptr<AbstractBuffer> buffer;
+  std::shared_ptr<AbstractBuffer> buffer;
 
   // Data
   std::map<std::string, std::shared_ptr<Tensor<int32_t>>> int_data;
@@ -150,7 +150,7 @@ private:
   // === P U B L I C === //
 public:
   explicit RawD3plot();
-  explicit RawD3plot(std::string filepath, bool _use_femzip = false);
+  explicit RawD3plot(std::string filepath);
   virtual ~RawD3plot();
 
   // disallow copy

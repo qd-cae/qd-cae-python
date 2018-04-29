@@ -175,7 +175,8 @@ retry:
 
   // fetch next timestep
   if (iTimeStep + 1 <= nTimeStep)
-    _next_buffer = std::async(FemzipBuffer::_load_next_timestep, iTimeStep, size_state);
+    _next_buffer =
+      std::async(FemzipBuffer::_load_next_timestep, iTimeStep, size_state);
 
   /*
   // q timesteps
@@ -225,7 +226,8 @@ FemzipBuffer::read_nextState()
 
   _current_buffer = _next_buffer.get();
   if (iTimeStep + 1 <= nTimeStep)
-    _next_buffer = std::async(FemzipBuffer::_load_next_timestep, iTimeStep, size_state);
+    _next_buffer =
+      std::async(FemzipBuffer::_load_next_timestep, iTimeStep, size_state);
 
   /*
   // BUGGY
@@ -325,18 +327,17 @@ FemzipBuffer::check_ier(const std::string& message)
  *
  * @return is_compressed
  */
-// bool
-// FemzipBuffer::is_femzip_compressed(const std::string& filepath)
-// {
-//   try {
-//     auto buffer = std::make_unique<FemzipBuffer>(filepath);
-//     buffer->read_geometryBuffer();
-//     buffer->free_geometryBuffer();
-//     buffer->finish_reading();
-//     return true;
-//   } catch (...) {
-//     return false;
-//   }
-// }
+bool
+FemzipBuffer::is_femzipped(const std::string& filepath)
+{
+  int error_code = -1;
+  int filetype = 1;
+  float fileunzipversion = 0.f;
+
+  femunziplib_version_file(
+    (char*)filepath.c_str(), &filetype, &fileunzipversion, &error_code);
+
+  return error_code == 0 && fileunzipversion != 0.f;
+}
 
 } // anemspace qd
