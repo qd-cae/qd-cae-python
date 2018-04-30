@@ -66,10 +66,10 @@ public:
   std::shared_ptr<Node> get_nodeByIndex_nothrow(T _index);
 
   // array data
-  Tensor_ptr<float> get_node_coords() const;
-  Tensor_ptr<float> get_node_velocity() const;
-  Tensor_ptr<float> get_node_acceleration() const;
-  Tensor_ptr<int32_t> get_node_ids() const;
+  Tensor_ptr<float> get_node_coords();
+  Tensor_ptr<float> get_node_velocity();
+  Tensor_ptr<float> get_node_acceleration();
+  Tensor_ptr<int32_t> get_node_ids();
 };
 
 /** Get the node index from it's id
