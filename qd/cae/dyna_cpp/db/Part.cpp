@@ -194,4 +194,34 @@ Part::get_element_node_indexes(Element::ElementType element_type,
   return std::move(tensor);
 }
 
+/** Get the number of elements in the part
+ *
+ * @return nElements
+ */
+size_t
+Part::get_nElements() const
+{
+  return this->elements.size();
+}
+
+/** Get the number of nodes in the part
+ *
+ * @return nNodes
+ */
+size_t
+Part::get_nNodes() const
+{
+
+  std::set<size_t> unique_node_ids;
+  // extract unique indexes
+  for (auto& elem : elements) {
+    const auto& elem_node_ids = elem->get_node_ids();
+    std::copy(elem_node_ids.begin(),
+              elem_node_ids.end(),
+              std::inserter(unique_node_ids, unique_node_ids.end()));
+  }
+
+  return unique_node_ids.size();
+}
+
 } // namespace qd

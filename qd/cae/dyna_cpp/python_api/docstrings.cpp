@@ -566,6 +566,42 @@ const char* part_get_element_node_indexes_docs = R"qddoc(
         array([ 347,  354,  343,  344])
 )qddoc";
 
+const char* part_get_nNodes_docs = R"qddoc(
+    get_nNodes()
+
+    Get the number of nodes in the part.
+
+    Returns
+    -------
+    nNodes : int
+        number of nodes
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_nNodes()
+        9115
+)qddoc";
+
+const char* part_get_Elements_docs = R"qddoc(
+    get_nElements()
+
+    Get the number of elements in the part.
+
+    Returns
+    -------
+    nElements : int
+        number of elements
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_nElements()
+        9041
+)qddoc";
+
 /* ----------------------- DB_NODES ---------------------- */
 const char* dbnodes_description = R"qddoc(
 

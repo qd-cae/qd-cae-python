@@ -122,6 +122,13 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual(d3plot.get_timesteps()[0], 0.)
         self.assertEqual(len(d3plot.get_timesteps()), 1)
         self.assertEqual(len(d3plot.get_parts()), 1)
+        part = d3plot.get_parts()[0]
+        self.assertEqual(part.get_nNodes(), 4915)
+        self.assertEqual(part.get_nElements(), 4696)
+        self.assertEqual(
+            part.get_element_node_ids(Element.shell, 4).shape, (4696, 4))
+        self.assertEqual(part.get_element_node_indexes(
+            Element.shell, 4).shape, (4696, 4))
 
         # D3plot error handling
         # ... TODO
@@ -161,9 +168,10 @@ class TestDynaModule(unittest.TestCase):
         # .. TODO Error stoff
 
         # Node Velocity and Acceleration Testing
-        self.assertCountEqual (d3plot.get_node_velocity().shape,(4915,1,3))
-        self.assertCountEqual (d3plot.get_node_acceleration().shape,(4915,1,3))
-        self.assertCountEqual (d3plot.get_node_ids().shape,[4915])
+        self.assertCountEqual(d3plot.get_node_velocity().shape, (4915, 1, 3))
+        self.assertCountEqual(
+            d3plot.get_node_acceleration().shape, (4915, 1, 3))
+        self.assertCountEqual(d3plot.get_node_ids().shape, [4915])
 
         # Shell Element
         element_ids = [1, 2]
