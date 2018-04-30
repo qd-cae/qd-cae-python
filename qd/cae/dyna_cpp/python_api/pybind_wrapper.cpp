@@ -497,11 +497,31 @@ PYBIND11_MODULE(dyna_cpp, m)
            return _db_nodes->get_nodeByIndex(tmp);
          },
          "index"_a,
-         pybind11::return_value_policy::reference_internal);
-  // .def("get_node_coords",
-  //      &DB_Nodes::get_node_coords,
-  //     //  pybind11::return_value_policy::take_ownership,
-  //      dbnodes_get_node_coords_docs);
+         pybind11::return_value_policy::reference_internal)
+    .def("get_node_coords",
+         [](std::shared_ptr<DB_Nodes> db_nodes) {
+           return py::tensor_to_nparray(db_nodes->get_node_coords());
+         },
+         pybind11::return_value_policy::take_ownership,
+         dbnodes_get_node_coords_docs)
+    .def("get_node_velocity",
+         [](std::shared_ptr<DB_Nodes> db_nodes) {
+           return py::tensor_to_nparray(db_nodes->get_node_velocity());
+         },
+         pybind11::return_value_policy::take_ownership,
+         dbnodes_get_node_velocity_docs)
+    .def("get_node_acceleration",
+         [](std::shared_ptr<DB_Nodes> db_nodes) {
+           return py::tensor_to_nparray(db_nodes->get_node_acceleration());
+         },
+         pybind11::return_value_policy::take_ownership,
+         dbnodes_get_node_acceleration_docs)
+    .def("get_node_ids",
+         [](std::shared_ptr<DB_Nodes> db_nodes) {
+           return py::tensor_to_nparray(db_nodes->get_node_ids());
+         },
+         pybind11::return_value_policy::take_ownership,
+         dbnodes_get_node_ids_docs);
 
   // DB_Elements
   pybind11::class_<DB_Elements, std::shared_ptr<DB_Elements>> db_elements_py(
@@ -1538,9 +1558,11 @@ PYBIND11_MODULE(dyna_cpp, m)
         pybind11::return_value_policy::take_ownership,
         pybind11::call_guard<pybind11::gil_scoped_release>(),
         module_get_file_entropy_description);
+#ifdef QD_USE_FEMZIP
   m.def("is_femzipped",
         &FemzipBuffer::is_femzipped,
         pybind11::return_value_policy::take_ownership);
+#endif
 
   // return m.ptr();
 }
