@@ -416,9 +416,9 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal,
          part_get_elements_docs)
     .def("get_nNodes", &Part::get_nNodes, part_get_nNodes_docs)
-    .def("get_nElements", &Part::get_nElements, part_get_Elements_docs)
+    .def("get_nElements", &Part::get_nElements, part_get_nElements_docs)
     .def("get_element_node_ids",
-        //  &Part::get_element_node_ids,
+         //  &Part::get_element_node_ids,
          [](std::shared_ptr<Part> self,
             Element::ElementType element_type,
             size_t nNodes) {
@@ -430,7 +430,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal,
          part_get_element_node_ids_docs)
     .def("get_element_node_indexes",
-        //  &Part::get_element_node_indexes,
+         //  &Part::get_element_node_indexes,
          [](std::shared_ptr<Part> self,
             Element::ElementType element_type,
             size_t nNodes) {
@@ -440,7 +440,23 @@ PYBIND11_MODULE(dyna_cpp, m)
          "element_type"_a,
          "nNodes"_a,
          pybind11::return_value_policy::reference_internal,
-         part_get_element_node_indexes_docs);
+         part_get_element_node_indexes_docs)
+    .def("get_node_ids",
+         [](std::shared_ptr<Part> self) {
+           return py::tensor_to_nparray(self->get_node_ids());
+         },
+         part_get_node_ids_docs)
+    .def("get_node_indexes",
+         [](std::shared_ptr<Part> self) {
+           return py::tensor_to_nparray(self->get_node_indexes());
+         },
+         part_get_node_indexes_docs)
+    .def("get_element_ids",
+         [](std::shared_ptr<Part> self, Element::ElementType element_filter) {
+           return py::tensor_to_nparray(self->get_element_ids(element_filter));
+         },
+         "element_filter"_a = Element::ElementType::NONE,
+         part_get_element_ids_docs);
 
   // DB_Nodes
   pybind11::class_<DB_Nodes, std::shared_ptr<DB_Nodes>> db_nodes_py(

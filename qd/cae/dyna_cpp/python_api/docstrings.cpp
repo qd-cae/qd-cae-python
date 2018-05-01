@@ -584,7 +584,7 @@ const char* part_get_nNodes_docs = R"qddoc(
         9115
 )qddoc";
 
-const char* part_get_Elements_docs = R"qddoc(
+const char* part_get_nElements_docs = R"qddoc(
     get_nElements()
 
     Get the number of elements in the part.
@@ -599,7 +599,70 @@ const char* part_get_Elements_docs = R"qddoc(
         >>> d3plot = D3plot("path/to/d3plot")
         >>> part = d3plot.get_partByID(1)
         >>> part.get_nElements()
-        9041
+        8945
+)qddoc";
+
+const char* part_get_node_ids_docs = R"qddoc(
+    get_node_ids()
+
+    Get the unique node ids of the part.
+
+    Returns
+    -------
+    node_ids : np.ndarray
+        unique node ids
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_node_ids().shape
+        (6489,)
+)qddoc";
+
+const char* part_get_node_indexes_docs = R"qddoc(
+    get_node_indexes()
+
+    Get the unique node indexes of the part.
+
+    Returns
+    -------
+    node_indexes : np.ndarray
+        unique node indexes
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_node_indexes().shape
+        (6489,)
+)qddoc";
+
+const char* part_get_element_ids_docs = R"qddoc(
+    get_element_ids(element_filter = Element.none)
+
+    Get the ids of the elements belonging to the part.
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional filter for elements
+
+    Returns
+    -------
+    element_ids : np.ndarray
+        ids of the elements
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_element_ids().shape
+        (9631,)
+        >>> # get only beams
+        >>> part.get_element_ids(Element.beam).shape
+        (0,)
+        >>> # oops no beams :P
 )qddoc";
 
 /* ----------------------- DB_NODES ---------------------- */

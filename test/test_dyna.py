@@ -129,6 +129,13 @@ class TestDynaModule(unittest.TestCase):
             part.get_element_node_ids(Element.shell, 4).shape, (4696, 4))
         self.assertEqual(part.get_element_node_indexes(
             Element.shell, 4).shape, (4696, 4))
+        self.assertEqual(part.get_node_ids().shape, (4915,))
+        self.assertEqual(part.get_node_indexes().shape, (4915,))
+        self.assertEqual(part.get_element_ids().shape, (4696,))
+        self.assertEqual(part.get_element_ids(Element.beam).shape, (0,))
+        self.assertEqual(part.get_element_ids(Element.shell).shape, (4696,))
+        self.assertEqual(part.get_element_ids(Element.tshell).shape, (0,))
+        self.assertEqual(part.get_element_ids(Element.solid).shape, (0,))
 
         # D3plot error handling
         # ... TODO
