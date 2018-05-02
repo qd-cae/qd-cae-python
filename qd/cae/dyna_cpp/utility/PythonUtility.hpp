@@ -218,7 +218,7 @@ vector_to_nparray(const std::vector<std::vector<T>>& _data)
  */
 template<typename T>
 pybind11::array_t<T>
-tensor_to_nparray_copy(std::shared_ptr<qd::Tensor<T>>& tensor)
+tensor_to_nparray_copy(std::shared_ptr<qd::Tensor<T>> tensor)
 {
 
   if (tensor.size() == 0) {
@@ -242,7 +242,7 @@ tensor_to_nparray_copy(std::shared_ptr<qd::Tensor<T>>& tensor)
  */
 template<typename T>
 inline pybind11::array_t<T>
-tensor_to_nparray(std::shared_ptr<qd::Tensor<T>>& tensor)
+tensor_to_nparray(std::shared_ptr<qd::Tensor<T>> tensor)
 {
   auto tensor_py = pybind11::cast(tensor);
   pybind11::array_t<T> ret(tensor_py);
