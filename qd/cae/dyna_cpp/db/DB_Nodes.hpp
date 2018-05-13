@@ -26,12 +26,28 @@ class DB_Nodes
 {
   friend FEMFile;
 
+public:
+  enum FieldType
+  {
+    NONE = 0x00,
+    COORDINATES = 0x01,
+    DISPLACEMENT = 0x02,
+    VELOCITY = 0x03,
+    ACCELERATION = 0x04,
+    DELETION = 0x05,
+    LAST = 0x06
+  };
+
 private:
   std::mutex _node_mutex;
 
   FEMFile* femfile;
   std::unordered_map<int32_t, size_t> id2index_nodes;
   std::vector<std::shared_ptr<Node>> nodes;
+
+  std::unordered_map<std::string, size_t> field_name_to_index;
+  std::vector<Tensor_ptr<float>> fields;
+  Tensor_ptr<int32_t> node_ids;
 
 public:
   explicit DB_Nodes(FEMFile* _femfile);
@@ -64,6 +80,13 @@ public:
     const std::vector<T>& _ids);
   template<typename T>
   std::shared_ptr<Node> get_nodeByIndex_nothrow(T _index);
+
+  // array data
+  Tensor_ptr<float> get_field(const std::string& field_name);
+  Tensor_ptr<float> get_field(FieldType field_enum);
+  template<typename T>
+  Tensor_ptr<float> get_field(T field_index);
+  size_t get_n_fields() const;
 
   // array data
   Tensor_ptr<float> get_node_coords();
