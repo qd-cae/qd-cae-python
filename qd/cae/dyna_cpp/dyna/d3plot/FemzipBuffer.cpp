@@ -173,42 +173,25 @@ retry:
 
   this->timese = NULL;
 
-  // fetch next timestep
-  if (iTimeStep + 1 <= nTimeStep)
-    _next_buffer = std::async(FemzipBuffer::_load_next_timestep, iTimeStep, size_state);
+  // preload timestep
+  if(iTimeStep+1 <= nTimeStep)
+    this->next_state_buffer = std::async(
+        [](int32_t _iTimestep, int32_t _size_state) {
+        int32_t _ier = 0;
+        int32_t _pos = 0;
+        std::vector<char> state_buffer(sizeof(int32_t) * _size_state);
+        states_read(
+            &_ier, &_pos, &_iTimestep, (int32_t*)&state_buffer[0], &_size_state);
+        if (_ier != 0) {
+            if (state_buffer.size() != 0) {
+            state_buffer = std::vector<char>();
+            }
+        }
 
-  /*
-  // q timesteps
-  constexpr size_t n_threads = 1; // not more! otherwise racing begins!
-  _work_queue.init_workers(n_threads);
-
-  _state_buffers.clear();
-  for (int32_t iStep = 1; iStep <= nTimeStep; ++iStep) {
-    _state_buffers.push_back(_work_queue.submit(_load_next_timestep, (*this)));
-  }
-  */
-}
-
-/** Loads the next/specified timestep (I think it can not handle skips!)
- *
- * @param fz_buffer : own instance ... hack for submit function
- */
-std::vector<char>
-FemzipBuffer::_load_next_timestep(int32_t _iTimestep, int32_t _size_state)
-{
-
-  int32_t _ier = 0;
-  int32_t _pos = 0;
-  std::vector<char> state_buffer(sizeof(int32_t) * _size_state);
-  states_read(
-    &_ier, &_pos, &_iTimestep, (int32_t*)&state_buffer[0], &_size_state);
-  if (_ier != 0) {
-    if (state_buffer.size() != 0) {
-      state_buffer = std::vector<char>();
-    }
-  }
-
-  return std::move(state_buffer);
+        return std::move(state_buffer);
+        },
+        this->iTimeStep,
+        this->size_state);
 }
 
 /*
@@ -238,6 +221,26 @@ FemzipBuffer::read_nextState()
   }
 
   this->iTimeStep++;
+
+  // preload timestep
+  if(iTimeStep <= nTimeStep)
+    this->next_state_buffer = std::async(
+        [](int32_t _iTimestep, int32_t _size_state) {
+        int32_t _ier = 0;
+        int32_t _pos = 0;
+        std::vector<char> state_buffer(sizeof(int32_t) * _size_state);
+        states_read(
+            &_ier, &_pos, &_iTimestep, (int32_t*)&state_buffer[0], &_size_state);
+        if (_ier != 0) {
+            if (state_buffer.size() != 0) {
+            state_buffer = std::vector<char>();
+            }
+        }
+
+        return std::move(state_buffer);
+        },
+        this->iTimeStep,
+        this->size_state);
 }
 
 /*
