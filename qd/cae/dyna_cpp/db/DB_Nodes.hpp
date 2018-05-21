@@ -26,17 +26,7 @@ class DB_Nodes
 {
   friend FEMFile;
 
-public:
-  enum FieldType
-  {
-    NONE = 0x00,
-    COORDINATES = 0x01,
-    DISPLACEMENT = 0x02,
-    VELOCITY = 0x03,
-    ACCELERATION = 0x04,
-    DELETION = 0x05,
-    LAST = 0x06
-  };
+
 
 private:
   std::mutex _node_mutex;
