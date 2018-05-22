@@ -225,7 +225,7 @@ tensor_to_nparray_copy(std::shared_ptr<qd::Tensor<T>> tensor)
     return std::move(create_empty_array<T>(1));
   }
 
-  auto data = tensor.get_data();
+  auto& data = tensor.get_data();
 
   pybind11::array_t<T, pybind11::array::c_style> ret;
   ret.resize(tensor.get_shape());
