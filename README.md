@@ -25,6 +25,12 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+
+*Changelog 22.05.2018*
+Version 0.7.3
+
+Recompiled 0.7.2 due to windows binary compatability issues.
+
 *Changelog 18.04.2018*
 Version 0.7.2
 
