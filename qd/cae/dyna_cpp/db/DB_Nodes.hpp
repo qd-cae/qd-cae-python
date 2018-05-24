@@ -16,7 +16,8 @@
 #include <dyna_cpp/math/Tensor.hpp>
 #include <dyna_cpp/utility/containers.hpp>
 
-namespace qd {
+namespace qd
+{
 
 // forward declarations
 class FEMFile;
@@ -26,12 +27,10 @@ class DB_Nodes
 {
   friend FEMFile;
 
-
-
 private:
   std::mutex _node_mutex;
 
-  FEMFile* femfile;
+  FEMFile *femfile;
   std::unordered_map<int32_t, size_t> id2index_nodes;
   std::vector<std::shared_ptr<Node>> nodes;
 
@@ -40,43 +39,36 @@ private:
   Tensor_ptr<int32_t> node_ids;
 
 public:
-  explicit DB_Nodes(FEMFile* _femfile);
+  explicit DB_Nodes(FEMFile *_femfile);
   virtual ~DB_Nodes();
   size_t get_nNodes() const;
   void reserve(const size_t _size);
-  FEMFile* get_femfile();
+  FEMFile *get_femfile();
   std::shared_ptr<Node> add_node(int32_t _id,
-                                 const std::vector<float>& _coords);
+                                 const std::vector<float> &_coords);
   std::shared_ptr<Node> add_node(int32_t _id, float _x, float _y, float _z);
   std::shared_ptr<Node> add_node_byKeyFile(int32_t _id,
                                            float _x,
                                            float _y,
                                            float _z);
 
-  template<typename T>
+  template <typename T>
   T get_id_from_index(size_t _id);
-  template<typename T>
+  template <typename T>
   size_t get_index_from_id(T _index);
 
   std::vector<std::shared_ptr<Node>> get_nodes();
-  template<typename T>
+  template <typename T>
   std::shared_ptr<Node> get_nodeByID(T _id);
-  template<typename T>
-  std::vector<std::shared_ptr<Node>> get_nodeByID(const std::vector<T>& _ids);
-  template<typename T>
+  template <typename T>
+  std::vector<std::shared_ptr<Node>> get_nodeByID(const std::vector<T> &_ids);
+  template <typename T>
   std::shared_ptr<Node> get_nodeByIndex(T _index);
-  template<typename T>
+  template <typename T>
   std::vector<std::shared_ptr<Node>> get_nodeByIndex(
-    const std::vector<T>& _ids);
-  template<typename T>
+      const std::vector<T> &_ids);
+  template <typename T>
   std::shared_ptr<Node> get_nodeByIndex_nothrow(T _index);
-
-  // array data
-  Tensor_ptr<float> get_field(const std::string& field_name);
-  Tensor_ptr<float> get_field(FieldType field_enum);
-  template<typename T>
-  Tensor_ptr<float> get_field(T field_index);
-  size_t get_n_fields() const;
 
   // array data
   Tensor_ptr<float> get_node_coords();
@@ -90,7 +82,7 @@ public:
  * @param T _id : node id
  * @return size_t : node index
  */
-template<typename T>
+template <typename T>
 inline T
 DB_Nodes::get_id_from_index(size_t _index)
 {
@@ -104,13 +96,13 @@ DB_Nodes::get_id_from_index(size_t _index)
  * @param T _id : node id
  * @return size_t _index : node index
  */
-template<typename T>
+template <typename T>
 inline size_t
 DB_Nodes::get_index_from_id(T _id)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
-  const auto& it = this->id2index_nodes.find(_id);
+  const auto &it = this->id2index_nodes.find(_id);
   if (it == this->id2index_nodes.end())
     throw(std::invalid_argument("Could not find node with id " +
                                 std::to_string(_id)));
@@ -124,7 +116,7 @@ DB_Nodes::get_index_from_id(T _id)
  * @return std::shared_ptr<Node> node : pointer to the node or nullptr if node
  * is not existing!
  */
-template<typename T>
+template <typename T>
 inline std::shared_ptr<Node>
 DB_Nodes::get_nodeByID(T _id)
 {
@@ -138,14 +130,15 @@ DB_Nodes::get_nodeByID(T _id)
  * @param std::vector<T> _ids : node ids
  * @return std::vector<std::shared_ptr<Node>> nodes
  */
-template<typename T>
+template <typename T>
 inline std::vector<std::shared_ptr<Node>>
-DB_Nodes::get_nodeByID(const std::vector<T>& _ids)
+DB_Nodes::get_nodeByID(const std::vector<T> &_ids)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   std::vector<std::shared_ptr<Node>> ret;
-  for (const auto& node_id : _ids) {
+  for (const auto &node_id : _ids)
+  {
     ret.push_back(this->get_nodeByID(node_id));
   }
 
@@ -158,7 +151,7 @@ DB_Nodes::get_nodeByID(const std::vector<T>& _ids)
  * @return std::shared_ptr<Node> node : pointer to the node or nullptr if node
  * is not existing!
  */
-template<typename T>
+template <typename T>
 inline std::shared_ptr<Node>
 DB_Nodes::get_nodeByIndex(T _index)
 {
@@ -177,7 +170,7 @@ DB_Nodes::get_nodeByIndex(T _index)
  * @return std::shared_ptr<Node> node : pointer to the node or nullptr if node
  * is not existing!
  */
-template<typename T>
+template <typename T>
 inline std::shared_ptr<Node>
 DB_Nodes::get_nodeByIndex_nothrow(T _index)
 {
@@ -194,14 +187,15 @@ DB_Nodes::get_nodeByIndex_nothrow(T _index)
  * @param std::vector<T> _indexes : node indexes
  * @return std::vector<std::shared_ptr<Node>> nodes
  */
-template<typename T>
+template <typename T>
 inline std::vector<std::shared_ptr<Node>>
-DB_Nodes::get_nodeByIndex(const std::vector<T>& _indexes)
+DB_Nodes::get_nodeByIndex(const std::vector<T> &_indexes)
 {
   static_assert(std::is_integral<T>::value, "Integer number required.");
 
   std::vector<std::shared_ptr<Node>> ret;
-  for (const auto index : _indexes) {
+  for (const auto index : _indexes)
+  {
     ret.push_back(this->get_nodeByIndex(index));
   }
 
