@@ -200,6 +200,11 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual(elem1.get_stress_mises().shape, (1,))
         self.assertEqual(elem1.get_strain().shape, (1, 6))
         self.assertEqual(elem1.get_history_variables().shape, (1, 1))
+
+        self.assertCountEqual(d3plot.get_element_ids().shape, (4696,))
+        self.assertCountEqual(d3plot.get_element_node_ids(
+            Element.shell, 4).shape, (4696, 4))
+
         # .. TODO Error stoff
 
         # plotting (disabled)

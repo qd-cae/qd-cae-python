@@ -1,7 +1,7 @@
 
 
 /* --------------------- NODE --------------------- */
-const char* qd_node_class_docs = R"qddoc(
+const char *qd_node_class_docs = R"qddoc(
 
     Container for handling nodal data.
 
@@ -15,7 +15,7 @@ const char* qd_node_class_docs = R"qddoc(
         >>> node = femfile.get_nodeByIndex(1)
 )qddoc";
 
-const char* node_get_id_docs = R"qddoc(
+const char *node_get_id_docs = R"qddoc(
     get_id()
 
     Get the id of the node.
@@ -31,7 +31,7 @@ const char* node_get_id_docs = R"qddoc(
         1
 )qddoc";
 
-const char* node_str_docs = R"qddoc(
+const char *node_str_docs = R"qddoc(
     __str__()
 
     String representation of a node.
@@ -47,7 +47,7 @@ const char* node_str_docs = R"qddoc(
         '<Node id:463>'
 )qddoc";
 
-const char* node_get_coords_docs = R"qddoc(
+const char *node_get_coords_docs = R"qddoc(
     get_coords()
 
     Get the geometric nodal coordinates. One has to load the
@@ -69,7 +69,7 @@ const char* node_get_coords_docs = R"qddoc(
         (34L, 3L)
 )qddoc";
 
-const char* node_get_disp_docs = R"qddoc(
+const char *node_get_disp_docs = R"qddoc(
     get_disp()
 
     Get the time series of the displacement vector.
@@ -85,7 +85,7 @@ const char* node_get_disp_docs = R"qddoc(
         (34L, 3L)
 )qddoc";
 
-const char* node_get_vel_docs = R"qddoc(
+const char *node_get_vel_docs = R"qddoc(
     get_vel()
 
     Get the time series of the velocity vector.
@@ -101,7 +101,7 @@ const char* node_get_vel_docs = R"qddoc(
         (34L, 3L)
 )qddoc";
 
-const char* node_get_accel_docs = R"qddoc(
+const char *node_get_accel_docs = R"qddoc(
     get_accel()
 
     Get the time series of the acceleration vector.
@@ -117,7 +117,7 @@ const char* node_get_accel_docs = R"qddoc(
         (34L, 3L)
 )qddoc";
 
-const char* node_get_elements_docs = R"qddoc(
+const char *node_get_elements_docs = R"qddoc(
     get_elements()
 
     Get the elements of the node.
@@ -134,7 +134,7 @@ const char* node_get_elements_docs = R"qddoc(
 )qddoc";
 
 /* --------------------- ELEMENT --------------------- */
-const char* element_description = R"qddoc(
+const char *element_description = R"qddoc(
 
     Examples
     --------
@@ -148,7 +148,7 @@ const char* element_description = R"qddoc(
         >>> element = femfile.get_elementByID(Element.solid, id)
 )qddoc";
 
-const char* element_type_docs = R"qddoc(
+const char *element_type_docs = R"qddoc(
     Element types:
      - Element.type.none (only used for filtering)
      - Element.type.beam
@@ -157,7 +157,7 @@ const char* element_type_docs = R"qddoc(
      - Element.type.tshell
 )qddoc";
 
-const char* element_get_id_docs = R"qddoc(
+const char *element_get_id_docs = R"qddoc(
     get_id()
 
     Get the id of the element.
@@ -173,7 +173,7 @@ const char* element_get_id_docs = R"qddoc(
         1
 )qddoc";
 
-const char* element_str_docs = R"qddoc(
+const char *element_str_docs = R"qddoc(
     __str__()
 
     String representation of an element.
@@ -189,7 +189,7 @@ const char* element_str_docs = R"qddoc(
         '<Element type:2 id:1>'
 )qddoc";
 
-const char* element_get_plastic_strain_docs = R"qddoc(
+const char *element_get_plastic_strain_docs = R"qddoc(
     get_plastic_strain()
 
     Get the plastic strain of the element, if it was read with ``d3plot.read_states``.
@@ -205,7 +205,7 @@ const char* element_get_plastic_strain_docs = R"qddoc(
         (34L,)
 )qddoc";
 
-const char* element_get_energy_docs = R"qddoc(
+const char *element_get_energy_docs = R"qddoc(
     get_energy()
 
     Get the energy of the element, if it was read with ``d3plot.read_states``.
@@ -221,7 +221,7 @@ const char* element_get_energy_docs = R"qddoc(
         (34L,)
 )qddoc";
 
-const char* element_get_strain_docs = R"qddoc(
+const char *element_get_strain_docs = R"qddoc(
     get_strain()
 
     Get the strain tensor of the element, if it was read with ``d3plot.read_states``.
@@ -238,7 +238,7 @@ const char* element_get_strain_docs = R"qddoc(
         (34L, 6L)
 )qddoc";
 
-const char* element_get_stress_docs = R"qddoc(
+const char *element_get_stress_docs = R"qddoc(
     get_strain()
 
     Get the stress tensor of the element, if it was read with ``d3plot.read_states``.
@@ -255,7 +255,7 @@ const char* element_get_stress_docs = R"qddoc(
         (34L, 6L)
 )qddoc";
 
-const char* element_get_stress_mises_docs = R"qddoc(
+const char *element_get_stress_mises_docs = R"qddoc(
     get_stress_mises()
 
     Get the mises stress of the element, if it was read with ``d3plot.read_states``.
@@ -271,7 +271,7 @@ const char* element_get_stress_mises_docs = R"qddoc(
         (34L,)
 )qddoc";
 
-const char* element_get_nodes_docs = R"qddoc(
+const char *element_get_nodes_docs = R"qddoc(
     get_nodes()
 
     Get the nodes of the element.
@@ -286,7 +286,7 @@ const char* element_get_nodes_docs = R"qddoc(
         >>> elem_nodes = element.get_nodes()
 )qddoc";
 
-const char* element_get_coords_docs = R"qddoc(
+const char *element_get_coords_docs = R"qddoc(
     get_coords()
 
     Get the elements coordinates (mean of nodes).
@@ -313,7 +313,7 @@ const char* element_get_coords_docs = R"qddoc(
         (34L, 3L)
 )qddoc";
 
-const char* element_get_history_docs = R"qddoc(
+const char *element_get_history_docs = R"qddoc(
     get_history_variables()
 
     Get the loaded history variables of the element.
@@ -335,7 +335,7 @@ const char* element_get_history_docs = R"qddoc(
         the variables were loaded
 )qddoc";
 
-const char* element_get_estimated_size_docs = R"qddoc(
+const char *element_get_estimated_size_docs = R"qddoc(
     get_estimated_size()
 
     Get the average element edge size of the element.
@@ -351,7 +351,7 @@ const char* element_get_estimated_size_docs = R"qddoc(
         2.542
 )qddoc";
 
-const char* element_get_type_docs = R"qddoc(
+const char *element_get_type_docs = R"qddoc(
     get_type()
 
     Get the type of the element.
@@ -373,7 +373,7 @@ const char* element_get_type_docs = R"qddoc(
         type.tshell
 )qddoc";
 
-const char* element_get_is_rigid_docs = R"qddoc(
+const char *element_get_is_rigid_docs = R"qddoc(
     is_rigid()
 
     Get the status, whether the element is a rigid (flag for shells only).
@@ -399,7 +399,7 @@ const char* element_get_is_rigid_docs = R"qddoc(
         (0L,)
 )qddoc";
 
-const char* element_get_part_id_docs = R"qddoc(
+const char *element_get_part_id_docs = R"qddoc(
     get_part_id()
 
     Returns
@@ -416,7 +416,7 @@ const char* element_get_part_id_docs = R"qddoc(
         1
 )qddoc";
 
-const char* element_get_node_ids_docs = R"qddoc(
+const char *element_get_node_ids_docs = R"qddoc(
     get_node_ids()
 
     Returns
@@ -434,7 +434,7 @@ const char* element_get_node_ids_docs = R"qddoc(
 )qddoc";
 
 /* ----------------------- PART ---------------------- */
-const char* part_get_id_docs = R"qddoc(
+const char *part_get_id_docs = R"qddoc(
     get_id()
 
     Get the id of the part.
@@ -452,7 +452,7 @@ const char* part_get_id_docs = R"qddoc(
         1
 )qddoc";
 
-const char* part_get_name_docs = R"qddoc(
+const char *part_get_name_docs = R"qddoc(
     get_name()
 
     Get the name of the part. It's the same name as in the input deck.
@@ -470,7 +470,7 @@ const char* part_get_name_docs = R"qddoc(
         'PLATE_C'
 )qddoc";
 
-const char* part_get_nodes_docs = R"qddoc(
+const char *part_get_nodes_docs = R"qddoc(
     get_nodes()
 
     Get the nodes of the part. Note that a node may belong to two parts,
@@ -489,7 +489,7 @@ const char* part_get_nodes_docs = R"qddoc(
         52341
 )qddoc";
 
-const char* part_get_elements_docs = R"qddoc(
+const char *part_get_elements_docs = R"qddoc(
     get_elements(element_filter=Element.none)
 
     Get the elements of the part.
@@ -514,7 +514,7 @@ const char* part_get_elements_docs = R"qddoc(
         45123
 )qddoc";
 
-const char* part_get_element_node_ids_docs = R"qddoc(
+const char *part_get_element_node_ids_docs = R"qddoc(
     get_element_node_ids(element_type, nNodes)
 
     Get the node ids of all the elements belonging to the part.
@@ -540,7 +540,7 @@ const char* part_get_element_node_ids_docs = R"qddoc(
         array([ 102,  109,   98,   99])
 )qddoc";
 
-const char* part_get_element_node_indexes_docs = R"qddoc(
+const char *part_get_element_node_indexes_docs = R"qddoc(
     get_element_node_indexes(element_type, nNodes)
 
     Get the node indexes of all respective elements.
@@ -566,7 +566,7 @@ const char* part_get_element_node_indexes_docs = R"qddoc(
         array([ 347,  354,  343,  344])
 )qddoc";
 
-const char* part_get_nNodes_docs = R"qddoc(
+const char *part_get_nNodes_docs = R"qddoc(
     get_nNodes()
 
     Get the number of nodes in the part.
@@ -584,7 +584,7 @@ const char* part_get_nNodes_docs = R"qddoc(
         9115
 )qddoc";
 
-const char* part_get_nElements_docs = R"qddoc(
+const char *part_get_nElements_docs = R"qddoc(
     get_nElements()
 
     Get the number of elements in the part.
@@ -602,7 +602,7 @@ const char* part_get_nElements_docs = R"qddoc(
         8945
 )qddoc";
 
-const char* part_get_node_ids_docs = R"qddoc(
+const char *part_get_node_ids_docs = R"qddoc(
     get_node_ids()
 
     Get the unique node ids of the part.
@@ -620,7 +620,7 @@ const char* part_get_node_ids_docs = R"qddoc(
         (6489,)
 )qddoc";
 
-const char* part_get_node_indexes_docs = R"qddoc(
+const char *part_get_node_indexes_docs = R"qddoc(
     get_node_indexes()
 
     Get the unique node indexes of the part.
@@ -638,7 +638,7 @@ const char* part_get_node_indexes_docs = R"qddoc(
         (6489,)
 )qddoc";
 
-const char* part_get_element_ids_docs = R"qddoc(
+const char *part_get_element_ids_docs = R"qddoc(
     get_element_ids(element_filter = Element.none)
 
     Get the ids of the elements belonging to the part.
@@ -666,7 +666,7 @@ const char* part_get_element_ids_docs = R"qddoc(
 )qddoc";
 
 /* ----------------------- DB_NODES ---------------------- */
-const char* dbnodes_description = R"qddoc(
+const char *dbnodes_description = R"qddoc(
 
     This class is managing the nodes internally in the
     background of a FEMFile. It can never be constructed
@@ -684,7 +684,7 @@ const char* dbnodes_description = R"qddoc(
 
 )qddoc";
 
-const char* dbnodes_get_nodeByID_docs = R"qddoc(
+const char *dbnodes_get_nodeByID_docs = R"qddoc(
     get_nodeByID(id)
 
     Parameters
@@ -710,7 +710,7 @@ const char* dbnodes_get_nodeByID_docs = R"qddoc(
         >>> list_of_nodes = femfile.get_nodeByID( [1,2,3] )
 )qddoc";
 
-const char* dbnodes_get_nodeByIndex_docs = R"qddoc(
+const char *dbnodes_get_nodeByIndex_docs = R"qddoc(
     get_nodeByIndex(index)
 
     Parameters
@@ -741,7 +741,7 @@ const char* dbnodes_get_nodeByIndex_docs = R"qddoc(
         >>> list_of_nodes = femfile.get_nodeByIndex( [1,2,3] )
 )qddoc";
 
-const char* dbnodes_get_nodes_docs = R"qddoc(
+const char *dbnodes_get_nodes_docs = R"qddoc(
     get_nodes()
 
     Returns
@@ -754,7 +754,7 @@ const char* dbnodes_get_nodes_docs = R"qddoc(
         >>> list_of_nodes = femfile.get_nodes()
     )qddoc";
 
-const char* dbnodes_get_nNodes_docs = R"qddoc(
+const char *dbnodes_get_nNodes_docs = R"qddoc(
     get_nNodes()
 
     Returns
@@ -768,7 +768,7 @@ const char* dbnodes_get_nNodes_docs = R"qddoc(
         43145
 )qddoc";
 
-const char* dbnodes_get_node_coords_docs = R"qddoc(
+const char *dbnodes_get_node_coords_docs = R"qddoc(
     get_node_coords()
 
     Returns
@@ -782,7 +782,7 @@ const char* dbnodes_get_node_coords_docs = R"qddoc(
         (4915, 3)
 )qddoc";
 
-const char* dbnodes_get_node_velocity_docs = R"qddoc(
+const char *dbnodes_get_node_velocity_docs = R"qddoc(
     get_node_velocity()
 
     Returns
@@ -796,7 +796,7 @@ const char* dbnodes_get_node_velocity_docs = R"qddoc(
         (4915,1,3)
 )qddoc";
 
-const char* dbnodes_get_node_acceleration_docs = R"qddoc(
+const char *dbnodes_get_node_acceleration_docs = R"qddoc(
     get_node_acceleration()
 
     Returns
@@ -810,7 +810,7 @@ const char* dbnodes_get_node_acceleration_docs = R"qddoc(
         (4915,1,3)
 )qddoc";
 
-const char* dbnodes_get_node_ids_docs = R"qddoc(
+const char *dbnodes_get_node_ids_docs = R"qddoc(
     get_node_ids()
 
     Returns
@@ -825,7 +825,7 @@ const char* dbnodes_get_node_ids_docs = R"qddoc(
 )qddoc";
 
 /* ----------------------- DB_ELEMENTS ---------------------- */
-const char* dbelems_description = R"qddoc(
+const char *dbelems_description = R"qddoc(
 
     This class is managing the elements internally in the
     background of a FEMFile. It can never be constructed
@@ -844,7 +844,7 @@ const char* dbelems_description = R"qddoc(
 
 )qddoc";
 
-const char* get_elements_docs = R"qddoc(
+const char *get_elements_docs = R"qddoc(
     get_elements(element_filter=Element.none)
 
     Parameters
@@ -872,7 +872,7 @@ const char* get_elements_docs = R"qddoc(
         >>> shell_elements = femfile.get_elements(Element.shell)
 )qddoc";
 
-const char* dbelems_get_nElements_docs = R"qddoc(
+const char *dbelems_get_nElements_docs = R"qddoc(
     get_nElements(element_filter=Element.none)
 
     Parameters
@@ -896,7 +896,7 @@ const char* dbelems_get_nElements_docs = R"qddoc(
         43156
 )qddoc";
 
-const char* dbelems_get_elementByID_docs = R"qddoc(
+const char *dbelems_get_elementByID_docs = R"qddoc(
     get_elementByID(element_type, id)
 
     Parameters
@@ -938,7 +938,7 @@ const char* dbelems_get_elementByID_docs = R"qddoc(
         type.solid
 )qddoc";
 
-const char* dbelems_get_elementByIndex_docs = R"qddoc(
+const char *dbelems_get_elementByIndex_docs = R"qddoc(
     get_elementByIndex(element_type, index)
 
     Parameters
@@ -974,8 +974,73 @@ const char* dbelems_get_elementByIndex_docs = R"qddoc(
         type.tshell
 )qddoc";
 
+const char *dbelems_get_element_ids_docs = R"qddoc(
+    get_element_ids(element_filter)
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional element type for filtering
+
+    Returns
+    -------
+    element_ids : np.array
+        Ids of the elements
+
+    Notes
+    -----
+        If the ids for all elements are queried (``Element.none`` as filter type)
+        then the returned order is:
+         - ``Element.beam``
+         - ``Element.shell``
+         - ``Element.solid``
+         - ``Element.tshell``
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> # get all ids (beam, shell, solid, tshell)
+        >>> d3plot.get_element_ids()
+        array([4687, 4688, 4689, 4690, ...])
+        >>> # filter only beams
+        >>> d3plot.get_element_ids(Element.beam)
+        array([9545, 9546, 9547, 9511, ...])
+
+)qddoc";
+
+const char *dbelems_get_element_node_ids_docs = R"qddoc(
+    get_element_node_ids(element_type, n_nodes)
+
+    Parameters
+    ----------
+    element_type : Element.type
+        type of the element
+    n_nodes : int
+        number of nodes
+
+    Returns
+    -------
+    element_node_ids : np.array
+        ids of the nodes for every element (shape elems x n_nodes). 
+
+    Notes
+    -----
+        The number of nodes must be specified since 
+        elements of one type may have different number of nodes
+        which would result in a non-uniform matrix.
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> d3plot.get_element_node_ids(Element.shell, 4)
+        array([[347, 354, 343, 344],
+               [354, 355, 342, 343],
+               [349, 352, 356, 348]], dtype=int32)
+
+)qddoc";
+
 /* ----------------------- DB_PARTS ---------------------- */
-const char* dbparts_description = R"qddoc(
+const char *dbparts_description = R"qddoc(
 
     This class is managing the parts internally in the
     background of a FEMFile. It can never be constructed
@@ -994,7 +1059,7 @@ const char* dbparts_description = R"qddoc(
 
 )qddoc";
 
-const char* dbparts_get_nParts_docs = R"qddoc(
+const char *dbparts_get_nParts_docs = R"qddoc(
     get_nParts()
 
     Returns
@@ -1008,7 +1073,7 @@ const char* dbparts_get_nParts_docs = R"qddoc(
         7
 )qddoc";
 
-const char* dbparts_get_parts_docs = R"qddoc(
+const char *dbparts_get_parts_docs = R"qddoc(
     get_parts()
 
     Returns
@@ -1021,7 +1086,7 @@ const char* dbparts_get_parts_docs = R"qddoc(
         >>> list_of_all_parts = femfile.get_parts()
 )qddoc";
 
-const char* dbparts_get_partByID_docs = R"qddoc(
+const char *dbparts_get_partByID_docs = R"qddoc(
     get_partByID(id)
 
     Parameters
@@ -1044,7 +1109,7 @@ const char* dbparts_get_partByID_docs = R"qddoc(
         >>> part = femfile.get_partByID(1)
 )qddoc";
 
-const char* dbparts_get_partByIndex_docs = R"qddoc(
+const char *dbparts_get_partByIndex_docs = R"qddoc(
     get_partByIndex(index)
 
     Parameters
@@ -1068,7 +1133,7 @@ const char* dbparts_get_partByIndex_docs = R"qddoc(
         >>> part = femfile.get_partByIndex(0)
 )qddoc";
 
-const char* dbparts_get_partByName_docs = R"qddoc(
+const char *dbparts_get_partByName_docs = R"qddoc(
     get_partByName(name)
 
     Parameters
@@ -1092,7 +1157,7 @@ const char* dbparts_get_partByName_docs = R"qddoc(
 )qddoc";
 
 /* ----------------------- FEMFILE ---------------------- */
-const char* femfile_get_filepath_docs = R"qddoc(
+const char *femfile_get_filepath_docs = R"qddoc(
     get_filepath()
 
     Returns
@@ -1107,7 +1172,7 @@ const char* femfile_get_filepath_docs = R"qddoc(
 )qddoc";
 
 /* ----------------------- D3PLOT ---------------------- */
-const char* d3plot_description = R"qddoc(
+const char *d3plot_description = R"qddoc(
 
     A D3plot is a binary result file from LS-Dyna, a 
     commercial FEM-Solver from LSTC. The class reads
@@ -1126,7 +1191,7 @@ const char* d3plot_description = R"qddoc(
 
 )qddoc";
 
-const char* d3plot_constructor = R"qddoc(
+const char *d3plot_constructor = R"qddoc(
     __init__(filepath, read_states=[])
 
     Parameters
@@ -1172,7 +1237,7 @@ const char* d3plot_constructor = R"qddoc(
 
 )qddoc";
 
-const char* d3plot_info_docs = R"qddoc(
+const char *d3plot_info_docs = R"qddoc(
     info()
 
     Prints a summary of the header data of the D3plot, which
@@ -1186,7 +1251,7 @@ const char* d3plot_info_docs = R"qddoc(
         >>> d3plot.info()
 )qddoc";
 
-const char* d3plot_get_title_docs = R"qddoc(
+const char *d3plot_get_title_docs = R"qddoc(
     get_title()
 
     Get the title of the d3plot, which is part
@@ -1205,7 +1270,7 @@ const char* d3plot_get_title_docs = R"qddoc(
         "Barrier Impact"
 )qddoc";
 
-const char* d3plot_get_timesteps_docs = R"qddoc(
+const char *d3plot_get_timesteps_docs = R"qddoc(
     get_timesteps()
 
     Get the simulation time of the written states.
@@ -1221,7 +1286,7 @@ const char* d3plot_get_timesteps_docs = R"qddoc(
         >>> time = d3plot.get_timesteps()
 )qddoc";
 
-const char* d3plot_get_nTimesteps_docs = R"qddoc(
+const char *d3plot_get_nTimesteps_docs = R"qddoc(
     get_nTimesteps()
 
     Get the number of timesteps of the d3plot.
@@ -1238,7 +1303,7 @@ const char* d3plot_get_nTimesteps_docs = R"qddoc(
         32
 )qddoc";
 
-const char* d3plot_read_states_docs = R"qddoc(
+const char *d3plot_read_states_docs = R"qddoc(
     read_states(vars)
 
     Parameters
@@ -1290,7 +1355,7 @@ const char* d3plot_read_states_docs = R"qddoc(
         >>> D3plot("path/to/d3plot", read_states=["disp","vel","plastic_strain max"])
 )qddoc";
 
-const char* d3plot_clear_docs = R"qddoc(
+const char *d3plot_clear_docs = R"qddoc(
     clear(vars)
 
     Parameters
@@ -1336,7 +1401,7 @@ const char* d3plot_clear_docs = R"qddoc(
 
 /* ----------------------- RAW D3PLOT ---------------------- */
 
-const char* rawd3plot_constructor_description = R"qddoc(
+const char *rawd3plot_constructor_description = R"qddoc(
     RawD3plot(filepath)
 
     Parameters
@@ -1370,7 +1435,7 @@ const char* rawd3plot_constructor_description = R"qddoc(
         >>> raw_d3plot = RawD3plot("path/to/d3plot.fz")
 )qddoc";
 
-const char* rawd3plot_get_int_names_docs = R"qddoc(
+const char *rawd3plot_get_int_names_docs = R"qddoc(
     _get_int_names()
 
     *For internal usage*
@@ -1391,7 +1456,7 @@ const char* rawd3plot_get_int_names_docs = R"qddoc(
         ['elem_beam_data', 'elem_beam_ids', 'elem_shell_data', 'elem_shell_ids', ...]
 )qddoc";
 
-const char* rawd3plot_get_int_data_docs = R"qddoc(
+const char *rawd3plot_get_int_data_docs = R"qddoc(
     _get_int_data(name)
 
     *For internal usage*
@@ -1420,7 +1485,7 @@ const char* rawd3plot_get_int_data_docs = R"qddoc(
         >>> # 4969 shell elements, 4 node ids and 1 material index (not id!)
 )qddoc";
 
-const char* rawd3plot_get_string_names_docs = R"qddoc(
+const char *rawd3plot_get_string_names_docs = R"qddoc(
     _get_string_names()
 
     *For internal usage*
@@ -1436,7 +1501,7 @@ const char* rawd3plot_get_string_names_docs = R"qddoc(
         ['part_names']
 )qddoc";
 
-const char* rawd3plot_get_string_data_docs = R"qddoc(
+const char *rawd3plot_get_string_data_docs = R"qddoc(
     _get_string_data(name)
 
     *For internal usage*
@@ -1463,7 +1528,7 @@ const char* rawd3plot_get_string_data_docs = R"qddoc(
         ["SomePart                                                                ']
 )qddoc";
 
-const char* rawd3plot_get_float_names_docs = R"qddoc(
+const char *rawd3plot_get_float_names_docs = R"qddoc(
     _get_float_names()
 
     Returns
@@ -1477,7 +1542,7 @@ const char* rawd3plot_get_float_names_docs = R"qddoc(
         ['elem_shell_results', 'elem_shell_results_layers', 'elem_solid_results', ... ]
 )qddoc";
 
-const char* rawd3plot_get_float_data_docs = R"qddoc(
+const char *rawd3plot_get_float_data_docs = R"qddoc(
     _get_float_data(name)
 
     *For internal usage*
@@ -1504,7 +1569,7 @@ const char* rawd3plot_get_float_data_docs = R"qddoc(
     >>> # 12 timesteps, 4969 elements and 24 variables
 )qddoc";
 
-const char* rawd3plot_info_docs = R"qddoc(
+const char *rawd3plot_info_docs = R"qddoc(
     info()
 
     Prints a summary of the header data of the d3plot, which
@@ -1518,7 +1583,7 @@ const char* rawd3plot_info_docs = R"qddoc(
 )qddoc";
 
 /* ----------------------- KEYFILE ---------------------- */
-const char* keyfile_description = R"qddoc(
+const char *keyfile_description = R"qddoc(
 
     A KeyFile is a textual input file for the FEM-Solver
     LS-Dyna from LSTC. The input file contains all the data 
@@ -1526,7 +1591,7 @@ const char* keyfile_description = R"qddoc(
 
 )qddoc";
 
-const char* keyfile_constructor = R"qddoc(
+const char *keyfile_constructor = R"qddoc(
     KeyFile(filepath="", read_keywords=True, parse_mesh=True, load_includes=True, encryption_detection=0.7)
 
     Parameters
@@ -1592,7 +1657,7 @@ const char* keyfile_constructor = R"qddoc(
 
 )qddoc";
 
-const char* keyfile_str_description = R"qddoc(
+const char *keyfile_str_description = R"qddoc(
     __str__()
 
     Returns
@@ -1609,7 +1674,7 @@ const char* keyfile_str_description = R"qddoc(
         >>>     fp.write(str(keyfile))
 )qddoc";
 
-const char* keyfile_getitem_description = R"qddoc(
+const char *keyfile_getitem_description = R"qddoc(
     __getitem__(name)
 
     Parameters
@@ -1632,7 +1697,7 @@ const char* keyfile_getitem_description = R"qddoc(
         [<Keyword: *PART_CONTACT>, <Keyword: *PART_CONTACT>]
 )qddoc";
 
-const char* keyfile_keys_description = R"qddoc(
+const char *keyfile_keys_description = R"qddoc(
     keys()
 
     Returns
@@ -1648,7 +1713,7 @@ const char* keyfile_keys_description = R"qddoc(
         ['*BOUNDARY_SPC_SET_ID', '*PART_CONTACT', '*NODE', ...]
 )qddoc";
 
-const char* keyfile_save_description = R"qddoc(
+const char *keyfile_save_description = R"qddoc(
     keys()
 
     Parameters
@@ -1670,7 +1735,7 @@ const char* keyfile_save_description = R"qddoc(
         
 )qddoc";
 
-const char* keyfile_remove_keyword_description = R"qddoc(
+const char *keyfile_remove_keyword_description = R"qddoc(
     remove_keyword(name, index)
 
     Parameters
@@ -1703,7 +1768,7 @@ const char* keyfile_remove_keyword_description = R"qddoc(
         
 )qddoc";
 
-const char* keyfile_add_keyword_description = R"qddoc(
+const char *keyfile_add_keyword_description = R"qddoc(
     add_keyword(lines, position=-1)
 
     Parameters
@@ -1747,7 +1812,7 @@ const char* keyfile_add_keyword_description = R"qddoc(
         
 )qddoc";
 
-const char* keyfile_get_includes_description = R"qddoc(
+const char *keyfile_get_includes_description = R"qddoc(
     get_includes()
 
     Returns
@@ -1772,7 +1837,7 @@ const char* keyfile_get_includes_description = R"qddoc(
         
 )qddoc";
 
-const char* keyfile_get_include_dirs_description = R"qddoc(
+const char *keyfile_get_include_dirs_description = R"qddoc(
     get_include_dirs()
 
     Returns
@@ -1797,7 +1862,7 @@ const char* keyfile_get_include_dirs_description = R"qddoc(
         
 )qddoc";
 
-const char* keyfile_field_size_description = R"qddoc(
+const char *keyfile_field_size_description = R"qddoc(
     field_size
 
     Raises
@@ -1826,7 +1891,7 @@ const char* keyfile_field_size_description = R"qddoc(
 
 /* ----------------------- KEYWORD ---------------------- */
 
-const char* keyword_enum_align_docs = R"qddoc(
+const char *keyword_enum_align_docs = R"qddoc(
     Type of alignment for comment names and fields:
      - left
      - right
@@ -1838,7 +1903,7 @@ const char* keyword_enum_align_docs = R"qddoc(
         >>> Keyword.field_alignment = Keyword.align.middle
 )qddoc";
 
-const char* keyword_constructor_docs = R"qddoc(
+const char *keyword_constructor_docs = R"qddoc(
     Keyword(lines, position=0)
 
     Parameters
@@ -1878,7 +1943,7 @@ const char* keyword_constructor_docs = R"qddoc(
         >>> kw[1,0] = 2000002
 )qddoc";
 
-const char* keyword_str_docs = R"qddoc(
+const char *keyword_str_docs = R"qddoc(
     __str__()
 
     Returns
@@ -1892,7 +1957,7 @@ const char* keyword_str_docs = R"qddoc(
         >>> print(kw)
 )qddoc";
 
-const char* keyword_repr_docs = R"qddoc(
+const char *keyword_repr_docs = R"qddoc(
     __repr__()
 
     Returns
@@ -1908,7 +1973,7 @@ const char* keyword_repr_docs = R"qddoc(
         [<Keyword: *SET_NODE_ADD>]
 )qddoc";
 
-const char* keyword_iter_docs = R"qddoc(
+const char *keyword_iter_docs = R"qddoc(
     __iter__()
 
     Returns
@@ -1922,7 +1987,7 @@ const char* keyword_iter_docs = R"qddoc(
         >>>    print(line)
 )qddoc";
 
-const char* keyword_getitem_docs = R"qddoc(
+const char *keyword_getitem_docs = R"qddoc(
     __getitem__(arg1, arg2, field_size=0)
     
     *Abreviation for `get_card_valueByName` and `get_card_valueByIndex`*
@@ -1968,7 +2033,7 @@ const char* keyword_getitem_docs = R"qddoc(
         'engine part number one'
 )qddoc";
 
-const char* keyword_get_card_valueByIndex_docs = R"qddoc(
+const char *keyword_get_card_valueByIndex_docs = R"qddoc(
     get_card_valueByIndex(iCard, iField, field_size=0)
     
     Parameters
@@ -2004,7 +2069,7 @@ const char* keyword_get_card_valueByIndex_docs = R"qddoc(
         'engine part number one'
 )qddoc";
 
-const char* keyword_get_card_valueByName_docs = R"qddoc(
+const char *keyword_get_card_valueByName_docs = R"qddoc(
     get_card_valueByName(name, field_size=0)
     
     Parameters
@@ -2032,7 +2097,7 @@ const char* keyword_get_card_valueByName_docs = R"qddoc(
         2000001
 )qddoc";
 
-const char* keyword_setitem_docs = R"qddoc(
+const char *keyword_setitem_docs = R"qddoc(
     __setitem__(args, value)
     
     *Please consider using ``set_card_valueByIndex`` or ``set_card_valueByName``*
@@ -2080,7 +2145,7 @@ const char* keyword_setitem_docs = R"qddoc(
         >>> kw[0,0,50] = "Set 50 chars to this"
 )qddoc";
 
-const char* keyword_set_card_valueByIndex_docs = R"qddoc(
+const char *keyword_set_card_valueByIndex_docs = R"qddoc(
     set_card_valueByIndex(iCard, iField, value, name="", field_size=0)
     
     Parameters
@@ -2121,7 +2186,7 @@ const char* keyword_set_card_valueByIndex_docs = R"qddoc(
         
 )qddoc";
 
-const char* keyword_set_card_valueByName_docs = R"qddoc(
+const char *keyword_set_card_valueByName_docs = R"qddoc(
     set_card_valueByName(name, value, field_size=0)
     
     Parameters
@@ -2156,7 +2221,7 @@ const char* keyword_set_card_valueByName_docs = R"qddoc(
         
 )qddoc";
 
-const char* keyword_set_card_valueByDict_docs = R"qddoc(
+const char *keyword_set_card_valueByDict_docs = R"qddoc(
     set_card_valueByDict(fields, field_size=0)
     
     Parameters
@@ -2189,7 +2254,7 @@ const char* keyword_set_card_valueByDict_docs = R"qddoc(
         
 )qddoc";
 
-const char* keyword_len_docs = R"qddoc(
+const char *keyword_len_docs = R"qddoc(
     __len__()
     
     Returns
@@ -2204,7 +2269,7 @@ const char* keyword_len_docs = R"qddoc(
         
 )qddoc";
 
-const char* keyword_append_line_docs = R"qddoc(
+const char *keyword_append_line_docs = R"qddoc(
     append_line(line)
     
     Parameters
@@ -2218,7 +2283,7 @@ const char* keyword_append_line_docs = R"qddoc(
         
 )qddoc";
 
-const char* keyword_get_lines_docs = R"qddoc(
+const char *keyword_get_lines_docs = R"qddoc(
     get_lines()
     
     Returns
@@ -2232,7 +2297,7 @@ const char* keyword_get_lines_docs = R"qddoc(
         
 )qddoc";
 
-const char* keyword_get_line_docs = R"qddoc(
+const char *keyword_get_line_docs = R"qddoc(
     get_line()
     
     Parameters
@@ -2255,7 +2320,7 @@ const char* keyword_get_line_docs = R"qddoc(
         '$# title'
 )qddoc";
 
-const char* keyword_set_lines_docs = R"qddoc(
+const char *keyword_set_lines_docs = R"qddoc(
     set_lines(lines)
     
     Parameters
@@ -2269,7 +2334,7 @@ const char* keyword_set_lines_docs = R"qddoc(
         >>> kw.set_lines(lines)
 )qddoc";
 
-const char* keyword_set_line_docs = R"qddoc(
+const char *keyword_set_line_docs = R"qddoc(
     set_line(iLine, line)
     
     Parameters
@@ -2283,7 +2348,7 @@ const char* keyword_set_line_docs = R"qddoc(
         >>> kw.set_line(4, "blubber")
 )qddoc";
 
-const char* keyword_insert_line_docs = R"qddoc(
+const char *keyword_insert_line_docs = R"qddoc(
     insert_line(iLine, line)
     
     Parameters
@@ -2297,7 +2362,7 @@ const char* keyword_insert_line_docs = R"qddoc(
         >>> kw.insert_line(4, "$ comment")
 )qddoc";
 
-const char* keyword_remove_line_docs = R"qddoc(
+const char *keyword_remove_line_docs = R"qddoc(
     remove_line(iLine)
     
     Parameters
@@ -2309,7 +2374,7 @@ const char* keyword_remove_line_docs = R"qddoc(
         >>> kw.remove_line(4)
 )qddoc";
 
-const char* keyword_position_docs = R"qddoc(
+const char *keyword_position_docs = R"qddoc(
     
     Notes
     -----
@@ -2324,7 +2389,7 @@ const char* keyword_position_docs = R"qddoc(
         
 )qddoc";
 
-const char* keyword_switch_field_size_docs = R"qddoc(
+const char *keyword_switch_field_size_docs = R"qddoc(
     switch_field_size(skip_cards=[])
 
     Parameters
@@ -2344,7 +2409,7 @@ const char* keyword_switch_field_size_docs = R"qddoc(
         >>> kw.switch_field_size(skip_cards=[0])
 )qddoc";
 
-const char* keyword_reformat_all_docs = R"qddoc(
+const char *keyword_reformat_all_docs = R"qddoc(
     reformat_all(skip_cards=[])
 
     Parameters
@@ -2377,7 +2442,7 @@ const char* keyword_reformat_all_docs = R"qddoc(
                100       200   2000017
 )qddoc";
 
-const char* keyword_reformat_field_docs = R"qddoc(
+const char *keyword_reformat_field_docs = R"qddoc(
     reformat_field(iCard, iField, field_size=0, format_field=True, format_name=True)
 
     Parameters
@@ -2422,7 +2487,7 @@ const char* keyword_reformat_field_docs = R"qddoc(
                100       200   2000017
 )qddoc";
 
-const char* keyword_has_long_fields_docs = R"qddoc(
+const char *keyword_has_long_fields_docs = R"qddoc(
     has_long_fields()
 
     Returns
@@ -2448,7 +2513,7 @@ const char* keyword_has_long_fields_docs = R"qddoc(
         '*PART'
 )qddoc";
 
-const char* keyword_get_keyword_name_docs = R"qddoc(
+const char *keyword_get_keyword_name_docs = R"qddoc(
     get_keyword_name()
 
     Returns
@@ -2470,7 +2535,7 @@ const char* keyword_get_keyword_name_docs = R"qddoc(
         '*PART'
 )qddoc";
 
-const char* keyword_name_delimiter_docs = R"qddoc(
+const char *keyword_name_delimiter_docs = R"qddoc(
     name_delimiter
 
     Notes
@@ -2485,7 +2550,7 @@ const char* keyword_name_delimiter_docs = R"qddoc(
         >>> Keyword.name_delimiter = '/'
 )qddoc";
 
-const char* keyword_name_delimiter_used_docs = R"qddoc(
+const char *keyword_name_delimiter_used_docs = R"qddoc(
     name_delimiter_used
 
     Notes
@@ -2500,7 +2565,7 @@ const char* keyword_name_delimiter_used_docs = R"qddoc(
         >>> Keyword.name_delimiter_used = False
 )qddoc";
 
-const char* keyword_name_spacer_docs = R"qddoc(
+const char *keyword_name_spacer_docs = R"qddoc(
     name_spacer
 
     Notes
@@ -2514,7 +2579,7 @@ const char* keyword_name_spacer_docs = R"qddoc(
         >>> Keyword.name_spacer = ' '
 )qddoc";
 
-const char* keyword_field_alignment_docs = R"qddoc(
+const char *keyword_field_alignment_docs = R"qddoc(
     field_alignment
 
     Notes
@@ -2528,7 +2593,7 @@ const char* keyword_field_alignment_docs = R"qddoc(
         >>> Keyword.field_alignment = Keyword.align.left
 )qddoc";
 
-const char* keyword_name_alignment_docs = R"qddoc(
+const char *keyword_name_alignment_docs = R"qddoc(
     name_alignment
 
     Notes
@@ -2544,7 +2609,7 @@ const char* keyword_name_alignment_docs = R"qddoc(
 
 /* ----------------------- NODE KEYWORD ---------------------- */
 
-const char* node_keyword_add_node_docs = R"qddoc(
+const char *node_keyword_add_node_docs = R"qddoc(
     add_node(id, x, y, z, additional_card_data="")
 
     Parameters
@@ -2583,7 +2648,7 @@ const char* node_keyword_add_node_docs = R"qddoc(
         >>> node = kw.add_node(123, 3.141, 5.926, 5.35, additional_data)
 )qddoc";
 
-const char* node_keyword_get_nNodes_docs = R"qddoc(
+const char *node_keyword_get_nNodes_docs = R"qddoc(
     get_nNodes()
 
     Returns
@@ -2597,7 +2662,7 @@ const char* node_keyword_get_nNodes_docs = R"qddoc(
         26357
 )qddoc";
 
-const char* node_keyword_get_nodes_docs = R"qddoc(
+const char *node_keyword_get_nodes_docs = R"qddoc(
     get_nodes()
 
     Returns
@@ -2611,7 +2676,7 @@ const char* node_keyword_get_nodes_docs = R"qddoc(
         26357
 )qddoc";
 
-const char* node_keyword_get_node_ids_docs = R"qddoc(
+const char *node_keyword_get_node_ids_docs = R"qddoc(
     get_node_ids()
 
     Returns
@@ -2625,7 +2690,7 @@ const char* node_keyword_get_node_ids_docs = R"qddoc(
         [1, 2, 3, 4]
 )qddoc";
 
-const char* node_keyword_load_docs = R"qddoc(
+const char *node_keyword_load_docs = R"qddoc(
     load()
 
     Raises
@@ -2665,7 +2730,7 @@ const char* node_keyword_load_docs = R"qddoc(
 
 /* ----------------------- ELEMENT KEYWORD ---------------------- */
 
-const char* element_keyword_get_elements_docs = R"qddoc(
+const char *element_keyword_get_elements_docs = R"qddoc(
     get_elements()
 
     Returns
@@ -2687,7 +2752,7 @@ const char* element_keyword_get_elements_docs = R"qddoc(
         1
 )qddoc";
 
-const char* element_keyword_get_nElements_docs = R"qddoc(
+const char *element_keyword_get_nElements_docs = R"qddoc(
     get_nElements()
 
     Returns
@@ -2705,7 +2770,7 @@ const char* element_keyword_get_nElements_docs = R"qddoc(
         1
 )qddoc";
 
-const char* element_keyword_add_elementByNodeID_docs = R"qddoc(
+const char *element_keyword_add_elementByNodeID_docs = R"qddoc(
     add_elementByNodeID(id, part_id, node_ids, additional_card_data="")
 
     Parameters
@@ -2749,7 +2814,7 @@ const char* element_keyword_add_elementByNodeID_docs = R"qddoc(
 
 )qddoc";
 
-const char* element_keyword_add_elementByNodeIndex_docs = R"qddoc(
+const char *element_keyword_add_elementByNodeIndex_docs = R"qddoc(
     add_elementByNodeIndex(id, part_id, node_indexes, additional_card_data="")
 
     Parameters
@@ -2793,7 +2858,7 @@ const char* element_keyword_add_elementByNodeIndex_docs = R"qddoc(
 
 )qddoc";
 
-const char* element_keyword_load_docs = R"qddoc(
+const char *element_keyword_load_docs = R"qddoc(
     load()
 
     Notes
@@ -2818,7 +2883,7 @@ const char* element_keyword_load_docs = R"qddoc(
 
 /* ----------------------- PART KEYWORD ---------------------- */
 
-const char* part_keyword_add_part_docs = R"qddoc(
+const char *part_keyword_add_part_docs = R"qddoc(
     add_part(id, name="", additional_card_data="")
 
     Parameters
@@ -2857,7 +2922,7 @@ const char* part_keyword_add_part_docs = R"qddoc(
         >>> part = kw.add_part(100, "my_part", additional_data)
 )qddoc";
 
-const char* part_keyword_get_parts_docs = R"qddoc(
+const char *part_keyword_get_parts_docs = R"qddoc(
     get_parts()
 
     Returns
@@ -2879,7 +2944,7 @@ const char* part_keyword_get_parts_docs = R"qddoc(
         1
 )qddoc";
 
-const char* part_keyword_get_nParts_docs = R"qddoc(
+const char *part_keyword_get_nParts_docs = R"qddoc(
     get_nParts()
 
     Returns
@@ -2901,7 +2966,7 @@ const char* part_keyword_get_nParts_docs = R"qddoc(
         1
 )qddoc";
 
-const char* part_keyword_load_docs = R"qddoc(
+const char *part_keyword_load_docs = R"qddoc(
     load()
 
     Notes
@@ -2929,7 +2994,7 @@ const char* part_keyword_load_docs = R"qddoc(
 
 /* ----------------------- INCLUDE PATH KEYWORD ---------------------- */
 
-const char* include_path_is_relative_docs = R"qddoc(
+const char *include_path_is_relative_docs = R"qddoc(
     is_relative()
 
     Returns
@@ -2952,7 +3017,7 @@ const char* include_path_is_relative_docs = R"qddoc(
 
 )qddoc";
 
-const char* include_path_keyword_get_include_dirs_docs = R"qddoc(
+const char *include_path_keyword_get_include_dirs_docs = R"qddoc(
     get_include_dirs()
 
     Returns
@@ -2981,7 +3046,7 @@ const char* include_path_keyword_get_include_dirs_docs = R"qddoc(
 
 /* ----------------------- INCLUDE KEYWORD ---------------------- */
 
-const char* include_keyword_get_includes_docs = R"qddoc(
+const char *include_keyword_get_includes_docs = R"qddoc(
     get_includes()
 
     Returns
@@ -3003,7 +3068,7 @@ const char* include_keyword_get_includes_docs = R"qddoc(
 
 )qddoc";
 
-const char* include_keyword_load_docs = R"qddoc(
+const char *include_keyword_load_docs = R"qddoc(
     load()
 
     Notes
@@ -3037,7 +3102,7 @@ const char* include_keyword_load_docs = R"qddoc(
 
 /* ----------------------- MODULE ---------------------- */
 
-const char* module_get_file_entropy_description = R"qddoc(
+const char *module_get_file_entropy_description = R"qddoc(
     get_file_entropy(filepath)
 
     Parameters
