@@ -12,13 +12,8 @@
 
 namespace qd {
 
-#ifdef QD_DEBUG
 template<typename T>
 class Tensor : public traced<Tensor<T>>
-#else 
-template<typename T>
-class Tensor
-#endif
 {
 private:
   std::vector<size_t> _shape;
@@ -43,7 +38,6 @@ public:
   void reserve(size_t n_elements);
 
   void print() const;
-
 };
 
 template<typename T>
