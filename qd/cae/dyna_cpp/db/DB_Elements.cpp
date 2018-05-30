@@ -497,6 +497,84 @@ DB_Elements::get_element_node_ids(Element::ElementType element_type,
         }
       }
       break;
+    case Element::NONE:
+    default:
+      break;
+  }
+
+  return tensor;
+}
+
+Tensor_ptr<float>
+DB_Elements::get_element_energy(Element::ElementType element_filter)
+{
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+  tensor->resize({ this->get_nElements(element_filter) });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+
+  for (auto& element : elements) {
+    auto result = element->get_energy();
+    if (result.size() != 0) {
+      std::copy(result.begin(), result.end(), data.begin() + offset);
+      offset += nTimesteps;
+    } else {
+      std::fill(data.begin() + offset, data.begin() + offset + nTimesteps, 0.);
+      offset += nTimesteps;
+    }
+  }
+
+  return tensor;
+}
+
+Tensor_ptr<float>
+DB_Elements::get_element_stress_mises(Element::ElementType element_filter)
+{
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+  tensor->resize({ this->get_nElements(element_filter) });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+
+  for (auto& element : elements) {
+    auto result = element->get_stress_mises();
+    if (result.size() != 0) {
+      std::copy(result.begin(), result.end(), data.begin() + offset);
+      offset += nTimesteps;
+    } else {
+      std::fill(data.begin() + offset, data.begin() + offset + nTimesteps, 0.);
+      offset += nTimesteps;
+    }
+  }
+
+  return tensor;
+}
+
+Tensor_ptr<float>
+DB_Elements::get_element_plastic_strain(Element::ElementType element_filter)
+{
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+  tensor->resize({ this->get_nElements(element_filter) });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+
+  for (auto& element : elements) {
+    auto result = element->get_plastic_strain();
+    if (result.size() != 0) {
+      std::copy(result.begin(), result.end(), data.begin() + offset);
+      offset += nTimesteps;
+    } else {
+      std::fill(data.begin() + offset, data.begin() + offset + nTimesteps, 0.);
+      offset += nTimesteps;
+    }
   }
 
   return tensor;

@@ -95,9 +95,12 @@ public:
     const std::vector<T>& _indexes);
 
   // array functions
-  // Tensor_ptr<float> get_result_field(
-  //   const std::string& field_name,
-  //   Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_energy(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_stress_mises(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_plastic_strain(
+    Element::ElementType element_filter = Element::ElementType::NONE);
 
   Tensor_ptr<int32_t> get_element_ids(
     Element::ElementType element_filter = Element::ElementType::NONE);
