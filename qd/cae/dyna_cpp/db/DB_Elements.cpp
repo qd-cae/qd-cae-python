@@ -81,7 +81,6 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
       id2index_elements8.insert(
         std::pair<int32_t, size_t>(_element_id, elements8.size()));
       elements8.push_back(element);
-
     } break;
 
     case (Element::BEAM):
@@ -331,18 +330,24 @@ DB_Elements::get_db_nodes()
 void
 DB_Elements::reserve(const Element::ElementType _type, const size_t _size)
 {
-  if (_type == Element::BEAM) {
-    elements2.reserve(_size);
-  } else if (_type == Element::SHELL) {
-    elements4.reserve(_size);
-  } else if (_type == Element::SOLID) {
-    elements8.reserve(_size);
-  } else if (_type == Element::TSHELL) {
-    elements4th.reserve(_size);
-  } else {
-    throw std::invalid_argument(
-      "Can not reserve memory for an unknown ElementType: " +
-      std::to_string(_type));
+  switch (_type) {
+    case Element::BEAM:
+      elements2.reserve(_size);
+      break;
+    case Element::SHELL:
+      elements4.reserve(_size);
+      break;
+    case Element::SOLID:
+      elements8.reserve(_size);
+      break;
+    case Element::TSHELL:
+      elements4th.reserve(_size);
+      break;
+    default:
+      throw std::invalid_argument(
+        "Can not reserve memory for an unknown ElementType: " +
+        std::to_string(_type));
+      break;
   }
 }
 
@@ -353,17 +358,21 @@ DB_Elements::reserve(const Element::ElementType _type, const size_t _size)
 size_t
 DB_Elements::get_nElements(const Element::ElementType _type) const
 {
-  if (_type == Element::BEAM) {
-    return elements2.size();
-  } else if (_type == Element::SHELL) {
-    return elements4.size();
-  } else if (_type == Element::SOLID) {
-    return elements8.size();
-  } else if (_type == Element::TSHELL) {
-    return elements4th.size();
+  switch (_type) {
+    case Element::BEAM:
+      return elements2.size();
+    case Element::SHELL:
+      return elements4.size();
+    case Element::SOLID:
+      return elements8.size();
+    case Element::TSHELL:
+      return elements4th.size();
+    case Element::NONE:
+      return elements4.size() + elements2.size() + elements8.size() +
+             elements4th.size();
   }
-  return elements4.size() + elements2.size() + elements8.size() +
-         elements4th.size();
+
+  throw(std::invalid_argument("Unknown element type specified."));
 }
 
 /** Get the elements of the database of a certain type
@@ -375,25 +384,200 @@ std::vector<std::shared_ptr<Element>>
 DB_Elements::get_elements(const Element::ElementType _type)
 {
 
-  if (_type == Element::NONE) {
-    std::vector<std::shared_ptr<Element>> elems;
-    elems.reserve(get_nElements(_type));
-    elems.insert(elems.end(), elements2.begin(), elements2.end());
-    elems.insert(elems.end(), elements4.begin(), elements4.end());
-    elems.insert(elems.end(), elements8.begin(), elements8.end());
-    elems.insert(elems.end(), elements4th.begin(), elements4th.end());
-    return std::move(elems);
-  } else if (_type == Element::BEAM) {
-    return elements2;
-  } else if (_type == Element::SHELL) {
-    return elements4;
-  } else if (_type == Element::SOLID) {
-    return elements8;
-  } else if (_type == Element::TSHELL) {
-    return elements4th;
+  switch (_type) {
+    case Element::BEAM:
+      return elements2;
+    case Element::SHELL:
+      return elements4;
+    case Element::SOLID:
+      return elements8;
+    case Element::TSHELL:
+      return elements4th;
+    case Element::NONE: {
+      std::vector<std::shared_ptr<Element>> elems;
+      elems.reserve(get_nElements(_type));
+      elems.insert(elems.end(), elements2.begin(), elements2.end());
+      elems.insert(elems.end(), elements4.begin(), elements4.end());
+      elems.insert(elems.end(), elements8.begin(), elements8.end());
+      elems.insert(elems.end(), elements4th.begin(), elements4th.end());
+      return elems;
+    }
   }
 
   throw(std::invalid_argument("Unknown element type specified."));
+}
+
+/** Get the element ids
+ *
+ * @param element_filter : filter type for elements
+ * @return tensor
+ */
+Tensor_ptr<int32_t>
+DB_Elements::get_element_ids(Element::ElementType element_filter)
+{
+
+  size_t element_offset = 0;
+  auto tensor = std::make_shared<Tensor<int32_t>>();
+  tensor->resize({ this->get_nElements(element_filter) });
+  auto& data = tensor->get_data();
+
+  if (element_filter == Element::NONE || element_filter == Element::BEAM) {
+    for (auto& elem : elements2)
+      data[element_offset++] = elem->get_elementID();
+  }
+
+  if (element_filter == Element::NONE || element_filter == Element::SHELL) {
+    for (auto& elem : elements4)
+      data[element_offset++] = elem->get_elementID();
+  }
+
+  if (element_filter == Element::NONE || element_filter == Element::SOLID) {
+    for (auto& elem : elements8)
+      data[element_offset++] = elem->get_elementID();
+  }
+
+  if (element_filter == Element::NONE || element_filter == Element::TSHELL) {
+    for (auto& elem : elements4th)
+      data[element_offset++] = elem->get_elementID();
+  }
+
+  return tensor;
+}
+
+/** Get the node ids of elements
+ *
+ * @param element_type : type of the elements
+ * @param n_nodes : number of nodes
+ * @return tensor
+ */
+Tensor_ptr<int32_t>
+DB_Elements::get_element_node_ids(Element::ElementType element_type,
+                                  size_t n_nodes)
+{
+
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<int32_t>>();
+  tensor->resize({ this->get_nElements(element_type), n_nodes });
+  auto& data = tensor->get_data();
+
+  switch (element_type) {
+    case Element::BEAM:
+      for (auto& elem : elements2) {
+        if (elem->get_nNodes() == n_nodes) {
+          const auto& node_ids = elem->get_node_ids();
+          std::copy(node_ids.begin(), node_ids.end(), data.begin() + offset);
+          offset += node_ids.size();
+        }
+      }
+      break;
+    case Element::SHELL:
+      for (auto& elem : elements4) {
+        if (elem->get_nNodes() == n_nodes) {
+          const auto& node_ids = elem->get_node_ids();
+          std::copy(node_ids.begin(), node_ids.end(), data.begin() + offset);
+          offset += node_ids.size();
+        }
+      }
+      break;
+    case Element::SOLID:
+      for (auto& elem : elements8) {
+        if (elem->get_nNodes() == n_nodes) {
+          const auto& node_ids = elem->get_node_ids();
+          std::copy(node_ids.begin(), node_ids.end(), data.begin() + offset);
+          offset += node_ids.size();
+        }
+      }
+      break;
+    case Element::TSHELL:
+      for (auto& elem : elements4th) {
+        if (elem->get_nNodes() == n_nodes) {
+          const auto& node_ids = elem->get_node_ids();
+          std::copy(node_ids.begin(), node_ids.end(), data.begin() + offset);
+          offset += node_ids.size();
+        }
+      }
+      break;
+    case Element::NONE:
+    default:
+      break;
+  }
+
+  return tensor;
+}
+
+Tensor_ptr<float>
+DB_Elements::get_element_energy(Element::ElementType element_filter)
+{
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+  tensor->resize({ this->get_nElements(element_filter) });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+
+  for (auto& element : elements) {
+    auto result = element->get_energy();
+    if (result.size() != 0) {
+      std::copy(result.begin(), result.end(), data.begin() + offset);
+      offset += nTimesteps;
+    } else {
+      std::fill(data.begin() + offset, data.begin() + offset + nTimesteps, 0.);
+      offset += nTimesteps;
+    }
+  }
+
+  return tensor;
+}
+
+Tensor_ptr<float>
+DB_Elements::get_element_stress_mises(Element::ElementType element_filter)
+{
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+  tensor->resize({ this->get_nElements(element_filter) });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+
+  for (auto& element : elements) {
+    auto result = element->get_stress_mises();
+    if (result.size() != 0) {
+      std::copy(result.begin(), result.end(), data.begin() + offset);
+      offset += nTimesteps;
+    } else {
+      std::fill(data.begin() + offset, data.begin() + offset + nTimesteps, 0.);
+      offset += nTimesteps;
+    }
+  }
+
+  return tensor;
+}
+
+Tensor_ptr<float>
+DB_Elements::get_element_plastic_strain(Element::ElementType element_filter)
+{
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+  tensor->resize({ this->get_nElements(element_filter) });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+
+  for (auto& element : elements) {
+    auto result = element->get_plastic_strain();
+    if (result.size() != 0) {
+      std::copy(result.begin(), result.end(), data.begin() + offset);
+      offset += nTimesteps;
+    } else {
+      std::fill(data.begin() + offset, data.begin() + offset + nTimesteps, 0.);
+      offset += nTimesteps;
+    }
+  }
+
+  return tensor;
 }
 
 } // namespace qd

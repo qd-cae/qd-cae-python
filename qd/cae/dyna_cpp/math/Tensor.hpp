@@ -8,10 +8,12 @@
 #include <numeric>
 #include <vector>
 
+#include <dyna_cpp/utility/debug.hpp>
+
 namespace qd {
 
 template<typename T>
-class Tensor
+class Tensor : public traced<Tensor<T>>
 {
 private:
   std::vector<size_t> _shape;
@@ -37,6 +39,9 @@ public:
 
   void print() const;
 };
+
+template<typename T>
+using Tensor_ptr = std::shared_ptr<Tensor<T>>;
 
 /** Create an empty tensor
  *

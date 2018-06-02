@@ -69,8 +69,9 @@ private:
   int32_t dyna_extra;   // double header length indicator
   int32_t dyna_numprop; // number of properties dude!!!
 
-  int32_t dyna_numrbe;         // number of rigid body shell elems
-  Tensor<int32_t> dyna_irbtyp; // rigid body material type numbers (internal)
+  int32_t dyna_numrbe; // number of rigid body shell elems
+  std::shared_ptr<Tensor<int32_t>>
+    dyna_irbtyp; // rigid body material type numbers (internal)
 
   // just for checks ... can not be handled.
   int32_t dyna_nmsph;   // #nodes of sph
@@ -105,14 +106,14 @@ private:
   int32_t wordsToRead;
   int32_t wordPositionStates; // remembers where states begin
 
-  bool useFemzip; // femzip usage?
+  bool _is_femzipped; // femzip usage?
   int32_t femzip_state_offset;
 
-  std::unique_ptr<AbstractBuffer> buffer;
+  std::shared_ptr<AbstractBuffer> buffer;
 
   // Data
-  std::map<std::string, Tensor<int32_t>> int_data;
-  std::map<std::string, Tensor<float>> float_data;
+  std::map<std::string, std::shared_ptr<Tensor<int32_t>>> int_data;
+  std::map<std::string, std::shared_ptr<Tensor<float>>> float_data;
   std::map<std::string, std::vector<std::string>> string_data;
 
   // header and metadata
@@ -149,18 +150,21 @@ private:
   // === P U B L I C === //
 public:
   explicit RawD3plot();
-  explicit RawD3plot(std::string filepath, bool _use_femzip = false);
+  explicit RawD3plot(std::string filepath);
   virtual ~RawD3plot();
-  void info() const;
 
+  // disallow copy
+  RawD3plot(const RawD3plot&) = delete;
+  RawD3plot& operator=(const RawD3plot&) = delete;
+
+  void info() const;
   std::string get_title() const;
 
-  Tensor<int32_t>& get_int_data(const std::string& _name);
+  Tensor_ptr<int32_t> get_int_data(const std::string& _name);
   std::vector<std::string> get_int_names() const;
-  void set_int_data(const std::string& _name, Tensor<int32_t> _data);
   std::vector<std::string> get_string_data(const std::string& _name);
   std::vector<std::string> get_string_names() const;
-  Tensor<float>& get_float_data(const std::string& _name);
+  Tensor_ptr<float> get_float_data(const std::string& _name);
   std::vector<std::string> get_float_names() const;
   void set_float_data(const std::string& _name,
                       std::vector<size_t> _shape,
@@ -168,6 +172,7 @@ public:
   void set_int_data(const std::string& _name,
                     std::vector<size_t> _shape,
                     const int* _data_ptr);
+  void set_int_data(const std::string& _name, Tensor_ptr<int32_t> _data);
   void set_string_data(const std::string& _name,
                        const std::vector<std::string>& _data);
 };

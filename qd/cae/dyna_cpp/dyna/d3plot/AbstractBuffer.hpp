@@ -61,7 +61,8 @@ AbstractBuffer::read_int(int32_t iWord) const
 {
 
 #ifdef QD_DEBUG
-  if (this->_current_buffer.capacity() <= iWord * this->_word_size)
+  if (this->_current_buffer.capacity() <=
+      static_cast<size_t>(iWord * this->_word_size))
     throw(
       std::invalid_argument("read_int tries to read beyond the buffer size."));
 #endif
@@ -84,7 +85,8 @@ AbstractBuffer::read_float(int32_t iWord) const
 {
 
 #ifdef QD_DEBUG
-  if (this->_current_buffer.capacity() <= iWord * this->_word_size)
+  if (this->_current_buffer.capacity() <=
+      static_cast<size_t>(iWord * this->_word_size))
     throw(
       std::invalid_argument("read_int tries to read beyond the buffer size."));
 #endif
@@ -106,10 +108,11 @@ AbstractBuffer::read_array(int32_t _iWord,
 {
 
 #ifdef QD_DEBUG
-  if (_buffer.capacity() < _length)
+  if (_buffer.capacity() < static_cast<size_t>(_length))
     throw(std::invalid_argument(
       "Can not read array, container capacity too small."));
-  if (this->_current_buffer.capacity() <= (_iWord + _length) * this->_word_size)
+  if (this->_current_buffer.capacity() <=
+      static_cast<size_t>((_iWord + _length) * this->_word_size))
     throw(std::invalid_argument(
       "AbstractBuffer::read_array tries to read beyond the buffer size."));
 #endif
@@ -136,10 +139,11 @@ AbstractBuffer::read_float_array(int32_t _iWord,
 {
 
 #ifdef QD_DEBUG
-  if (_buffer.capacity() < _length)
+  if (_buffer.capacity() < static_cast<size_t>(_length))
     throw(std::invalid_argument(
       "Can not read float array, container capacity too small."));
-  if (this->_current_buffer.capacity() <= (_iWord + _length) * this->_word_size)
+  if (this->_current_buffer.capacity() <=
+      static_cast<size_t>((_iWord + _length) * this->_word_size))
     throw(std::invalid_argument(
       "read_float_array tries to read beyond the buffer size."));
 #endif
@@ -164,7 +168,7 @@ AbstractBuffer::read_str(int32_t iWord, int32_t wordLength) const
 {
 #ifdef QD_DEBUG
   if (this->_current_buffer.capacity() <=
-      (iWord + wordLength) * this->_word_size)
+      static_cast<size_t>((iWord + wordLength) * this->_word_size))
     throw(
       std::invalid_argument("read_str tries to read beyond the buffer size."));
 #endif

@@ -87,6 +87,8 @@ public:
           double _encryption_detection = 0.7,
           KeyFile* _parent_kf = nullptr);
 
+  size_t get_nTimesteps() const override { return 1; };
+
   bool load(bool _load_mesh = true);
 
   // keywords

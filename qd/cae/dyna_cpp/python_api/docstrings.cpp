@@ -566,6 +566,105 @@ const char* part_get_element_node_indexes_docs = R"qddoc(
         array([ 347,  354,  343,  344])
 )qddoc";
 
+const char* part_get_nNodes_docs = R"qddoc(
+    get_nNodes()
+
+    Get the number of nodes in the part.
+
+    Returns
+    -------
+    nNodes : int
+        number of nodes
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_nNodes()
+        9115
+)qddoc";
+
+const char* part_get_nElements_docs = R"qddoc(
+    get_nElements()
+
+    Get the number of elements in the part.
+
+    Returns
+    -------
+    nElements : int
+        number of elements
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_nElements()
+        8945
+)qddoc";
+
+const char* part_get_node_ids_docs = R"qddoc(
+    get_node_ids()
+
+    Get the unique node ids of the part.
+
+    Returns
+    -------
+    node_ids : np.ndarray
+        unique node ids
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_node_ids().shape
+        (6489,)
+)qddoc";
+
+const char* part_get_node_indexes_docs = R"qddoc(
+    get_node_indexes()
+
+    Get the unique node indexes of the part.
+
+    Returns
+    -------
+    node_indexes : np.ndarray
+        unique node indexes
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_node_indexes().shape
+        (6489,)
+)qddoc";
+
+const char* part_get_element_ids_docs = R"qddoc(
+    get_element_ids(element_filter = Element.none)
+
+    Get the ids of the elements belonging to the part.
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional filter for elements
+
+    Returns
+    -------
+    element_ids : np.ndarray
+        ids of the elements
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> part = d3plot.get_partByID(1)
+        >>> part.get_element_ids().shape
+        (9631,)
+        >>> # get only beams
+        >>> part.get_element_ids(Element.beam).shape
+        (0,)
+        >>> # oops no beams :P
+)qddoc";
+
 /* ----------------------- DB_NODES ---------------------- */
 const char* dbnodes_description = R"qddoc(
 
@@ -875,6 +974,146 @@ const char* dbelems_get_elementByIndex_docs = R"qddoc(
         type.tshell
 )qddoc";
 
+const char* dbelems_get_element_ids_docs = R"qddoc(
+    get_element_ids(element_filter)
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional element type for filtering
+
+    Returns
+    -------
+    element_ids : np.ndarray
+        Ids of the elements
+
+    Notes
+    -----
+        If the ids for all elements are queried (``Element.none`` as filter type)
+        then the returned order is:
+         - ``Element.beam``
+         - ``Element.shell``
+         - ``Element.solid``
+         - ``Element.tshell``
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> # get all ids (beam, shell, solid, tshell)
+        >>> d3plot.get_element_ids()
+        array([4687, 4688, 4689, 4690, ...])
+        >>> # filter only beams
+        >>> d3plot.get_element_ids(Element.beam)
+        array([9545, 9546, 9547, 9511, ...])
+
+)qddoc";
+
+const char* dbelems_get_element_node_ids_docs = R"qddoc(
+    get_element_node_ids(element_type, n_nodes)
+
+    Parameters
+    ----------
+    element_type : Element.type
+        type of the element
+    n_nodes : int
+        number of nodes
+
+    Returns
+    -------
+    element_node_ids : np.ndarray
+        ids of the nodes for every element (shape elems x n_nodes). 
+
+    Notes
+    -----
+        The number of nodes must be specified since 
+        elements of one type may have different number of nodes
+        which would result in a non-uniform matrix.
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> d3plot.get_element_node_ids(Element.shell, 4)
+        array([[347, 354, 343, 344],
+               [354, 355, 342, 343],
+               [349, 352, 356, 348]], dtype=int32)
+
+)qddoc";
+
+const char* dbelems_get_element_energy = R"qddoc(
+    get_element_energy(element_filter)
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional type for filtering
+
+    Returns
+    -------
+    field : np.ndarray
+        energy of the elements
+
+    Notes
+    -----
+        If an element does not have the respective result, 0 is set as default value.
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> d3plot.get_element_energy(Element.shell)
+        array([0., 0., 0., ..., 0., 0., 0.], dtype=float32)
+
+)qddoc";
+
+const char* dbelems_get_element_stress_mises = R"qddoc(
+    get_element_stress_mises(element_filter)
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional type for filtering
+
+    Returns
+    -------
+    field : np.ndarray
+        mises stress of the elements
+
+    Notes
+    -----
+        If an element does not have the respective result, 0 is set as default value.
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> d3plot.get_element_stress_mises(Element.shell)
+        array([0., 0., 0., ..., 0., 0., 0.], dtype=float32)
+
+)qddoc";
+
+const char* dbelems_get_plastic_strain = R"qddoc(
+    get_plastic_strain(element_filter)
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional type for filtering
+
+    Returns
+    -------
+    field : np.ndarray
+        plastic strain of the elements
+
+    Notes
+    -----
+        If an element does not have the respective result, 0 is set as default value.
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot")
+        >>> d3plot.get_plastic_strain(Element.shell).shape
+        array([0., 0., 0., ..., 0., 0., 0.], dtype=float32)
+
+)qddoc";
+
 /* ----------------------- DB_PARTS ---------------------- */
 const char* dbparts_description = R"qddoc(
 
@@ -1028,14 +1267,12 @@ const char* d3plot_description = R"qddoc(
 )qddoc";
 
 const char* d3plot_constructor = R"qddoc(
-    __init__(filepath, use_femzip=False, read_states=[])
+    __init__(filepath, read_states=[])
 
     Parameters
     ----------
     filepath : str
         path to the d3plot
-    use_femzip : bool
-        whether to use femzip for decompression
     read_states : str or list of str
         read state information directly (saves time), 
         see the function ``read_states``
@@ -1067,7 +1304,7 @@ const char* d3plot_constructor = R"qddoc(
         
         Read a compressed d3plot
 
-        >>> d3plot = D3plot("path/to/d3plot.fz", use_femzip=True)
+        >>> d3plot = D3plot("path/to/d3plot.fz")
         
         Read d3plot with state data at once.
 
@@ -1240,14 +1477,12 @@ const char* d3plot_clear_docs = R"qddoc(
 /* ----------------------- RAW D3PLOT ---------------------- */
 
 const char* rawd3plot_constructor_description = R"qddoc(
-    RawD3plot(filepath, use_femzip=False)
+    RawD3plot(filepath)
 
     Parameters
     ----------
     filepath : str
         path to the file
-    use_femzip : bool
-        whether to use femzip decompression
 
     Returns
     -------
@@ -1272,7 +1507,7 @@ const char* rawd3plot_constructor_description = R"qddoc(
         >>> # read an arbitrary d3plot
         >>> raw_d3plot = RawD3plot("path/to/d3plot")
         >>> #read femzip compressed file
-        >>> raw_d3plot = RawD3plot("path/to/d3plot.fz",use_femzip=True)
+        >>> raw_d3plot = RawD3plot("path/to/d3plot.fz")
 )qddoc";
 
 const char* rawd3plot_get_int_names_docs = R"qddoc(

@@ -32,9 +32,7 @@ namespace qd {
  *                          read_states
  * @param use_femzip : set to true if your d3plot was femzipped
  */
-D3plot::D3plot(std::string _filename,
-               std::vector<std::string> _state_variables,
-               bool _useFemzip)
+D3plot::D3plot(std::string _filename, std::vector<std::string> _state_variables)
   : FEMFile(_filename)
   , dyna_ndim(-1)
   , dyna_icode(-1)
@@ -95,7 +93,7 @@ D3plot::D3plot(std::string _filename,
   , wordPosition(0)
   , wordsToRead(0)
   , wordPositionStates(0)
-  , useFemzip(_useFemzip)
+  , _is_femzipped(false)
   , femzip_state_offset(0)
   , plastic_strain_is_read(false)
   , plastic_strain_read(0)
@@ -113,33 +111,21 @@ D3plot::D3plot(std::string _filename,
   , acc_read(0)
   , vel_is_read(false)
   , vel_read(0)
-  , buffer([](std::string _filename,
-              bool _useFemzip) -> std::unique_ptr<AbstractBuffer> {
-
-// WTF is this ?!?!?!
-// This is a lambda for initialization of the buffer variable
-// Since the buffer is a std::unique_ptr I need to do it in the
-// initializer list. And since it is a little bit more complicated,
-// I need to use a lambda function
-#ifdef QD_USE_FEMZIP
-    if (_useFemzip) {
-      return std::move((std::make_unique<FemzipBuffer>(_filename)));
-    } else {
-      const int32_t bytesPerWord = 4;
-      return std::move(std::make_unique<D3plotBuffer>(_filename, bytesPerWord));
-    }
-#else
-    if (_useFemzip) {
-      throw(std::invalid_argument(
-        "D3plot.cpp was compiled without femzip support."));
-    }
-    const int32_t bytesPerWord = 4;
-    return std::move(std::make_unique<D3plotBuffer>(_filename, bytesPerWord));
-#endif
-
-  }(_filename, _useFemzip))
+  , buffer(nullptr)
 {
-  // --> Constructor starts here ...
+  // check for femzip
+#ifdef QD_USE_FEMZIP
+  _is_femzipped = FemzipBuffer::is_femzipped(_filename);
+  if (_is_femzipped) {
+    buffer = std::make_shared<FemzipBuffer>(_filename);
+  } else {
+    constexpr int32_t bytesPerWord = 4;
+    buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
+  }
+#else
+  const int32_t bytesPerWord = 4;
+  buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
+#endif
 
   this->buffer->read_geometryBuffer(); // deallocated in read_geometry
 
@@ -166,19 +152,17 @@ D3plot::D3plot(std::string _filename,
  *                    read_states
  * @param use_femzip : set to true if your d3plot was femzipped
  */
-D3plot::D3plot(std::string _filepath, std::string _variable, bool _use_femzip)
-  : D3plot(_filepath,
-           [_variable](std::string) -> std::vector<std::string> {
+D3plot::D3plot(std::string _filepath, std::string _variable)
+  : D3plot(_filepath, [_variable](std::string) -> std::vector<std::string> {
 
-             if (_variable.empty()) {
-               return std::vector<std::string>();
-             } else {
-               std::vector<std::string> vec = { _variable };
-               return vec;
-             }
+    if (_variable.empty()) {
+      return std::vector<std::string>();
+    } else {
+      std::vector<std::string> vec = { _variable };
+      return vec;
+    }
 
-           }(_variable),
-           _use_femzip)
+  }(_variable))
 {}
 
 /*
@@ -602,7 +586,7 @@ D3plot::read_geometry()
   /* === PARTS === */
   this->buffer->free_geometryBuffer();
   this->buffer->read_partBuffer();
-  if (this->useFemzip)
+  if (this->_is_femzipped)
     wordPosition = 1; // don't ask me why not 0 ...
 
   this->read_and_create_parts(part_numbering); // directly creates parts
@@ -1652,11 +1636,11 @@ D3plot::read_states(std::vector<std::string> _variables)
     this->buffer->read_nextState();
 
     // Not femzip case
-    if ((!this->useFemzip) && firstFileDone) {
+    if ((!this->_is_femzipped) && firstFileDone) {
       wordPosition = 0;
     }
     // femzip case
-    if (this->useFemzip) {
+    if (this->_is_femzipped) {
       // 0 = endmark
       // 1 = ntype = 90001
       // 2 = numprop

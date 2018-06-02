@@ -109,7 +109,7 @@ private:
   int32_t wordsToRead;
   int32_t wordPositionStates; // remembers where states begin
 
-  bool useFemzip; // femzip usage?
+  bool _is_femzipped; // femzip usage?
   int32_t femzip_state_offset;
 
   // Checks for already read variables
@@ -142,7 +142,7 @@ private:
   std::vector<int32_t> history_shell_mode;
   std::vector<int32_t> history_solid_mode;
 
-  std::unique_ptr<AbstractBuffer> buffer;
+  std::shared_ptr<AbstractBuffer> buffer;
 
   // header and metadata
   void read_header();
@@ -178,11 +178,8 @@ private:
 public:
   explicit D3plot(
     std::string filepath,
-    std::vector<std::string> _variables = std::vector<std::string>(),
-    bool _use_femzip = false);
-  explicit D3plot(std::string filepath,
-                  std::string _variables = std::string(),
-                  bool _use_femzip = false);
+    std::vector<std::string> _variables = std::vector<std::string>());
+  explicit D3plot(std::string filepath, std::string _variables = std::string());
   virtual ~D3plot();
   void info() const;
   void read_states(std::vector<std::string> _variables);
@@ -190,7 +187,7 @@ public:
   void clear(
     const std::vector<std::string>& _variables = std::vector<std::string>());
   void clear(const std::string& _variable);
-  size_t get_nTimesteps() const;
+  size_t get_nTimesteps() const override;
   std::string get_title() const;
   std::vector<float> get_timesteps() const;
   /*
