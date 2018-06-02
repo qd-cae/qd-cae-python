@@ -104,6 +104,7 @@ KeyFile::load(bool _load_mesh)
 
   std::string line;
   std::stringstream st(std::string(char_buffer.begin(), char_buffer.end()));
+  bool is_encrypted_line =  false;
   for (; std::getline(st, line); ++iLine) {
 
     // remove windows file ending ... I hate it ...
@@ -111,8 +112,23 @@ KeyFile::load(bool _load_mesh)
       if (line[line.size() - 1] == '\r')
         line.pop_back();
 
+    // Check for Encrypted data start line
+    if (is_encrypted_line || line.find("-----BEGIN PGP MESSAGE-----")==0 ){
+        is_encrypted_line = true;
+
+        // Check for Encrypted data end line
+        if (line.find("-----BEGIN PGP MESSAGE-----") == 0)
+        {
+          is_encrypted_line = false;
+        }
+        else{
+          continue;
+        }
+    }
+
+
     // new keyword
-    if (line[0] == '*') {
+    else if (line[0] == '*') {
 
       if (!line_buffer.empty() && !last_keyword.empty()) {
 

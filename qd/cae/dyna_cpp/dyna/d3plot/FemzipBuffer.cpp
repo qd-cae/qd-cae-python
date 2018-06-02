@@ -240,6 +240,26 @@ FemzipBuffer::read_nextState()
   }
 
   this->iTimeStep++;
+
+  // preload timestep
+  if (iTimeStep <= nTimeStep)
+    this->next_state_buffer = std::async(
+      [](int32_t _iTimestep, int32_t _size_state) {
+        int32_t _ier = 0;
+        int32_t _pos = 0;
+        std::vector<char> state_buffer(sizeof(int32_t) * _size_state);
+        states_read(
+          &_ier, &_pos, &_iTimestep, (int32_t*)&state_buffer[0], &_size_state);
+        if (_ier != 0) {
+          if (state_buffer.size() != 0) {
+            state_buffer = std::vector<char>();
+          }
+        }
+
+        return std::move(state_buffer);
+      },
+      this->iTimeStep,
+      this->size_state);
 }
 
 /*

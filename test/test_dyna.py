@@ -480,6 +480,30 @@ class TestDynaModule(unittest.TestCase):
         self.assertCountEqual([node.get_id()
                                for node in elem.get_nodes()], [1, 2, 3, 4])
 
+        # ElementKeyword new solid element format test
+        kf = KeyFile(parse_mesh=True)
+        nkw = kf.add_keyword("*NODE")
+        nkw.add_node(42731096, 0, 0, 0)
+        nkw.add_node(42730740, 0, 0, 0)
+        nkw.add_node(42731090, 0, 0, 0)
+        nkw.add_node(42723028, 0, 0, 0)
+
+        pkw = kf.add_keyword("*PART")
+        pkw.add_part(42792001, "yay")
+
+        ekw = kf.add_keyword("*ELEMENT_SOLID")
+        ekw.append_line("4278837942792001")
+        ekw.append_line(
+            "4273109642730740427310904272302842723028427230284272302842723028       0       0")
+        ekw.load()
+
+        self.assertEqual(len(kf.get_elements()), 1)
+        elem = kf.get_elements()[0]
+        self.assertEqual(elem.get_id(), 42788379)
+        self.assertEqual(elem.get_part_id(), 42792001)
+        self.assertEqual(len(elem.get_nodes()), 4)
+        self.assertEqual(elem.get_type(), Element.solid)
+
         # IncludePathKeyword
         kf = KeyFile("test/keyfile.key", load_includes=True)
 
