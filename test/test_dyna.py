@@ -303,7 +303,7 @@ class TestDynaModule(unittest.TestCase):
 
         # test encryption detection
         np.testing.assert_almost_equal(get_file_entropy(
-            "test/keyfile_include2.key"), 7.715498, decimal=6)
+            "test/keyfile_include2.key"), 7.655742, decimal=6)
 
         # file loading (arguments)
         kf = KeyFile("test/keyfile.key")
@@ -317,6 +317,10 @@ class TestDynaModule(unittest.TestCase):
 
         kf = KeyFile("test/keyfile.key", load_includes=True)
         self.assertEqual(len(kf.keys()), 8)
+        kf1, kf2 = kf.get_includes()
+        kf2.save("test/keyfile_include2_copy.key")
+        import code
+        code.interact(local=locals())
         self.assertEqual(len(kf.get_includes()), 1)
         self.assertEqual(kf.get_nNodes(), 0)
         self.assertTrue(isinstance(kf["*INCLUDE"][0], IncludeKeyword))

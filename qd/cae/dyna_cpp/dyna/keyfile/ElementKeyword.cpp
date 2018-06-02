@@ -293,8 +293,7 @@ ElementKeyword::parse_elem8(const std::string& _keyword_name_lower,
 
 #ifdef QD_DEBUG
   std::cout << "ElementKeyword\nname: " << _keyword_name_lower
-            << "\nnAdditionalLines: " << nAdditionalLines
-            << "\nold_solid_format: " << old_solid_format << '\n';
+            << "\nnAdditionalLines: " << nAdditionalLines << '\n';
 #endif
 
   // extract node data

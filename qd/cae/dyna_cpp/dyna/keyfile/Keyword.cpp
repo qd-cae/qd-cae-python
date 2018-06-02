@@ -355,7 +355,7 @@ Keyword::get_keyword_name() const
 {
   for (const auto& line : lines) {
     if (is_keyword(line)) {
-      if (line[line.size() - 1] == '+')
+      if (line.back() == '+')
         return line.substr(0, line.size() - 1);
       else
         return line;

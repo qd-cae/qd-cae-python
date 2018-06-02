@@ -85,50 +85,51 @@ KeyFile::load(bool _load_mesh)
   std::cout << "done." << std::endl;
 #endif
 
-  // test for encryption
-  if ((get_entropy(char_buffer) / 8.) > this->encryption_detection_threshold) {
-#ifdef QD_DEBUG
-    std::cout << "Skipping file " << my_filepath
-              << " with normalized entropy of "
-              << (get_entropy(char_buffer) / 8) << std::endl;
-#endif
-    return false;
-  }
-
   // convert buffer into blocks
   size_t iLine = 0;
   std::string last_keyword;
   std::vector<std::string> line_buffer;
   std::vector<std::string> line_buffer_tmp;
   std::queue<size_t> buffer_iLine_queue;
+  bool found_pgp_section = false;
 
   std::string line;
-  std::stringstream st(std::string(char_buffer.begin(), char_buffer.end()));
-  bool is_encrypted_line =  false;
+  auto string_buffer = std::string(char_buffer.begin(), char_buffer.end());
+  std::stringstream st(string_buffer);
   for (; std::getline(st, line); ++iLine) {
 
-    // remove windows file ending ... I hate it ...
-    if (line.size() != 0)
-      if (line[line.size() - 1] == '\r')
-        line.pop_back();
+    // encrypted section handling
+    if (found_pgp_section) {
+      found_pgp_section = false;
+      const auto stream_position = st.tellp();
+      auto end_position = string_buffer.find("-----END ", stream_position);
 
-    // Check for Encrypted data start line
-    if (is_encrypted_line || line.find("-----BEGIN PGP MESSAGE-----")==0 ){
-        is_encrypted_line = true;
-
-        // Check for Encrypted data end line
-        if (line.find("-----BEGIN PGP MESSAGE-----") == 0)
-        {
-          is_encrypted_line = false;
-        }
-        else{
-          continue;
-        }
+      if (end_position != std::string::npos) {
+        line_buffer.push_back(std::string(char_buffer.begin() + stream_position,
+                                          char_buffer.begin() + end_position));
+        st.seekp(end_position);
+        std::cout << "stream_position: " << stream_position
+                  << "\nend_position: " << end_position
+                  << "\nstring_buffer.size()" << string_buffer.size() << '\n';
+        continue;
+      } else {
+        line_buffer.push_back(
+          std::string(string_buffer.begin() + stream_position,
+                      string_buffer.begin() + end_position));
+        st.seekp(string_buffer.size());
+        continue;
+      }
     }
 
+    if (line.find("-----BEGIN ") != std::string::npos)
+      found_pgp_section = true;
+
+    // remove windows file ending ... I hate it ...
+    if (line.size() != 0 && line.back() == '\r')
+      line.pop_back();
 
     // new keyword
-    else if (line[0] == '*') {
+    if (line[0] == '*' || found_pgp_section) {
 
       if (!line_buffer.empty() && !last_keyword.empty()) {
 
