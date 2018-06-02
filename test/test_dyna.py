@@ -129,6 +129,34 @@ class TestDynaModule(unittest.TestCase):
             part.get_element_node_ids(Element.shell, 4).shape, (4696, 4))
         self.assertEqual(part.get_element_node_indexes(
             Element.shell, 4).shape, (4696, 4))
+        self.assertEqual(part.get_node_ids().shape, (4915,))
+        self.assertEqual(part.get_node_indexes().shape, (4915,))
+        self.assertEqual(part.get_element_ids().shape, (4696,))
+        self.assertEqual(part.get_element_ids(Element.beam).shape, (0,))
+        self.assertEqual(part.get_element_ids(Element.shell).shape, (4696,))
+        self.assertEqual(part.get_element_ids(Element.tshell).shape, (0,))
+        self.assertEqual(part.get_element_ids(Element.solid).shape, (0,))
+        self.assertEqual(d3plot.get_element_energy().shape, (4696,))
+        self.assertEqual(d3plot.get_element_energy(Element.beam).shape, (0,))
+        self.assertEqual(d3plot.get_element_energy(
+            Element.shell).shape, (4696,))
+        self.assertEqual(d3plot.get_element_energy(Element.solid).shape, (0,))
+        self.assertEqual(d3plot.get_element_energy(Element.tshell).shape, (0,))
+        self.assertEqual(d3plot.get_plastic_strain().shape, (4696,))
+        self.assertEqual(d3plot.get_plastic_strain(Element.beam).shape, (0,))
+        self.assertEqual(d3plot.get_plastic_strain(
+            Element.shell).shape, (4696,))
+        self.assertEqual(d3plot.get_plastic_strain(Element.solid).shape, (0,))
+        self.assertEqual(d3plot.get_plastic_strain(Element.tshell).shape, (0,))
+        self.assertEqual(d3plot.get_element_stress_mises().shape, (4696,))
+        self.assertEqual(d3plot.get_element_stress_mises(
+            Element.beam).shape, (0,))
+        self.assertEqual(d3plot.get_element_stress_mises(
+            Element.shell).shape, (4696,))
+        self.assertEqual(d3plot.get_element_stress_mises(
+            Element.solid).shape, (0,))
+        self.assertEqual(d3plot.get_element_stress_mises(
+            Element.tshell).shape, (0,))
 
         # D3plot error handling
         # ... TODO
@@ -193,6 +221,11 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual(elem1.get_stress_mises().shape, (1,))
         self.assertEqual(elem1.get_strain().shape, (1, 6))
         self.assertEqual(elem1.get_history_variables().shape, (1, 1))
+
+        self.assertCountEqual(d3plot.get_element_ids().shape, (4696,))
+        self.assertCountEqual(d3plot.get_element_node_ids(
+            Element.shell, 4).shape, (4696, 4))
+
         # .. TODO Error stoff
 
         # plotting (disabled)

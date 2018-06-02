@@ -183,7 +183,7 @@ DB_Nodes::get_nodes()
  * @return tensor : data as tensor
  */
 Tensor_ptr<float>
-DB_Nodes::get_node_coords() const
+DB_Nodes::get_node_coords()
 {
   auto tensor = std::make_shared<Tensor<float>>();
 
@@ -218,7 +218,7 @@ DB_Nodes::get_node_coords() const
 }
 
 Tensor_ptr<float>
-DB_Nodes::get_node_velocity() const
+DB_Nodes::get_node_velocity()
 {
   auto tensor = std::make_shared<Tensor<float>>();
 
@@ -253,7 +253,7 @@ DB_Nodes::get_node_velocity() const
 }
 
 Tensor_ptr<float>
-DB_Nodes::get_node_acceleration() const
+DB_Nodes::get_node_acceleration()
 {
   auto tensor = std::make_shared<Tensor<float>>();
 
@@ -291,7 +291,7 @@ DB_Nodes::get_node_acceleration() const
 }
 
 Tensor_ptr<int32_t>
-DB_Nodes::get_node_ids() const
+DB_Nodes::get_node_ids()
 {
   auto tensor = std::make_shared<Tensor<int32_t>>();
 

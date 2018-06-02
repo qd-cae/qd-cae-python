@@ -50,6 +50,10 @@ public:
                                            size_t nNodes);
   Tensor_ptr<size_t> get_element_node_indexes(Element::ElementType element_type,
                                               size_t nNodes) const;
+  Tensor_ptr<int32_t> get_node_ids();
+  Tensor_ptr<size_t> get_node_indexes();
+  Tensor_ptr<int32_t> get_element_ids(
+    Element::ElementType etype = Element::ElementType::NONE);
 };
 
 } // namespace qd

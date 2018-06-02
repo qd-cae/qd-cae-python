@@ -118,7 +118,6 @@ namespace qd {
 
 /* Utility functions */
 auto cast_kw = [](std::shared_ptr<Keyword> instance) {
-
   switch (instance->get_keyword_type()) {
 
     case (Keyword::KeywordType::NODE):
@@ -140,7 +139,6 @@ auto cast_kw = [](std::shared_ptr<Keyword> instance) {
     default:
       return pybind11::cast(instance);
   }
-
 };
 
 // template<typename T>
@@ -168,7 +166,6 @@ PYBIND11_MODULE(dyna_cpp, m)
     m, "Tensor_f32", pybind11::buffer_protocol());
   tensor_f32_py
     .def_buffer([](Tensor<float>& m) -> pybind11::buffer_info {
-
       const auto& shape = m.get_shape();
       auto strides = shape_to_strides<float>(shape);
 
@@ -188,7 +185,6 @@ PYBIND11_MODULE(dyna_cpp, m)
     tensor_i32_py(m, "Tensor_i32", pybind11::buffer_protocol());
   tensor_i32_py
     .def_buffer([](Tensor<int32_t>& m) -> pybind11::buffer_info {
-
       const auto& shape = m.get_shape();
       auto strides = shape_to_strides<int32_t>(shape);
 
@@ -208,7 +204,6 @@ PYBIND11_MODULE(dyna_cpp, m)
     tensor_size_t_py(m, "Tensor_size_t", pybind11::buffer_protocol());
   tensor_size_t_py
     .def_buffer([](Tensor<size_t>& m) -> pybind11::buffer_info {
-
       const auto& shape = m.get_shape();
       auto strides = shape_to_strides<size_t>(shape);
 
@@ -286,7 +281,6 @@ PYBIND11_MODULE(dyna_cpp, m)
   element_py
     .def("__repr__",
          [](std::shared_ptr<Element> self) {
-
            std::string etype_str;
            switch (self->get_elementType()) {
              case (Element::ElementType::SHELL):
@@ -416,9 +410,9 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal,
          part_get_elements_docs)
     .def("get_nNodes", &Part::get_nNodes, part_get_nNodes_docs)
-    .def("get_nElements", &Part::get_nElements, part_get_Elements_docs)
+    .def("get_nElements", &Part::get_nElements, part_get_nElements_docs)
     .def("get_element_node_ids",
-        //  &Part::get_element_node_ids,
+         //  &Part::get_element_node_ids,
          [](std::shared_ptr<Part> self,
             Element::ElementType element_type,
             size_t nNodes) {
@@ -430,7 +424,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal,
          part_get_element_node_ids_docs)
     .def("get_element_node_indexes",
-        //  &Part::get_element_node_indexes,
+         //  &Part::get_element_node_indexes,
          [](std::shared_ptr<Part> self,
             Element::ElementType element_type,
             size_t nNodes) {
@@ -440,7 +434,23 @@ PYBIND11_MODULE(dyna_cpp, m)
          "element_type"_a,
          "nNodes"_a,
          pybind11::return_value_policy::reference_internal,
-         part_get_element_node_indexes_docs);
+         part_get_element_node_indexes_docs)
+    .def("get_node_ids",
+         [](std::shared_ptr<Part> self) {
+           return py::tensor_to_nparray(self->get_node_ids());
+         },
+         part_get_node_ids_docs)
+    .def("get_node_indexes",
+         [](std::shared_ptr<Part> self) {
+           return py::tensor_to_nparray(self->get_node_indexes());
+         },
+         part_get_node_indexes_docs)
+    .def("get_element_ids",
+         [](std::shared_ptr<Part> self, Element::ElementType element_filter) {
+           return py::tensor_to_nparray(self->get_element_ids(element_filter));
+         },
+         "element_filter"_a = Element::ElementType::NONE,
+         part_get_element_ids_docs);
 
   // DB_Nodes
   pybind11::class_<DB_Nodes, std::shared_ptr<DB_Nodes>> db_nodes_py(
@@ -464,7 +474,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          dbnodes_get_nodeByID_docs)
     .def("get_nodeByID",
          [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::list _ids) {
-
            auto tmp = qd::py::container_to_vector<int32_t>(
              _ids, "An entry of the list was not a fully fledged integer.");
 
@@ -475,7 +484,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal)
     .def("get_nodeByID",
          [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::tuple _ids) {
-
            auto tmp = qd::py::container_to_vector<int32_t>(
              _ids, "An entry of the list was not a fully fledged integer.");
 
@@ -492,7 +500,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          dbnodes_get_nodeByIndex_docs)
     .def("get_nodeByIndex",
          [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::list _indexes) {
-
            auto tmp = qd::py::container_to_vector<int32_t>(
              _indexes, "An entry of the list was not a fully fledged integer.");
 
@@ -503,7 +510,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal)
     .def("get_nodeByIndex",
          [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::tuple _indexes) {
-
            auto tmp = qd::py::container_to_vector<int32_t>(
              _indexes, "An entry of the list was not a fully fledged integer.");
 
@@ -564,7 +570,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<DB_Elements> _db_elems,
             Element::ElementType _eType,
             pybind11::list _list) {
-
            auto tmp = qd::py::container_to_vector<long>(
              _list, "An entry of the id list was not an integer.");
 
@@ -578,7 +583,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<DB_Elements> _db_elems,
             Element::ElementType _eType,
             pybind11::tuple _list) {
-
            auto tmp = qd::py::container_to_vector<long>(
              _list, "An entry of the id list was not an integer.");
 
@@ -600,7 +604,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<DB_Elements> _db_elems,
             Element::ElementType _eType,
             pybind11::tuple _list) {
-
            auto tmp = qd::py::container_to_vector<long>(
              _list, "An entry of the index list was not an integer.");
 
@@ -614,7 +617,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<DB_Elements> _db_elems,
             Element::ElementType _eType,
             pybind11::list _list) {
-
            auto tmp = qd::py::container_to_vector<long>(
              _list, "An entry of the index list was not an integer.");
 
@@ -623,7 +625,48 @@ PYBIND11_MODULE(dyna_cpp, m)
          },
          "element_type"_a,
          "index"_a,
-         pybind11::return_value_policy::reference_internal);
+         pybind11::return_value_policy::reference_internal)
+    .def("get_element_ids",
+         [](std::shared_ptr<DB_Elements> self,
+            Element::ElementType element_filter) {
+           return py::tensor_to_nparray(self->get_element_ids());
+         },
+         "element_filter"_a = Element::ElementType::NONE,
+         dbelems_get_element_ids_docs)
+    .def("get_element_node_ids",
+         [](std::shared_ptr<DB_Elements> self,
+            Element::ElementType element_type,
+            size_t n_nodes) {
+           return py::tensor_to_nparray(
+             self->get_element_node_ids(element_type, n_nodes));
+         },
+         "element_type"_a = Element::ElementType::NONE,
+         "n_nodes"_a,
+         dbelems_get_element_node_ids_docs)
+    .def("get_element_energy",
+         [](std::shared_ptr<DB_Elements> self,
+            Element::ElementType element_filter) {
+           return py::tensor_to_nparray(
+             self->get_element_energy(element_filter));
+         },
+         "element_filter"_a = Element::ElementType::NONE,
+         dbelems_get_element_energy)
+    .def("get_plastic_strain",
+         [](std::shared_ptr<DB_Elements> self,
+            Element::ElementType element_filter) {
+           return py::tensor_to_nparray(
+             self->get_element_plastic_strain(element_filter));
+         },
+         "element_filter"_a = Element::ElementType::NONE,
+         dbelems_get_plastic_strain)
+    .def("get_element_stress_mises",
+         [](std::shared_ptr<DB_Elements> self,
+            Element::ElementType element_filter) {
+           return py::tensor_to_nparray(
+             self->get_element_stress_mises(element_filter));
+         },
+         "element_filter"_a = Element::ElementType::NONE,
+         dbelems_get_element_stress_mises);
 
   // DB_Parts
   pybind11::class_<DB_Parts, std::shared_ptr<DB_Parts>> db_parts_py(
@@ -646,7 +689,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          dbparts_get_partByID_docs)
     .def("get_partByID",
          [](std::shared_ptr<DB_Parts> _db_parts, pybind11::list _list) {
-
            auto tmp = qd::py::container_to_vector<int32_t>(
              _list, "An entry of the index list was not an integer.");
 
@@ -657,7 +699,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal)
     .def("get_partByID",
          [](std::shared_ptr<DB_Parts> _db_parts, pybind11::tuple _list) {
-
            auto tmp = qd::py::container_to_vector<int32_t>(
              _list, "An entry of the index list was not an integer.");
 
@@ -674,7 +715,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          dbparts_get_partByIndex_docs)
     .def("get_partByIndex",
          [](std::shared_ptr<DB_Parts> _db_parts, pybind11::list _list) {
-
            auto tmp = qd::py::container_to_vector<int32_t>(
              _list, "An entry of the index list was not an integer.");
 
@@ -685,7 +725,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::reference_internal)
     .def("get_partByIndex",
          [](std::shared_ptr<DB_Parts> _db_parts, pybind11::tuple _list) {
-
            auto tmp = qd::py::container_to_vector<int32_t>(
              _list, "An entry of the index list was not an integer.");
 
@@ -721,24 +760,20 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::call_guard<pybind11::gil_scoped_release>(),
          d3plot_constructor)
     .def(pybind11::init([](std::string _filepath, pybind11::list _variables) {
-
            auto tmp = qd::py::container_to_vector<std::string>(
              _variables, "An entry of read_states was not of type str");
 
            pybind11::gil_scoped_release release;
            return std::make_shared<D3plot>(_filepath, tmp);
-
          }),
          "filepath"_a,
          "read_states"_a = pybind11::list())
     .def(pybind11::init([](std::string _filepath, pybind11::tuple _variables) {
-
            auto tmp = qd::py::container_to_vector<std::string>(
              _variables, "An entry of read_states was not of type str");
 
            pybind11::gil_scoped_release release;
            return std::make_shared<D3plot>(_filepath, tmp);
-
          }),
          "filepath"_a,
          "read_states"_a = pybind11::tuple())
@@ -749,27 +784,22 @@ PYBIND11_MODULE(dyna_cpp, m)
          d3plot_read_states_docs)
     .def("read_states",
          [](std::shared_ptr<D3plot> _d3plot, pybind11::list _list) {
-
            auto tmp = qd::py::container_to_vector<std::string>(
              _list, "An entry of read_states was not of type str");
 
            pybind11::gil_scoped_release release;
            _d3plot->read_states(tmp);
-
          })
     .def("read_states",
          [](std::shared_ptr<D3plot> _d3plot, pybind11::tuple _list) {
-
            auto tmp = qd::py::container_to_vector<std::string>(
              _list, "An entry of read_states was not of type str");
 
            pybind11::gil_scoped_release release;
            _d3plot->read_states(tmp);
-
          })
     .def("clear",
          [](std::shared_ptr<D3plot> _d3plot, pybind11::list _list) {
-
            auto tmp = qd::py::container_to_vector<std::string>(
              _list, "An entry of read_states was not of type str");
 
@@ -780,7 +810,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          d3plot_clear_docs)
     .def("clear",
          [](std::shared_ptr<D3plot> _d3plot, pybind11::tuple _list) {
-
            auto tmp = qd::py::container_to_vector<std::string>(
              _list, "An entry of read_states was not of type str");
 
@@ -858,14 +887,12 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<RawD3plot> _d3plot,
             std::string _entry_name,
             pybind11::array_t<float> _data) {
-
            auto shape_sizet = std::vector<size_t>(_data.ndim());
            for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
              shape_sizet[ii] = _data.shape()[ii];
 
            pybind11::gil_scoped_release release;
            _d3plot->set_float_data(_entry_name, shape_sizet, _data.data());
-
          },
          "name"_a,
          "data"_a)
@@ -873,14 +900,12 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<RawD3plot> _d3plot,
             std::string _entry_name,
             pybind11::array_t<int> _data) {
-
            auto shape_sizet = std::vector<size_t>(_data.ndim());
            for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
              shape_sizet[ii] = _data.shape()[ii];
 
            pybind11::gil_scoped_release release;
            _d3plot->set_int_data(_entry_name, shape_sizet, _data.data());
-
          },
          "name"_a,
          "data"_a)
@@ -888,7 +913,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<RawD3plot> _d3plot,
             std::string _entry_name,
             pybind11::list _data) {
-
            auto data = qd::py::container_to_vector<std::string>(_data);
 
            pybind11::gil_scoped_release release;
@@ -900,7 +924,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<RawD3plot> _d3plot,
             std::string _entry_name,
             pybind11::tuple _data) {
-
            auto data = qd::py::container_to_vector<std::string>(_data);
 
            pybind11::gil_scoped_release release;
@@ -1007,7 +1030,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<Keyword> self,
             pybind11::tuple args,
             pybind11::object _value) {
-
            switch (args.size()) {
              case (0):
                throw(
@@ -1312,7 +1334,6 @@ PYBIND11_MODULE(dyna_cpp, m)
             int64_t part_id,
             const std::vector<int32_t>& node_ids,
             const std::string& additional_card_data) {
-
            return self->add_elementByNodeID<int64_t>(
              element_id, part_id, node_ids, { additional_card_data });
          },
@@ -1335,7 +1356,6 @@ PYBIND11_MODULE(dyna_cpp, m)
             int64_t part_id,
             const std::vector<size_t>& node_indexes,
             const std::string& additional_card_data) {
-
            return self->add_elementByNodeIndex<int64_t>(
              element_id, part_id, node_indexes, { additional_card_data });
          },
@@ -1422,7 +1442,6 @@ PYBIND11_MODULE(dyna_cpp, m)
             bool parse_mesh,
             bool load_includes,
             double encryption_detection_threshold) {
-
            new (&instance) KeyFile(_filepath,
                                    read_generic_keywords,
                                    parse_mesh,
@@ -1430,7 +1449,6 @@ PYBIND11_MODULE(dyna_cpp, m)
                                    encryption_detection_threshold);
            if (!str_has_content(_filepath))
              instance.load();
-
          },
          "filepath"_a = std::string(),
          "read_keywords"_a = true,
@@ -1494,7 +1512,6 @@ PYBIND11_MODULE(dyna_cpp, m)
           default:
             return pybind11::cast(kwrds);
         }
-
       },
       "name"_a,
       pybind11::return_value_policy::take_ownership,
@@ -1526,7 +1543,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<KeyFile> self,
             const std::string& lines,
             int64_t position) {
-
            return cast_kw(
              self->add_keyword(string_to_lines(lines, true), position));
          },
@@ -1537,7 +1553,6 @@ PYBIND11_MODULE(dyna_cpp, m)
          [](std::shared_ptr<KeyFile> self,
             const std::vector<std::string>& lines,
             int64_t position) {
-
            return cast_kw(self->add_keyword(lines, position));
          },
          "lines"_a,

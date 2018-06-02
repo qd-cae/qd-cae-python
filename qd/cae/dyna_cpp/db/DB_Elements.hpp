@@ -93,6 +93,19 @@ public:
   std::vector<std::shared_ptr<Element>> get_elementByIndex(
     Element::ElementType _eType,
     const std::vector<T>& _indexes);
+
+  // array functions
+  Tensor_ptr<float> get_element_energy(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_stress_mises(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_plastic_strain(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+
+  Tensor_ptr<int32_t> get_element_ids(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<int32_t> get_element_node_ids(Element::ElementType element_type,
+                                           size_t n_nodes);
 };
 
 /** Get the element idnex from an id
