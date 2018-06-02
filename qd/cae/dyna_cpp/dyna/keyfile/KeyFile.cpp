@@ -96,33 +96,15 @@ KeyFile::load(bool _load_mesh)
   std::string line;
   auto string_buffer = std::string(char_buffer.begin(), char_buffer.end());
   std::stringstream st(string_buffer);
+  // for (; std::getline(st, line); ++iLine) {
   for (; std::getline(st, line); ++iLine) {
 
-    // encrypted section handling
-    if (found_pgp_section) {
-      found_pgp_section = false;
-      const auto stream_position = st.tellp();
-      auto end_position = string_buffer.find("-----END ", stream_position);
-
-      if (end_position != std::string::npos) {
-        line_buffer.push_back(std::string(char_buffer.begin() + stream_position,
-                                          char_buffer.begin() + end_position));
-        st.seekp(end_position);
-        std::cout << "stream_position: " << stream_position
-                  << "\nend_position: " << end_position
-                  << "\nstring_buffer.size()" << string_buffer.size() << '\n';
-        continue;
-      } else {
-        line_buffer.push_back(
-          std::string(string_buffer.begin() + stream_position,
-                      string_buffer.begin() + end_position));
-        st.seekp(string_buffer.size());
-        continue;
-      }
-    }
-
-    if (line.find("-----BEGIN ") != std::string::npos)
+    if (line.find("-----BEGIN ") != std::string::npos) {
       found_pgp_section = true;
+#ifdef QD_DEBUG
+      std::cout << "Found PGP Section\n";
+#endif
+    }
 
     // remove windows file ending ... I hate it ...
     if (line.size() != 0 && line.back() == '\r')
@@ -179,6 +161,45 @@ KeyFile::load(bool _load_mesh)
       last_keyword = line;
 
     } // IF:line[0] == '*'
+
+    // Encrypted Sections
+    //
+    // Extracts encrypted section here and places it in a line in the
+    // line buffer. An encrypted section is treated like a keyword.
+    if (found_pgp_section) {
+      found_pgp_section = false;
+
+      std::cout << "entered pgp\n";
+
+      // remember current line: -----BEGIN
+      line_buffer.push_back(line);
+
+      // CHECK stream position!!!
+      const auto stream_position = st.tellp();
+      std::cout << "stream_position: " << stream_position << '\n';
+      // st.tellg(); // ?!?!?!
+
+      const auto end_position =
+        string_buffer.find("-----END ", stream_position);
+
+      // auto line_ending = string_buffer.find('\n', end_position);
+
+      // auto pgp_end_position =
+      //   line_ending != std::string::npos ? line_ending :
+      //   string_buffer.size();
+
+      // set stream position behind encrypted section
+      st.seekg(end_position);
+
+      // extract encrypted stuff
+      line = std::string(char_buffer.begin() + stream_position,
+                         char_buffer.begin() + end_position);
+
+      if (line.back() == '\n')
+        line.pop_back();
+      if (line.back() == '\r')
+        line.pop_back();
+    }
 
     // we stupidly add every line to the buffer
     line_buffer.push_back(line);

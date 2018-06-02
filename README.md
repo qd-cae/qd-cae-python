@@ -25,6 +25,17 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 02.06.2018*
+Version 0.8.0
+
+License: Changed project license to MIT
+
+qd.cae.dyna:
+ - Added many functions to get entire data arrays (e.g. `d3plot.get_node_displacement()`)
+ - `D3plot` now automatically detects femzip compressed files
+ - `KeyFile` encryption detection checks now for '----- BEGIN PGP MESSAGE-----' and does not compute the entropy anymore
+ - Parallelized reading of `KeyFile` partially
+
 *Changelog 18.04.2018*
 Version 0.7.2
 
