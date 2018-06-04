@@ -303,7 +303,7 @@ class TestDynaModule(unittest.TestCase):
 
         # test encryption detection
         np.testing.assert_almost_equal(get_file_entropy(
-            "test/keyfile_include2.key"), 7.655742, decimal=6)
+            "test/keyfile_include2.key"), 7.433761, decimal=6)
 
         # file loading (arguments)
         kf = KeyFile("test/keyfile.key")
@@ -317,11 +317,8 @@ class TestDynaModule(unittest.TestCase):
 
         kf = KeyFile("test/keyfile.key", load_includes=True)
         self.assertEqual(len(kf.keys()), 8)
-        kf1, kf2 = kf.get_includes()
-        kf2.save("test/keyfile_include2_copy.key")
-        import code
-        code.interact(local=locals())
-        self.assertEqual(len(kf.get_includes()), 1)
+
+        self.assertEqual(len(kf.get_includes()), 2)
         self.assertEqual(kf.get_nNodes(), 0)
         self.assertTrue(isinstance(kf["*INCLUDE"][0], IncludeKeyword))
         self.assertTrue(isinstance(kf["*NODE"][0], Keyword))
@@ -330,8 +327,10 @@ class TestDynaModule(unittest.TestCase):
 
         kf = KeyFile("test/keyfile.key", load_includes=True, parse_mesh=True)
         self.assertEqual(len(kf.keys()), 8)
-        self.assertEqual(len(kf.get_includes()), 1)
-        self.assertEqual(kf.get_nNodes(), 5)
+        self.assertEqual(len(kf.get_includes()), 2)
+        self.assertEqual(kf.get_nNodes(), 6)
+        self.assertCountEqual(kf.get_nodeByID(
+            11).get_coords()[0], (7., 7., 7.))
         self.assertTrue(isinstance(kf["*INCLUDE"][0], Keyword))
         self.assertTrue(isinstance(kf["*NODE"][0], NodeKeyword))
         self.assertTrue(isinstance(kf["*PART"][0], PartKeyword))

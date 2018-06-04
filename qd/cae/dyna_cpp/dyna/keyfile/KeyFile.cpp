@@ -169,31 +169,24 @@ KeyFile::load(bool _load_mesh)
     if (found_pgp_section) {
       found_pgp_section = false;
 
-      std::cout << "entered pgp\n";
-
-      // remember current line: -----BEGIN
-      line_buffer.push_back(line);
-
-      // CHECK stream position!!!
-      const auto stream_position = st.tellp();
-      std::cout << "stream_position: " << stream_position << '\n';
-      // st.tellg(); // ?!?!?!
+      // get stream position
+      const auto stream_position = st.tellg();
 
       const auto end_position =
         string_buffer.find("-----END ", stream_position);
 
-      // auto line_ending = string_buffer.find('\n', end_position);
-
-      // auto pgp_end_position =
-      //   line_ending != std::string::npos ? line_ending :
-      //   string_buffer.size();
+      if (end_position == std::string::npos)
+        throw(
+          std::runtime_error("Could not find \"-----END PGP MESSAGE-----\" for "
+                             "corresponding \"-----BEGIN PGP MESSAGE-----\" "));
 
       // set stream position behind encrypted section
       st.seekg(end_position);
 
       // extract encrypted stuff
-      line = std::string(char_buffer.begin() + stream_position,
-                         char_buffer.begin() + end_position);
+      line += '\n';
+      line += std::string(char_buffer.begin() + stream_position,
+                          char_buffer.begin() + end_position);
 
       if (line.back() == '\n')
         line.pop_back();
@@ -232,6 +225,7 @@ KeyFile::load(bool _load_mesh)
 
   // load mesh if requested
   if (parse_mesh && _load_mesh) {
+
     // load nodes
     load_nodes();
 
