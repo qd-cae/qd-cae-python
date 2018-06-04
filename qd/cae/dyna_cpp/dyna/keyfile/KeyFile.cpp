@@ -99,7 +99,7 @@ KeyFile::load(bool _load_mesh)
   // for (; std::getline(st, line); ++iLine) {
   for (; std::getline(st, line); ++iLine) {
 
-    if (line.find("-----BEGIN ") != std::string::npos) {
+    if (line.find("-----BEGIN PGP") != std::string::npos) {
       found_pgp_section = true;
 #ifdef QD_DEBUG
       std::cout << "Found PGP Section\n";
@@ -173,7 +173,7 @@ KeyFile::load(bool _load_mesh)
       const auto stream_position = st.tellg();
 
       const auto end_position =
-        string_buffer.find("-----END ", stream_position);
+        string_buffer.find("-----END PGP", stream_position);
 
       if (end_position == std::string::npos)
         throw(

@@ -355,6 +355,14 @@ class TestDynaModule(unittest.TestCase):
         self.assertTrue(filecmp.cmp("test/keyfile.key", "test/tmp.key"))
         os.remove("test/tmp.key")
 
+        kf = KeyFile("test/keyfile.key", read_keywords=True,
+                     parse_mesh=False, load_includes=True)
+        _, kf2 = kf.get_includes()
+        kf2.save("test/tmp.key")
+        self.assertTrue(filecmp.cmp(
+            "test/keyfile_include2.key", "test/tmp.key"))
+        os.remove("test/tmp.key")
+
         # Generic Keywords
         kf = KeyFile("test/keyfile.key")
         kwrds = kf["*PART"]
