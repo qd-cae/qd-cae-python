@@ -6,7 +6,6 @@
 #include <dyna_cpp/db/DB_Elements.hpp>
 #include <dyna_cpp/db/DB_Nodes.hpp>
 #include <dyna_cpp/db/DB_Parts.hpp>
-
 #include <string>
 
 namespace qd {

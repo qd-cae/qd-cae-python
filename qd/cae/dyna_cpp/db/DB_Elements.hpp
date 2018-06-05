@@ -101,6 +101,13 @@ public:
     Element::ElementType element_filter = Element::ElementType::NONE);
   Tensor_ptr<float> get_element_plastic_strain(
     Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_strain(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_stress(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_coords(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_history_vars(Element::ElementType element_type);
 
   Tensor_ptr<int32_t> get_element_ids(
     Element::ElementType element_filter = Element::ElementType::NONE);

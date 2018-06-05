@@ -666,7 +666,39 @@ PYBIND11_MODULE(dyna_cpp, m)
              self->get_element_stress_mises(element_filter));
          },
          "element_filter"_a = Element::ElementType::NONE,
-         dbelems_get_element_stress_mises);
+         dbelems_get_element_stress_mises)
+    .def("get_element_stress",
+         [](std::shared_ptr<DB_Elements> self,
+            Element::ElementType element_filter) {
+           return py::tensor_to_nparray(
+             self->get_element_stress(element_filter));
+         },
+         "element_filter"_a = Element::ElementType::NONE,
+         dbelems_get_element_stress)
+    .def("get_element_strain",
+         [](std::shared_ptr<DB_Elements> self,
+            Element::ElementType element_filter) {
+           return py::tensor_to_nparray(
+             self->get_element_strain(element_filter));
+         },
+         "element_filter"_a = Element::ElementType::NONE,
+         dbelems_get_element_strain)
+    .def("get_element_coords",
+         [](std::shared_ptr<DB_Elements> self,
+            Element::ElementType element_filter) {
+           return py::tensor_to_nparray(
+             self->get_element_coords(element_filter));
+         },
+         "element_filter"_a = Element::ElementType::NONE,
+         dbelems_get_element_coords)
+    .def(
+      "get_element_history_vars",
+      [](std::shared_ptr<DB_Elements> self, Element::ElementType element_type) {
+        return py::tensor_to_nparray(
+          self->get_element_history_vars(element_type));
+      },
+      "element_type"_a = Element::ElementType::NONE,
+      dbelems_get_element_history_vars);
 
   // DB_Parts
   pybind11::class_<DB_Parts, std::shared_ptr<DB_Parts>> db_parts_py(
@@ -777,6 +809,64 @@ PYBIND11_MODULE(dyna_cpp, m)
          }),
          "filepath"_a,
          "read_states"_a = pybind11::tuple())
+    // DEPRECATED BEGIN
+    .def(
+      pybind11::init(
+        [](std::string _filepath, pybind11::list _variables, bool use_femzip) {
+
+          PyErr_WarnEx(
+            PyExc_DeprecationWarning,
+            "argument 'use_femzip' is not needed anymore and will be "
+            "removed in the future.",
+            2);
+
+          auto tmp = qd::py::container_to_vector<std::string>(
+            _variables, "An entry of read_states was not of type str");
+
+          pybind11::gil_scoped_release release;
+          return std::make_shared<D3plot>(_filepath, tmp);
+        }),
+      "filepath"_a,
+      "read_states"_a = pybind11::list(),
+      "use_femzip"_a = false)
+    .def(
+      pybind11::init(
+        [](std::string _filepath, pybind11::tuple _variables, bool use_femzip) {
+
+          PyErr_WarnEx(
+            PyExc_DeprecationWarning,
+            "argument 'use_femzip' is not needed anymore and will be "
+            "removed in the future.",
+            2);
+
+          auto tmp = qd::py::container_to_vector<std::string>(
+            _variables, "An entry of read_states was not of type str");
+
+          pybind11::gil_scoped_release release;
+          return std::make_shared<D3plot>(_filepath, tmp);
+        }),
+      "filepath"_a,
+      "read_states"_a = pybind11::tuple(),
+      "use_femzip"_a = false)
+    .def(pybind11::init(
+           [](std::string _filepath, std::string var_name, bool use_femzip) {
+
+             PyErr_WarnEx(
+               PyExc_DeprecationWarning,
+               "argument 'use_femzip' is not needed anymore and will be "
+               "removed in the future.",
+               2);
+
+             pybind11::gil_scoped_release release;
+             return std::make_shared<D3plot>(_filepath, var_name);
+
+           }),
+         "filepath"_a,
+         "read_states"_a = std::string(),
+         "use_femzip"_a = false,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         d3plot_constructor)
+    // DEPRECATED END
     .def("info", &D3plot::info, d3plot_info_docs)
     .def("read_states",
          (void (D3plot::*)(const std::string&)) & D3plot::read_states,
@@ -1591,6 +1681,10 @@ PYBIND11_MODULE(dyna_cpp, m)
   m.def("is_femzipped",
         &FemzipBuffer::is_femzipped,
         pybind11::return_value_policy::take_ownership);
+#endif
+
+#ifdef QD_VERSION
+  m.attr("__version__") = QD_VERSION;
 #endif
 
   // return m.ptr();

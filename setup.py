@@ -19,9 +19,9 @@ except ImportError:
 femzip_path_windows = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
 femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
-debugging_mode = True
+debugging_mode = False
 measure_time = False
-use_openmp = False
+use_openmp = True
 version = "0.8.0"
 # =============================== #
 is_windows = (platform.system() == "Windows")
@@ -30,6 +30,14 @@ is_linux = (platform.system() in ["Linux", "Darwin"])
 
 
 def setup_dyna_cpp():
+    '''Basic setup of the LS-DYNA C-Extension
+
+    Returns
+    -------
+    srcs : list of str
+    include_dirs : list of str
+    compiler_args : list of str
+    '''
 
     include_dirs = ["qd/cae",
                     np.get_include(),
@@ -57,11 +65,14 @@ def setup_dyna_cpp():
         "qd/cae/dyna_cpp/utility/TextUtility.cpp",
         "qd/cae/dyna_cpp/parallel/WorkQueue.cpp"]
 
+    extra_link_args = []
+
     # linux compiler args
     if is_linux:
         compiler_args = ["-std=c++14",
                          "-fPIC",
-                         "-DQD_VERSION=\"" + version + "\""]
+                         "-DQD_VERSION=\"" + version + "\"",
+                         "-static"]
 
         if debugging_mode:
             compiler_args.append("-DQD_DEBUG")
@@ -72,6 +83,7 @@ def setup_dyna_cpp():
             compiler_args.append("-DQD_MEASURE_TIME")
         if use_openmp:
             compiler_args.append("-fopenmp")
+            extra_link_args.append("-lgomp")
         else:
             compiler_args.append("-Wno-unknown-pragmas")
 
@@ -89,7 +101,7 @@ def setup_dyna_cpp():
     else:
         raise RuntimeError("Could not determine os (windows or linux)")
 
-    return srcs, include_dirs, compiler_args
+    return srcs, include_dirs, compiler_args, extra_link_args
 
 
 def setup_dyna_cpp_binout(srcs, compiler_args):
@@ -203,7 +215,7 @@ if __name__ == "__main__":
     # setup basic extension
     lib_dirs_dyna = []
     libs_dyna = []
-    srcs_dyna, include_dirs_dyna, compiler_args_dyna = setup_dyna_cpp()
+    srcs_dyna, include_dirs_dyna, compiler_args_dyna, extra_link_args = setup_dyna_cpp()
 
     # compile binout
     '''
@@ -233,8 +245,11 @@ if __name__ == "__main__":
         compiler_args_dyna)
 
     # setup extension
+    os.environ["CFLAGS"] = ""
     dyna_extension = Extension("dyna_cpp", srcs_dyna,
                                extra_compile_args=compiler_args_dyna,
+                               extra_objects=[],
+                               extra_link_args=extra_link_args,
                                library_dirs=lib_dirs_dyna,
                                libraries=libs_dyna,
                                include_dirs=include_dirs_dyna,)

@@ -1050,7 +1050,7 @@ const char* dbelems_get_element_energy = R"qddoc(
     Returns
     -------
     field : np.ndarray
-        energy of the elements
+        energy of the elements (nElems x nTimesteps)
 
     Notes
     -----
@@ -1058,9 +1058,13 @@ const char* dbelems_get_element_energy = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot("path/to/d3plot")
-        >>> d3plot.get_element_energy(Element.shell)
-        array([0., 0., 0., ..., 0., 0., 0.], dtype=float32)
+        >>> d3plot = D3plot("path/to/d3plot", read_states="energy mean")
+        >>> d3plot.get_nElements(Element.shell)
+        4969
+        >>> d3plot.get_nTimesteps()
+        32
+        >>> d3plot.get_element_energy(Element.shell).shape
+        (4969, 32)
 
 )qddoc";
 
@@ -1075,7 +1079,7 @@ const char* dbelems_get_element_stress_mises = R"qddoc(
     Returns
     -------
     field : np.ndarray
-        mises stress of the elements
+        mises stress of the elements (nElems x nTimesteps)
 
     Notes
     -----
@@ -1083,14 +1087,18 @@ const char* dbelems_get_element_stress_mises = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot("path/to/d3plot")
-        >>> d3plot.get_element_stress_mises(Element.shell)
-        array([0., 0., 0., ..., 0., 0., 0.], dtype=float32)
+        >>> d3plot = D3plot("path/to/d3plot", read_states="stress_mises mean")
+        >>> d3plot.get_nElements(Element.shell)
+        4969
+        >>> d3plot.get_nTimesteps()
+        32
+        >>> d3plot.get_element_stress_mises(Element.shell).shape
+        (4969, 32)
 
 )qddoc";
 
 const char* dbelems_get_plastic_strain = R"qddoc(
-    get_plastic_strain(element_filter)
+    get_element_plastic_strain(element_filter)
 
     Parameters
     ----------
@@ -1100,7 +1108,7 @@ const char* dbelems_get_plastic_strain = R"qddoc(
     Returns
     -------
     field : np.ndarray
-        plastic strain of the elements
+        effective plastic strain of the elements (nElems x nTimesteps)
 
     Notes
     -----
@@ -1108,9 +1116,134 @@ const char* dbelems_get_plastic_strain = R"qddoc(
 
     Examples
     --------
-        >>> d3plot = D3plot("path/to/d3plot")
+        >>> d3plot = D3plot("path/to/d3plot", read_states="plastic_strain max")
+        >>> d3plot.get_nElements(Element.shell)
+        4969
+        >>> d3plot.get_nTimesteps()
+        32
         >>> d3plot.get_plastic_strain(Element.shell).shape
-        array([0., 0., 0., ..., 0., 0., 0.], dtype=float32)
+        (4969, 32)
+
+)qddoc";
+
+const char* dbelems_get_element_stress = R"qddoc(
+    get_element_stress(element_filter)
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional type for filtering
+
+    Returns
+    -------
+    field : np.ndarray
+        stress vector of the elements (nElems x nTimesteps x 6)
+
+    Notes
+    -----
+        If an element does not have the respective result, 0 is set as default value.
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot", read_states="stress mean")
+        >>> d3plot.get_nElements(Element.shell)
+        4969
+        >>> d3plot.get_nTimesteps()
+        32
+        >>> d3plot.get_element_stress(Element.shell).shape
+        (4969, 32. 6)
+
+)qddoc";
+
+const char* dbelems_get_element_strain = R"qddoc(
+    get_element_strain(element_filter)
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional type for filtering
+
+    Returns
+    -------
+    field : np.ndarray
+        strain vector of the elements (nElems x nTimesteps x 6)
+
+    Notes
+    -----
+        If an element does not have the respective result, 0 is set as default value.
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot", read_states="strain mean")
+        >>> d3plot.get_nElements(Element.shell)
+        4969
+        >>> d3plot.get_nTimesteps()
+        32
+        >>> d3plot.get_element_strain(Element.shell).shape
+        (4969, 32. 6)
+
+)qddoc";
+
+const char* dbelems_get_element_coords = R"qddoc(
+    get_element_coords(element_filter)
+
+    Parameters
+    ----------
+    element_filter : Element.type
+        optional type for filtering
+
+    Returns
+    -------
+    field : np.ndarray
+        coords vector of the elements (nElems x nTimesteps x 3)
+
+    Notes
+    -----
+        If an element does not have the respective result, 0 is set as default value.
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot", read_states="coords")
+        >>> d3plot.get_nElements(Element.shell)
+        4969
+        >>> d3plot.get_nTimesteps()
+        32
+        >>> d3plot.get_element_coords(Element.shell).shape
+        (4969, 32. 3)
+
+)qddoc";
+
+const char* dbelems_get_element_history_vars = R"qddoc(
+    get_element_history_vars(element_type)
+
+    Parameters
+    ----------
+    element_type : Element.type
+        type of the element
+
+    Returns
+    -------
+    field : np.ndarray
+        history_vars vector of the elements (nElems x nTimesteps x nHistoryVars)
+
+    Notes
+    -----
+        IMPORTANT: You can not query the history vars without specifying an element type. 
+        In LS-Dyna e.g. history var 7 is different between shells and beams. To prevent 
+        wrong usage and bugginess, we enforce this policy here. We didn't mess this one up!
+
+        If an element does not have the respective result, 0 is set as default value.
+
+    Examples
+    --------
+        >>> d3plot = D3plot("path/to/d3plot", read_states="shell history 7 max")
+        >>> d3plot.get_nElements(Element.shell)
+        4969
+        >>> d3plot.get_nTimesteps()
+        32
+        >>> # Element type is required here!
+        >>> d3plot.get_element_history_vars(Element.shell).shape
+        (4969, 32. 10)
 
 )qddoc";
 

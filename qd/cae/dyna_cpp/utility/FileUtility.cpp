@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -13,16 +12,102 @@
 #include <stdlib.h>
 #include <string>
 
+extern "C" {
+#include <cstring>
+#include <unistd.h>
+}
+
+// WINDOWS
 #ifdef _WIN32
 #include <stdio.h>
 #include <tchar.h>
 #include <windows.h>
+#define NULL_DEVICE "NUL:"
 
-#else
+#else // LINUX
 #include "glob.h"
+#define NULL_DEVICE "/dev/null"
+
 #endif
 
 namespace qd {
+
+static FILE* redirect_stdout = nullptr;
+static std::mutex redirect_stdout_lock;
+
+void
+SwapIOB(FILE* A, FILE* B)
+{
+
+  FILE temp;
+
+  // make a copy of IOB A (usually this is "stdout")
+  std::memcpy(&temp, A, sizeof(FILE));
+
+  // copy IOB B to A's location, now any output
+  // sent to A is redirected thru B's IOB.
+  std::memcpy(A, B, sizeof(FILE));
+
+  // copy A into B, the swap is complete
+  std::memcpy(B, &temp, sizeof(FILE));
+
+} // end SwapIOB;
+
+/** Disable stdout
+ *
+ * This function should be thread safe.
+ */
+void
+disable_stdout()
+{
+
+// already redirected, is usually fine for non debugging
+#ifdef QD_DEBUG
+  if (redirect_stdout != nullptr)
+    throw(std::runtime_error("Error, trying to disable stdout twice!"));
+#else
+  if (redirect_stdout != nullptr)
+    return;
+#endif
+
+  std::lock_guard<std::mutex> lock(redirect_stdout_lock);
+
+  redirect_stdout = fopen(NULL_DEVICE, "w");
+  if (!redirect_stdout) {
+    redirect_stdout = nullptr;
+    throw(std::runtime_error("Can not redirect IO to NULL."));
+  }
+
+  SwapIOB(redirect_stdout, stdout);
+}
+
+/** Enables stdout
+ *
+ * This function should be thread safe.
+ */
+void
+enable_stdout()
+{
+// already enabled, usually fine but not for debugging
+#ifdef QD_DEBUG
+  if (redirect_stdout == nullptr)
+    throw(std::runtime_error("Error, trying to disable stdout twice!"));
+#else
+  if (redirect_stdout == nullptr)
+    return;
+#endif
+
+  std::lock_guard<std::mutex> lock(redirect_stdout_lock);
+
+  SwapIOB(redirect_stdout, stdout);
+  if (fclose(redirect_stdout) != 0) {
+    redirect_stdout = nullptr;
+    throw(std::runtime_error(
+      "Error redirecting output from NULL to stdout again."));
+  }
+
+  redirect_stdout = nullptr;
+}
 
 /** Join filepaths correctly
  *

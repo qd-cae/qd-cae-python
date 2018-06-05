@@ -11,6 +11,7 @@
 extern "C" {
 #include "dyna_cpp/dyna/d3plot/femzip.h"
 #include <stdio.h>
+#include <unistd.h>
 }
 
 namespace qd {
@@ -339,8 +340,14 @@ FemzipBuffer::is_femzipped(const std::string& filepath)
   int filetype = 1;
   float fileunzipversion = 0.f;
 
+  // suppress messages
+  disable_stdout();
+
   femunziplib_version_file(
     (char*)filepath.c_str(), &filetype, &fileunzipversion, &error_code);
+
+  // enable stdout again
+  enable_stdout();
 
   return error_code == 0 && fileunzipversion != 0.f;
 }

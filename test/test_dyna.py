@@ -136,27 +136,70 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual(part.get_element_ids(Element.shell).shape, (4696,))
         self.assertEqual(part.get_element_ids(Element.tshell).shape, (0,))
         self.assertEqual(part.get_element_ids(Element.solid).shape, (0,))
-        self.assertEqual(d3plot.get_element_energy().shape, (4696,))
-        self.assertEqual(d3plot.get_element_energy(Element.beam).shape, (0,))
+        self.assertEqual(d3plot.get_element_energy().shape, (4696, 1))
+        self.assertEqual(d3plot.get_element_energy(Element.beam).shape, (0, 1))
         self.assertEqual(d3plot.get_element_energy(
-            Element.shell).shape, (4696,))
-        self.assertEqual(d3plot.get_element_energy(Element.solid).shape, (0,))
-        self.assertEqual(d3plot.get_element_energy(Element.tshell).shape, (0,))
-        self.assertEqual(d3plot.get_plastic_strain().shape, (4696,))
-        self.assertEqual(d3plot.get_plastic_strain(Element.beam).shape, (0,))
+            Element.shell).shape, (4696, 1))
+        self.assertEqual(d3plot.get_element_energy(
+            Element.solid).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_energy(
+            Element.tshell).shape, (0, 1))
+        self.assertEqual(d3plot.get_plastic_strain().shape, (4696, 1))
+        self.assertEqual(d3plot.get_plastic_strain(Element.beam).shape, (0, 1))
         self.assertEqual(d3plot.get_plastic_strain(
-            Element.shell).shape, (4696,))
-        self.assertEqual(d3plot.get_plastic_strain(Element.solid).shape, (0,))
-        self.assertEqual(d3plot.get_plastic_strain(Element.tshell).shape, (0,))
-        self.assertEqual(d3plot.get_element_stress_mises().shape, (4696,))
+            Element.shell).shape, (4696, 1))
+        self.assertEqual(d3plot.get_plastic_strain(
+            Element.solid).shape, (0, 1))
+        self.assertEqual(d3plot.get_plastic_strain(
+            Element.tshell).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_stress_mises().shape, (4696, 1))
         self.assertEqual(d3plot.get_element_stress_mises(
-            Element.beam).shape, (0,))
+            Element.beam).shape, (0, 1))
         self.assertEqual(d3plot.get_element_stress_mises(
-            Element.shell).shape, (4696,))
+            Element.shell).shape, (4696, 1))
         self.assertEqual(d3plot.get_element_stress_mises(
-            Element.solid).shape, (0,))
+            Element.solid).shape, (0, 1))
         self.assertEqual(d3plot.get_element_stress_mises(
-            Element.tshell).shape, (0,))
+            Element.tshell).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_strain().shape, (4696, 1, 6))
+        self.assertEqual(d3plot.get_element_strain(
+            Element.beam).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_strain(
+            Element.shell).shape, (4696, 1, 6))
+        self.assertEqual(d3plot.get_element_strain(
+            Element.solid).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_strain(
+            Element.tshell).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_stress().shape, (4696, 1, 6))
+        self.assertEqual(d3plot.get_element_stress(
+            Element.beam).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_stress(
+            Element.shell).shape, (4696, 1, 6))
+        self.assertEqual(d3plot.get_element_stress(
+            Element.solid).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_stress(
+            Element.tshell).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_coords().shape, (4696, 1, 3))
+        self.assertEqual(d3plot.get_element_coords(
+            Element.beam).shape, (0, 1, 3))
+        self.assertEqual(d3plot.get_element_coords(
+            Element.shell).shape, (4696, 1, 3))
+        self.assertEqual(d3plot.get_element_coords(
+            Element.solid).shape, (0, 1, 3))
+        self.assertEqual(d3plot.get_element_coords(
+            Element.tshell).shape, (0, 1, 3))
+        with self.assertRaises(ValueError):
+            d3plot.get_element_history_vars(Element.none)
+        with self.assertRaises(ValueError):
+            d3plot.get_element_history_vars()
+        self.assertEqual(d3plot.get_element_history_vars(
+            Element.beam).shape, (0, 1, 0))
+        self.assertEqual(d3plot.get_element_history_vars(
+            Element.shell).shape, (4696, 1, 1))
+        self.assertEqual(d3plot.get_element_history_vars(
+            Element.solid).shape, (0, 1, 0))
+        self.assertEqual(d3plot.get_element_history_vars(
+            Element.tshell).shape, (0, 1, 0))
 
         # D3plot error handling
         # ... TODO
