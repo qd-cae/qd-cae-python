@@ -814,11 +814,9 @@ PYBIND11_MODULE(dyna_cpp, m)
       pybind11::init(
         [](std::string _filepath, pybind11::list _variables, bool use_femzip) {
 
-          PyErr_WarnEx(
-            PyExc_DeprecationWarning,
-            "argument 'use_femzip' is not needed anymore and will be "
-            "removed in the future.",
-            2);
+          std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
+                       "needed anymore and will be "
+                       "removed in the future.\n";
 
           auto tmp = qd::py::container_to_vector<std::string>(
             _variables, "An entry of read_states was not of type str");
@@ -833,11 +831,9 @@ PYBIND11_MODULE(dyna_cpp, m)
       pybind11::init(
         [](std::string _filepath, pybind11::tuple _variables, bool use_femzip) {
 
-          PyErr_WarnEx(
-            PyExc_DeprecationWarning,
-            "argument 'use_femzip' is not needed anymore and will be "
-            "removed in the future.",
-            2);
+          std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
+                       "needed anymore and will be "
+                       "removed in the future.\n";
 
           auto tmp = qd::py::container_to_vector<std::string>(
             _variables, "An entry of read_states was not of type str");
@@ -851,11 +847,9 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def(pybind11::init(
            [](std::string _filepath, std::string var_name, bool use_femzip) {
 
-             PyErr_WarnEx(
-               PyExc_DeprecationWarning,
-               "argument 'use_femzip' is not needed anymore and will be "
-               "removed in the future.",
-               2);
+             std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
+                          "needed anymore and will be "
+                          "removed in the future.\n";
 
              pybind11::gil_scoped_release release;
              return std::make_shared<D3plot>(_filepath, var_name);
@@ -1530,13 +1524,35 @@ PYBIND11_MODULE(dyna_cpp, m)
             const std::string& _filepath,
             bool read_generic_keywords,
             bool parse_mesh,
+            bool load_includes) {
+
+           new (&instance) KeyFile(
+             _filepath, read_generic_keywords, parse_mesh, load_includes);
+           if (!str_has_content(_filepath))
+             instance.load();
+         },
+         "filepath"_a = std::string(),
+         "read_keywords"_a = true,
+         "parse_mesh"_a = false,
+         "load_includes"_a = false,
+         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         keyfile_constructor)
+    .def("__init__",
+         [](KeyFile& instance,
+            const std::string& _filepath,
+            bool read_generic_keywords,
+            bool parse_mesh,
             bool load_includes,
             double encryption_detection_threshold) {
-           new (&instance) KeyFile(_filepath,
-                                   read_generic_keywords,
-                                   parse_mesh,
-                                   load_includes,
-                                   encryption_detection_threshold);
+
+           if (encryption_detection_threshold != 0.7)
+             std::cout << "DeprecationWarning: Argument 'encryption_detection' "
+                          "is not needed "
+                          "anymore and will be "
+                          "removed in the future.\n";
+
+           new (&instance) KeyFile(
+             _filepath, read_generic_keywords, parse_mesh, load_includes);
            if (!str_has_content(_filepath))
              instance.load();
          },
@@ -1545,8 +1561,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          "parse_mesh"_a = false,
          "load_includes"_a = false,
          "encryption_detection"_a = 0.7,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
-         keyfile_constructor)
+         pybind11::call_guard<pybind11::gil_scoped_release>())
     .def("__str__",
          &KeyFile::str,
          pybind11::return_value_policy::take_ownership,

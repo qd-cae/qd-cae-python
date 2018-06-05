@@ -43,7 +43,6 @@ private:
   bool has_linebreak_at_eof;
   int64_t max_position;
 
-  double encryption_detection_threshold;
   std::vector<std::string> include_dirs;
 
   std::map<std::string, std::vector<std::shared_ptr<Keyword>>> keywords;
@@ -78,13 +77,11 @@ public:
   KeyFile(bool _read_generic_keywords = false,
           bool _parse_mesh = false,
           bool _load_includes = true,
-          double _encryption_detection = 0.7,
           KeyFile* _parent_kf = nullptr);
   KeyFile(const std::string& _filepath,
           bool _read_generic_keywords = false,
           bool _parse_mesh = false,
           bool _load_includes = true,
-          double _encryption_detection = 0.7,
           KeyFile* _parent_kf = nullptr);
 
   size_t get_nTimesteps() const override { return 1; };
@@ -111,10 +108,6 @@ public:
   bool get_read_generic_keywords() const { return read_generic_keywords; }
   bool get_parse_mesh() const { return parse_mesh; }
   bool get_load_includes() const { return load_includes; }
-  double get_encryption_detection_threshold() const
-  {
-    return encryption_detection_threshold;
-  }
 
   // utility
   inline KeyFile* get_master_keyfile();

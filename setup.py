@@ -71,8 +71,7 @@ def setup_dyna_cpp():
     if is_linux:
         compiler_args = ["-std=c++14",
                          "-fPIC",
-                         "-DQD_VERSION=\"" + version + "\"",
-                         "-static"]
+                         "-DQD_VERSION=\"" + version + "\""]
 
         if debugging_mode:
             compiler_args.append("-DQD_DEBUG")

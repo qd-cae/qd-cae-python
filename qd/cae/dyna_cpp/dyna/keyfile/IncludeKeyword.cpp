@@ -52,13 +52,11 @@ IncludeKeyword::load(bool _load_mesh)
       break;
 
     auto fpath = master->resolve_include_filepath(line);
-    auto kf =
-      std::make_shared<KeyFile>(fpath,
-                                parent_kf->get_read_generic_keywords(),
-                                parent_kf->get_parse_mesh(),
-                                parent_kf->get_load_includes(),
-                                parent_kf->get_encryption_detection_threshold(),
-                                parent_kf);
+    auto kf = std::make_shared<KeyFile>(fpath,
+                                        parent_kf->get_read_generic_keywords(),
+                                        parent_kf->get_parse_mesh(),
+                                        parent_kf->get_load_includes(),
+                                        parent_kf);
 
     auto is_ok = kf->load(_load_mesh);
     if (is_ok) {

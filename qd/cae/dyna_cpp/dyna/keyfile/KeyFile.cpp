@@ -27,7 +27,6 @@ namespace qd {
 KeyFile::KeyFile(bool _read_generic_keywords,
                  bool _parse_mesh,
                  bool _load_includes,
-                 double _encryption_detection,
                  KeyFile* _parent_kf)
   : FEMFile("")
   , parent_kf(_parent_kf != nullptr ? _parent_kf : this)
@@ -36,7 +35,6 @@ KeyFile::KeyFile(bool _read_generic_keywords,
   , parse_mesh(_parse_mesh)
   , has_linebreak_at_eof(true)
   , max_position(0)
-  , encryption_detection_threshold(_encryption_detection)
 {}
 
 /** Constructor for reading a LS-Dyna input file.
@@ -47,7 +45,6 @@ KeyFile::KeyFile(const std::string& _filepath,
                  bool _read_generic_keywords,
                  bool _parse_mesh,
                  bool _load_includes,
-                 double _encryption_detection,
                  KeyFile* _parent_kf)
   : FEMFile(_filepath)
   , parent_kf(_parent_kf != nullptr ? _parent_kf : this)
@@ -56,13 +53,7 @@ KeyFile::KeyFile(const std::string& _filepath,
   , parse_mesh(_parse_mesh)
   , has_linebreak_at_eof(true)
   , max_position(0)
-  , encryption_detection_threshold(_encryption_detection)
-{
-  // check encryption
-  if (encryption_detection_threshold < 0 || encryption_detection_threshold > 1)
-    throw(std::invalid_argument(
-      "Encryption detection threshold must be between 0 and 1."));
-}
+{}
 
 /** Parse a keyfile
  *
