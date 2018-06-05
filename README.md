@@ -28,13 +28,15 @@ This core idea keeps us pushing forward.
 *Changelog 02.06.2018*
 Version 0.8.0
 
-License: Changed project license to MIT
+**License: Changed project license to MIT**
 
 qd.cae.dyna:
- - Added many functions to get entire data arrays (e.g. `d3plot.get_node_displacement()`)
- - `D3plot` now automatically detects femzip compressed files
- - `KeyFile` encryption detection checks now for '----- BEGIN PGP MESSAGE-----' and does not compute the entropy anymore
- - Parallelized reading of `KeyFile` partially
+ - **Arrays** are here: added many functions to get entire data arrays (e.g. `d3plot.get_node_displacement()`)
+ - Getting data arrays from `RawD3plot` does not copy the memory anymore, but numpy instead simply uses the C++ memory (big performance boost).
+ - `D3plot` now automatically detects femzip compressed files (`use_femzip` is not used anymore and will be removed in the future).
+ - `KeyFile` encryption detection checks now for '----- BEGIN PGP MESSAGE-----' and does not compute the entropy anymore (`encryption_detection` is not used anymore and will be removed in the future).
+ - Parallelized reading of `KeyFile` (to some degree)
+ 
 
 *Changelog 18.04.2018*
 Version 0.7.2
@@ -43,18 +45,6 @@ This is a bugfix version.
 
 qd.cae.dyna:
  - Fix: Reading a `KeyFile` with `parse_mesh=True` and *SOLID in the new format was skipping lines wrongly
-
-*Changelog 07.03.2018*
-Version 0.7.1
-
-This is a bugfix version.
-
-qd.cae.dyna:
-  - Fix: loading includes manually could lead to a bug 
-  - Fix: if `load_includes=False`, includes are now treated as generic keywords 
-  - Fix: add_part could cause a segfault
-  - Fix: `KeyFile.save` did only write one keyword, if they had the same `KeyFile.position``.
-  - Fix: Adding a `Keyword` without a `position` specified simply appends the `Keyword` to the end of the file.
 
 
 # Documentation
@@ -108,10 +98,10 @@ If you are bold enough to compile it yourself, then follow the [compilation guid
 
 # License
 
-*This library is a free gift from and to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share their code as well. As long as one is not selling their code, in which is library is embedded, we will not demand the disclosure though. Against financial compensation we can also provide professional support or a different license.*
+See the license file.
 
 # Authors
 
-- codie (C. Diez)
-- towelie (D. Toewe)
-- (?)
+- codie 
+- towelie
+- bala
