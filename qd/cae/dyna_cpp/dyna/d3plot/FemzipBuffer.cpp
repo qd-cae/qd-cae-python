@@ -226,15 +226,6 @@ FemzipBuffer::read_nextState()
 #endif
 
   _current_buffer = _next_buffer.get();
-  if (iTimeStep + 1 <= nTimeStep)
-    _next_buffer =
-      std::async(FemzipBuffer::_load_next_timestep, iTimeStep, size_state);
-
-  /*
-  // BUGGY
-  _current_buffer = _state_buffers.front().get();
-  _state_buffers.pop_front();
-  */
 
   if (this->_current_buffer.size() == 0) {
     throw(std::invalid_argument("FEMZIP Error during state reading."));

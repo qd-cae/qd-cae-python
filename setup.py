@@ -19,7 +19,7 @@ except ImportError:
 femzip_path_windows = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
 femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
-debugging_mode = False
+debugging_mode = True
 measure_time = False
 use_openmp = True
 version = "0.8.0"
@@ -244,7 +244,6 @@ if __name__ == "__main__":
         compiler_args_dyna)
 
     # setup extension
-    os.environ["CFLAGS"] = ""
     dyna_extension = Extension("dyna_cpp", srcs_dyna,
                                extra_compile_args=compiler_args_dyna,
                                extra_objects=[],

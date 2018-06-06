@@ -15,7 +15,7 @@ CAE suffers greatly from expensive tools with bad or moderate scripting access a
 
 We believe, that CAE can not evolve, if people do not get comfortable access to the raw data and start doing their own stuff, because 
 
-<p style="text-align: center;"><b>"Creativity originates from freedom and thus simplicity."</b></p>
+<p style="text-align: center;"><b>"Creativity originates from freedom and simplicity."</b></p>
 
 This core idea keeps us pushing forward.
 
