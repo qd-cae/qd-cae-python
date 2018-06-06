@@ -2,7 +2,6 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
-#include <queue>
 #include <sstream>
 #include <stdexcept>
 
@@ -76,12 +75,14 @@ KeyFile::load(bool _load_mesh)
   std::cout << "done." << std::endl;
 #endif
 
+  // parallel speed up stuff
+  _wq.init_workers(1);
+
   // convert buffer into blocks
   size_t iLine = 0;
   std::string last_keyword;
   std::vector<std::string> line_buffer;
   std::vector<std::string> line_buffer_tmp;
-  std::queue<size_t> buffer_iLine_queue;
   bool found_pgp_section = false;
 
   std::string line;
@@ -179,7 +180,7 @@ KeyFile::load(bool _load_mesh)
       line += std::string(char_buffer.begin() + stream_position,
                           char_buffer.begin() + end_position);
 
-      print_string_as_hex(line);
+      // print_string_as_hex(line);
 
       if (line.back() == '\n')
         line.pop_back();
@@ -228,6 +229,8 @@ KeyFile::load(bool _load_mesh)
     // load elements
     load_elements();
   }
+
+  _wq.wait_for_completion();
 
   return true;
 }

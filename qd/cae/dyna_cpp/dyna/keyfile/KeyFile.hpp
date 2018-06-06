@@ -10,6 +10,7 @@
 #include <dyna_cpp/dyna/keyfile/Keyword.hpp>
 #include <dyna_cpp/dyna/keyfile/NodeKeyword.hpp>
 #include <dyna_cpp/dyna/keyfile/PartKeyword.hpp>
+#include <dyna_cpp/parallel/WorkQueue.hpp>
 
 #include <map>
 #include <stdexcept>
@@ -53,11 +54,7 @@ private:
   std::vector<std::shared_ptr<PartKeyword>> part_keywords;
   std::vector<std::shared_ptr<IncludeKeyword>> include_keywords;
   std::vector<std::shared_ptr<IncludePathKeyword>> include_path_keywords;
-
-  // std::shared_ptr<Keyword> create_keyword(
-  //   const std::vector<std::string>& _lines,
-  //   Keyword::KeywordType _keyword_type,
-  //   size_t _iLine);
+  WorkQueue _wq;
 
   template<typename T>
   std::shared_ptr<Keyword> create_keyword(
@@ -224,6 +221,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
           parent_kf->get_db_nodes(), _lines, position);
         node_keywords.push_back(kw);
         max_position = std::max(position, max_position);
+        _wq.submit([](std::shared_ptr<NodeKeyword> kw) { kw->load(); }, kw);
         return kw;
         break;
       }
@@ -240,6 +238,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
           parent_kf->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
         part_keywords.push_back(kw);
         max_position = std::max(position, max_position);
+        _wq.submit([](std::shared_ptr<PartKeyword> kw) { kw->load(); }, kw);
         return kw;
         break;
       }
