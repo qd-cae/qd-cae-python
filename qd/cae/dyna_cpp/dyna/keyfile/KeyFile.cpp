@@ -179,6 +179,8 @@ KeyFile::load(bool _load_mesh)
       line += std::string(char_buffer.begin() + stream_position,
                           char_buffer.begin() + end_position);
 
+      print_string_as_hex(line);
+
       if (line.back() == '\n')
         line.pop_back();
       if (line.back() == '\r')

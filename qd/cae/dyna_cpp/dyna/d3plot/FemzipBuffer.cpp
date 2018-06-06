@@ -8,10 +8,9 @@
 #include <sstream>
 #include <stdexcept>
 
-extern "C" {
+extern "C"
+{
 #include "dyna_cpp/dyna/d3plot/femzip.h"
-#include <stdio.h>
-#include <unistd.h>
 }
 
 namespace qd {

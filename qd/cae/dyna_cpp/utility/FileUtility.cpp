@@ -5,27 +5,33 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <stdexcept>
-#include <stdlib.h>
 #include <string>
 
-extern "C" {
-#include <cstring>
-#include <unistd.h>
+extern "C"
+{
+#include <stdlib.h>
 }
 
 // WINDOWS
 #ifdef _WIN32
+extern "C"
+{
+#include <io.h>}
 #include <stdio.h>
 #include <tchar.h>
 #include <windows.h>
+}
 #define NULL_DEVICE "NUL:"
 
 #else // LINUX
 #include "glob.h"
+#include <unistd.h>
+
 #define NULL_DEVICE "/dev/null"
 
 #endif
@@ -218,7 +224,7 @@ save_file(const std::string& _filepath, const std::string& _data)
 {
 
   std::ofstream fs;
-  fs.open(_filepath);
+  fs.open(_filepath, std::ofstream::binary);
   fs << _data;
   fs.close();
 }

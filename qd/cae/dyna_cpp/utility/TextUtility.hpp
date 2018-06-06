@@ -15,6 +15,18 @@
 
 namespace qd {
 
+/** Print a string as hex
+ *
+ * @param arg : string to be printed
+ */
+inline void
+print_string_as_hex(const std::string& arg)
+{
+  for (auto c : arg)
+    std::cout << std::hex << static_cast<int32_t>(c);
+  std::cout << '\n';
+}
+
 /** Tests if a string has content (non spacing chars)
  *
  * @param _str : string to test
