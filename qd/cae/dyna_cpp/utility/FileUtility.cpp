@@ -38,83 +38,6 @@ extern "C"
 
 namespace qd {
 
-static FILE* redirect_stdout = nullptr;
-static std::mutex redirect_stdout_lock;
-
-void
-SwapIOB(FILE* A, FILE* B)
-{
-
-  FILE temp;
-
-  // make a copy of IOB A (usually this is "stdout")
-  std::memcpy(&temp, A, sizeof(FILE));
-
-  // copy IOB B to A's location, now any output
-  // sent to A is redirected thru B's IOB.
-  std::memcpy(A, B, sizeof(FILE));
-
-  // copy A into B, the swap is complete
-  std::memcpy(B, &temp, sizeof(FILE));
-
-} // end SwapIOB;
-
-/** Disable stdout
- *
- * This function should be thread safe.
- */
-void
-disable_stdout()
-{
-
-// already redirected, is usually fine for non debugging
-#ifdef QD_DEBUG
-  if (redirect_stdout != nullptr)
-    throw(std::runtime_error("Error, trying to disable stdout twice!"));
-#else
-  if (redirect_stdout != nullptr)
-    return;
-#endif
-
-  std::lock_guard<std::mutex> lock(redirect_stdout_lock);
-
-  redirect_stdout = fopen(NULL_DEVICE, "w");
-  if (!redirect_stdout) {
-    redirect_stdout = nullptr;
-    throw(std::runtime_error("Can not redirect IO to NULL."));
-  }
-
-  SwapIOB(redirect_stdout, stdout);
-}
-
-/** Enables stdout
- *
- * This function should be thread safe.
- */
-void
-enable_stdout()
-{
-// already enabled, usually fine but not for debugging
-#ifdef QD_DEBUG
-  if (redirect_stdout == nullptr)
-    throw(std::runtime_error("Error, trying to disable stdout twice!"));
-#else
-  if (redirect_stdout == nullptr)
-    return;
-#endif
-
-  std::lock_guard<std::mutex> lock(redirect_stdout_lock);
-
-  SwapIOB(redirect_stdout, stdout);
-  if (fclose(redirect_stdout) != 0) {
-    redirect_stdout = nullptr;
-    throw(std::runtime_error(
-      "Error redirecting output from NULL to stdout again."));
-  }
-
-  redirect_stdout = nullptr;
-}
-
 /** Join filepaths correctly
  *
  * @param _path1 : path to first file
@@ -264,6 +187,54 @@ get_entropy(const std::vector<char>& _buffer)
 /* === WINDOWS === */
 #ifdef _WIN32
 
+static FILE* redirect_stdout = nullptr;
+static std::mutex redirect_stdout_lock;
+
+void
+enable_stdout()
+{
+  std::lock_guard<std::mutex> lock(redirect_stdout_lock);
+
+#ifdef QD_DEBUG
+  if (redirect_stdout == nullptr)
+    throw(std::runtime_error("Error, trying to disable stdout twice!"));
+#else
+  if (redirect_stdout == nullptr)
+    return;
+#endif
+
+  if (fclose(redirect_stdout) != 0) {
+    redirect_stdout = nullptr;
+    throw(std::runtime_error(
+      "Error redirecting output from NULL to stdout again."));
+  }
+
+  redirect_stdout = nullptr;
+  if (!freopen("CON", "w", stdout)) {
+    throw(std::runtime_error("Could not re-enable console output."));
+  }
+}
+
+void
+disable_stdout()
+{
+  std::lock_guard<std::mutex> lock(redirect_stdout_lock);
+
+#ifdef QD_DEBUG
+  if (redirect_stdout != nullptr)
+    throw(std::runtime_error("Error, trying to disable stdout twice!"));
+#else
+  if (redirect_stdout != nullptr)
+    return;
+#endif
+
+  redirect_stdout = freopen(NULL_DEVICE, "w", stdout);
+  if (!redirect_stdout) {
+    redirect_stdout = nullptr;
+    throw(std::runtime_error("Can not redirect IO to NULL."));
+  }
+}
+
 auto s2ws = [](const std::string& s) {
   int len;
   int slength = (int)s.length() + 1;
@@ -378,6 +349,83 @@ find_dyna_result_files(const std::string& _base_filepath)
 
 /* === LINUX === */
 #else
+
+static FILE* redirect_stdout = nullptr;
+static std::mutex redirect_stdout_lock;
+
+void
+SwapIOB(FILE* A, FILE* B)
+{
+
+  FILE temp;
+
+  // make a copy of IOB A (usually this is "stdout")
+  std::memcpy(&temp, A, sizeof(FILE));
+
+  // copy IOB B to A's location, now any output
+  // sent to A is redirected thru B's IOB.
+  std::memcpy(A, B, sizeof(FILE));
+
+  // copy A into B, the swap is complete
+  std::memcpy(B, &temp, sizeof(FILE));
+
+} // end SwapIOB;
+
+/** Disable stdout
+ *
+ * This function should be thread safe.
+ */
+void
+disable_stdout()
+{
+
+// already redirected, is usually fine for non debugging
+#ifdef QD_DEBUG
+  if (redirect_stdout != nullptr)
+    throw(std::runtime_error("Error, trying to disable stdout twice!"));
+#else
+  if (redirect_stdout != nullptr)
+    return;
+#endif
+
+  std::lock_guard<std::mutex> lock(redirect_stdout_lock);
+
+  redirect_stdout = fopen(NULL_DEVICE, "w");
+  if (!redirect_stdout) {
+    redirect_stdout = nullptr;
+    throw(std::runtime_error("Can not redirect IO to NULL."));
+  }
+
+  SwapIOB(redirect_stdout, stdout);
+}
+
+/** Enables stdout
+ *
+ * This function should be thread safe.
+ */
+void
+enable_stdout()
+{
+// already enabled, usually fine but not for debugging
+#ifdef QD_DEBUG
+  if (redirect_stdout == nullptr)
+    throw(std::runtime_error("Error, trying to disable stdout twice!"));
+#else
+  if (redirect_stdout == nullptr)
+    return;
+#endif
+
+  std::lock_guard<std::mutex> lock(redirect_stdout_lock);
+
+  SwapIOB(redirect_stdout, stdout);
+  if (fclose(redirect_stdout) != 0) {
+    redirect_stdout = nullptr;
+    throw(std::runtime_error(
+      "Error redirecting output from NULL to stdout again."));
+  }
+
+  redirect_stdout = nullptr;
+}
 
 bool
 check_ExistanceAndAccess(const std::string& filepath)
