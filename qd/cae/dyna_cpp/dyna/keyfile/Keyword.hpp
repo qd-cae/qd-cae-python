@@ -412,7 +412,12 @@ Keyword::iCard_to_iLine(T _iCard, bool _auto_extend)
 size_t
 Keyword::get_line_index_of_next_card(size_t _iLineOffset)
 {
+
   for (size_t iLine = _iLineOffset + 1; iLine < lines.size(); ++iLine) {
+#ifdef QD_DEBUG
+    if (iLine >= lines.size())
+      throw(std::invalid_argument("iLine > lines.size()"));
+#endif
     if (!is_comment(lines[iLine]) && !is_keyword(lines[iLine]))
       return iLine;
   }

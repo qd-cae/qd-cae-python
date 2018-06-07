@@ -651,7 +651,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          },
          "element_filter"_a = Element::ElementType::NONE,
          dbelems_get_element_energy)
-    .def("get_plastic_strain",
+    .def("get_element_plastic_strain",
          [](std::shared_ptr<DB_Elements> self,
             Element::ElementType element_filter) {
            return py::tensor_to_nparray(
@@ -1673,7 +1673,10 @@ PYBIND11_MODULE(dyna_cpp, m)
            return self->get_include_dirs(true);
          },
          pybind11::return_value_policy::take_ownership,
-         keyfile_get_include_dirs_description);
+         keyfile_get_include_dirs_description)
+    .def("get_end_keyword_position",
+         &KeyFile::get_end_keyword_position,
+         pybind11::return_value_policy::take_ownership);
 
   // Binout
   /*

@@ -116,7 +116,7 @@ DB_Nodes::add_node(int32_t _nodeID, float _x, float _y, float _z)
 std::shared_ptr<Node>
 DB_Nodes::add_node_byKeyFile(int32_t _id, float _x, float _y, float _z)
 {
-
+  std::lock_guard<std::mutex> lock(_instance_mutex);
   auto it = id2index_nodes.find(_id);
 
   // correct existing nodes

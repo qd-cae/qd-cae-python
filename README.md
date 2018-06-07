@@ -28,14 +28,29 @@ This core idea keeps us pushing forward.
 *Changelog 02.06.2018*
 Version 0.8.0
 
-**License: Changed project license to MIT**
+**License: Changed project license to BSD**
 
 qd.cae.dyna:
- - **Arrays** are here: added many functions to get entire data arrays (e.g. `d3plot.get_node_displacement()`)
+ - **Arrays** are here: added many functions to get entire data arrays:
+   - `d3plot.get_node_displacement(element_filter)`
+   - `d3plot.get_node_velocity(element_filter)`
+   - `d3plot.get_node_acceleration(element_filter)`
+   - `d3plot.get_node_ids(element_filter)`
+   - `d3plot.get_element_coords(element_filter)`
+   - `d3plot.get_element_energy(element_filter)`
+   - `d3plot.get_element_strain(element_filter)`
+   - `d3plot.get_element_plastic_strain(element_filter)`
+   - `d3plot.get_element_stress(element_filter)`
+   - `d3plot.get_element_stress_mises(element_filter)`
+   - `d3plot.get_element_history_vars(element_type)`
+   - `part.get_node_ids()`
+   - `part.get_node_indexes()`
+   - `part.get_element_ids(element_filter)`
+   - `part.get_element_node_ids(element_type, nNodes)`
  - Getting data arrays from `RawD3plot` does not copy the memory anymore, but numpy instead simply uses the C++ memory (big performance boost).
- - `D3plot` now automatically detects femzip compressed files (`use_femzip` is not used anymore and will be removed in the future).
- - `KeyFile` encryption detection checks now for '----- BEGIN PGP MESSAGE-----' and does not compute the entropy anymore (`encryption_detection` is not used anymore and will be removed in the future).
- - Parallelized reading of `KeyFile` (to some degree)
+ - `D3plot` now automatically detects femzip compressed files (argument `use_femzip` is now deprecated).
+ - `KeyFile` encryption detection checks now for '-----BEGIN PGP MESSAGE-----' and does not compute the entropy anymore (argument `encryption_detection` is now deprecated).
+ - Along with a lot of new features we also introduced a lot of new bugs so that we don't get bored
  
 
 *Changelog 18.04.2018*
@@ -54,7 +69,7 @@ You can find the [full Documentation here](https://qd-cae.github.io/qd-cae-pytho
 1. [qd.cae.dyna ](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna.html)
   - Read D3plot
   - Read Binouts
-  - Read Input Files (partially done)
+  - Read KeyFiles
 2. [qd.numerics](https://qd-cae.github.io/qd-cae-python/build/html/qd_numerics.html)
   - Submodule: sampling
 3. [qd.cae.beta](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_beta.html)

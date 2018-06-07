@@ -144,13 +144,14 @@ class TestDynaModule(unittest.TestCase):
             Element.solid).shape, (0, 1))
         self.assertEqual(d3plot.get_element_energy(
             Element.tshell).shape, (0, 1))
-        self.assertEqual(d3plot.get_plastic_strain().shape, (4696, 1))
-        self.assertEqual(d3plot.get_plastic_strain(Element.beam).shape, (0, 1))
-        self.assertEqual(d3plot.get_plastic_strain(
+        self.assertEqual(d3plot.get_element_plastic_strain().shape, (4696, 1))
+        self.assertEqual(d3plot.get_element_plastic_strain(
+            Element.beam).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_plastic_strain(
             Element.shell).shape, (4696, 1))
-        self.assertEqual(d3plot.get_plastic_strain(
+        self.assertEqual(d3plot.get_element_plastic_strain(
             Element.solid).shape, (0, 1))
-        self.assertEqual(d3plot.get_plastic_strain(
+        self.assertEqual(d3plot.get_element_plastic_strain(
             Element.tshell).shape, (0, 1))
         self.assertEqual(d3plot.get_element_stress_mises().shape, (4696, 1))
         self.assertEqual(d3plot.get_element_stress_mises(

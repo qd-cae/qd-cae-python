@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -21,6 +22,8 @@ private:
   std::vector<int32_t> node_ids_in_card;
   std::vector<std::string> unparsed_node_data;
   std::vector<std::string> trailing_lines;
+
+  std::mutex _instance_mutex;
 
 public:
   explicit NodeKeyword(DB_Nodes* _db_nodes,

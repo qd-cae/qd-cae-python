@@ -36,8 +36,11 @@ WorkQueue::~WorkQueue()
 void
 WorkQueue::init_workers(size_t num_workers)
 {
+  std::lock_guard<std::mutex> lg(m_mutex);
+
   if (num_workers == 0) {
-    num_workers = std::thread::hardware_concurrency() + 1;
+    return;
+    // num_workers = std::thread::hardware_concurrency() + 1;
   }
 
   for (size_t iThread = m_workers.size(); iThread < num_workers; ++iThread)

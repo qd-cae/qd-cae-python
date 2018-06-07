@@ -13,6 +13,7 @@
 #include <dyna_cpp/parallel/WorkQueue.hpp>
 
 #include <map>
+#include <queue>
 #include <stdexcept>
 #include <string>
 
@@ -45,7 +46,6 @@ private:
   int64_t max_position;
 
   std::vector<std::string> include_dirs;
-
   std::map<std::string, std::vector<std::shared_ptr<Keyword>>> keywords;
 
   // internal use only
@@ -54,7 +54,10 @@ private:
   std::vector<std::shared_ptr<PartKeyword>> part_keywords;
   std::vector<std::shared_ptr<IncludeKeyword>> include_keywords;
   std::vector<std::shared_ptr<IncludePathKeyword>> include_path_keywords;
-  WorkQueue _wq;
+
+  // parallel worker queue
+  //  WorkQueue _wq;
+  // std::queue<std::future<void>> work_queue;
 
   template<typename T>
   std::shared_ptr<Keyword> create_keyword(
@@ -94,6 +97,8 @@ public:
   void remove_keyword(const std::string& _keyword_name);
   template<typename T>
   void remove_keyword(const std::string& _keyword_name, T _index);
+
+  int64_t get_end_keyword_position();
 
   // io
   std::string str() const;
@@ -220,8 +225,13 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
         auto kw = std::make_shared<NodeKeyword>(
           parent_kf->get_db_nodes(), _lines, position);
         node_keywords.push_back(kw);
+
+        // preload while continuing parsing
+        // parent_kf->work_queue.push(std::async([kw]() { kw->load(); }));
+
+        // update max position
         max_position = std::max(position, max_position);
-        _wq.submit([](std::shared_ptr<NodeKeyword> kw) { kw->load(); }, kw);
+
         return kw;
         break;
       }
@@ -229,7 +239,10 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
         auto kw = std::make_shared<ElementKeyword>(
           parent_kf->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
         element_keywords.push_back(kw);
+
+        // update max position
         max_position = std::max(position, max_position);
+
         return kw;
         break;
       }
@@ -237,8 +250,11 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
         auto kw = std::make_shared<PartKeyword>(
           parent_kf->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
         part_keywords.push_back(kw);
+
+        // update max position
         max_position = std::max(position, max_position);
-        _wq.submit([](std::shared_ptr<PartKeyword> kw) { kw->load(); }, kw);
+
+        // _wq.submit([](std::shared_ptr<PartKeyword> kw) { kw->load(); }, kw);
         return kw;
         break;
       }
@@ -255,7 +271,10 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
       auto kw = std::make_shared<IncludePathKeyword>(
         _lines, static_cast<int64_t>(_iLine));
       include_path_keywords.push_back(kw);
+
+      // update max position
       max_position = std::max(position, max_position);
+
       return kw;
     }
 
@@ -264,14 +283,20 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
       auto kw = std::make_shared<IncludeKeyword>(
         parent_kf, _lines, static_cast<int64_t>(_iLine));
       include_keywords.push_back(kw);
+
+      // update max position
       max_position = std::max(position, max_position);
+
       return kw;
     }
   }
 
   if (read_generic_keywords) {
+
+    // update max position
     max_position = std::max(position, max_position);
     return std::make_shared<Keyword>(_lines, _iLine);
+
   } else
     return nullptr;
 }

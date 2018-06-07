@@ -31,6 +31,7 @@ NodeKeyword::NodeKeyword(DB_Nodes* _db_nodes,
 void
 NodeKeyword::load()
 {
+  std::lock_guard<std::mutex> lock(_instance_mutex);
 
   if (db_nodes == nullptr)
     return;

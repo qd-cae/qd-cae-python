@@ -75,8 +75,9 @@ KeyFile::load(bool _load_mesh)
   std::cout << "done." << std::endl;
 #endif
 
-  // parallel speed up stuff
-  _wq.init_workers(1);
+  // init parallel worker if master file
+  // if (parent_kf == this)
+  //   _wq.init_workers(1);
 
   // convert buffer into blocks
   size_t iLine = 0;
@@ -203,6 +204,9 @@ KeyFile::load(bool _load_mesh)
       keywords[kw->get_keyword_name()].push_back(kw);
   }
 
+  // only load files above *END!
+  const auto end_kw_position = get_end_keyword_position();
+
   // includes
   if (load_includes) {
 
@@ -212,10 +216,20 @@ KeyFile::load(bool _load_mesh)
     // do the thing
     for (auto& include_kw : include_keywords) {
 
-      // Note: prevent loading the mesh here
-      include_kw->load(false);
+      if (include_kw->get_position() < end_kw_position)
+        // Note: prevent loading the mesh here
+        include_kw->load(false);
     }
   }
+
+  // wait for threads to finish preloading
+  // _wq.wait_for_completion();
+
+  // Wait for completion
+  // while (work_queue.size() != 0) {
+  //   work_queue.front().wait();
+  //   work_queue.pop();
+  // }
 
   // load mesh if requested
   if (parse_mesh && _load_mesh) {
@@ -230,8 +244,6 @@ KeyFile::load(bool _load_mesh)
     load_elements();
   }
 
-  _wq.wait_for_completion();
-
   return true;
 }
 
@@ -241,10 +253,12 @@ KeyFile::load(bool _load_mesh)
 void
 KeyFile::load_nodes()
 {
+  const auto end_kw_position = get_end_keyword_position();
 
   // load oneself
   for (auto& node_keyword : node_keywords) {
-    node_keyword->load();
+    if (node_keyword->get_position() < end_kw_position)
+      node_keyword->load();
   }
 
   // load includes
@@ -260,10 +274,12 @@ KeyFile::load_nodes()
 void
 KeyFile::load_parts()
 {
+  const auto end_kw_position = get_end_keyword_position();
 
   // load oneself
   for (auto& part_kw : part_keywords) {
-    part_kw->load();
+    if (part_kw->get_position() < end_kw_position)
+      part_kw->load();
   }
 
   // load includes
@@ -279,10 +295,12 @@ KeyFile::load_parts()
 void
 KeyFile::load_elements()
 {
+  const auto end_kw_position = get_end_keyword_position();
 
   // load oneself
   for (auto& element_kw : element_keywords) {
-    element_kw->load();
+    if (element_kw->get_position() < end_kw_position)
+      element_kw->load();
   }
 
   // load includes
@@ -529,6 +547,37 @@ KeyFile::save_txt(const std::string& _filepath)
 {
   save_file(_filepath, str());
   set_filepath(_filepath);
+}
+
+/** Get the position of the lowest *END
+ *
+ * @return position : position index (usually line)
+ *
+ * Returns max_position of none found
+ */
+int64_t
+KeyFile::get_end_keyword_position()
+{
+  int64_t position = max_position;
+  for (auto& kw : get_keywordsByName("*END")) {
+    position = std::min(position, kw->get_position());
+  }
+  for (auto& kw : get_keywordsByName("*eND")) {
+    position = std::min(position, kw->get_position());
+  }
+  for (auto& kw : get_keywordsByName("*enD")) {
+    position = std::min(position, kw->get_position());
+  }
+  for (auto& kw : get_keywordsByName("*end")) {
+    position = std::min(position, kw->get_position());
+  }
+  for (auto& kw : get_keywordsByName("*End")) {
+    position = std::min(position, kw->get_position());
+  }
+  for (auto& kw : get_keywordsByName("*EnD")) {
+    position = std::min(position, kw->get_position());
+  }
+  return position;
 }
 
 } // namespace qd
