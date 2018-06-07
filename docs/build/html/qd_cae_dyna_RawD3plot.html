@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>RawD3plot &mdash; qd 0.7.2 documentation</title>
+  <title>RawD3plot &mdash; qd 0.8.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.7.2 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.8.0 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.7.2
+                0.8.0
               </div>
             
           
@@ -247,7 +247,7 @@
 <hr class="docutils" />
 <dl class="class">
 <dt id="qd.cae.dyna.RawD3plot">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">RawD3plot</code><span class="sig-paren">(</span><em>filepath</em>, <em>use_femzip=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">RawD3plot</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a RawD3plot file object</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -256,10 +256,6 @@
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
 <blockquote>
 <div><p>path to either the (first) d3plot or a d3plot in hdf5 format</p>
-</div></blockquote>
-<p><strong>use_femzip</strong> : bool</p>
-<blockquote>
-<div><p>use femzip decompression for a compressed d3plot</p>
 </div></blockquote>
 </td>
 </tr>
@@ -289,7 +285,7 @@ other files. The class automatically reads all data!</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># read an arbitrary d3plot</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1">#read femzip compressed file</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span><span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># save file as HDF5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">save_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># open HDF5 d3plot</span>
@@ -319,7 +315,7 @@ other files. The class automatically reads all data!</p>
 </table>
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>filepath</em>, <em>use_femzip=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a RawD3plot file object</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -328,10 +324,6 @@ other files. The class automatically reads all data!</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
 <blockquote>
 <div><p>path to either the (first) d3plot or a d3plot in hdf5 format</p>
-</div></blockquote>
-<p><strong>use_femzip</strong> : bool</p>
-<blockquote>
-<div><p>use femzip decompression for a compressed d3plot</p>
 </div></blockquote>
 </td>
 </tr>
@@ -361,7 +353,7 @@ other files. The class automatically reads all data!</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># read an arbitrary d3plot</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1">#read femzip compressed file</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span><span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># save file as HDF5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">save_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># open HDF5 d3plot</span>
@@ -706,7 +698,7 @@ so forth.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7.2',
+            VERSION:'0.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

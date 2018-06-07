@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Part &mdash; qd 0.7.2 documentation</title>
+  <title>Part &mdash; qd 0.8.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.7.2 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.8.0 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                0.7.2
+                0.8.0
               </div>
             
           
@@ -195,23 +195,151 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_elements" title="qd.cae.dyna.QD_Part.get_elements"><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></a>([element_filter])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_element_ids" title="qd.cae.dyna.QD_Part.get_element_ids"><code class="xref py py-obj docutils literal"><span class="pre">get_element_ids</span></code></a>(element_filter&nbsp;=&nbsp;Element.none)</td>
+<td>Get the ids of the elements belonging to the part.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_element_node_ids" title="qd.cae.dyna.QD_Part.get_element_node_ids"><code class="xref py py-obj docutils literal"><span class="pre">get_element_node_ids</span></code></a>(element_type,&nbsp;nNodes)</td>
+<td>Get the node ids of all the elements belonging to the part.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_element_node_indexes" title="qd.cae.dyna.QD_Part.get_element_node_indexes"><code class="xref py py-obj docutils literal"><span class="pre">get_element_node_indexes</span></code></a>(element_type,&nbsp;nNodes)</td>
+<td>Get the node indexes of all respective elements.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_elements" title="qd.cae.dyna.QD_Part.get_elements"><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></a>([element_filter])</td>
 <td>Get the elements of the part.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_id" title="qd.cae.dyna.QD_Part.get_id"><code class="xref py py-obj docutils literal"><span class="pre">get_id</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_id" title="qd.cae.dyna.QD_Part.get_id"><code class="xref py py-obj docutils literal"><span class="pre">get_id</span></code></a>()</td>
 <td>Get the id of the part.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_name" title="qd.cae.dyna.QD_Part.get_name"><code class="xref py py-obj docutils literal"><span class="pre">get_name</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_nElements" title="qd.cae.dyna.QD_Part.get_nElements"><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></a>()</td>
+<td>Get the number of elements in the part.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_nNodes" title="qd.cae.dyna.QD_Part.get_nNodes"><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></a>()</td>
+<td>Get the number of nodes in the part.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_name" title="qd.cae.dyna.QD_Part.get_name"><code class="xref py py-obj docutils literal"><span class="pre">get_name</span></code></a>()</td>
 <td>Get the name of the part.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_nodes" title="qd.cae.dyna.QD_Part.get_nodes"><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_node_ids" title="qd.cae.dyna.QD_Part.get_node_ids"><code class="xref py py-obj docutils literal"><span class="pre">get_node_ids</span></code></a>()</td>
+<td>Get the unique node ids of the part.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_node_indexes" title="qd.cae.dyna.QD_Part.get_node_indexes"><code class="xref py py-obj docutils literal"><span class="pre">get_node_indexes</span></code></a>()</td>
+<td>Get the unique node indexes of the part.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.get_nodes" title="qd.cae.dyna.QD_Part.get_nodes"><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></a>()</td>
 <td>Get the nodes of the part.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.plot" title="qd.cae.dyna.QD_Part.plot"><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></a>([iTimestep,&nbsp;element_result,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.QD_Part.plot" title="qd.cae.dyna.QD_Part.plot"><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></a>([iTimestep,&nbsp;element_result,&nbsp;…])</td>
 <td>Plot the Part, currently shells only!</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_element_ids">
+<code class="descname">get_element_ids</code><span class="sig-paren">(</span><em>element_filter = Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_element_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ids of the elements belonging to the part.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
+<blockquote>
+<div><p>optional filter for elements</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>element_ids</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>ids of the elements</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_element_ids</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(9631,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># get only beams</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_element_ids</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">beam</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(0,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># oops no beams :P</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_element_node_ids">
+<code class="descname">get_element_node_ids</code><span class="sig-paren">(</span><em>element_type</em>, <em>nNodes</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_element_node_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the node ids of all the elements belonging to the part.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : Element.type</p>
+<blockquote>
+<div><p>Element type. May be beam, shell or solid.</p>
+</div></blockquote>
+<p><strong>nNodes</strong> : int</p>
+<blockquote>
+<div><p>number of nodes (e.g. 3 for tria with Element.shell)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>element_node_ids</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>every row contains the node ids for every element</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tria_node_ids</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="n">get_element_node_ids</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="n">nNodes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tria_node_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">array([ 102,  109,   98,   99])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_element_node_indexes">
+<code class="descname">get_element_node_indexes</code><span class="sig-paren">(</span><em>element_type</em>, <em>nNodes</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_element_node_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the node indexes of all respective elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : Element.type</p>
+<blockquote>
+<div><p>Element type. May be beam, shell or solid.</p>
+</div></blockquote>
+<p><strong>nNodes</strong> : int</p>
+<blockquote>
+<div><p>number of nodes (e.g. 3 for tria with Element.shell)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>element_node_indexes</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>every row contains the node indexes for every element</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tria_node_indexes</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="n">get_element_node_ids</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="n">nNodes</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tria_node_indexes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">array([ 347,  354,  343,  344])</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="method">
 <dt id="qd.cae.dyna.QD_Part.get_elements">
 <code class="descname">get_elements</code><span class="sig-paren">(</span><em>element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_elements" title="Permalink to this definition">¶</a></dt>
@@ -271,6 +399,56 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_nElements">
+<code class="descname">get_nElements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_nElements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of elements in the part.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nElements</strong> : int</p>
+<blockquote class="last">
+<div><p>number of elements</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">()</span>
+<span class="go">8945</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_nNodes">
+<code class="descname">get_nNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_nNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of nodes in the part.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nNodes</strong> : int</p>
+<blockquote class="last">
+<div><p>number of nodes</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_nNodes</span><span class="p">()</span>
+<span class="go">9115</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="qd.cae.dyna.QD_Part.get_name">
 <code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the name of the part. It’s the same name as in the input deck.</p>
@@ -279,6 +457,56 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
 <span class="go">&#39;PLATE_C&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_node_ids">
+<code class="descname">get_node_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_node_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the unique node ids of the part.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node_ids</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>unique node ids</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_node_ids</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(6489,)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="qd.cae.dyna.QD_Part.get_node_indexes">
+<code class="descname">get_node_indexes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.QD_Part.get_node_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the unique node indexes of the part.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node_indexes</strong> : np.ndarray</p>
+<blockquote class="last">
+<div><p>unique node indexes</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span><span class="o">.</span><span class="n">get_node_indexes</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(6489,)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -404,7 +632,7 @@ browser.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7.2',
+            VERSION:'0.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -5,6 +5,8 @@ Keyword Types
 
 The basic idea of these classes is, that the file should look identical if written again, except for modifications. Also comments shall be preserved. Please beware in case of parsing the mesh, since the rewritten floating point numbers will deviate in due to the machine precision. To prevent this deviation, just don't parse the mesh.
 
+ - `KeyFile Introduction Article <http://www.qd-eng.de/index.php/2018/02/19/manipulating-ls-dyna-keyfiles-in-python/>`_
+
 **Keyword**
 
     The generic ``Keyword`` class is used for all unknown keywords. If the mesh of a ``KeyFile`` is not parsed, then also the mesh keywords are seen as generic keywords. To read all keywords of a ``KeyFile`` use the ``read_keywords`` option.

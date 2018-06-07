@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Compilation Guide &mdash; qd 0.7.2 documentation</title>
+  <title>Compilation Guide &mdash; qd 0.8.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.7.2 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.8.0 documentation" href="index.html"/>
         <link rel="next" title="Developer Guide" href="developer_guide.html"/>
         <link rel="prev" title="qd.numerics" href="qd_numerics.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.7.2
+                0.8.0
               </div>
             
           
@@ -103,6 +103,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Compilation Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#compilation-on-windows">Compilation on Windows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#compilation-on-linux">Compilation on Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tests">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hints-on-openmp">Hints on OpenMP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#compilation-with-femzip-support">Compilation with FEMZIP support</a></li>
 </ul>
 </li>
@@ -178,14 +180,13 @@
 <div class="section" id="compilation-on-windows">
 <h2>Compilation on Windows<a class="headerlink" href="#compilation-on-windows" title="Permalink to this headline">¶</a></h2>
 <p>Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++14 (also the old compiler created 3x slower code).</p>
-<p>For compilation of python version 3.5 or 3.6 on Windows download <a class="reference external" href="https://www.visualstudio.com/de/vs/older-downloads/">Visual Studio 15</a> (dunno if Visual Studio 17 also works, but may be worth a try). Then clone the repository into a folder:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/qd-cae/qd-cae-python.git
+<p>For compilation of python version 3.5 or 3.6 on Windows download <a class="reference external" href="https://www.visualstudio.com/de/vs/older-downloads/">Visual Studio 15</a> (Visual Studio 17 also worked for me). Then clone the repository into a folder:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone --depth <span class="m">1</span> https://github.com/qd-cae/qd-cae-python.git
 <span class="nb">cd</span> qd-cae-python
 </pre></div>
 </div>
-<p>Thereafter run the setup script, the code will automatically compile and install.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python -m pip install -r requirements.txt
-python setup.py install
+<p>The argument <code class="docutils literal"><span class="pre">--depth</span></code> only makes a shallow copy, which saves a lot time and memory. Thereafter run the setup script, the code will automatically compile and install.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python setup.py install
 </pre></div>
 </div>
 </div>
@@ -198,7 +199,6 @@ python setup.py install
 <p>You will need <strong>g++ version 5.4 or higher</strong>. If your compiler is fine, just install as follows:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/qd-cae/qd-cae-python.git
 <span class="nb">cd</span> qd-cae-python
-sudo python -m pip install -r requirements.txt
 sudo python setup.py install
 </pre></div>
 </div>
@@ -206,6 +206,17 @@ sudo python setup.py install
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sudo <span class="nv">CC</span><span class="o">=</span>g++-5.4 python setup.py install
 </pre></div>
 </div>
+</div>
+<div class="section" id="tests">
+<h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h2>
+<p>It is highly recommended to run the test suite after compilation to check the installation!</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python setup.py <span class="nb">test</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hints-on-openmp">
+<h2>Hints on OpenMP<a class="headerlink" href="#hints-on-openmp" title="Permalink to this headline">¶</a></h2>
+<p>By default the library uses and supports OpenMP parallelization. Sometimes compatability issues arise though if the path to OpenMP (on your Linux) is not configured correctly (it can confuse the Anaconda OpenMP with your system one). To check if OpenMP is really an issue during compilation, you can optionally disable OpenMP in the top of the <code class="docutils literal"><span class="pre">setup.py</span></code> with <code class="docutils literal"><span class="pre">use_openmp=False</span></code> and the library will be compiled and run without it.</p>
 </div>
 <div class="section" id="compilation-with-femzip-support">
 <h2>Compilation with FEMZIP support<a class="headerlink" href="#compilation-with-femzip-support" title="Permalink to this headline">¶</a></h2>
@@ -269,7 +280,7 @@ sudo python setup.py install
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7.2',
+            VERSION:'0.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
