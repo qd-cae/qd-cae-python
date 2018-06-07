@@ -17,7 +17,7 @@ We believe, that CAE can not evolve, if people do not get comfortable access to 
 
 <p style="text-align: center;"><b>"Creativity originates from freedom and simplicity."</b></p>
 
-This core idea keeps us pushing forward.
+This core idea keeps us pushing forward. 
 
 # Support this project
 
