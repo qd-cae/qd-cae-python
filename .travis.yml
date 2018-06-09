@@ -23,8 +23,8 @@ before_install:
   
 install:
   # new gcc
-  - sudo apt-get install -qq g++-5
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 90
+  - sudo apt-get install -qq g++-6
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   # python packages
   #- python3 -m pip install --only-binary=numpy numpy
   
@@ -46,12 +46,12 @@ install:
   - conda info -a
 
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy>=1.12 scipy
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy>=1.12 
   - source activate test-environment
   #- python setup.py install
   
   - python -m pip install -r requirements.txt
-  - CC=gcc-5 CXX=g++-5 python setup.py install
+  - CC=gcc-6 CXX=gcc-6 python setup.py install
   #- sudo python3 -m pip install -r requirements.txt
   #- sudo CC=gcc-6 CXX=g++-6 python3 setup.py install
 
