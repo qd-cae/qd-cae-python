@@ -3,7 +3,6 @@
 #include "dyna_cpp/db/DB_Elements.hpp"
 #include "dyna_cpp/db/DB_Nodes.hpp"
 #include "dyna_cpp/db/Node.hpp"
-#include "dyna_cpp/dyna/D3plot.hpp"
 #include "dyna_cpp/utility/MathUtility.hpp"
 
 #include <algorithm> // std::max
@@ -67,6 +66,7 @@ Element::operator<(const Element& other) const
 void
 Element::set_is_rigid(bool _is_rigid)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->is_rigid = _is_rigid;
 }
 
@@ -104,6 +104,16 @@ Element::get_elementID() const
   return this->elementID;
 }
 
+/** Get the number of nodes
+ *
+ * @return nNodes : number of nodes
+ */
+size_t
+Element::get_nNodes() const
+{
+  return node_ids.size();
+}
+
 /** Get the nodes of the elements.
  * @return std::vector<std::shared_ptr<Node>> nodes
  */
@@ -125,7 +135,7 @@ Element::get_nodes() const
  *
  * @return vector<int32_t> node_ids
  */
-std::vector<int32_t>
+const std::vector<int32_t>&
 Element::get_node_ids() const
 {
   return node_ids;
@@ -154,6 +164,7 @@ Element::get_node_indexes() const
 void
 Element::add_plastic_strain(float _platic_strain)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->plastic_strain.push_back(_platic_strain);
 }
 
@@ -163,6 +174,7 @@ Element::add_plastic_strain(float _platic_strain)
 void
 Element::add_energy(float _energy)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->energy.push_back(_energy);
 }
 
@@ -179,6 +191,7 @@ Element::add_strain(std::vector<float> _strain)
                                 std::to_string(_strain.size()) + "!=6"));
 #endif
 
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->strain.push_back(_strain);
 }
 
@@ -195,6 +208,7 @@ Element::add_stress(std::vector<float> _stress)
                                 std::to_string(_stress.size()) + "!=6"));
 #endif
 
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->stress.push_back(_stress);
 }
 
@@ -204,6 +218,7 @@ Element::add_stress(std::vector<float> _stress)
 void
 Element::add_stress_mises(float _stress_mises)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->stress_mises.push_back(_stress_mises);
 }
 
@@ -213,6 +228,8 @@ Element::add_stress_mises(float _stress_mises)
 void
 Element::add_history_vars(std::vector<float> vars, size_t iTimestep)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
+
   if (iTimestep < this->history_vars.size()) {
     for (size_t ii = 0; ii < vars.size(); ++ii) {
       this->history_vars[iTimestep].push_back(vars[ii]);
@@ -442,29 +459,39 @@ Element::get_history_vars() const
 void
 Element::check() const
 {
-  if (this->elemType == SHELL) {
-    if ((this->node_ids.size() < 3) || (this->node_ids.size() > 4))
-      throw(std::runtime_error(
-        "A shell element must have 3 or 4 nodes. Element has " +
-        std::to_string(this->node_ids.size())));
-    return;
-  } else if (this->elemType == SOLID) {
-    if ((this->node_ids.size() < 4) || (this->node_ids.size() > 8) ||
-        (this->node_ids.size() == 7))
-      throw(std::runtime_error(
-        "A solid element must have 4,5,6 or 8 nodes. Element has " +
-        std::to_string(this->node_ids.size())));
-    return;
-  } else if (this->elemType == BEAM) {
-    if (this->node_ids.size() != 2)
-      throw(std::runtime_error(
-        "A beam element must have exactly 2 nodes. Element has " +
-        std::to_string(this->node_ids.size())));
-  } else if (this->elemType == TSHELL) {
-    if ((this->node_ids.size() != 8) && (this->node_ids.size() != 6))
-      throw(std::runtime_error(
-        "A thick shell element must have 6 or 8 nodes. Element has " +
-        std::to_string(this->node_ids.size())));
+  switch (elemType) {
+    case (SHELL):
+      if ((this->node_ids.size() < 3) || (this->node_ids.size() > 4))
+        throw(std::runtime_error(
+          "A shell element must have 3 or 4 nodes. Element has " +
+          std::to_string(this->node_ids.size())));
+      break;
+
+    case (SOLID):
+      if ((this->node_ids.size() < 4) || (this->node_ids.size() > 8) ||
+          (this->node_ids.size() == 7))
+        throw(std::runtime_error(
+          "A solid element must have 4,5,6 or 8 nodes. Element has " +
+          std::to_string(this->node_ids.size())));
+      break;
+
+    case (BEAM):
+      if (this->node_ids.size() != 2)
+        throw(std::runtime_error(
+          "A beam element must have exactly 2 nodes. Element has " +
+          std::to_string(this->node_ids.size())));
+      break;
+
+    case (TSHELL):
+      if ((this->node_ids.size() != 8) && (this->node_ids.size() != 6))
+        throw(std::runtime_error(
+          "A thick shell element must have 6 or 8 nodes. Element has " +
+          std::to_string(this->node_ids.size())));
+      break;
+
+    default:
+      throw(std::runtime_error("Unknown element type during element check."));
+      break;
   }
 }
 
@@ -473,6 +500,7 @@ Element::check() const
 void
 Element::clear_energy()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->energy.clear();
 }
 
@@ -481,6 +509,7 @@ Element::clear_energy()
 void
 Element::clear_plastic_strain()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->plastic_strain.clear();
 }
 
@@ -489,6 +518,7 @@ Element::clear_plastic_strain()
 void
 Element::clear_stress()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->stress.clear();
 }
 
@@ -497,6 +527,7 @@ Element::clear_stress()
 void
 Element::clear_stress_mises()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->stress_mises.clear();
 }
 
@@ -505,6 +536,7 @@ Element::clear_stress_mises()
 void
 Element::clear_strain()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->strain.clear();
 }
 
@@ -513,6 +545,7 @@ Element::clear_strain()
 void
 Element::clear_history_vars()
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   this->history_vars.clear();
 }
 
@@ -525,6 +558,7 @@ Element::clear_history_vars()
 void
 Element::remove_node(int32_t _node_id)
 {
+  std::lock_guard<std::mutex> lock(_element_mutex);
   node_ids.erase(
     std::remove_if(node_ids.begin(),
                    node_ids.end(),

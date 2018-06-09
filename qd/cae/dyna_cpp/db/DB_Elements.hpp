@@ -5,6 +5,7 @@
 // includes
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -23,6 +24,11 @@ class FEMFile;
 class DB_Elements
 {
 private:
+  std::mutex _elem2_mutex;
+  std::mutex _elem4_mutex;
+  std::mutex _elem4th_mutex;
+  std::mutex _elem8_mutex;
+
   FEMFile* femfile;
   DB_Nodes* db_nodes;
   DB_Parts* db_parts;
@@ -87,6 +93,26 @@ public:
   std::vector<std::shared_ptr<Element>> get_elementByIndex(
     Element::ElementType _eType,
     const std::vector<T>& _indexes);
+
+  // array functions
+  Tensor_ptr<float> get_element_energy(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_stress_mises(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_plastic_strain(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_strain(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_stress(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_coords(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<float> get_element_history_vars(Element::ElementType element_type);
+
+  Tensor_ptr<int32_t> get_element_ids(
+    Element::ElementType element_filter = Element::ElementType::NONE);
+  Tensor_ptr<int32_t> get_element_node_ids(Element::ElementType element_type,
+                                           size_t n_nodes);
 };
 
 /** Get the element idnex from an id
@@ -204,7 +230,6 @@ DB_Elements::get_elementByID(Element::ElementType _elementType,
  *
  */
 template<typename T>
-// typename std::enable_if<std::is_integral<T>::value>::type
 std::shared_ptr<Element>
 DB_Elements::get_elementByIndex(Element::ElementType _type, T _index)
 {

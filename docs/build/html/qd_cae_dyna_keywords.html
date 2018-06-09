@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Keyword Types &mdash; qd 0.7.2 documentation</title>
+  <title>Keyword Types &mdash; qd 0.8.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="qd 0.7.2 documentation" href="index.html"/>
+    <link rel="top" title="qd 0.8.0 documentation" href="index.html"/>
         <link rel="up" title="qd.cae.dyna" href="qd_cae_dyna.html"/>
         <link rel="next" title="Keyword" href="qd_cae_dyna_keywords_Keyword.html"/> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
@@ -70,7 +70,7 @@
             
             
               <div class="version">
-                0.7.2
+                0.8.0
               </div>
             
           
@@ -192,6 +192,11 @@
   <div class="section" id="keyword-types">
 <h1>Keyword Types<a class="headerlink" href="#keyword-types" title="Permalink to this headline">¶</a></h1>
 <p>The basic idea of these classes is, that the file should look identical if written again, except for modifications. Also comments shall be preserved. Please beware in case of parsing the mesh, since the rewritten floating point numbers will deviate in due to the machine precision. To prevent this deviation, just don’t parse the mesh.</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://www.qd-eng.de/index.php/2018/02/19/manipulating-ls-dyna-keyfiles-in-python/">KeyFile Introduction Article</a></li>
+</ul>
+</div></blockquote>
 <p><strong>Keyword</strong></p>
 <blockquote>
 <div><p>The generic <code class="docutils literal"><span class="pre">Keyword</span></code> class is used for all unknown keywords. If the mesh of a <code class="docutils literal"><span class="pre">KeyFile</span></code> is not parsed, then also the mesh keywords are seen as generic keywords. To read all keywords of a <code class="docutils literal"><span class="pre">KeyFile</span></code> use the <code class="docutils literal"><span class="pre">read_keywords</span></code> option.</p>
@@ -203,6 +208,13 @@
 </li>
 </ul>
 </div>
+<dl class="docutils">
+<dt>Ressources:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://youtu.be/wdOIw2m_YLk">Youtube Tutorial</a></li>
+</ul>
+</dd>
+</dl>
 <p>Example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
 <span class="c1"># open a file (without mesh parsing)</span>
@@ -230,6 +242,13 @@ Includes are loaded automatically, if in the <code class="docutils literal"><spa
 </li>
 </ul>
 </div>
+<dl class="docutils">
+<dt>Ressources:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://youtu.be/ZGiyNSxr4Eg">Youtube Tutorial</a></li>
+</ul>
+</dd>
+</dl>
 <p>Example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
 <span class="c1"># open a file</span>
@@ -264,6 +283,13 @@ Includes are loaded automatically, if in the <code class="docutils literal"><spa
 </ul>
 </div>
 <p>are only created, if opening a <code class="docutils literal"><span class="pre">KeyFile</span></code> with the argument <code class="docutils literal"><span class="pre">parse_mesh</span></code> enabled. If the mesh is not parsed, their data is seen as a generic <code class="docutils literal"><span class="pre">Keyword</span></code>.</p>
+<dl class="docutils">
+<dt>Ressources:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://youtu.be/CkelV3MI6Jg">Youtube Tutorial</a></li>
+</ul>
+</dd>
+</dl>
 <p>Example</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
 <span class="c1"># load a file</span>
@@ -331,7 +357,7 @@ Includes are loaded automatically, if in the <code class="docutils literal"><spa
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.7.2',
+            VERSION:'0.8.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

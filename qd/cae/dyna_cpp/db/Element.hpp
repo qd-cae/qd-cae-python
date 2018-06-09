@@ -5,6 +5,7 @@
 // includes
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
@@ -44,6 +45,8 @@ private:
   ElementType elemType;
   DB_Elements* db_elements;
 
+  std::mutex _element_mutex;
+
   void remove_node(int32_t _node_id);
 
 public:
@@ -67,8 +70,9 @@ public:
   int32_t get_part_id() const;
   bool get_is_rigid() const;
   float get_estimated_element_size() const; // fast
+  size_t get_nNodes() const;
   std::vector<std::shared_ptr<Node>> get_nodes() const;
-  std::vector<int32_t> get_node_ids() const;
+  const std::vector<int32_t>& get_node_ids() const;
   std::vector<size_t> get_node_indexes() const;
   std::vector<float> get_energy() const;
   std::vector<float> get_stress_mises() const;

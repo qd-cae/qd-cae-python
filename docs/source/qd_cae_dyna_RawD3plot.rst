@@ -18,7 +18,7 @@ These are all the data arrays available with their shape description. They are c
 
 **Float Data**:
  - timesteps *(nTimesteps)*
- - node_coordinates *(nTimesteps x nNodes x 3)*
+ - node_coordinates *(nNodes x 3)*
  - node_displacement *(nTimesteps x nNodes x 3)*
  - node_velocity *(nTimesteps x nNodes x 3)*
  - node_acceleration *(nTimesteps x nNodes x 3)*

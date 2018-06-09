@@ -122,6 +122,85 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual(d3plot.get_timesteps()[0], 0.)
         self.assertEqual(len(d3plot.get_timesteps()), 1)
         self.assertEqual(len(d3plot.get_parts()), 1)
+        part = d3plot.get_parts()[0]
+        self.assertEqual(part.get_nNodes(), 4915)
+        self.assertEqual(part.get_nElements(), 4696)
+        self.assertEqual(
+            part.get_element_node_ids(Element.shell, 4).shape, (4696, 4))
+        self.assertEqual(part.get_element_node_indexes(
+            Element.shell, 4).shape, (4696, 4))
+        self.assertEqual(part.get_node_ids().shape, (4915,))
+        self.assertEqual(part.get_node_indexes().shape, (4915,))
+        self.assertEqual(part.get_element_ids().shape, (4696,))
+        self.assertEqual(part.get_element_ids(Element.beam).shape, (0,))
+        self.assertEqual(part.get_element_ids(Element.shell).shape, (4696,))
+        self.assertEqual(part.get_element_ids(Element.tshell).shape, (0,))
+        self.assertEqual(part.get_element_ids(Element.solid).shape, (0,))
+        self.assertEqual(d3plot.get_element_energy().shape, (4696, 1))
+        self.assertEqual(d3plot.get_element_energy(Element.beam).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_energy(
+            Element.shell).shape, (4696, 1))
+        self.assertEqual(d3plot.get_element_energy(
+            Element.solid).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_energy(
+            Element.tshell).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_plastic_strain().shape, (4696, 1))
+        self.assertEqual(d3plot.get_element_plastic_strain(
+            Element.beam).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_plastic_strain(
+            Element.shell).shape, (4696, 1))
+        self.assertEqual(d3plot.get_element_plastic_strain(
+            Element.solid).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_plastic_strain(
+            Element.tshell).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_stress_mises().shape, (4696, 1))
+        self.assertEqual(d3plot.get_element_stress_mises(
+            Element.beam).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_stress_mises(
+            Element.shell).shape, (4696, 1))
+        self.assertEqual(d3plot.get_element_stress_mises(
+            Element.solid).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_stress_mises(
+            Element.tshell).shape, (0, 1))
+        self.assertEqual(d3plot.get_element_strain().shape, (4696, 1, 6))
+        self.assertEqual(d3plot.get_element_strain(
+            Element.beam).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_strain(
+            Element.shell).shape, (4696, 1, 6))
+        self.assertEqual(d3plot.get_element_strain(
+            Element.solid).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_strain(
+            Element.tshell).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_stress().shape, (4696, 1, 6))
+        self.assertEqual(d3plot.get_element_stress(
+            Element.beam).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_stress(
+            Element.shell).shape, (4696, 1, 6))
+        self.assertEqual(d3plot.get_element_stress(
+            Element.solid).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_stress(
+            Element.tshell).shape, (0, 1, 6))
+        self.assertEqual(d3plot.get_element_coords().shape, (4696, 1, 3))
+        self.assertEqual(d3plot.get_element_coords(
+            Element.beam).shape, (0, 1, 3))
+        self.assertEqual(d3plot.get_element_coords(
+            Element.shell).shape, (4696, 1, 3))
+        self.assertEqual(d3plot.get_element_coords(
+            Element.solid).shape, (0, 1, 3))
+        self.assertEqual(d3plot.get_element_coords(
+            Element.tshell).shape, (0, 1, 3))
+        with self.assertRaises(ValueError):
+            d3plot.get_element_history_vars(Element.none)
+        with self.assertRaises(ValueError):
+            d3plot.get_element_history_vars()
+        self.assertEqual(d3plot.get_element_history_vars(
+            Element.beam).shape, (0, 1, 0))
+        self.assertEqual(d3plot.get_element_history_vars(
+            Element.shell).shape, (4696, 1, 1))
+        self.assertEqual(d3plot.get_element_history_vars(
+            Element.solid).shape, (0, 1, 0))
+        self.assertEqual(d3plot.get_element_history_vars(
+            Element.tshell).shape, (0, 1, 0))
 
         # D3plot error handling
         # ... TODO
@@ -160,6 +239,12 @@ class TestDynaModule(unittest.TestCase):
                                for node in nodes_indexes_v2], node_matching_ids)
         # .. TODO Error stoff
 
+        # Node Velocity and Acceleration Testing
+        self.assertCountEqual(d3plot.get_node_velocity().shape, (4915, 1, 3))
+        self.assertCountEqual(
+            d3plot.get_node_acceleration().shape, (4915, 1, 3))
+        self.assertCountEqual(d3plot.get_node_ids().shape, [4915])
+
         # Shell Element
         element_ids = [1, 2]
         element_ids_shell_v1 = [d3plot.get_elementByID(
@@ -180,6 +265,11 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual(elem1.get_stress_mises().shape, (1,))
         self.assertEqual(elem1.get_strain().shape, (1, 6))
         self.assertEqual(elem1.get_history_variables().shape, (1, 1))
+
+        self.assertCountEqual(d3plot.get_element_ids().shape, (4696,))
+        self.assertCountEqual(d3plot.get_element_node_ids(
+            Element.shell, 4).shape, (4696, 4))
+
         # .. TODO Error stoff
 
         # plotting (disabled)
@@ -257,7 +347,7 @@ class TestDynaModule(unittest.TestCase):
 
         # test encryption detection
         np.testing.assert_almost_equal(get_file_entropy(
-            "test/keyfile_include2.key"), 7.715498, decimal=6)
+            "test/keyfile_include2.key"), 7.433761, decimal=6)
 
         # file loading (arguments)
         kf = KeyFile("test/keyfile.key")
@@ -271,7 +361,8 @@ class TestDynaModule(unittest.TestCase):
 
         kf = KeyFile("test/keyfile.key", load_includes=True)
         self.assertEqual(len(kf.keys()), 8)
-        self.assertEqual(len(kf.get_includes()), 1)
+
+        self.assertEqual(len(kf.get_includes()), 2)
         self.assertEqual(kf.get_nNodes(), 0)
         self.assertTrue(isinstance(kf["*INCLUDE"][0], IncludeKeyword))
         self.assertTrue(isinstance(kf["*NODE"][0], Keyword))
@@ -280,8 +371,10 @@ class TestDynaModule(unittest.TestCase):
 
         kf = KeyFile("test/keyfile.key", load_includes=True, parse_mesh=True)
         self.assertEqual(len(kf.keys()), 8)
-        self.assertEqual(len(kf.get_includes()), 1)
-        self.assertEqual(kf.get_nNodes(), 5)
+        self.assertEqual(len(kf.get_includes()), 2)
+        self.assertEqual(kf.get_nNodes(), 6)
+        self.assertCountEqual(kf.get_nodeByID(
+            11).get_coords()[0], (7., 7., 7.))
         self.assertTrue(isinstance(kf["*INCLUDE"][0], Keyword))
         self.assertTrue(isinstance(kf["*NODE"][0], NodeKeyword))
         self.assertTrue(isinstance(kf["*PART"][0], PartKeyword))
@@ -304,6 +397,14 @@ class TestDynaModule(unittest.TestCase):
         kf.save("test/tmp.key")
         self.assertEqual(kf.get_filepath(), "test/tmp.key")
         self.assertTrue(filecmp.cmp("test/keyfile.key", "test/tmp.key"))
+        os.remove("test/tmp.key")
+
+        kf = KeyFile("test/keyfile.key", read_keywords=True,
+                     parse_mesh=False, load_includes=True)
+        _, kf2 = kf.get_includes()
+        kf2.save("test/tmp.key")
+        self.assertTrue(filecmp.cmp(
+            "test/keyfile_include2.key", "test/tmp.key"))
         os.remove("test/tmp.key")
 
         # Generic Keywords

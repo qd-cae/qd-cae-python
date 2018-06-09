@@ -6,12 +6,14 @@
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include <dyna_cpp/db/Node.hpp>
+#include <dyna_cpp/math/Tensor.hpp>
 #include <dyna_cpp/utility/containers.hpp>
 
 namespace qd {
@@ -25,9 +27,15 @@ class DB_Nodes
   friend FEMFile;
 
 private:
+  std::mutex _instance_mutex;
+
   FEMFile* femfile;
   std::unordered_map<int32_t, size_t> id2index_nodes;
   std::vector<std::shared_ptr<Node>> nodes;
+
+  std::unordered_map<std::string, size_t> field_name_to_index;
+  std::vector<Tensor_ptr<float>> fields;
+  Tensor_ptr<int32_t> node_ids;
 
 public:
   explicit DB_Nodes(FEMFile* _femfile);
@@ -60,6 +68,12 @@ public:
     const std::vector<T>& _ids);
   template<typename T>
   std::shared_ptr<Node> get_nodeByIndex_nothrow(T _index);
+
+  // array data
+  Tensor_ptr<float> get_node_coords();
+  Tensor_ptr<float> get_node_velocity();
+  Tensor_ptr<float> get_node_acceleration();
+  Tensor_ptr<int32_t> get_node_ids();
 };
 
 /** Get the node index from it's id

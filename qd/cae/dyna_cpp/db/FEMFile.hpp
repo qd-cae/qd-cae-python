@@ -6,14 +6,9 @@
 #include <dyna_cpp/db/DB_Elements.hpp>
 #include <dyna_cpp/db/DB_Nodes.hpp>
 #include <dyna_cpp/db/DB_Parts.hpp>
-
 #include <string>
 
 namespace qd {
-
-// forward declarations
-class D3plot;
-class KeyFile;
 
 /** Superclass for all FEM-Files
  */
@@ -32,6 +27,7 @@ public:
   virtual ~FEMFile();
   void set_filepath(const std::string& filepath);
   std::string get_filepath();
+  virtual size_t get_nTimesteps() const = 0;
 
   inline DB_Nodes* get_db_nodes() { return static_cast<DB_Nodes*>(this); }
   inline DB_Parts* get_db_parts() { return static_cast<DB_Parts*>(this); }

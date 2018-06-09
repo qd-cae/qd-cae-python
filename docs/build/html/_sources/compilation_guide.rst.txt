@@ -10,20 +10,19 @@ Compilation on Windows
 
 Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++14 (also the old compiler created 3x slower code).
 
-For compilation of python version 3.5 or 3.6 on Windows download `Visual Studio 15`_ (dunno if Visual Studio 17 also works, but may be worth a try). Then clone the repository into a folder:
+For compilation of python version 3.5 or 3.6 on Windows download `Visual Studio 15`_ (Visual Studio 17 also worked for me). Then clone the repository into a folder:
 
 .. _Visual Studio 15: https://www.visualstudio.com/de/vs/older-downloads/
 
 .. code-block:: bash
 
-    git clone https://github.com/qd-cae/qd-cae-python.git
+    git clone --depth 1 https://github.com/qd-cae/qd-cae-python.git
     cd qd-cae-python
 
-Thereafter run the setup script, the code will automatically compile and install. 
+The argument ``--depth`` only makes a shallow copy, which saves a lot time and memory. Thereafter run the setup script, the code will automatically compile and install. 
 
 .. code-block:: bash
 
-    python -m pip install -r requirements.txt
     python setup.py install
 
 
@@ -36,22 +35,35 @@ Note that in contrast to windows, on Linux the library can be compiled for both,
 
     g++ --version
 
-You will need **g++ version 4.9 or higher**. If your compiler is fine, just install as follows:
+You will need **g++ version 5.4 or higher**. If your compiler is fine, just install as follows:
 
 .. code-block:: bash
 
     git clone https://github.com/qd-cae/qd-cae-python.git
     cd qd-cae-python
-    sudo python -m pip install -r requirements.txt
     sudo python setup.py install
-
+    
 As a little hint, if you want force python to take your modern compiler version (it may happen that you have multiple g++), simply overwrite the `CC` attribute before the running the setup script:
 
 .. code-block:: bash
 
-    sudo CC=g++-4.9 python setup.py install
+    sudo CC=g++-5.4 python setup.py install
 
+Tests
+-----
 
+It is highly recommended to run the test suite after compilation to check the installation!
+
+.. code-block:: bash
+
+    python setup.py test
+
+    
+Hints on OpenMP
+---------------
+By default the library uses and supports OpenMP parallelization. Sometimes compatability issues arise though if the path to OpenMP (on your Linux) is not configured correctly (it can confuse the Anaconda OpenMP with your system one). To check if OpenMP is really an issue during compilation, you can optionally disable OpenMP in the top of the ``setup.py`` with ``use_openmp=False`` and the library will be compiled and run without it.
+    
+    
 Compilation with FEMZIP support
 -------------------------------
 

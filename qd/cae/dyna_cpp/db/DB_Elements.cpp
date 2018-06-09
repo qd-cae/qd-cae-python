@@ -53,19 +53,26 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
     std::make_shared<Element>(_element_id, _part_id, _eType, _node_ids, this);
 
   switch (_eType) {
+
     case (Element::SHELL):
-      // check uniqueness
+#pragma omp critical
+    {
+      // std::lock_guard<std::mutex> lock(_elem4_mutex);
+
       if (id2index_elements4.find(_element_id) != id2index_elements4.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
           std::to_string(_element_id)));
-      // insert
       id2index_elements4.insert(
         std::pair<int32_t, size_t>(_element_id, elements4.size()));
       elements4.push_back(element);
-      break;
+    } break;
 
     case (Element::SOLID):
+#pragma omp critical
+    {
+      // std::lock_guard<std::mutex> lock(_elem8_mutex);
+
       if (id2index_elements8.find(_element_id) != id2index_elements8.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
@@ -74,9 +81,13 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
       id2index_elements8.insert(
         std::pair<int32_t, size_t>(_element_id, elements8.size()));
       elements8.push_back(element);
-      break;
+    } break;
 
     case (Element::BEAM):
+#pragma omp critical
+    {
+      // std::lock_guard<std::mutex> lock(_elem2_mutex);
+
       if (id2index_elements2.find(_element_id) != id2index_elements2.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
@@ -85,9 +96,13 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
       this->id2index_elements2.insert(
         std::pair<int32_t, size_t>(_element_id, elements2.size()));
       this->elements2.push_back(element);
-      break;
+    } break;
 
     case (Element::TSHELL):
+#pragma omp critical
+    {
+      // std::lock_guard<std::mutex> lock(_elem4th_mutex);
+
       if (id2index_elements4th.find(_element_id) != id2index_elements4th.end())
         throw(std::invalid_argument(
           "Trying to insert an element with same id twice:" +
@@ -96,7 +111,7 @@ DB_Elements::create_element_unchecked(Element::ElementType _eType,
       id2index_elements4th.insert(
         std::pair<int32_t, size_t>(_element_id, this->elements4th.size()));
       elements4th.push_back(element);
-      break;
+    } break;
 
     default:
       throw(std::invalid_argument(
@@ -315,18 +330,24 @@ DB_Elements::get_db_nodes()
 void
 DB_Elements::reserve(const Element::ElementType _type, const size_t _size)
 {
-  if (_type == Element::BEAM) {
-    elements2.reserve(_size);
-  } else if (_type == Element::SHELL) {
-    elements4.reserve(_size);
-  } else if (_type == Element::SOLID) {
-    elements8.reserve(_size);
-  } else if (_type == Element::TSHELL) {
-    elements4th.reserve(_size);
-  } else {
-    throw std::invalid_argument(
-      "Can not reserve memory for an unknown ElementType: " +
-      std::to_string(_type));
+  switch (_type) {
+    case Element::BEAM:
+      elements2.reserve(_size);
+      break;
+    case Element::SHELL:
+      elements4.reserve(_size);
+      break;
+    case Element::SOLID:
+      elements8.reserve(_size);
+      break;
+    case Element::TSHELL:
+      elements4th.reserve(_size);
+      break;
+    default:
+      throw std::invalid_argument(
+        "Can not reserve memory for an unknown ElementType: " +
+        std::to_string(_type));
+      break;
   }
 }
 
@@ -337,17 +358,21 @@ DB_Elements::reserve(const Element::ElementType _type, const size_t _size)
 size_t
 DB_Elements::get_nElements(const Element::ElementType _type) const
 {
-  if (_type == Element::BEAM) {
-    return elements2.size();
-  } else if (_type == Element::SHELL) {
-    return elements4.size();
-  } else if (_type == Element::SOLID) {
-    return elements8.size();
-  } else if (_type == Element::TSHELL) {
-    return elements4th.size();
+  switch (_type) {
+    case Element::BEAM:
+      return elements2.size();
+    case Element::SHELL:
+      return elements4.size();
+    case Element::SOLID:
+      return elements8.size();
+    case Element::TSHELL:
+      return elements4th.size();
+    case Element::NONE:
+      return elements4.size() + elements2.size() + elements8.size() +
+             elements4th.size();
   }
-  return elements4.size() + elements2.size() + elements8.size() +
-         elements4th.size();
+
+  throw(std::invalid_argument("Unknown element type specified."));
 }
 
 /** Get the elements of the database of a certain type
@@ -359,25 +384,477 @@ std::vector<std::shared_ptr<Element>>
 DB_Elements::get_elements(const Element::ElementType _type)
 {
 
-  if (_type == Element::NONE) {
-    std::vector<std::shared_ptr<Element>> elems;
-    elems.reserve(get_nElements(_type));
-    elems.insert(elems.end(), elements2.begin(), elements2.end());
-    elems.insert(elems.end(), elements4.begin(), elements4.end());
-    elems.insert(elems.end(), elements8.begin(), elements8.end());
-    elems.insert(elems.end(), elements4th.begin(), elements4th.end());
-    return std::move(elems);
-  } else if (_type == Element::BEAM) {
-    return elements2;
-  } else if (_type == Element::SHELL) {
-    return elements4;
-  } else if (_type == Element::SOLID) {
-    return elements8;
-  } else if (_type == Element::TSHELL) {
-    return elements4th;
+  switch (_type) {
+    case Element::BEAM:
+      return elements2;
+    case Element::SHELL:
+      return elements4;
+    case Element::SOLID:
+      return elements8;
+    case Element::TSHELL:
+      return elements4th;
+    case Element::NONE: {
+      std::vector<std::shared_ptr<Element>> elems;
+      elems.reserve(get_nElements(_type));
+      elems.insert(elems.end(), elements2.begin(), elements2.end());
+      elems.insert(elems.end(), elements4.begin(), elements4.end());
+      elems.insert(elems.end(), elements8.begin(), elements8.end());
+      elems.insert(elems.end(), elements4th.begin(), elements4th.end());
+      return elems;
+    }
   }
 
   throw(std::invalid_argument("Unknown element type specified."));
+}
+
+/** Get the element ids
+ *
+ * @param element_filter : filter type for elements
+ * @return tensor
+ */
+Tensor_ptr<int32_t>
+DB_Elements::get_element_ids(Element::ElementType element_filter)
+{
+
+  size_t element_offset = 0;
+  auto tensor = std::make_shared<Tensor<int32_t>>();
+  tensor->resize({ this->get_nElements(element_filter) });
+  auto& data = tensor->get_data();
+
+  if (element_filter == Element::NONE || element_filter == Element::BEAM) {
+    for (auto& elem : elements2)
+      data[element_offset++] = elem->get_elementID();
+  }
+
+  if (element_filter == Element::NONE || element_filter == Element::SHELL) {
+    for (auto& elem : elements4)
+      data[element_offset++] = elem->get_elementID();
+  }
+
+  if (element_filter == Element::NONE || element_filter == Element::SOLID) {
+    for (auto& elem : elements8)
+      data[element_offset++] = elem->get_elementID();
+  }
+
+  if (element_filter == Element::NONE || element_filter == Element::TSHELL) {
+    for (auto& elem : elements4th)
+      data[element_offset++] = elem->get_elementID();
+  }
+
+  return tensor;
+}
+
+/** Get the node ids of elements
+ *
+ * @param element_type : type of the elements
+ * @param n_nodes : number of nodes
+ * @return tensor
+ */
+Tensor_ptr<int32_t>
+DB_Elements::get_element_node_ids(Element::ElementType element_type,
+                                  size_t n_nodes)
+{
+
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<int32_t>>();
+  tensor->resize({ this->get_nElements(element_type), n_nodes });
+  auto& data = tensor->get_data();
+
+  switch (element_type) {
+    case Element::BEAM:
+      for (auto& elem : elements2) {
+        if (elem->get_nNodes() == n_nodes) {
+          const auto& node_ids = elem->get_node_ids();
+          std::copy(node_ids.begin(), node_ids.end(), data.begin() + offset);
+          offset += node_ids.size();
+        }
+      }
+      break;
+    case Element::SHELL:
+      for (auto& elem : elements4) {
+        if (elem->get_nNodes() == n_nodes) {
+          const auto& node_ids = elem->get_node_ids();
+          std::copy(node_ids.begin(), node_ids.end(), data.begin() + offset);
+          offset += node_ids.size();
+        }
+      }
+      break;
+    case Element::SOLID:
+      for (auto& elem : elements8) {
+        if (elem->get_nNodes() == n_nodes) {
+          const auto& node_ids = elem->get_node_ids();
+          std::copy(node_ids.begin(), node_ids.end(), data.begin() + offset);
+          offset += node_ids.size();
+        }
+      }
+      break;
+    case Element::TSHELL:
+      for (auto& elem : elements4th) {
+        if (elem->get_nNodes() == n_nodes) {
+          const auto& node_ids = elem->get_node_ids();
+          std::copy(node_ids.begin(), node_ids.end(), data.begin() + offset);
+          offset += node_ids.size();
+        }
+      }
+      break;
+    case Element::NONE:
+    default:
+      break;
+  }
+
+  return tensor;
+}
+
+/** Get the energy of elements
+ *
+ * @param element_filter : optional element filter
+ * @return tensor : result data array
+ *
+ * If a value is not present for an element, the it will be initialized as 0 by
+ * default.
+ */
+Tensor_ptr<float>
+DB_Elements::get_element_energy(Element::ElementType element_filter)
+{
+  constexpr auto default_value = 0.;
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+
+  // resize
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+  tensor->resize({ this->get_nElements(element_filter), nTimesteps });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+
+  for (auto& element : elements) {
+    auto result = element->get_energy();
+    if (result.size() != 0) {
+      std::copy(result.begin(), result.end(), data.begin() + offset);
+      offset += nTimesteps;
+    } else {
+      std::fill(data.begin() + offset,
+                data.begin() + offset + nTimesteps,
+                default_value);
+      offset += nTimesteps;
+    }
+  }
+
+  return tensor;
+}
+
+/** Get the mises stress of elements
+ *
+ * @param element_filter : optional element filter
+ * @return tensor : result data array
+ *
+ * If a value is not present for an element, the it will be initialized as 0 by
+ * default.
+ */
+Tensor_ptr<float>
+DB_Elements::get_element_stress_mises(Element::ElementType element_filter)
+{
+  constexpr auto default_value = 0.;
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+
+  // resize
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+  tensor->resize({ this->get_nElements(element_filter), nTimesteps });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+  for (auto& element : elements) {
+    auto result = element->get_stress_mises();
+    if (result.size() != 0) {
+      std::copy(result.begin(), result.end(), data.begin() + offset);
+      offset += nTimesteps;
+    } else {
+      std::fill(data.begin() + offset,
+                data.begin() + offset + nTimesteps,
+                default_value);
+      offset += nTimesteps;
+    }
+  }
+
+  return tensor;
+}
+
+/** Get the plastic strain of elements
+ *
+ * @param element_filter : optional element filter
+ * @return tensor : result data array
+ *
+ * If a value is not present for an element, the it will be initialized as 0 by
+ * default.
+ */
+Tensor_ptr<float>
+DB_Elements::get_element_plastic_strain(Element::ElementType element_filter)
+{
+  constexpr auto default_value = 0.;
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+
+  // resize tensor (nElems x nTimesteps)
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+  tensor->resize({ this->get_nElements(element_filter), nTimesteps });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+  for (auto& element : elements) {
+    auto result = element->get_plastic_strain();
+    if (result.size() != 0) {
+      std::copy(result.begin(), result.end(), data.begin() + offset);
+      offset += nTimesteps;
+    } else {
+      std::fill(data.begin() + offset,
+                data.begin() + offset + nTimesteps,
+                default_value);
+      offset += nTimesteps;
+    }
+  }
+
+  return tensor;
+}
+
+/** Get the strain of elements
+ *
+ * @param element_filter : optional element filter
+ * @return tensor : result data array
+ *
+ * If a value is not present for an element, the it will be initialized as 0 by
+ * default.
+ */
+Tensor_ptr<float>
+DB_Elements::get_element_strain(Element::ElementType element_filter)
+{
+  constexpr auto default_value = 0.;
+  constexpr size_t nComponents = 6;
+
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+
+  // resize (nElems x nTimesteps x nStrain)
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+  tensor->resize(
+    { this->get_nElements(element_filter), nTimesteps, nComponents });
+  auto& data = tensor->get_data();
+
+  auto elements = get_elements(element_filter);
+  for (auto& element : elements) {
+    auto result = element->get_strain();
+
+    if (result.size() != 0) {
+#ifdef QD_DEBUG
+      if (result.size() != nTimesteps)
+        throw(std::runtime_error(
+          "element timeseries has a wrong number of timesteps."));
+#endif
+
+      for (auto& vec : result) {
+#ifdef QD_DEBUG
+        if (vec.size() != nComponents)
+          throw(std::runtime_error("vector has wrong number of components:" +
+                                   std::to_string(vec.size()) +
+                                   " != " + std::to_string(nComponents)));
+#endif
+        std::copy(vec.begin(), vec.end(), data.begin() + offset);
+        offset += vec.size();
+      }
+
+    } else {
+      const auto tmp = nTimesteps * nComponents;
+      std::fill(
+        data.begin() + offset, data.begin() + offset + tmp, default_value);
+      offset += tmp;
+    }
+  }
+
+  return tensor;
+}
+
+/** Get the stress of elements
+ *
+ * @param element_filter : optional element filter
+ * @return tensor : result data array
+ *
+ * If a value is not present for an element, the it will be initialized as 0 by
+ * default.
+ */
+Tensor_ptr<float>
+DB_Elements::get_element_stress(Element::ElementType element_filter)
+{
+  constexpr auto default_value = 0.;
+  constexpr size_t nComponents = 6;
+
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+
+  // resize (nElems x nTimesteps x nStrain)
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+  tensor->resize(
+    { this->get_nElements(element_filter), nTimesteps, nComponents });
+  auto& data = tensor->get_data();
+
+  const auto element_offset = nTimesteps * nComponents;
+  auto elements = get_elements(element_filter);
+  for (auto& element : elements) {
+    auto result = element->get_stress();
+
+    if (result.size() != 0) {
+#ifdef QD_DEBUG
+      if (result.size() != nTimesteps)
+        throw(std::runtime_error(
+          "element timeseries has a wrong number of timesteps."));
+#endif
+
+      for (auto& vec : result) {
+#ifdef QD_DEBUG
+        if (vec.size() != nComponents)
+          throw(std::runtime_error("vector has wrong number of components:" +
+                                   std::to_string(vec.size()) +
+                                   " != " + std::to_string(nComponents)));
+#endif
+        std::copy(vec.begin(), vec.end(), data.begin() + offset);
+        offset += vec.size();
+      }
+
+    } else {
+      std::fill(data.begin() + offset,
+                data.begin() + offset + element_offset,
+                default_value);
+      offset += element_offset;
+    }
+  }
+
+  return tensor;
+}
+
+/** Get the coords of elements
+ *
+ * @param element_filter : optional element filter
+ * @return tensor : result data array
+ *
+ * If a value is not present for an element, the it will be initialized as 0 by
+ * default.
+ */
+Tensor_ptr<float>
+DB_Elements::get_element_coords(Element::ElementType element_filter)
+{
+  constexpr auto default_value = 0.;
+  constexpr size_t nComponents = 3;
+
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+
+  // resize (nElems x nTimesteps x nStrain)
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+  tensor->resize(
+    { this->get_nElements(element_filter), nTimesteps, nComponents });
+  auto& data = tensor->get_data();
+
+  const auto element_offset = nTimesteps * nComponents;
+  auto elements = get_elements(element_filter);
+  for (auto& element : elements) {
+    auto result = element->get_coords();
+
+    if (result.size() != 0) {
+#ifdef QD_DEBUG
+      if (result.size() != nTimesteps)
+        throw(std::runtime_error(
+          "element timeseries has a wrong number of timesteps."));
+#endif
+
+      for (auto& vec : result) {
+#ifdef QD_DEBUG
+        if (vec.size() != nComponents)
+          throw(std::runtime_error("vector has wrong number of components:" +
+                                   std::to_string(vec.size()) +
+                                   " != " + std::to_string(nComponents)));
+#endif
+        std::copy(vec.begin(), vec.end(), data.begin() + offset);
+        offset += vec.size();
+      }
+
+    } else {
+      std::fill(data.begin() + offset,
+                data.begin() + offset + element_offset,
+                default_value);
+      offset += element_offset;
+    }
+  }
+
+  return tensor;
+}
+
+/** Get the history vars for a specific element type
+ *
+ * @param element_type : type of the element
+ * @return tensor : data array
+ *
+ * In contrast to all other array functions this function actually needs a
+ * specific element type for the reason, that history vars usually differ
+ * between the element types. We didn't screw this up!
+ */
+Tensor_ptr<float>
+DB_Elements::get_element_history_vars(Element::ElementType element_type)
+{
+
+  // test
+  if (element_type == Element::ElementType::NONE)
+    throw(std::invalid_argument(
+      "You need to specify an element type if "
+      "requesting history variables for the reason, "
+      "that history vars differ between the "
+      "element types. Don't blame us, we didn't screw this up!"));
+
+  constexpr auto default_value = 0.;
+
+  size_t offset = 0;
+  auto tensor = std::make_shared<Tensor<float>>();
+
+  // get the number of history vars ... little bit complicated
+  auto elements = get_elements(element_type);
+  const auto nComponents =
+    elements.size() != 0 ? elements[0]->get_history_vars().size() : 0;
+
+  // resize (nElems x nTimesteps x nStrain)
+  const auto nTimesteps = get_femfile()->get_nTimesteps();
+  tensor->resize(
+    { this->get_nElements(element_type), nTimesteps, nComponents });
+  auto& data = tensor->get_data();
+
+  const auto element_offset = nTimesteps * nComponents;
+  for (auto& element : elements) {
+    auto result = element->get_history_vars();
+
+    if (result.size() != 0) {
+#ifdef QD_DEBUG
+      if (result.size() != nTimesteps)
+        throw(std::runtime_error(
+          "element timeseries has a wrong number of timesteps."));
+#endif
+
+      for (auto& vec : result) {
+#ifdef QD_DEBUG
+        if (vec.size() != nComponents)
+          throw(std::runtime_error("vector has wrong number of components:" +
+                                   std::to_string(vec.size()) +
+                                   " != " + std::to_string(nComponents)));
+#endif
+        std::copy(vec.begin(), vec.end(), data.begin() + offset);
+        offset += vec.size();
+      }
+
+    } else {
+      std::fill(data.begin() + offset,
+                data.begin() + offset + element_offset,
+                default_value);
+      offset += element_offset;
+    }
+  }
+
+  return tensor;
 }
 
 } // namespace qd

@@ -15,9 +15,9 @@ CAE suffers greatly from expensive tools with bad or moderate scripting access a
 
 We believe, that CAE can not evolve, if people do not get comfortable access to the raw data and start doing their own stuff, because 
 
-<p style="text-align: center;"><b>"Creativity originates from freedom and thus simplicity."</b></p>
+<p style="text-align: center;"><b>"Creativity originates from freedom and simplicity."</b></p>
 
-This core idea keeps us pushing forward.
+This core idea keeps us pushing forward. 
 
 # Support this project
 
@@ -25,11 +25,33 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 02.06.2018*
+Version 0.8.0
 
-*Changelog 22.05.2018*
-Version 0.7.3
+**License: Changed project license to BSD**
 
-Recompiled 0.7.2 due to windows binary compatability issues.
+qd.cae.dyna:
+ - **Arrays** are here: added many functions to get entire data arrays:
+   - `d3plot.get_node_displacement(element_filter)`
+   - `d3plot.get_node_velocity(element_filter)`
+   - `d3plot.get_node_acceleration(element_filter)`
+   - `d3plot.get_node_ids(element_filter)`
+   - `d3plot.get_element_coords(element_filter)`
+   - `d3plot.get_element_energy(element_filter)`
+   - `d3plot.get_element_strain(element_filter)`
+   - `d3plot.get_element_plastic_strain(element_filter)`
+   - `d3plot.get_element_stress(element_filter)`
+   - `d3plot.get_element_stress_mises(element_filter)`
+   - `d3plot.get_element_history_vars(element_type)`
+   - `part.get_node_ids()`
+   - `part.get_node_indexes()`
+   - `part.get_element_ids(element_filter)`
+   - `part.get_element_node_ids(element_type, nNodes)`
+ - Getting data arrays from `RawD3plot` does not copy the memory anymore, but numpy instead simply uses the C++ memory (big performance boost).
+ - `D3plot` now automatically detects femzip compressed files (argument `use_femzip` is now deprecated).
+ - `KeyFile` encryption detection checks now for '-----BEGIN PGP MESSAGE-----' and does not compute the entropy anymore (argument `encryption_detection` is now deprecated).
+ - Along with a lot of new features we also introduced a lot of new bugs so that we don't get bored
+ 
 
 *Changelog 18.04.2018*
 Version 0.7.2
@@ -39,18 +61,6 @@ This is a bugfix version.
 qd.cae.dyna:
  - Fix: Reading a `KeyFile` with `parse_mesh=True` and *SOLID in the new format was skipping lines wrongly
 
-*Changelog 07.03.2018*
-Version 0.7.1
-
-This is a bugfix version.
-
-qd.cae.dyna:
-  - Fix: loading includes manually could lead to a bug 
-  - Fix: if `load_includes=False`, includes are now treated as generic keywords 
-  - Fix: add_part could cause a segfault
-  - Fix: `KeyFile.save` did only write one keyword, if they had the same `KeyFile.position``.
-  - Fix: Adding a `Keyword` without a `position` specified simply appends the `Keyword` to the end of the file.
-
 
 # Documentation
 
@@ -59,7 +69,7 @@ You can find the [full Documentation here](https://qd-cae.github.io/qd-cae-pytho
 1. [qd.cae.dyna ](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna.html)
   - Read D3plot
   - Read Binouts
-  - Read Input Files (partially done)
+  - Read KeyFiles
 2. [qd.numerics](https://qd-cae.github.io/qd-cae-python/build/html/qd_numerics.html)
   - Submodule: sampling
 3. [qd.cae.beta](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_beta.html)
@@ -103,10 +113,10 @@ If you are bold enough to compile it yourself, then follow the [compilation guid
 
 # License
 
-*This library is a free gift from and to the community. We publish under GNU GPL v3 (see the LICENSE file), because we want to encourage everyone to share their code as well. As long as one is not selling their code, in which is library is embedded, we will not demand the disclosure though. Against financial compensation we can also provide professional support or a different license.*
+See the license file.
 
 # Authors
 
-- codie (C. Diez)
-- towelie (D. Toewe)
-- (?)
+- codie 
+- towelie
+- bala

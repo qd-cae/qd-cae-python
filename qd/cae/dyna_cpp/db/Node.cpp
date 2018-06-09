@@ -5,7 +5,6 @@
 #include "dyna_cpp/db/DB_Nodes.hpp"
 #include "dyna_cpp/db/Element.hpp"
 #include "dyna_cpp/db/FEMFile.hpp"
-#include "dyna_cpp/dyna/D3plot.hpp"
 #include "dyna_cpp/utility/TextUtility.hpp"
 
 #include <algorithm>
@@ -73,7 +72,11 @@ Node::add_element(std::shared_ptr<Element> _element)
                                 std::to_string(this->nodeID)));
 #endif
 
-  this->elements.push_back(_element);
+  {
+    std::lock_guard<std::mutex> lock(_node_mutex);
+    this->elements.push_back(_element);
+  }
+
   return _element;
 }
 
@@ -95,7 +98,10 @@ Node::add_disp(std::vector<float> _new_disp)
   _new_disp[1] -= coords[1];
   _new_disp[2] -= coords[2];
 
-  this->disp.push_back(_new_disp);
+  {
+    std::lock_guard<std::mutex> lock(_node_mutex);
+    this->disp.push_back(_new_disp);
+  }
 }
 
 /** Add a new velocity state to the node.
@@ -111,8 +117,10 @@ Node::add_vel(std::vector<float> _new_vel)
       "Wrong length of velocity vector:" + std::to_string(_new_vel.size()) +
       " in node:" + std::to_string(this->nodeID)));
 #endif
-
-  this->vel.push_back(_new_vel);
+  {
+    std::lock_guard<std::mutex> lock(_node_mutex);
+    this->vel.push_back(_new_vel);
+  }
 }
 
 /** Add a new velocity state to the node.
@@ -128,8 +136,10 @@ Node::add_accel(std::vector<float> _new_accel)
       "Wrong length of velocity vector:" + std::to_string(_new_accel.size()) +
       " in node:" + std::to_string(this->nodeID)));
 #endif
-
-  this->accel.push_back(_new_accel);
+  {
+    std::lock_guard<std::mutex> lock(_node_mutex);
+    this->accel.push_back(_new_accel);
+  }
 }
 
 /** Set the coordinates of the node
@@ -145,33 +155,6 @@ Node::set_coords(float _x, float _y, float _z)
   coords[2] = _z;
 }
 
-/** Get the coordinates of the node over time
- *
- * @return ret : time series of coordinates
- */
-std::vector<std::vector<float>>
-Node::get_coords() const
-{
-
-  // check for displacements
-  if (this->disp.size() > 0) {
-
-    std::vector<std::vector<float>> ret(disp.size(), this->coords);
-    for (size_t iTimestep = 0; iTimestep < this->disp.size(); ++iTimestep) {
-      ret[iTimestep][0] += this->disp[iTimestep][0];
-      ret[iTimestep][1] += this->disp[iTimestep][1];
-      ret[iTimestep][2] += this->disp[iTimestep][2];
-    }
-
-    return ret;
-
-    // no displacements
-  } else {
-    std::vector<std::vector<float>> ret = { this->coords };
-    return ret;
-  }
-}
-
 /** Remove an element from the node
  *
  * @param _element : element to remove
@@ -181,11 +164,14 @@ Node::get_coords() const
 void
 Node::remove_element(std::shared_ptr<Element> _element)
 {
-  elements.erase(
-    std::remove_if(elements.begin(),
-                   elements.end(),
-                   [_element](auto elem) { return elem == _element; }),
-    elements.end());
+  {
+    std::lock_guard<std::mutex> lock(_node_mutex);
+    elements.erase(
+      std::remove_if(elements.begin(),
+                     elements.end(),
+                     [_element](auto elem) { return elem == _element; }),
+      elements.end());
+  }
 }
 
 } // NAMESPACE:qd

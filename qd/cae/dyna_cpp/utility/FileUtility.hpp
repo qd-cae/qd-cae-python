@@ -2,7 +2,10 @@
 #ifndef FILEUTILITY_HPP
 #define FILEUTILITY_HPP
 
+#include <cstdio>
+#include <mutex>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace qd {
@@ -33,6 +36,12 @@ delete_file(const std::string& _path);
 
 void
 save_file(const std::string& _filepath, const std::string& _data);
+
+void
+disable_stdout();
+
+void
+enable_stdout();
 
 } // namespace qd
 
