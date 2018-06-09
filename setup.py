@@ -67,12 +67,16 @@ def setup_dyna_cpp():
 
     extra_link_args = []
 
+    libs_dyna = []
+
     # linux compiler args
     if is_linux:
         compiler_args = ["-std=c++14",
                          "-fPIC",
 
                          "-DQD_VERSION=\"" + version + "\""]
+
+        libs_dyna = ["stdc++"]
 
         if debugging_mode:
             compiler_args.append("-DQD_DEBUG")
@@ -101,7 +105,7 @@ def setup_dyna_cpp():
     else:
         raise RuntimeError("Could not determine os (windows or linux)")
 
-    return srcs, include_dirs, compiler_args, extra_link_args
+    return srcs, include_dirs, compiler_args, extra_link_args, libs_dyna
 
 
 def setup_dyna_cpp_binout(srcs, compiler_args):
@@ -214,8 +218,7 @@ if __name__ == "__main__":
 
     # setup basic extension
     lib_dirs_dyna = []
-    libs_dyna = ['stdc++']
-    srcs_dyna, include_dirs_dyna, compiler_args_dyna, extra_link_args = setup_dyna_cpp()
+    srcs_dyna, include_dirs_dyna, compiler_args_dyna, extra_link_args, libs_dyna = setup_dyna_cpp()
 
     # compile binout
     '''
