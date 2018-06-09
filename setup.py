@@ -71,6 +71,7 @@ def setup_dyna_cpp():
     if is_linux:
         compiler_args = ["-std=c++14",
                          "-fPIC",
+
                          "-DQD_VERSION=\"" + version + "\""]
 
         if debugging_mode:
@@ -213,7 +214,7 @@ if __name__ == "__main__":
 
     # setup basic extension
     lib_dirs_dyna = []
-    libs_dyna = []
+    libs_dyna = ['stdc++']
     srcs_dyna, include_dirs_dyna, compiler_args_dyna, extra_link_args = setup_dyna_cpp()
 
     # compile binout
