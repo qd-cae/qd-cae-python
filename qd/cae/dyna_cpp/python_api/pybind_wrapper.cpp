@@ -6,7 +6,7 @@
 #include <dyna_cpp/db/FEMFile.hpp>
 #include <dyna_cpp/db/Node.hpp>
 #include <dyna_cpp/db/Part.hpp>
-//#include <dyna_cpp/dyna/Binout.hpp>
+#include <dyna_cpp/dyna/binout/Binout.hpp>
 #include <dyna_cpp/dyna/d3plot/D3plot.hpp>
 #include <dyna_cpp/dyna/d3plot/FemzipBuffer.hpp>
 #include <dyna_cpp/dyna/d3plot/RawD3plot.hpp>
@@ -182,8 +182,66 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("print", &Tensor<float>::print)
     .def("shape", &Tensor<float>::get_shape);
 
+  // Tensor
+  pybind11::class_<Tensor<double>, std::shared_ptr<Tensor<double>>>
+    tensor_f64_py(m, "Tensor_f64", pybind11::buffer_protocol());
+  tensor_f64_py
+    .def_buffer([](Tensor<double>& m) -> pybind11::buffer_info {
+      const auto& shape = m.get_shape();
+      auto strides = shape_to_strides<double>(shape);
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                           // Pointer to buffer
+        (pybind11::ssize_t)sizeof(double),             // Size of one scalar
+        pybind11::format_descriptor<double>::format(), // Python struct-style
+        static_cast<pybind11::ssize_t>(shape.size()),  // Number of dims
+        shape,                                         // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<double>::print)
+    .def("shape", &Tensor<double>::get_shape);
+
+  pybind11::class_<Tensor<int8_t>, std::shared_ptr<Tensor<int8_t>>>
+    tensor_i8_py(m, "Tensor_int8", pybind11::buffer_protocol());
+  tensor_i8_py
+    .def_buffer([](Tensor<int8_t>& m) -> pybind11::buffer_info {
+      const auto& shape = m.get_shape();
+      auto strides = shape_to_strides<int8_t>(shape);
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                           // Pointer to buffer
+        (pybind11::ssize_t)sizeof(int8_t),             // Size of one scalar
+        pybind11::format_descriptor<int8_t>::format(), // Python struct-style
+        static_cast<pybind11::ssize_t>(shape.size()),  // Number of dims
+        shape,                                         // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<int8_t>::print)
+    .def("shape", &Tensor<int8_t>::get_shape);
+
+  pybind11::class_<Tensor<int16_t>, std::shared_ptr<Tensor<int16_t>>>
+    tensor_i16_py(m, "Tensor_int16", pybind11::buffer_protocol());
+  tensor_i16_py
+    .def_buffer([](Tensor<int16_t>& m) -> pybind11::buffer_info {
+      const auto& shape = m.get_shape();
+      auto strides = shape_to_strides<int16_t>(shape);
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                            // Pointer to buffer
+        (pybind11::ssize_t)sizeof(int16_t),             // Size of one scalar
+        pybind11::format_descriptor<int16_t>::format(), // Python struct-style
+        static_cast<pybind11::ssize_t>(shape.size()),   // Number of dims
+        shape,                                          // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<int16_t>::print)
+    .def("shape", &Tensor<int16_t>::get_shape);
+
   pybind11::class_<Tensor<int32_t>, std::shared_ptr<Tensor<int32_t>>>
-    tensor_i32_py(m, "Tensor_i32", pybind11::buffer_protocol());
+    tensor_i32_py(m, "Tensor_int32", pybind11::buffer_protocol());
   tensor_i32_py
     .def_buffer([](Tensor<int32_t>& m) -> pybind11::buffer_info {
       const auto& shape = m.get_shape();
@@ -201,6 +259,102 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("print", &Tensor<int32_t>::print)
     .def("shape", &Tensor<int32_t>::get_shape);
 
+  pybind11::class_<Tensor<int64_t>, std::shared_ptr<Tensor<int64_t>>>
+    tensor_i64_py(m, "Tensor_int64", pybind11::buffer_protocol());
+  tensor_i64_py
+    .def_buffer([](Tensor<int64_t>& m) -> pybind11::buffer_info {
+      const auto& shape = m.get_shape();
+      auto strides = shape_to_strides<int64_t>(shape);
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                            // Pointer to buffer
+        (pybind11::ssize_t)sizeof(int64_t),             // Size of one scalar
+        pybind11::format_descriptor<int64_t>::format(), // Python struct-style
+        static_cast<pybind11::ssize_t>(shape.size()),   // Number of dims
+        shape,                                          // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<int64_t>::print)
+    .def("shape", &Tensor<int64_t>::get_shape);
+
+  pybind11::class_<Tensor<uint8_t>, std::shared_ptr<Tensor<uint8_t>>>
+    tensor_uint8_py(m, "Tensor_uint8", pybind11::buffer_protocol());
+  tensor_uint8_py
+    .def_buffer([](Tensor<uint8_t>& m) -> pybind11::buffer_info {
+      const auto& shape = m.get_shape();
+      auto strides = shape_to_strides<uint8_t>(shape);
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                            // Pointer to buffer
+        (pybind11::ssize_t)sizeof(uint8_t),             // Size of one scalar
+        pybind11::format_descriptor<uint8_t>::format(), // Python struct-style
+        static_cast<pybind11::ssize_t>(shape.size()),   // Number of dims
+        shape,                                          // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<uint8_t>::print)
+    .def("shape", &Tensor<uint8_t>::get_shape);
+
+  pybind11::class_<Tensor<uint16_t>, std::shared_ptr<Tensor<uint16_t>>>
+    tensor_uint16_py(m, "Tensor_uint16", pybind11::buffer_protocol());
+  tensor_uint16_py
+    .def_buffer([](Tensor<uint16_t>& m) -> pybind11::buffer_info {
+      const auto& shape = m.get_shape();
+      auto strides = shape_to_strides<uint16_t>(shape);
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                             // Pointer to buffer
+        (pybind11::ssize_t)sizeof(uint16_t),             // Size of one scalar
+        pybind11::format_descriptor<uint16_t>::format(), // Python struct-style
+        static_cast<pybind11::ssize_t>(shape.size()),    // Number of dims
+        shape,                                           // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<uint16_t>::print)
+    .def("shape", &Tensor<uint16_t>::get_shape);
+
+  pybind11::class_<Tensor<uint32_t>, std::shared_ptr<Tensor<uint32_t>>>
+    tensor_uint32_py(m, "Tensor_uint32", pybind11::buffer_protocol());
+  tensor_uint32_py
+    .def_buffer([](Tensor<uint32_t>& m) -> pybind11::buffer_info {
+      const auto& shape = m.get_shape();
+      auto strides = shape_to_strides<uint32_t>(shape);
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                             // Pointer to buffer
+        (pybind11::ssize_t)sizeof(uint32_t),             // Size of one scalar
+        pybind11::format_descriptor<uint32_t>::format(), // Python struct-style
+        static_cast<pybind11::ssize_t>(shape.size()),    // Number of dims
+        shape,                                           // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<uint32_t>::print)
+    .def("shape", &Tensor<uint32_t>::get_shape);
+
+  pybind11::class_<Tensor<uint64_t>, std::shared_ptr<Tensor<uint64_t>>>
+    tensor_uint64_py(m, "Tensor_uint64", pybind11::buffer_protocol());
+  tensor_uint64_py
+    .def_buffer([](Tensor<uint64_t>& m) -> pybind11::buffer_info {
+      const auto& shape = m.get_shape();
+      auto strides = shape_to_strides<uint64_t>(shape);
+
+      return pybind11::buffer_info(
+        m.get_data().data(),                             // Pointer to buffer
+        (pybind11::ssize_t)sizeof(uint64_t),             // Size of one scalar
+        pybind11::format_descriptor<uint64_t>::format(), // Python struct-style
+        static_cast<pybind11::ssize_t>(shape.size()),    // Number of dims
+        shape,                                           // Buffer dimensions
+        strides // Strides (in bytes) for each index
+      );
+    })
+    .def("print", &Tensor<uint64_t>::print)
+    .def("shape", &Tensor<uint64_t>::get_shape);
+
+  /*
   pybind11::class_<Tensor<size_t>, std::shared_ptr<Tensor<size_t>>>
     tensor_size_t_py(m, "Tensor_size_t", pybind11::buffer_protocol());
   tensor_size_t_py
@@ -219,6 +373,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     })
     .def("print", &Tensor<size_t>::print)
     .def("shape", &Tensor<size_t>::get_shape);
+    */
 
   // Node
   pybind11::class_<Node, std::shared_ptr<Node>> node_py(
@@ -1678,12 +1833,75 @@ PYBIND11_MODULE(dyna_cpp, m)
          pybind11::return_value_policy::take_ownership);
 
   // Binout
-  /*
   const char* empty_description = { "\0" };
   pybind11::class_<Binout, std::shared_ptr<Binout>> binout_py(
     m, "QD_Binout", empty_description);
-  binout_py.def(pybind11::init<std::string>(), "filepath"_a, empty_description);
-  */
+
+  pybind11::enum_<Binout::EntryType>(binout_py, "entry_type")
+    .value("unknown", Binout::EntryType::UNKNOWN)
+    .value("directory", Binout::EntryType::DIRECTORY)
+    .value("int8", Binout::EntryType::INT8)
+    .value("int16", Binout::EntryType::INT16)
+    .value("int32", Binout::EntryType::INT32)
+    .value("int64", Binout::EntryType::INT64)
+    .value("uint8", Binout::EntryType::UINT8)
+    .value("uint16", Binout::EntryType::UINT16)
+    .value("uint32", Binout::EntryType::UINT32)
+    .value("uint64", Binout::EntryType::UINT64)
+    .value("float32", Binout::EntryType::FLOAT32)
+    .value("float64", Binout::EntryType::FLOAT64)
+    .value("link", Binout::EntryType::LINK)
+    .export_values();
+
+  binout_py.def(pybind11::init<std::string>(), "filepath"_a)
+    .def("cd", &Binout::cd, "path"_a)
+    .def("exists", &Binout::exists, "path"_a)
+    .def("has_children", &Binout::has_children, "path"_a)
+    .def("is_variable", &Binout::is_variable, "path"_a)
+    .def("get_children", &Binout::get_children, "path"_a = ".")
+    .def("get_type_id", &Binout::get_type_id, "path"_a)
+    .def(
+      "read_variable",
+      [](std::shared_ptr<Binout> self, const std::string& path) {
+
+        // what do we have?
+        auto type_id = self->get_type_id(path);
+
+        // magic
+        switch (type_id) {
+          case Binout::EntryType::DIRECTORY:
+            throw(std::invalid_argument(
+              "Path points to a directory, not a variable."));
+          case Binout::EntryType::INT8:
+            return py::tensor_to_nparray(self->read_variable<int8_t>(path));
+          case Binout::EntryType::INT16:
+            return py::tensor_to_nparray(self->read_variable<int16_t>(path));
+          case Binout::EntryType::INT32:
+            return py::tensor_to_nparray(self->read_variable<int32_t>(path));
+          case Binout::EntryType::INT64:
+            return py::tensor_to_nparray(self->read_variable<int64_t>(path));
+          case Binout::EntryType::UINT8:
+            return py::tensor_to_nparray(self->read_variable<uint8_t>(path));
+          case Binout::EntryType::UINT16:
+            return py::tensor_to_nparray(self->read_variable<uint16_t>(path));
+          case Binout::EntryType::UINT32:
+            return py::tensor_to_nparray(self->read_variable<uint32_t>(path));
+          case Binout::EntryType::UINT64:
+            return py::tensor_to_nparray(self->read_variable<uint64_t>(path));
+          case Binout::EntryType::FLOAT32:
+            return py::tensor_to_nparray(self->read_variable<float>(path));
+          case Binout::EntryType::FLOAT64:
+            return py::tensor_to_nparray(self->read_variable<double>(path));
+          case Binout::EntryType::LINK:
+            throw(
+              std::invalid_argument("Path points to a link, not a variable."));
+          default:
+            throw(std::invalid_argument("Path points to something ... I "
+                                        "honestly don't know what exactly."));
+        }
+
+      },
+      "path"_a);
 
   // module functions
   m.def("get_file_entropy",
