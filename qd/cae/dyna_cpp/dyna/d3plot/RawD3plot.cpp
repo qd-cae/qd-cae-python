@@ -86,7 +86,7 @@ RawD3plot::RawD3plot()
   , buffer(nullptr)
 {}
 
-RawD3plot::RawD3plot(std::string _filename)
+RawD3plot::RawD3plot(std::string _filename, bool use_femzip)
   : dyna_ndim(-1)
   , dyna_icode(-1)
   , dyna_numnp(-1)
@@ -153,7 +153,8 @@ RawD3plot::RawD3plot(std::string _filename)
 {
 // check for femzip
 #ifdef QD_USE_FEMZIP
-  _is_femzipped = FemzipBuffer::is_femzipped(_filename);
+  // _is_femzipped = FemzipBuffer::is_femzipped(_filename);
+  _is_femzipped = use_femzip;
   if (_is_femzipped) {
     buffer = std::make_shared<FemzipBuffer>(_filename);
   } else {
@@ -161,6 +162,10 @@ RawD3plot::RawD3plot(std::string _filename)
     buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
   }
 #else
+  if (use_femzip)
+    throw(
+      std::invalid_argument("Library was compiled without femzip support."));
+
   const int32_t bytesPerWord = 4;
   buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
 #endif

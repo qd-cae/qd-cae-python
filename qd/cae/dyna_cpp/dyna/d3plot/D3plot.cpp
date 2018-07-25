@@ -32,7 +32,9 @@ namespace qd {
  *                          read_states
  * @param use_femzip : set to true if your d3plot was femzipped
  */
-D3plot::D3plot(std::string _filename, std::vector<std::string> _state_variables)
+D3plot::D3plot(std::string _filename,
+               std::vector<std::string> _state_variables,
+               bool use_femzip)
   : FEMFile(_filename)
   , dyna_ndim(-1)
   , dyna_icode(-1)
@@ -115,7 +117,8 @@ D3plot::D3plot(std::string _filename, std::vector<std::string> _state_variables)
 {
   // check for femzip
 #ifdef QD_USE_FEMZIP
-  _is_femzipped = FemzipBuffer::is_femzipped(_filename);
+  // _is_femzipped = FemzipBuffer::is_femzipped(_filename);
+  _is_femzipped = use_femzip;
   if (_is_femzipped) {
     buffer = std::make_shared<FemzipBuffer>(_filename);
   } else {
@@ -123,6 +126,10 @@ D3plot::D3plot(std::string _filename, std::vector<std::string> _state_variables)
     buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
   }
 #else
+  if (use_femzip)
+    throw(
+      std::invalid_argument("Library was compiled without femzip support."));
+
   const int32_t bytesPerWord = 4;
   buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
 #endif
@@ -152,17 +159,17 @@ D3plot::D3plot(std::string _filename, std::vector<std::string> _state_variables)
  *                    read_states
  * @param use_femzip : set to true if your d3plot was femzipped
  */
-D3plot::D3plot(std::string _filepath, std::string _variable)
-  : D3plot(_filepath, [_variable](std::string) -> std::vector<std::string> {
-
-    if (_variable.empty()) {
-      return std::vector<std::string>();
-    } else {
-      std::vector<std::string> vec = { _variable };
-      return vec;
-    }
-
-  }(_variable))
+D3plot::D3plot(std::string _filepath, std::string _variable, bool use_femzip)
+  : D3plot(_filepath,
+           [_variable](std::string) -> std::vector<std::string> {
+             if (_variable.empty()) {
+               return std::vector<std::string>();
+             } else {
+               std::vector<std::string> vec = { _variable };
+               return vec;
+             }
+           }(_variable),
+           use_femzip)
 {}
 
 /*
@@ -668,6 +675,7 @@ D3plot::read_geometry()
     throw(std::runtime_error(
       "nRigidShells != numrbe: " + std::to_string(nRigidShells) +
       " != " + std::to_string(this->dyna_numrbe)));
+    // this->dyna_numrbe = nRigidShells;
 
 // Solids
 #ifdef QD_DEBUG

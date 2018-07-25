@@ -20,7 +20,8 @@
 #include <dyna_cpp/utility/PythonUtility.hpp>
 #include <dyna_cpp/utility/TextUtility.hpp>
 
-extern "C" {
+extern "C"
+{
 #include <pybind11/numpy.h>
 }
 
@@ -786,43 +787,44 @@ PYBIND11_MODULE(dyna_cpp, m)
   pybind11::class_<D3plot, FEMFile, std::shared_ptr<D3plot>> d3plot_py(
     m, "QD_D3plot", d3plot_description);
   d3plot_py
-    .def(pybind11::init<std::string, std::string>(),
-         "filepath"_a,
-         "read_states"_a = std::string(),
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
-         d3plot_constructor)
-    .def(pybind11::init([](std::string _filepath, pybind11::list _variables) {
-           auto tmp = qd::py::container_to_vector<std::string>(
-             _variables, "An entry of read_states was not of type str");
+    // .def(pybind11::init<std::string, std::string>(),
+    //      "filepath"_a,
+    //      "read_states"_a = std::string(),
+    //      pybind11::call_guard<pybind11::gil_scoped_release>(),
+    //      d3plot_constructor)
+    // .def(pybind11::init([](std::string _filepath, pybind11::list _variables)
+    // {
+    //        auto tmp = qd::py::container_to_vector<std::string>(
+    //          _variables, "An entry of read_states was not of type str");
 
-           pybind11::gil_scoped_release release;
-           return std::make_shared<D3plot>(_filepath, tmp);
-         }),
-         "filepath"_a,
-         "read_states"_a = pybind11::list())
-    .def(pybind11::init([](std::string _filepath, pybind11::tuple _variables) {
-           auto tmp = qd::py::container_to_vector<std::string>(
-             _variables, "An entry of read_states was not of type str");
+    //        pybind11::gil_scoped_release release;
+    //        return std::make_shared<D3plot>(_filepath, tmp);
+    //      }),
+    //      "filepath"_a,
+    //      "read_states"_a = pybind11::list())
+    // .def(pybind11::init([](std::string _filepath, pybind11::tuple _variables)
+    // {
+    //        auto tmp = qd::py::container_to_vector<std::string>(
+    //          _variables, "An entry of read_states was not of type str");
 
-           pybind11::gil_scoped_release release;
-           return std::make_shared<D3plot>(_filepath, tmp);
-         }),
-         "filepath"_a,
-         "read_states"_a = pybind11::tuple())
+    //        pybind11::gil_scoped_release release;
+    //        return std::make_shared<D3plot>(_filepath, tmp);
+    //      }),
+    //      "filepath"_a,
+    //      "read_states"_a = pybind11::tuple())
     // DEPRECATED BEGIN
     .def(
       pybind11::init(
         [](std::string _filepath, pybind11::list _variables, bool use_femzip) {
-
-          std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
-                       "needed anymore and will be "
-                       "removed in the future.\n";
+          // std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
+          //              "needed anymore and will be "
+          //              "removed in the future.\n";
 
           auto tmp = qd::py::container_to_vector<std::string>(
             _variables, "An entry of read_states was not of type str");
 
           pybind11::gil_scoped_release release;
-          return std::make_shared<D3plot>(_filepath, tmp);
+          return std::make_shared<D3plot>(_filepath, tmp, use_femzip);
         }),
       "filepath"_a,
       "read_states"_a = pybind11::list(),
@@ -830,30 +832,28 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def(
       pybind11::init(
         [](std::string _filepath, pybind11::tuple _variables, bool use_femzip) {
-
-          std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
-                       "needed anymore and will be "
-                       "removed in the future.\n";
+          // std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
+          //              "needed anymore and will be "
+          //              "removed in the future.\n";
 
           auto tmp = qd::py::container_to_vector<std::string>(
             _variables, "An entry of read_states was not of type str");
 
           pybind11::gil_scoped_release release;
-          return std::make_shared<D3plot>(_filepath, tmp);
+          return std::make_shared<D3plot>(_filepath, tmp, use_femzip);
         }),
       "filepath"_a,
       "read_states"_a = pybind11::tuple(),
       "use_femzip"_a = false)
     .def(pybind11::init(
            [](std::string _filepath, std::string var_name, bool use_femzip) {
-
-             std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
-                          "needed anymore and will be "
-                          "removed in the future.\n";
+             //  std::cout << "DeprecationWarning: Argument 'use_femzip' is not
+             //  "
+             //               "needed anymore and will be "
+             //               "removed in the future.\n";
 
              pybind11::gil_scoped_release release;
-             return std::make_shared<D3plot>(_filepath, var_name);
-
+             return std::make_shared<D3plot>(_filepath, var_name, use_femzip);
            }),
          "filepath"_a,
          "read_states"_a = std::string(),
@@ -932,8 +932,9 @@ PYBIND11_MODULE(dyna_cpp, m)
   pybind11::class_<RawD3plot, std::shared_ptr<RawD3plot>> raw_d3plot_py(
     m, "QD_RawD3plot");
   raw_d3plot_py
-    .def(pybind11::init<std::string>(),
+    .def(pybind11::init<std::string, bool>(),
          "filepath"_a,
+         "use_femzip"_a = false,
          pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_constructor_description)
     .def(pybind11::init<>())
@@ -1525,7 +1526,6 @@ PYBIND11_MODULE(dyna_cpp, m)
             bool read_generic_keywords,
             bool parse_mesh,
             bool load_includes) {
-
            new (&instance) KeyFile(
              _filepath, read_generic_keywords, parse_mesh, load_includes);
            if (!str_has_content(_filepath))
@@ -1544,7 +1544,6 @@ PYBIND11_MODULE(dyna_cpp, m)
             bool parse_mesh,
             bool load_includes,
             double encryption_detection_threshold) {
-
            if (encryption_detection_threshold != 0.7)
              std::cout << "DeprecationWarning: Argument 'encryption_detection' "
                           "is not needed "

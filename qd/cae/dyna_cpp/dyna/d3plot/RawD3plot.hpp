@@ -150,7 +150,7 @@ private:
   // === P U B L I C === //
 public:
   explicit RawD3plot();
-  explicit RawD3plot(std::string filepath);
+  explicit RawD3plot(std::string filepath, bool use_femzip = false);
   virtual ~RawD3plot();
 
   // disallow copy
