@@ -7,7 +7,8 @@
 #include <string>
 #include <vector>
 
-extern "C" {
+extern "C"
+{
 #include <dyna_cpp/dyna/binout/lsda/lsda.h>
 }
 
@@ -122,7 +123,7 @@ Binout::read_variable(const std::string& path)
   size_t length = 0;
   int32_t type_id = -1;
   int32_t filenum = -1;
-  lsda_queryvar(this->fhandle, &path[0], &type_id, &length, &filenum);
+  lsda_queryvar(this->fhandle, (char*)&path[0], &type_id, &length, &filenum);
   if (type_id < 0)
     throw(std::invalid_argument(
       "Binout.read_variable encountered an error on: " + path));

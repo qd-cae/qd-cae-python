@@ -70,7 +70,7 @@ D3plotBuffer::get_bufferFromFile(std::string filepath)
   fStream.seekg(0, std::ios::end);
   std::streamoff bufferSize = fStream.tellg();
   fStream.seekg(0, std::ios::beg);
-  state_buffer.reserve(bufferSize);
+  state_buffer.resize(bufferSize);
   fStream.read(&state_buffer[0], bufferSize);
   fStream.close();
 
@@ -120,6 +120,7 @@ D3plotBuffer::free_partBuffer(){};
 void
 D3plotBuffer::init_nextState()
 {
+  iStateFile = 0;
 
   if (_current_buffer.size() == 0)
     _current_buffer = D3plotBuffer::get_bufferFromFile(_d3plots[0]);
@@ -135,11 +136,12 @@ D3plotBuffer::init_nextState()
 
   constexpr size_t n_threads = 1;
 
-  _work_queue.init_workers(n_threads);
+  _work_queue.reset();
   for (size_t iFile = 1; iFile < _d3plots.size(); ++iFile) {
     _file_buffer_q.push_back(
       _work_queue.submit(D3plotBuffer::get_bufferFromFile, _d3plots[iFile]));
   }
+  _work_queue.init_workers(n_threads);
 
   // preload buffers
   // for (size_t iFile = _d3plots.size() - 1; iFile > 0; --iFile)
@@ -185,8 +187,7 @@ D3plotBuffer::read_nextState()
 void
 D3plotBuffer::rewind_nextState()
 {
-  iStateFile = 0;
-  _current_buffer = D3plotBuffer::get_bufferFromFile(_d3plots[0]);
+	this->init_nextState();
 }
 
 /*

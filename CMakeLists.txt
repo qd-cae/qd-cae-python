@@ -10,7 +10,7 @@ SET(QD_CAE_DYNA_SRC qd/cae/dyna_cpp/db/FEMFile.cpp
         qd/cae/dyna_cpp/dyna/d3plot/D3plotBuffer.cpp
         qd/cae/dyna_cpp/dyna/d3plot/D3plot.cpp
         qd/cae/dyna_cpp/dyna/d3plot/RawD3plot.cpp
-        qd/cae/dyna_cpp/dyna/d3plot/FemzipBuffer.cpp
+        #qd/cae/dyna_cpp/dyna/d3plot/FemzipBuffer.cpp
         qd/cae/dyna_cpp/dyna/keyfile/KeyFile.cpp
         qd/cae/dyna_cpp/dyna/keyfile/Keyword.cpp
         qd/cae/dyna_cpp/dyna/keyfile/NodeKeyword.cpp
@@ -27,22 +27,23 @@ ADD_LIBRARY( QD_CAE_DYNA_LIB STATIC "${QD_CAE_DYNA_SRC}")
 INCLUDE_DIRECTORIES(qd/cae)
 
 # FEMZIP
-SET(FEMZIP_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64")
+#SET(FEMZIP_LIB_DIR "${CMAKE_SOURCE_DIR}/libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64")
 #LINK_DIRECTORIES(FEMZIP_LIB_DIR)
-SET(FEMZIP_LIBS "${FEMZIP_LIB_DIR}/femunziplib_standard_dyna.lib" 
-                "${FEMZIP_LIB_DIR}/ipp_zlibd.lib" 
-                "${FEMZIP_LIB_DIR}/ippcoremt.lib" 
-                "${FEMZIP_LIB_DIR}/ippdcmt.lib" 
-                "${FEMZIP_LIB_DIR}/ippsmt.lib" 
-                "${FEMZIP_LIB_DIR}/ifwin.lib" 
-                "${FEMZIP_LIB_DIR}/ifconsol.lib" 
-                "${FEMZIP_LIB_DIR}/ippvmmt.lib" 
-                "${FEMZIP_LIB_DIR}/libmmd.lib" 
-                "${FEMZIP_LIB_DIR}/libirc.lib" 
-                "${FEMZIP_LIB_DIR}/svml_dispmd.lib" 
-                "msvcrt") 
-ADD_DEFINITIONS(-DQD_USE_FEMZIP)
-TARGET_LINK_LIBRARIES(QD_CAE_DYNA_LIB "${FEMZIP_LIBS}")
+#SET(FEMZIP_LIBS "${FEMZIP_LIB_DIR}/femunziplib_standard_dyna.lib" 
+#                "${FEMZIP_LIB_DIR}/ipp_zlibd.lib" 
+#                "${FEMZIP_LIB_DIR}/ippcoremt.lib" 
+#                "${FEMZIP_LIB_DIR}/ippdcmt.lib" 
+#                "${FEMZIP_LIB_DIR}/ippsmt.lib" 
+#                "${FEMZIP_LIB_DIR}/ifwin.lib" 
+#                "${FEMZIP_LIB_DIR}/ifconsol.lib" 
+#                "${FEMZIP_LIB_DIR}/ippvmmt.lib" 
+#                "${FEMZIP_LIB_DIR}/libmmd.lib" 
+#                "${FEMZIP_LIB_DIR}/libirc.lib" 
+#                "${FEMZIP_LIB_DIR}/svml_dispmd.lib" 
+#                "msvcrt") 
+#ADD_DEFINITIONS(-DQD_USE_FEMZIP)
+#TARGET_LINK_LIBRARIES(QD_CAE_DYNA_LIB "${FEMZIP_LIBS}")
+TARGET_LINK_LIBRARIES(QD_CAE_DYNA_LIB)
 
 # OPENMP
 find_package(OpenMP)
@@ -54,4 +55,5 @@ endif()
 
 # TEST Executable
 ADD_EXECUTABLE(test_app "${CMAKE_SOURCE_DIR}/test/test_app.cpp")
-TARGET_LINK_LIBRARIES(test_app QD_CAE_DYNA_LIB "${FEMZIP_LIBS}")
+#TARGET_LINK_LIBRARIES(test_app QD_CAE_DYNA_LIB "${FEMZIP_LIBS}")
+TARGET_LINK_LIBRARIES(test_app QD_CAE_DYNA_LIB)

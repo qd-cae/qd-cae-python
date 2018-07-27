@@ -1353,8 +1353,6 @@ read_initialize(LSDAFile* daf, int keepst)
   } else {
     sprintf(base_directory, ".");
   }
-#elseif
-
 #endif
 
   for (i = 0; i == 0 || i < org_num_list; i++) {
@@ -3590,7 +3588,7 @@ finddirmatch(char* name, DIR* dp)
 again:
   while (file = readdir(dp)) {
 
-  //  return this file if it is of the form "name%XXXX"
+    //  return this file if it is of the form "name%XXXX"
 
 #ifdef _WIN32
     return file->d_name;
