@@ -118,6 +118,7 @@ D3plotBuffer::free_partBuffer(){};
 void
 D3plotBuffer::init_nextState()
 {
+  iStateFile = 0;
 
   if (this->current_buffer.size() == 0) {
     this->current_buffer = D3plotBuffer::get_bufferFromFile(d3plots[0]);
@@ -177,7 +178,7 @@ void
 D3plotBuffer::rewind_nextState()
 {
   iStateFile = 0;
-  this->current_buffer = D3plotBuffer::get_bufferFromFile(d3plots[0]);
+  init_nextState();
 }
 
 /*
