@@ -1,6 +1,9 @@
 
 import os
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 import h5py
+warnings.resetwarnings()
 import numpy as np
 from qd.cae.dyna import QD_RawD3plot
 

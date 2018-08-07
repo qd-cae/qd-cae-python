@@ -1832,7 +1832,8 @@ PYBIND11_MODULE(dyna_cpp, m)
          &KeyFile::get_end_keyword_position,
          pybind11::return_value_policy::take_ownership);
 
-  // Binout
+// Binout
+#ifdef QD_USE_C_BINOUT
   const char* empty_description = { "\0" };
   pybind11::class_<Binout, std::shared_ptr<Binout>> binout_py(
     m, "QD_Binout", empty_description);
@@ -1863,7 +1864,6 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def(
       "read_variable",
       [](std::shared_ptr<Binout> self, const std::string& path) {
-
         // what do we have?
         auto type_id = self->get_type_id(path);
 
@@ -1899,9 +1899,9 @@ PYBIND11_MODULE(dyna_cpp, m)
             throw(std::invalid_argument("Path points to something ... I "
                                         "honestly don't know what exactly."));
         }
-
       },
       "path"_a);
+#endif
 
   // module functions
   m.def("get_file_entropy",

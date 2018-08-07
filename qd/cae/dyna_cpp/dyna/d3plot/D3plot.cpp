@@ -1956,7 +1956,7 @@ D3plot::read_states_elem4(size_t iState)
     return;
 
   // prepare looping
-  int32_t start =
+  const int32_t start =
     this->wordPosition + 1 // time
     + dyna_nglbv +
     ((dyna_iu + dyna_iv + dyna_ia) * dyna_ndim + own_has_mass_scaling_info) *
@@ -1966,10 +1966,10 @@ D3plot::read_states_elem4(size_t iState)
   wordsToRead = dyna_nv2d * (dyna_nel4 - dyna_numrbe);
 
   // offsets
-  int32_t iPlastStrainOffset = this->dyna_ioshl1 * 6; // stresses before?
-  int32_t iHistoryOffset =
+  const int32_t iPlastStrainOffset = this->dyna_ioshl1 * 6; // stresses before?
+  const int32_t iHistoryOffset =
     iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
-  int32_t iLayerSize = dyna_neips + iHistoryOffset;
+  const int32_t iLayerSize = dyna_neips + iHistoryOffset;
 
   const auto nElements_shell = static_cast<int64_t>(
     get_db_elements()->get_nElements(Element::ElementType::SHELL));
@@ -1989,13 +1989,14 @@ D3plot::read_states_elem4(size_t iState)
     std::vector<std::vector<float>> layers_history(
       this->history_shell_read.size(), std::vector<float>(dyna_maxint));
 
-    // Do the thing ...
-    // size_t iElement = 0;
-    // for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
-#pragma omp for schedule(dynamic)
+// Do the thing ...
+// size_t iElement = 0;
+// for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
+// #pragma omp for schedule(dynamic)
+#pragma omp for
     for (int32_t iElement = 0; iElement < nElements_shell; ++iElement) {
 
-      auto ii = start + iElement * dyna_nv2d;
+      const auto ii = start + iElement * dyna_nv2d;
 
       // get element (and check for rigidity)
       auto element =
@@ -2007,14 +2008,7 @@ D3plot::read_states_elem4(size_t iState)
 
       // LOOP: LAYERS
       for (int32_t iLayer = 0; iLayer < dyna_maxint; ++iLayer) {
-        int32_t layerStart = ii + iLayer * iLayerSize;
-
-        // LAYER: PLASTIC_STRAIN
-        if ((this->plastic_strain_read) && (dyna_ioshl2)) {
-
-          layers_plastic_strain[iLayer] =
-            this->buffer->read_float(layerStart + iPlastStrainOffset);
-        }
+        const int32_t layerStart = ii + iLayer * iLayerSize;
 
         // LAYER: STRESS TENSOR AND MISES
         if ((this->stress_read || this->stress_mises_read) && (dyna_ioshl1)) {
@@ -2037,6 +2031,13 @@ D3plot::read_states_elem4(size_t iState)
           }
 
         } // end:stress
+
+        // LAYER: PLASTIC_STRAIN
+        if ((this->plastic_strain_read) && (dyna_ioshl2)) {
+
+          layers_plastic_strain[iLayer] =
+            this->buffer->read_float(layerStart + iPlastStrainOffset);
+        }
 
         // LAYERS: HISTORY SHELL
         if (this->dyna_neips) {
@@ -2111,7 +2112,7 @@ D3plot::read_states_elem4(size_t iState)
       }
       */
 
-      ii += dyna_nv2d;
+      // ii += dyna_nv2d;
     } // for elements
   }   // pragma omp parallel
 }

@@ -19,9 +19,9 @@ except ImportError:
 femzip_path_windows = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
 femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
-debugging_mode = False
+debugging_mode = True
 measure_time = False
-use_openmp = True
+use_openmp = False
 version = "0.8.1"
 # =============================== #
 is_windows = (platform.system() == "Windows")
@@ -119,7 +119,9 @@ def setup_dyna_cpp_binout(srcs, compiler_args):
             "qd/cae/dyna_cpp/dyna/binout/lsda/lsdaf2c.c"] + srcs
 
     if is_linux:
-        compiler_args += ["-fpermissive"]
+        compiler_args += ["-fpermissive", "-DQD_USE_C_BINOUT"]
+    elif is_windows:
+        compiler_args += ["/DQD_USE_C_BINOUT"]
 
     return srcs, compiler_args
 
@@ -221,8 +223,8 @@ if __name__ == "__main__":
     srcs_dyna, include_dirs_dyna, compiler_args_dyna, extra_link_args, libs_dyna = setup_dyna_cpp()
 
     # compile binout
-    srcs_dyna, compiler_args_dyna = setup_dyna_cpp_binout(
-        srcs_dyna, compiler_args_dyna)
+    # srcs_dyna, compiler_args_dyna = setup_dyna_cpp_binout(
+    #     srcs_dyna, compiler_args_dyna)
 
     # setup hdf5
     # (MUST be before femzip, due to linking)
