@@ -25,6 +25,20 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 08.08.2018*
+Version 0.8.1
+
+**This is an extreme bugfix version.**  The goal was to bring back a high stability to the code, which was decreasing throughout the most recent versions. In the future this repo will try to keep stability much higher.
+
+qd.cae.dyna:
+ - `RawD3plot` state reading was fixed to read multiple states correctly again
+ - OpenMP was disabled for causing random bugs and instability on Windows and runtime issues on Linux for sometimes using the wrong OpenMP library.
+ - D3Part reading with rigid shells is now correct
+ - Automatic Femzip detection was disabled for causing too many instabilities. The `use_femzip` flag is thus not deprecated anymore.
+ - `D3plot.read_states` was broken due to a threading issue. The consequence was that for some files the states were not read.
+ - `D3plot.read_states` shell mode `middle` was broken and is now fixed.
+
+
 *Changelog 02.06.2018*
 Version 0.8.0
 
@@ -51,15 +65,6 @@ qd.cae.dyna:
  - `D3plot` now automatically detects femzip compressed files (argument `use_femzip` is now deprecated).
  - `KeyFile` encryption detection checks now for '-----BEGIN PGP MESSAGE-----' and does not compute the entropy anymore (argument `encryption_detection` is now deprecated).
  - Along with a lot of new features we also introduced a lot of new bugs so that we don't get bored
- 
-
-*Changelog 18.04.2018*
-Version 0.7.2
-
-This is a bugfix version.
-
-qd.cae.dyna:
- - Fix: Reading a `KeyFile` with `parse_mesh=True` and *SOLID in the new format was skipping lines wrongly
 
 
 # Documentation

@@ -44,6 +44,7 @@ private:
 public:
   explicit WorkQueue();
   virtual ~WorkQueue();
+  void reset();
   void init_workers(size_t num_workers = 0);
   void abort();
   void stop();

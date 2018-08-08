@@ -114,6 +114,53 @@ Binout::is_variable(const std::string& _path)
   }
 }
 
+/** Get the type id of the path element
+ *
+ * @return type_id
+ *
+ */
+Binout::EntryType
+Binout::get_type_id(std::string path)
+{
+
+  if (!this->exists(path))
+    throw(std::invalid_argument("path " + path + " does not exist."));
+
+  size_t length = 0;
+  int32_t type_id = -1;
+  int32_t filenum = -1;
+  lsda_queryvar(this->fhandle, &path[0], &type_id, &length, &filenum);
+
+  switch (type_id) {
+    case 0:
+      return EntryType::DIRECTORY;
+    case 1:
+      return EntryType::INT8;
+    case 2:
+      return EntryType::INT16;
+    case 3:
+      return EntryType::INT32;
+    case 4:
+      return EntryType::INT64;
+    case 5:
+      return EntryType::UINT8;
+    case 6:
+      return EntryType::UINT16;
+    case 7:
+      return EntryType::UINT32;
+    case 8:
+      return EntryType::UINT64;
+    case 9:
+      return EntryType::FLOAT32;
+    case 10:
+      return EntryType::FLOAT64;
+    case 11:
+      return EntryType::LINK;
+    default:
+      return EntryType::UNKNOWN;
+  }
+}
+
 /** get the labels in a directory in the binout
  * @param _path
  * @return list : list of names
@@ -122,7 +169,7 @@ std::vector<std::string>
 Binout::get_children(const std::string& _path)
 {
   LSDA_Length nChildren = 0; // == size_t
-  const int follow = 0;
+  constexpr int follow = 0;
 
   char** names = lsda_get_children_names(
     this->fhandle, (char*)&_path[0], follow, &nChildren);

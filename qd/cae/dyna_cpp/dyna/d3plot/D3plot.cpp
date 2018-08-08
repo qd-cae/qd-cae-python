@@ -32,8 +32,11 @@ namespace qd {
  *                          read_states
  * @param use_femzip : set to true if your d3plot was femzipped
  */
-D3plot::D3plot(std::string _filename, std::vector<std::string> _state_variables)
+D3plot::D3plot(std::string _filename,
+               std::vector<std::string> _state_variables,
+               bool use_femzip)
   : FEMFile(_filename)
+  , dyna_filetype(-1)
   , dyna_ndim(-1)
   , dyna_icode(-1)
   , dyna_numnp(-1)
@@ -113,9 +116,10 @@ D3plot::D3plot(std::string _filename, std::vector<std::string> _state_variables)
   , vel_read(0)
   , buffer(nullptr)
 {
-  // check for femzip
+// check for femzip
 #ifdef QD_USE_FEMZIP
-  _is_femzipped = FemzipBuffer::is_femzipped(_filename);
+  // _is_femzipped = FemzipBuffer::is_femzipped(_filename);
+  _is_femzipped = use_femzip;
   if (_is_femzipped) {
     buffer = std::make_shared<FemzipBuffer>(_filename);
   } else {
@@ -123,6 +127,10 @@ D3plot::D3plot(std::string _filename, std::vector<std::string> _state_variables)
     buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
   }
 #else
+  if (use_femzip)
+    throw(
+      std::invalid_argument("Library was compiled without femzip support."));
+
   const int32_t bytesPerWord = 4;
   buffer = std::make_shared<D3plotBuffer>(_filename, bytesPerWord);
 #endif
@@ -152,17 +160,17 @@ D3plot::D3plot(std::string _filename, std::vector<std::string> _state_variables)
  *                    read_states
  * @param use_femzip : set to true if your d3plot was femzipped
  */
-D3plot::D3plot(std::string _filepath, std::string _variable)
-  : D3plot(_filepath, [_variable](std::string) -> std::vector<std::string> {
-
-    if (_variable.empty()) {
-      return std::vector<std::string>();
-    } else {
-      std::vector<std::string> vec = { _variable };
-      return vec;
-    }
-
-  }(_variable))
+D3plot::D3plot(std::string _filepath, std::string _variable, bool use_femzip)
+  : D3plot(_filepath,
+           [_variable](std::string) -> std::vector<std::string> {
+             if (_variable.empty()) {
+               return std::vector<std::string>();
+             } else {
+               std::vector<std::string> vec = { _variable };
+               return vec;
+             }
+           }(_variable),
+           use_femzip)
 {}
 
 /*
@@ -187,12 +195,12 @@ D3plot::read_header()
   std::cout << "> HEADER " << std::endl;
 #endif
 
-  int32_t filetype = this->buffer->read_int(11);
-  if (filetype > 1000) {
-    filetype -= 1000;
+  dyna_filetype = this->buffer->read_int(11);
+  if (dyna_filetype > 1000) {
+    dyna_filetype -= 1000;
     own_external_numbers_I8 = true;
   }
-  if ((filetype != 1) && (filetype != 5)) {
+  if ((dyna_filetype != 1) && (dyna_filetype != 5)) {
     throw(std::runtime_error(
       "Wrong filetype " + std::to_string(this->buffer->read_int(11)) +
       " != 1 (or 5) in header of d3plot. Your file might be in Double "
@@ -664,10 +672,11 @@ D3plot::read_geometry()
   std::cout << this->get_db_elements()->get_nElements(Element::SHELL)
             << " done." << std::endl;
 #endif
-  if (nRigidShells != this->dyna_numrbe)
-    throw(std::runtime_error(
-      "nRigidShells != numrbe: " + std::to_string(nRigidShells) +
-      " != " + std::to_string(this->dyna_numrbe)));
+  // if (dyna_filetype == 1 && nRigidShells != this->dyna_numrbe)
+  // throw(std::runtime_error(
+  //   "nRigidShells != numrbe: " + std::to_string(nRigidShells) +
+  //   " != " + std::to_string(this->dyna_numrbe)));
+  // this->dyna_numrbe = nRigidShells;
 
 // Solids
 #ifdef QD_DEBUG
@@ -1084,15 +1093,15 @@ std::vector<int32_t>
 D3plot::read_part_ids()
 {
 
-  /*
-   * Indeed this is a little complicated: usually the file should contain
-   * as many materials as in the input but somehow dyna generates a few
-   * ghost materials itself and those are appended with a 0 ID. Therefore
-   * the length should be nMaterials but it's d3plot_nmmat with:
-   * nMaterials < d3plot_nmmat. The difference are the ghost mats.
-   * Took some time to find that out ... and I don't know why ...
-   * oh and it is undocumented ...
-   */
+/*
+ * Indeed this is a little complicated: usually the file should contain
+ * as many materials as in the input but somehow dyna generates a few
+ * ghost materials itself and those are appended with a 0 ID. Therefore
+ * the length should be nMaterials but it's d3plot_nmmat with:
+ * nMaterials < d3plot_nmmat. The difference are the ghost mats.
+ * Took some time to find that out ... and I don't know why ...
+ * oh and it is undocumented ...
+ */
 
 #ifdef QD_DEBUG
   std::cout << "Reading part numbering at word " << wordPosition << " ... ";
@@ -1948,7 +1957,7 @@ D3plot::read_states_elem4(size_t iState)
     return;
 
   // prepare looping
-  int32_t start =
+  const int32_t start =
     this->wordPosition + 1 // time
     + dyna_nglbv +
     ((dyna_iu + dyna_iv + dyna_ia) * dyna_ndim + own_has_mass_scaling_info) *
@@ -1958,15 +1967,15 @@ D3plot::read_states_elem4(size_t iState)
   wordsToRead = dyna_nv2d * (dyna_nel4 - dyna_numrbe);
 
   // offsets
-  int32_t iPlastStrainOffset = this->dyna_ioshl1 * 6; // stresses before?
-  int32_t iHistoryOffset =
+  const int32_t iPlastStrainOffset = this->dyna_ioshl1 * 6; // stresses before?
+  const int32_t iHistoryOffset =
     iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
-  int32_t iLayerSize = dyna_neips + iHistoryOffset;
+  const int32_t iLayerSize = dyna_neips + iHistoryOffset;
 
-  const auto nElements_shell = static_cast<int64_t>(
-    get_db_elements()->get_nElements(Element::ElementType::SHELL));
+  // const auto nElements_shell = static_cast<int64_t>(
+  //   get_db_elements()->get_nElements(Element::ElementType::SHELL));
 
-#pragma omp parallel
+  // #pragma omp parallel
   {
 
     // helpful vars
@@ -1982,31 +1991,33 @@ D3plot::read_states_elem4(size_t iState)
       this->history_shell_read.size(), std::vector<float>(dyna_maxint));
 
     // Do the thing ...
-    // size_t iElement = 0;
-    // for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
-#pragma omp for schedule(dynamic)
-    for (int32_t iElement = 0; iElement < nElements_shell; ++iElement) {
+    size_t iElement = 0;
+    for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
 
-      auto ii = start + iElement * dyna_nv2d;
+      // #pragma omp for schedule(dynamic)
+      // #pragma omp for
+      // for (int32_t iElement = 0; iElement < nElements_shell; ++iElement) {
+
+      // auto ii = start + element_offsets[iElement];
+      // const auto ii = start + iElement * dyna_nv2d;
 
       // get element (and check for rigidity)
       auto element =
         this->get_db_elements()->get_elementByIndex(Element::SHELL, iElement);
-      if (element->get_is_rigid()) {
+
+      // Fix:
+      // Interestingly, dyna seems to write result values for rigid shells in
+      // the d3part file, but not in the d3plot. Of course this is not
+      // documented ...
+      // 5 -> d3part
+      if (dyna_filetype != 5 && element->get_is_rigid()) {
         // does not increment ii, but iElement!!!!!
         continue;
       }
 
       // LOOP: LAYERS
       for (int32_t iLayer = 0; iLayer < dyna_maxint; ++iLayer) {
-        int32_t layerStart = ii + iLayer * iLayerSize;
-
-        // LAYER: PLASTIC_STRAIN
-        if ((this->plastic_strain_read) && (dyna_ioshl2)) {
-
-          layers_plastic_strain[iLayer] =
-            this->buffer->read_float(layerStart + iPlastStrainOffset);
-        }
+        const int32_t layerStart = ii + iLayer * iLayerSize;
 
         // LAYER: STRESS TENSOR AND MISES
         if ((this->stress_read || this->stress_mises_read) && (dyna_ioshl1)) {
@@ -2029,6 +2040,13 @@ D3plot::read_states_elem4(size_t iState)
           }
 
         } // end:stress
+
+        // LAYER: PLASTIC_STRAIN
+        if ((this->plastic_strain_read) && (dyna_ioshl2)) {
+
+          layers_plastic_strain[iLayer] =
+            this->buffer->read_float(layerStart + iPlastStrainOffset);
+        }
 
         // LAYERS: HISTORY SHELL
         if (this->dyna_neips) {
@@ -2096,9 +2114,9 @@ D3plot::read_states_elem4(size_t iState)
       if (this->energy_read && dyna_ioshl4) {
         if (dyna_istrn == 1) {
           if (dyna_nv2d >= 45)
-            element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
-        } else {
-          element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
+            element->add_energy(this->buffer->read_float(ii + dyna_nv2d -
+      1)); } else { element->add_energy(this->buffer->read_float(ii +
+      dyna_nv2d - 1));
         }
       }
       */

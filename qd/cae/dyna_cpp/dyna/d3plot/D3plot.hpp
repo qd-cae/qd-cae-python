@@ -28,6 +28,8 @@ private:
   std::string dyna_title;
   std::string dyna_datetime; // BUGGY
 
+  int32_t dyna_filetype; // filetype, 1=d3plot, 5=d3part, 3=d3thdt
+
   int32_t dyna_ndim;   // dimension parameter
   int32_t dyna_icode;  // finite element code, should be 6
   int32_t dyna_numnp;  // number of nodes
@@ -178,8 +180,11 @@ private:
 public:
   explicit D3plot(
     std::string filepath,
-    std::vector<std::string> _variables = std::vector<std::string>());
-  explicit D3plot(std::string filepath, std::string _variables = std::string());
+    std::vector<std::string> _variables = std::vector<std::string>(),
+    bool use_femzip = false);
+  explicit D3plot(std::string filepath,
+                  std::string _variables = std::string(),
+                  bool use_femzip = false);
   virtual ~D3plot();
   void info() const;
   void read_states(std::vector<std::string> _variables);
