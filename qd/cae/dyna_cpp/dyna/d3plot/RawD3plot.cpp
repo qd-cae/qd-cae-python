@@ -21,7 +21,8 @@
 namespace qd {
 
 RawD3plot::RawD3plot()
-  : dyna_ndim(-1)
+  : dyna_filetype(-1)
+  , dyna_ndim(-1)
   , dyna_icode(-1)
   , dyna_numnp(-1)
   , dyna_mdlopt(-1)
@@ -126,6 +127,7 @@ RawD3plot::RawD3plot(std::string _filename, bool use_femzip)
   , dyna_extra(-1)
   , dyna_numprop(-1)
   , dyna_numrbe(-1)
+  , dyna_irbtyp(std::make_shared<Tensor<int32_t>>())
   , dyna_nmsph(-1)
   , dyna_ngpsph(-1)
   , dyna_ialemat(-1)
@@ -196,12 +198,12 @@ RawD3plot::read_header()
   std::cout << "> HEADER " << std::endl;
 #endif
 
-  int32_t filetype = this->buffer->read_int(11);
-  if (filetype > 1000) {
-    filetype -= 1000;
+  dyna_filetype = this->buffer->read_int(11);
+  if (dyna_filetype > 1000) {
+    dyna_filetype -= 1000;
     own_external_numbers_I8 = true;
   }
-  if ((filetype != 1) && (filetype != 5)) {
+  if ((dyna_filetype != 1) && (dyna_filetype != 5)) {
     throw(std::runtime_error(
       "Wrong filetype " + std::to_string(this->buffer->read_int(11)) +
       " != 1 (or 5) in header of d3plot. Your file might be in Double "
@@ -475,10 +477,8 @@ RawD3plot::read_matsection()
   }
 
   int32_t start = wordPosition + 2;
-  int32_t end = start + tmp_nummat;
   dyna_irbtyp->resize({ static_cast<size_t>(tmp_nummat) });
-  this->buffer->read_array<int32_t>(
-    start, end - start, dyna_irbtyp->get_data());
+  this->buffer->read_array<int32_t>(start, tmp_nummat, dyna_irbtyp->get_data());
   int_data.insert(std::make_pair("material_type_numbers", dyna_irbtyp));
 
   this->wordPosition += 2 + tmp_nummat;
@@ -973,15 +973,15 @@ void
 RawD3plot::read_part_ids()
 {
 
-  /*
-   * Indeed this is a little complicated: usually the file should contain
-   * as many materials as in the input but somehow dyna generates a few
-   * ghost materials itself and those are appended with a 0 ID. Therefore
-   * the length should be nMaterials but it's d3plot_nmmat with:
-   * nMaterials < d3plot_nmmat. The difference are the ghost mats.
-   * Took some time to find that out ... and I don't know why ...
-   * oh and it is undocumented ...
-   */
+/*
+ * Indeed this is a little complicated: usually the file should contain
+ * as many materials as in the input but somehow dyna generates a few
+ * ghost materials itself and those are appended with a 0 ID. Therefore
+ * the length should be nMaterials but it's d3plot_nmmat with:
+ * nMaterials < d3plot_nmmat. The difference are the ghost mats.
+ * Took some time to find that out ... and I don't know why ...
+ * oh and it is undocumented ...
+ */
 
 #ifdef QD_DEBUG
   std::cout << "Reading part ids at word " << wordPosition << " ... ";
@@ -1306,8 +1306,13 @@ RawD3plot::read_states_displacement()
 #endif
 
   // do the magic thing
-  auto tensor = std::make_shared<Tensor<float>>();
-  float_data.insert(std::make_pair(var_name, tensor));
+  std::shared_ptr<Tensor<float>> tensor = nullptr;
+  if (float_data.find(var_name) == float_data.end()) {
+    tensor = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair(var_name, tensor));
+  } else {
+    tensor = float_data[var_name];
+  }
   auto shape = tensor->get_shape();
   if (shape.size() == 0) {
     shape = { 0, static_cast<size_t>(dyna_numnp), 3 };
@@ -1341,8 +1346,13 @@ RawD3plot::read_states_velocity()
   std::cout << "> read_states_velocity at " << start << std::endl;
 #endif
 
-  auto tensor = std::make_shared<Tensor<float>>();
-  float_data.insert(std::make_pair(var_name, tensor));
+  std::shared_ptr<Tensor<float>> tensor = nullptr;
+  if (float_data.find(var_name) == float_data.end()) {
+    tensor = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair(var_name, tensor));
+  } else {
+    tensor = float_data[var_name];
+  }
   auto shape = tensor->get_shape();
   if (shape.size() == 0) {
     shape = { 0, static_cast<size_t>(dyna_numnp), 3 };
@@ -1375,8 +1385,13 @@ RawD3plot::read_states_acceleration()
   std::cout << "> read_states_acceleration at " << start << std::endl;
 #endif
 
-  auto tensor = std::make_shared<Tensor<float>>();
-  float_data.insert(std::make_pair(var_name, tensor));
+  std::shared_ptr<Tensor<float>> tensor = nullptr;
+  if (float_data.find(var_name) == float_data.end()) {
+    tensor = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair(var_name, tensor));
+  } else {
+    tensor = float_data[var_name];
+  }
   auto shape = tensor->get_shape();
   if (shape.size() == 0) {
     shape = { 0, static_cast<size_t>(dyna_numnp), 3 };
@@ -1413,8 +1428,13 @@ RawD3plot::read_states_elem8()
 #endif
 
   // allocate
-  auto tensor = std::make_shared<Tensor<float>>();
-  float_data.insert(std::make_pair(var_name, tensor));
+  std::shared_ptr<Tensor<float>> tensor = nullptr;
+  if (float_data.find(var_name) == float_data.end()) {
+    tensor = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair(var_name, tensor));
+  } else {
+    tensor = float_data[var_name];
+  }
   auto shape = tensor->get_shape();
   if (shape.size() == 0) {
     shape = {
@@ -1467,9 +1487,14 @@ RawD3plot::read_states_elem4()
   size_t nNormalVars_unsigned = static_cast<size_t>(nNormalVars);
 
   // allocate
-  auto shell_layer_vars = std::make_shared<Tensor<float>>();
-  float_data.insert(
-    std::make_pair("elem_shell_results_layers", shell_layer_vars));
+  std::shared_ptr<Tensor<float>> shell_layer_vars = nullptr;
+  if (float_data.find("elem_shell_results_layers") == float_data.end()) {
+    shell_layer_vars = std::make_shared<Tensor<float>>();
+    float_data.insert(
+      std::make_pair("elem_shell_results_layers", shell_layer_vars));
+  } else {
+    shell_layer_vars = float_data["elem_shell_results_layers"];
+  }
   auto shape = shell_layer_vars->get_shape();
   if (shape.size() == 0) {
     shape = { 0,
@@ -1481,8 +1506,14 @@ RawD3plot::read_states_elem4()
   auto offset_shell_layer_vars = shell_layer_vars->size();
   shell_layer_vars->resize(shape);
 
-  auto shell_vars = std::make_shared<Tensor<float>>();
-  float_data.insert(std::make_pair("elem_shell_results", shell_vars));
+  std::shared_ptr<Tensor<float>> shell_vars = nullptr;
+  if (float_data.find("elem_shell_results") == float_data.end()) {
+    shell_vars = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair("elem_shell_results", shell_vars));
+  } else {
+    shell_vars = float_data["elem_shell_results"];
+  }
+
   auto shape2 = shell_vars->get_shape();
   if (shape2.size() == 0) {
     shape2 = {
@@ -1545,9 +1576,14 @@ RawD3plot::read_states_elem4th()
   size_t nNormalVars_unsigned = static_cast<size_t>(nNormalVars);
 
   // allocate
-  auto tshell_layer_vars = std::make_shared<Tensor<float>>();
-  float_data.insert(
-    std::make_pair("elem_tshell_results_layers", tshell_layer_vars));
+  std::shared_ptr<Tensor<float>> tshell_layer_vars = nullptr;
+  if (float_data.find("elem_tshell_results_layers") == float_data.end()) {
+    tshell_layer_vars = std::make_shared<Tensor<float>>();
+    float_data.insert(
+      std::make_pair("elem_tshell_results_layers", tshell_layer_vars));
+  } else {
+    tshell_layer_vars = float_data["elem_tshell_results_layers"];
+  }
   auto shape = tshell_layer_vars->get_shape();
   if (shape.size() == 0) {
     shape = { 0,
@@ -1559,8 +1595,13 @@ RawD3plot::read_states_elem4th()
   auto offset_tshell_layer_vars = tshell_layer_vars->size();
   tshell_layer_vars->resize(shape);
 
-  auto tshell_vars = std::make_shared<Tensor<float>>();
-  float_data.insert(std::make_pair("elem_tshell_results", tshell_vars));
+  std::shared_ptr<Tensor<float>> tshell_vars = nullptr;
+  if (float_data.find("elem_tshell_results") == float_data.end()) {
+    tshell_vars = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair("elem_tshell_results", tshell_vars));
+  } else {
+    tshell_vars = float_data["elem_tshell_results"];
+  }
   auto shape2 = tshell_vars->get_shape();
   if (shape2.size() == 0) {
     shape2 = {
@@ -1613,9 +1654,16 @@ RawD3plot::read_states_elem2()
   std::cout << "> read_states_elem2 at " << start << std::endl;
 #endif
 
+  const std::string var_name = "elem_beam_results";
+
   // allocate
-  auto tensor = std::make_shared<Tensor<float>>();
-  float_data.insert(std::make_pair("elem_beam_results", tensor));
+  std::shared_ptr<Tensor<float>> tensor = nullptr;
+  if (float_data.find(var_name) == float_data.end()) {
+    tensor = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair(var_name, tensor));
+  } else {
+    tensor = float_data[var_name];
+  }
   auto shape = tensor->get_shape();
   if (shape.size() == 0) {
     shape = {
@@ -1648,8 +1696,15 @@ RawD3plot::read_states_elem_deletion()
   // Node deletion info
   if (dyna_mdlopt == 1) {
 
-    auto tensor = std::make_shared<Tensor<float>>();
-    float_data.insert(std::make_pair("node_deletion_info", tensor));
+    const std::string var_name = "node_deletion_info";
+
+    std::shared_ptr<Tensor<float>> tensor = nullptr;
+    if (float_data.find(var_name) == float_data.end()) {
+      tensor = std::make_shared<Tensor<float>>();
+      float_data.insert(std::make_pair(var_name, tensor));
+    } else {
+      tensor = float_data[var_name];
+    }
 
     auto shape = tensor->get_shape();
     if (shape.size() == 0)
@@ -1683,8 +1738,13 @@ RawD3plot::read_states_elem_deletion()
       if (wordsToRead < 1)
         continue;
 
-      auto tensor = std::make_shared<Tensor<float>>();
-      float_data.insert(std::make_pair(field_name, tensor));
+      std::shared_ptr<Tensor<float>> tensor = nullptr;
+      if (float_data.find(field_name) == float_data.end()) {
+        tensor = std::make_shared<Tensor<float>>();
+        float_data.insert(std::make_pair(field_name, tensor));
+      } else {
+        tensor = float_data[field_name];
+      }
 
       auto shape = tensor->get_shape();
       if (shape.size() == 0)
@@ -1769,9 +1829,14 @@ RawD3plot::read_states_airbag()
   wordsToRead = dyna_airbag_npartgas * dyna_airbag_state_geom;
 
   // allocate
-  auto tensor_float = std::make_shared<Tensor<float>>();
-  float_data.insert(
-    std::make_pair("airbag_geom_state_float_results", tensor_float));
+  const std::string tensor_float_name = "airbag_geom_state_float_results";
+  std::shared_ptr<Tensor<float>> tensor_float = nullptr;
+  if (float_data.find(tensor_float_name) == float_data.end()) {
+    tensor_float = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair(tensor_float_name, tensor_float));
+  } else {
+    tensor_float = float_data[tensor_float_name];
+  }
   auto shape = tensor_float->get_shape();
   if (shape.size() == 0) {
     shape = { 0,
@@ -1783,8 +1848,14 @@ RawD3plot::read_states_airbag()
   tensor_float->resize(shape);
   auto& tensor_float_vec = tensor_float->get_data();
 
-  auto tensor_int = std::make_shared<Tensor<int32_t>>();
-  int_data.insert(std::make_pair("airbag_geom_state_int_results", tensor_int));
+  const std::string tensor_int_name = "airbag_geom_state_int_results";
+  std::shared_ptr<Tensor<int32_t>> tensor_int = nullptr;
+  if (int_data.find(tensor_int_name) == int_data.end()) {
+    tensor_int = std::make_shared<Tensor<int32_t>>();
+    int_data.insert(std::make_pair(tensor_int_name, tensor_int));
+  } else {
+    tensor_int = int_data[tensor_int_name];
+  }
   shape = tensor_int->get_shape();
   if (shape.size() == 0) {
     shape = { 0,
@@ -1833,9 +1904,14 @@ RawD3plot::read_states_airbag()
   // 14. z velocity
 
   // allocate
-  auto tensor_float2 = std::make_shared<Tensor<float>>();
-  float_data.insert(
-    std::make_pair("airbag_particle_float_results", tensor_float2));
+  const std::string tensor_float2_name = "airbag_particle_float_results";
+  std::shared_ptr<Tensor<float>> tensor_float2 = nullptr;
+  if (float_data.find(tensor_float2_name) == float_data.end()) {
+    tensor_float2 = std::make_shared<Tensor<float>>();
+    float_data.insert(std::make_pair(tensor_float2_name, tensor_float2));
+  } else {
+    tensor_float2 = float_data[tensor_float2_name];
+  }
   shape = tensor_float2->get_shape();
   if (shape.size() == 0) {
     shape = {
@@ -1849,8 +1925,14 @@ RawD3plot::read_states_airbag()
   tensor_float2->resize(shape);
   auto& tensor_float_vec2 = tensor_float2->get_data();
 
-  auto tensor_int2 = std::make_shared<Tensor<int32_t>>();
-  int_data.insert(std::make_pair("airbag_particle_int_results", tensor_int2));
+  const std::string tensor_int2_name = "airbag_particle_int_results";
+  std::shared_ptr<Tensor<int32_t>> tensor_int2 = nullptr;
+  if (int_data.find(tensor_int2_name) == int_data.end()) {
+    tensor_int2 = std::make_shared<Tensor<int32_t>>();
+    int_data.insert(std::make_pair(tensor_int2_name, tensor_int2));
+  } else {
+    tensor_int2 = int_data[tensor_int2_name];
+  }
   shape = tensor_int2->get_shape();
   if (shape.size() == 0) {
     shape = {

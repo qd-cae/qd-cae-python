@@ -238,7 +238,10 @@ MathUtility::middle(const std::vector<T>& _vec)
 
   auto mid = _vec.size() / 2;
   auto rest = _vec.size() % 2;
-  return (_vec[mid] + _vec[mid + rest]) / ((T)2);
+  if (rest)
+    return _vec[mid];
+  else
+    return (_vec[mid] + _vec[mid + 1]) / (static_cast<T>(2));
 }
 
 /** Compute the max of a vector

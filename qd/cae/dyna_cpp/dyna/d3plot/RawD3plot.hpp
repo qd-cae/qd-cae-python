@@ -21,6 +21,8 @@ private:
   std::string dyna_title;
   std::string dyna_datetime; // missing
 
+  int32_t dyna_filetype; // filetype, 1=d3plot, 5=d3part, 3=d3thdt
+
   int32_t dyna_ndim;   // dimension parameter
   int32_t dyna_icode;  // finite element code, should be 6
   int32_t dyna_numnp;  // number of nodes

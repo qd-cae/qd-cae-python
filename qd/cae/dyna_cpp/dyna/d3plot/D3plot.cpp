@@ -36,6 +36,7 @@ D3plot::D3plot(std::string _filename,
                std::vector<std::string> _state_variables,
                bool use_femzip)
   : FEMFile(_filename)
+  , dyna_filetype(-1)
   , dyna_ndim(-1)
   , dyna_icode(-1)
   , dyna_numnp(-1)
@@ -115,7 +116,7 @@ D3plot::D3plot(std::string _filename,
   , vel_read(0)
   , buffer(nullptr)
 {
-  // check for femzip
+// check for femzip
 #ifdef QD_USE_FEMZIP
   // _is_femzipped = FemzipBuffer::is_femzipped(_filename);
   _is_femzipped = use_femzip;
@@ -194,12 +195,12 @@ D3plot::read_header()
   std::cout << "> HEADER " << std::endl;
 #endif
 
-  int32_t filetype = this->buffer->read_int(11);
-  if (filetype > 1000) {
-    filetype -= 1000;
+  dyna_filetype = this->buffer->read_int(11);
+  if (dyna_filetype > 1000) {
+    dyna_filetype -= 1000;
     own_external_numbers_I8 = true;
   }
-  if ((filetype != 1) && (filetype != 5)) {
+  if ((dyna_filetype != 1) && (dyna_filetype != 5)) {
     throw(std::runtime_error(
       "Wrong filetype " + std::to_string(this->buffer->read_int(11)) +
       " != 1 (or 5) in header of d3plot. Your file might be in Double "
@@ -671,11 +672,11 @@ D3plot::read_geometry()
   std::cout << this->get_db_elements()->get_nElements(Element::SHELL)
             << " done." << std::endl;
 #endif
-  if (nRigidShells != this->dyna_numrbe)
-    throw(std::runtime_error(
-      "nRigidShells != numrbe: " + std::to_string(nRigidShells) +
-      " != " + std::to_string(this->dyna_numrbe)));
-    // this->dyna_numrbe = nRigidShells;
+  // if (dyna_filetype == 1 && nRigidShells != this->dyna_numrbe)
+  // throw(std::runtime_error(
+  //   "nRigidShells != numrbe: " + std::to_string(nRigidShells) +
+  //   " != " + std::to_string(this->dyna_numrbe)));
+  // this->dyna_numrbe = nRigidShells;
 
 // Solids
 #ifdef QD_DEBUG
@@ -1092,15 +1093,15 @@ std::vector<int32_t>
 D3plot::read_part_ids()
 {
 
-  /*
-   * Indeed this is a little complicated: usually the file should contain
-   * as many materials as in the input but somehow dyna generates a few
-   * ghost materials itself and those are appended with a 0 ID. Therefore
-   * the length should be nMaterials but it's d3plot_nmmat with:
-   * nMaterials < d3plot_nmmat. The difference are the ghost mats.
-   * Took some time to find that out ... and I don't know why ...
-   * oh and it is undocumented ...
-   */
+/*
+ * Indeed this is a little complicated: usually the file should contain
+ * as many materials as in the input but somehow dyna generates a few
+ * ghost materials itself and those are appended with a 0 ID. Therefore
+ * the length should be nMaterials but it's d3plot_nmmat with:
+ * nMaterials < d3plot_nmmat. The difference are the ghost mats.
+ * Took some time to find that out ... and I don't know why ...
+ * oh and it is undocumented ...
+ */
 
 #ifdef QD_DEBUG
   std::cout << "Reading part numbering at word " << wordPosition << " ... ";
@@ -1971,8 +1972,8 @@ D3plot::read_states_elem4(size_t iState)
     iPlastStrainOffset + this->dyna_ioshl2; // stresses & pl. strain before
   const int32_t iLayerSize = dyna_neips + iHistoryOffset;
 
-  const auto nElements_shell = static_cast<int64_t>(
-    get_db_elements()->get_nElements(Element::ElementType::SHELL));
+  // const auto nElements_shell = static_cast<int64_t>(
+  //   get_db_elements()->get_nElements(Element::ElementType::SHELL));
 
   // #pragma omp parallel
   {
@@ -2003,7 +2004,13 @@ D3plot::read_states_elem4(size_t iState)
       // get element (and check for rigidity)
       auto element =
         this->get_db_elements()->get_elementByIndex(Element::SHELL, iElement);
-      if (element->get_is_rigid()) {
+
+      // Fix:
+      // Interestingly, dyna seems to write result values for rigid shells in
+      // the d3part file, but not in the d3plot. Of course this is not
+      // documented ...
+      // 5 -> d3part
+      if (dyna_filetype != 5 && element->get_is_rigid()) {
         // does not increment ii, but iElement!!!!!
         continue;
       }
