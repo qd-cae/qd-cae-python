@@ -1974,7 +1974,7 @@ D3plot::read_states_elem4(size_t iState)
   const auto nElements_shell = static_cast<int64_t>(
     get_db_elements()->get_nElements(Element::ElementType::SHELL));
 
-#pragma omp parallel
+  // #pragma omp parallel
   {
 
     // helpful vars
@@ -1989,14 +1989,16 @@ D3plot::read_states_elem4(size_t iState)
     std::vector<std::vector<float>> layers_history(
       this->history_shell_read.size(), std::vector<float>(dyna_maxint));
 
-// Do the thing ...
-// size_t iElement = 0;
-// for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
-// #pragma omp for schedule(dynamic)
-#pragma omp for
-    for (int32_t iElement = 0; iElement < nElements_shell; ++iElement) {
+    // Do the thing ...
+    size_t iElement = 0;
+    for (int32_t ii = start; ii < start + wordsToRead; ++iElement) {
 
-      const auto ii = start + iElement * dyna_nv2d;
+      // #pragma omp for schedule(dynamic)
+      // #pragma omp for
+      // for (int32_t iElement = 0; iElement < nElements_shell; ++iElement) {
+
+      // auto ii = start + element_offsets[iElement];
+      // const auto ii = start + iElement * dyna_nv2d;
 
       // get element (and check for rigidity)
       auto element =
@@ -2105,14 +2107,14 @@ D3plot::read_states_elem4(size_t iState)
       if (this->energy_read && dyna_ioshl4) {
         if (dyna_istrn == 1) {
           if (dyna_nv2d >= 45)
-            element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
-        } else {
-          element->add_energy(this->buffer->read_float(ii + dyna_nv2d - 1));
+            element->add_energy(this->buffer->read_float(ii + dyna_nv2d -
+      1)); } else { element->add_energy(this->buffer->read_float(ii +
+      dyna_nv2d - 1));
         }
       }
       */
 
-      // ii += dyna_nv2d;
+      ii += dyna_nv2d;
     } // for elements
   }   // pragma omp parallel
 }

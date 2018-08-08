@@ -21,7 +21,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 # ====== D E V E L O P E R ====== #
 debugging_mode = True
 measure_time = False
-use_openmp = False
+use_openmp = False  # buggy
 version = "0.8.1"
 # =============================== #
 is_windows = (platform.system() == "Windows")
