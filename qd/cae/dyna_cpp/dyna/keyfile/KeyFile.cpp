@@ -577,6 +577,12 @@ KeyFile::get_end_keyword_position()
   for (auto& kw : get_keywordsByName("*EnD")) {
     position = std::min(position, kw->get_position());
   }
+  for (auto& kw : get_keywordsByName("*ENd")) {
+    position = std::min(position, kw->get_position());
+  }
+  for (auto& kw : get_keywordsByName("*eNd")) {
+    position = std::min(position, kw->get_position());
+  }
   return position;
 }
 

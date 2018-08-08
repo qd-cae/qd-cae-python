@@ -241,7 +241,7 @@ tensor_to_nparray_copy(std::shared_ptr<qd::Tensor<T>> tensor)
  * @return ret : numpy array
  */
 template<typename T>
-inline pybind11::array_t<T>
+inline pybind11::object
 tensor_to_nparray(std::shared_ptr<qd::Tensor<T>> tensor)
 {
   auto tensor_py = pybind11::cast(tensor);
@@ -249,6 +249,16 @@ tensor_to_nparray(std::shared_ptr<qd::Tensor<T>> tensor)
 
   return ret;
 }
+
+// template<typename T>
+// inline pybind11::array
+// tensor_to_nparray(std::shared_ptr<qd::Tensor<T>> tensor)
+// {
+//   auto tensor_py = pybind11::cast(tensor);
+//   pybind11::array ret(pybind11::buffer_info(tensor_py));
+
+//   return ret;
+// }
 
 } // end:namespace:py
 } // end:namespace:qd

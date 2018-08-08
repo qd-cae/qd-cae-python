@@ -25,6 +25,14 @@ WorkQueue::~WorkQueue()
   abort();
 }
 
+/** Reset the WorkQueue (required for restart)
+ *
+ */
+void WorkQueue::reset() {
+	m_exit = false;
+	m_finish_work = true;
+}
+
 /** Initialize a certain amount of workers
  *
  * @param num_workers : number of workers to spawn
@@ -42,6 +50,8 @@ WorkQueue::init_workers(size_t num_workers)
     return;
     // num_workers = std::thread::hardware_concurrency() + 1;
   }
+
+  reset();
 
   for (size_t iThread = m_workers.size(); iThread < num_workers; ++iThread)
     m_workers.emplace_back(std::thread(&WorkQueue::do_work, this));
