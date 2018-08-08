@@ -36,7 +36,7 @@ qd.cae.dyna:
  - D3Part reading with rigid shells is now correct
  - Automatic Femzip detection was disabled for causing too many instabilities. The `use_femzip` flag is thus not deprecated anymore.
  - `D3plot.read_states` was broken due to a threading issue. The consequence was that for some files the states were not read.
- - `D3plot.read_states` shell mode mid was broken and is now fixed.
+ - `D3plot.read_states` shell mode `middle` was broken and is now fixed.
 
 
 *Changelog 02.06.2018*
