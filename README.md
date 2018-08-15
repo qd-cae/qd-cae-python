@@ -25,6 +25,13 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+
+*Changelog 15.08.2018*
+Version 0.8.2
+
+qd.cae.dyna:
+ - files with a missing part names section can now be read
+
 *Changelog 08.08.2018*
 Version 0.8.1
 
@@ -37,34 +44,6 @@ qd.cae.dyna:
  - Automatic Femzip detection was disabled for causing too many instabilities. The `use_femzip` flag is thus not deprecated anymore.
  - `D3plot.read_states` was broken due to a threading issue. The consequence was that for some files the states were not read.
  - `D3plot.read_states` shell mode `middle` was broken and is now fixed.
-
-
-*Changelog 02.06.2018*
-Version 0.8.0
-
-**License: Changed project license to BSD**
-
-qd.cae.dyna:
- - **Arrays** are here: added many functions to get entire data arrays:
-   - `d3plot.get_node_displacement(element_filter)`
-   - `d3plot.get_node_velocity(element_filter)`
-   - `d3plot.get_node_acceleration(element_filter)`
-   - `d3plot.get_node_ids(element_filter)`
-   - `d3plot.get_element_coords(element_filter)`
-   - `d3plot.get_element_energy(element_filter)`
-   - `d3plot.get_element_strain(element_filter)`
-   - `d3plot.get_element_plastic_strain(element_filter)`
-   - `d3plot.get_element_stress(element_filter)`
-   - `d3plot.get_element_stress_mises(element_filter)`
-   - `d3plot.get_element_history_vars(element_type)`
-   - `part.get_node_ids()`
-   - `part.get_node_indexes()`
-   - `part.get_element_ids(element_filter)`
-   - `part.get_element_node_ids(element_type, nNodes)`
- - Getting data arrays from `RawD3plot` does not copy the memory anymore, but numpy instead simply uses the C++ memory (big performance boost).
- - `D3plot` now automatically detects femzip compressed files (argument `use_femzip` is now deprecated).
- - `KeyFile` encryption detection checks now for '-----BEGIN PGP MESSAGE-----' and does not compute the entropy anymore (argument `encryption_detection` is now deprecated).
- - Along with a lot of new features we also introduced a lot of new bugs so that we don't get bored
 
 
 # Documentation

@@ -200,7 +200,7 @@ D3plot::read_header()
     dyna_filetype -= 1000;
     own_external_numbers_I8 = true;
   }
-  if ((dyna_filetype != 1) && (dyna_filetype != 5)) {
+  if ((dyna_filetype != 0) && (dyna_filetype != 1) && (dyna_filetype != 5)) {
     throw(std::runtime_error(
       "Wrong filetype " + std::to_string(this->buffer->read_int(11)) +
       " != 1 (or 5) in header of d3plot. Your file might be in Double "
@@ -581,34 +581,54 @@ D3plot::read_geometry()
   /* === AIRBAGS === */
   this->read_geometry_airbag();
 
-  // check for correct end of section
-  if (!isFileEnding(wordPosition)) {
+  // Check if part names are here
+  std::vector<std::string> part_names;
+  // if (!isFileEnding(wordPosition)) {
+  if (isFileEnding(wordPosition)) {
 #ifdef QD_DEBUG
     std::cout << "At word position: " << wordPosition << std::endl;
 #endif
-    throw(
-      std::runtime_error("Anticipated file ending wrong in geometry section."));
-  }
-  wordPosition++;
+    // throw(
+    //   std::runtime_error("Anticipated file ending wrong in geometry
+    //   section."));
+    // }
+    wordPosition++;
 
-  /* === PARTS === */
-  this->buffer->free_geometryBuffer();
-  this->buffer->read_partBuffer();
-  if (this->_is_femzipped)
-    wordPosition = 1; // don't ask me why not 0 ...
+    /* === PARTS === */
+    this->buffer->free_geometryBuffer();
+    this->buffer->read_partBuffer();
+    if (this->_is_femzipped)
+      wordPosition = 1; // don't ask me why not 0 ...
 
-  this->read_and_create_parts(part_numbering); // directly creates parts
+    part_names = this->read_part_names(); // directly creates parts
 
-  if (!isFileEnding(wordPosition)) {
+    if (!isFileEnding(wordPosition)) {
 #ifdef QD_DEBUG
-    std::cout << "At word position: " << wordPosition << std::endl;
+      std::cout << "At word position: " << wordPosition << std::endl;
 #endif
-    throw(std::runtime_error("Anticipated file ending wrong in part section."));
-  }
+      throw(
+        std::runtime_error("Anticipated file ending wrong in part section."));
+    }
 
-  this->buffer->free_partBuffer();
+    this->buffer->free_partBuffer();
+  }
 
 /* ====== D A T A B A S E S ====== */
+
+// Parts
+#ifdef QD_DEBUG
+  std::cout << "Adding parts ... ";
+#endif
+  auto* db_parts = this->get_db_parts();
+  for (size_t i_part = 0; i_part < part_numbering.size(); ++i_part) {
+
+    auto part = db_parts->add_partByID(part_numbering[i_part]);
+    if (i_part < part_names.size())
+      part->set_name(part_names[i_part]);
+  }
+#ifdef QD_DEBUG
+  std::cout << this->get_db_parts()->get_nParts() << " done." << std::endl;
+#endif
 
 // Nodes
 #ifdef QD_DEBUG
@@ -1093,15 +1113,15 @@ std::vector<int32_t>
 D3plot::read_part_ids()
 {
 
-/*
- * Indeed this is a little complicated: usually the file should contain
- * as many materials as in the input but somehow dyna generates a few
- * ghost materials itself and those are appended with a 0 ID. Therefore
- * the length should be nMaterials but it's d3plot_nmmat with:
- * nMaterials < d3plot_nmmat. The difference are the ghost mats.
- * Took some time to find that out ... and I don't know why ...
- * oh and it is undocumented ...
- */
+  /*
+   * Indeed this is a little complicated: usually the file should contain
+   * as many materials as in the input but somehow dyna generates a few
+   * ghost materials itself and those are appended with a 0 ID. Therefore
+   * the length should be nMaterials but it's d3plot_nmmat with:
+   * nMaterials < d3plot_nmmat. The difference are the ghost mats.
+   * Took some time to find that out ... and I don't know why ...
+   * oh and it is undocumented ...
+   */
 
 #ifdef QD_DEBUG
   std::cout << "Reading part numbering at word " << wordPosition << " ... ";
@@ -1202,12 +1222,12 @@ for (auto iAirbag = 0; iAirbag < this->dyna_airbag_npartgas; ++iAirbag) {
   } // if dyna_npefg
 }
 
-/** Read the part names from the geometry section and create them.
+/** Read the part names from the geometry section
  *
  * @param _part_ids : array of exernal part ids
  */
-void
-D3plot::read_and_create_parts(std::vector<int32_t> _part_ids)
+std::vector<std::string>
+D3plot::read_part_names()
 {
 #ifdef QD_DEBUG
   std::cout << "Reading part info ... ";
@@ -1223,6 +1243,8 @@ D3plot::read_and_create_parts(std::vector<int32_t> _part_ids)
     throw(std::runtime_error(
       "negative number of parts in part section makes no sense."));
 
+  std::vector<std::string> part_names;
+  part_names.reserve(this->dyna_numprop);
   for (int32_t ii = 0; ii < this->dyna_numprop; ii++) {
 
     // start of the section of current part in the file
@@ -1230,11 +1252,10 @@ D3plot::read_and_create_parts(std::vector<int32_t> _part_ids)
 
     // this id is wrong ... and don't ask me why
     // int32_t partID = this->buffer->read_int(start);
-    int32_t part_id = _part_ids[ii];
-    std::string partName = this->buffer->read_str(start + 1, 18);
+    part_names.push_back(this->buffer->read_str(start + 1, 18));
 
     // createpart
-    this->get_db_parts()->add_partByID(part_id)->set_name(partName);
+    // this->get_db_parts()->add_partByID(part_id)->set_name(partName);
   }
 
 #ifdef QD_DEBUG
@@ -1243,6 +1264,8 @@ D3plot::read_and_create_parts(std::vector<int32_t> _part_ids)
 
   // update position
   wordPosition += 1 + (this->dyna_numprop + 1) * 19 + 1;
+
+  return part_names;
 }
 
 /*

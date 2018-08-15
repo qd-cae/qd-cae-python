@@ -161,7 +161,7 @@ private:
   std::vector<std::vector<int32_t>> read_geometry_numbering();
   std::vector<int32_t> read_part_ids();
   void read_geometry_airbag();
-  void read_and_create_parts(std::vector<int32_t> _part_ids);
+  std::vector<std::string> read_part_names();
 
   // state reading
   void read_states_init();

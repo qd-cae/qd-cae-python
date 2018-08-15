@@ -22,7 +22,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 debugging_mode = False
 measure_time = False
 use_openmp = False  # buggy
-version = "0.8.1"
+version = "0.8.2"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() in ["Linux", "Darwin"])
@@ -259,7 +259,7 @@ if __name__ == "__main__":
     # (3) SETUP
     setup(name='qd',
           version=version,
-          license='GNU GPL v3',
+          license='BSD3',
           description='QD-Engineering Python Library for CAE',
           author='C. Diez, D. Toewe',
           url='http://www.qd-eng.de',
@@ -289,7 +289,9 @@ if __name__ == "__main__":
                       'engineering',
                       'ls-dyna',
                       'postprocessing',
-                      'preprocessing'],
+                      'preprocessing',
+                      'keyfile',
+                      'binout'],
           classifiers=['Development Status :: 4 - Beta',
                        'Programming Language :: C++',
                        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',

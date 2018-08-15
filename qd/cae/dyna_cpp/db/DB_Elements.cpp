@@ -262,8 +262,9 @@ DB_Elements::add_element_byD3plot(const Element::ElementType _eType,
   // Find part
   // index is decremented once, since ls-dyna starts at 1 (fortran array
   // style)
-  const auto part = this->db_parts->get_partByIndex(_elementData.back() - 1);
+  auto part = this->db_parts->get_partByIndex(_elementData.back() - 1);
   if (part == nullptr) {
+    // part = this->db_parts->add_partByID(_elementData.back() - 1);
     throw(std::invalid_argument(
       "Could not find part with index:" + std::to_string(_elementData.back()) +
       " in db."));

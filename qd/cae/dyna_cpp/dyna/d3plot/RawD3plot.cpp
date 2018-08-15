@@ -203,7 +203,7 @@ RawD3plot::read_header()
     dyna_filetype -= 1000;
     own_external_numbers_I8 = true;
   }
-  if ((dyna_filetype != 1) && (dyna_filetype != 5)) {
+  if ((dyna_filetype != 0) && (dyna_filetype != 1) && (dyna_filetype != 5)) {
     throw(std::runtime_error(
       "Wrong filetype " + std::to_string(this->buffer->read_int(11)) +
       " != 1 (or 5) in header of d3plot. Your file might be in Double "
@@ -647,31 +647,34 @@ RawD3plot::read_geometry()
   this->read_geometry_airbag();
 
   // check for correct end of section
-  if (!isFileEnding(wordPosition)) {
+  if (isFileEnding(wordPosition)) {
 #ifdef QD_DEBUG
     std::cout << "At word position: " << wordPosition << std::endl;
 #endif
-    throw(
-      std::runtime_error("Anticipated file ending wrong in geometry section."));
-  }
-  wordPosition++;
+    // throw(
+    //   std::runtime_error("Anticipated file ending wrong in geometry
+    //   section."));
 
-  /* === PARTS === */
-  this->buffer->free_geometryBuffer();
-  this->buffer->read_partBuffer();
-  if (this->_is_femzipped)
-    wordPosition = 1; // don't ask me why not 0 ...
+    wordPosition++;
 
-  this->read_part_names(); // directly creates parts
+    /* === PARTS === */
+    this->buffer->free_geometryBuffer();
+    this->buffer->read_partBuffer();
+    if (this->_is_femzipped)
+      wordPosition = 1; // don't ask me why not 0 ...
 
-  if (!isFileEnding(wordPosition)) {
+    this->read_part_names(); // directly creates parts
+
+    if (!isFileEnding(wordPosition)) {
 #ifdef QD_DEBUG
-    std::cout << "At word position: " << wordPosition << std::endl;
+      std::cout << "At word position: " << wordPosition << std::endl;
 #endif
-    throw(std::runtime_error("Anticipated file ending wrong in part section."));
-  }
+      throw(
+        std::runtime_error("Anticipated file ending wrong in part section."));
+    }
 
-  this->buffer->free_partBuffer();
+    this->buffer->free_partBuffer();
+  }
 }
 
 void
@@ -973,15 +976,15 @@ void
 RawD3plot::read_part_ids()
 {
 
-/*
- * Indeed this is a little complicated: usually the file should contain
- * as many materials as in the input but somehow dyna generates a few
- * ghost materials itself and those are appended with a 0 ID. Therefore
- * the length should be nMaterials but it's d3plot_nmmat with:
- * nMaterials < d3plot_nmmat. The difference are the ghost mats.
- * Took some time to find that out ... and I don't know why ...
- * oh and it is undocumented ...
- */
+  /*
+   * Indeed this is a little complicated: usually the file should contain
+   * as many materials as in the input but somehow dyna generates a few
+   * ghost materials itself and those are appended with a 0 ID. Therefore
+   * the length should be nMaterials but it's d3plot_nmmat with:
+   * nMaterials < d3plot_nmmat. The difference are the ghost mats.
+   * Took some time to find that out ... and I don't know why ...
+   * oh and it is undocumented ...
+   */
 
 #ifdef QD_DEBUG
   std::cout << "Reading part ids at word " << wordPosition << " ... ";
