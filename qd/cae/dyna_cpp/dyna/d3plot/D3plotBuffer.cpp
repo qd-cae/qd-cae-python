@@ -167,7 +167,7 @@ D3plotBuffer::read_nextState()
   }
 
   if (iStateFile >= _d3plots.size()) {
-    throw(std::invalid_argument("There are no more state-files to be read."));
+    throw(std::runtime_error("There are no more state-files to be read."));
   }
 
 #ifdef QD_DEBUG
@@ -187,7 +187,7 @@ D3plotBuffer::read_nextState()
 void
 D3plotBuffer::rewind_nextState()
 {
-	this->init_nextState();
+  this->init_nextState();
 }
 
 /*
@@ -197,8 +197,12 @@ D3plotBuffer::rewind_nextState()
 bool
 D3plotBuffer::has_nextState()
 {
+  if (iStateFile == 0)
+    return true;
+
   if (_file_buffer_q.size() > 0)
     return true;
+
   return false;
 }
 
