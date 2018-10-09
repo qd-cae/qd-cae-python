@@ -25,26 +25,17 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 09.10.2018*
+Version 0.8.3
+
+qd.cae.dyna:
+ - fixed a bug that occasionally only a single timestep was read
 
 *Changelog 15.08.2018*
 Version 0.8.2
 
 qd.cae.dyna:
  - files with a missing part names section can now be read
-
-*Changelog 08.08.2018*
-Version 0.8.1
-
-**This is an extreme bugfix version.**  The goal was to bring back a high stability to the code, which was decreasing throughout the most recent versions. In the future this repo will try to keep stability much higher.
-
-qd.cae.dyna:
- - `RawD3plot` state reading was fixed to read multiple states correctly again
- - OpenMP was disabled for causing random bugs and instability on Windows and runtime issues on Linux for sometimes using the wrong OpenMP library.
- - D3Part reading with rigid shells is now correct
- - Automatic Femzip detection was disabled for causing too many instabilities. The `use_femzip` flag is thus not deprecated anymore.
- - `D3plot.read_states` was broken due to a threading issue. The consequence was that for some files the states were not read.
- - `D3plot.read_states` shell mode `middle` was broken and is now fixed.
-
 
 # Documentation
 
