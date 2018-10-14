@@ -140,11 +140,12 @@ PartKeyword::load()
   }
 
   // trailing shit
+  auto iLine_trailing = iLine;
   for (; iLine < lines.size(); ++iLine)
     trailing_lines.push_back(lines[iLine]);
 
   // remove all lines below keyword
-  lines.resize(header_size);
+  lines.resize(iLine_trailing);
 }
 
 /** Get the keyword as a string
@@ -157,8 +158,11 @@ PartKeyword::str()
   std::stringstream ss;
 
   // write headers
-  for (const auto& entry : lines)
-    ss << entry << '\n';
+  auto iLine = get_line_index_of_next_card(0);
+  for (size_t ii = 0; ii < iLine; ++ii)
+    ss << lines[ii] << '\n';
+  // for (const auto& entry : lines)
+  //   ss << entry << '\n';
 
   // write parts
   switch (Keyword::field_alignment) {
@@ -172,15 +176,71 @@ PartKeyword::str()
       ss.setf(std::ios::internal);
   }
 
+  const auto kw_name = get_keyword_name();
+  bool is_part_inertia = false;
+  size_t nAdditionalLines = 0;
+  if (kw_name.find("inertia", 6) != std::string::npos) {
+    nAdditionalLines += 3;
+    is_part_inertia = true;
+  }
+  if (kw_name.find("reposition", 6) != std::string::npos)
+    ++nAdditionalLines;
+  if (kw_name.find("contact", 6) != std::string::npos)
+    ++nAdditionalLines;
+  if (kw_name.find("print", 6) != std::string::npos)
+    ++nAdditionalLines;
+  if (kw_name.find("attachment_nodes", 6) != std::string::npos)
+    ++nAdditionalLines;
+
   ss.precision(7);
   for (size_t iPart = 0; iPart < part_ids.size(); ++iPart) {
-    auto part = db_parts->get_partByID(part_ids[iPart]);
+    const auto part = db_parts->get_partByID(part_ids[iPart]);
 
-    const auto& comment_block = comments_between_card0_and_card1[iPart];
+    // const auto& comment_block = comments_between_card0_and_card1[iPart];
 
-    ss << std::setw(7 * field_size) << part->get_name() << '\n'
-       << comment_block << std::setw(field_size) << part->get_partID()
-       << unparsed_data[iPart] << '\n';
+    ss << std::setw(7 * field_size) << part->get_name() << '\n';
+
+    const size_t iLineNextKeyword = get_line_index_of_next_card(iLine);
+    for (size_t jLine = iLine + 1; jLine < iLineNextKeyword; ++jLine)
+      ss << lines[jLine] << '\n';
+
+    std::string remaining_line_data =
+      (iLineNextKeyword < lines.size() &&
+       lines[iLineNextKeyword].size() > field_size)
+        ? lines[iLineNextKeyword].substr(field_size,
+                                         lines[iLineNextKeyword].size())
+        : "";
+
+    ss << std::setw(field_size) << part->get_partID() << remaining_line_data
+       << '\n';
+
+    iLine = iLineNextKeyword + 1;
+    size_t iCardCount = 0;
+    bool one_more_card = false;
+    try {
+      while (iCardCount < nAdditionalLines + one_more_card &&
+             iLine < lines.size()) {
+
+        if (!is_comment(lines[iLine])) {
+
+          // if ircs field is 1, then we have another card line
+          if (is_part_inertia && iCardCount == 0) {
+            const auto flag_ircs =
+              trim_copy(lines[iLine].substr(4 * field_size, field_size));
+            if (flag_ircs.empty() || std::stod(flag_ircs) == 1)
+              one_more_card = true;
+          }
+
+          ++iCardCount;
+        }
+        ss << lines[iLine] << '\n';
+        ++iLine;
+      }
+    } catch (const std::exception& err) {
+      throw(std::invalid_argument("Error while trying to convert part data "
+                                  "beyond second card to string: " +
+                                  std::string(err.what())));
+    }
   }
 
   // write trailing lines

@@ -81,12 +81,14 @@ PartKeyword::add_part(T _part_id,
   auto part_id_i32 = static_cast<int32_t>(_part_id);
   auto part = db_parts->add_partByID(part_id_i32, _name);
   part_ids.push_back(part_id_i32);
-  comments_between_card0_and_card1.push_back("");
 
-  if (_additional_lines.size() != 0) {
-    unparsed_data.push_back(str_concat_lines(_additional_lines));
-  } else {
-    unparsed_data.push_back("");
+  if (_additional_lines.empty())
+    lines.push_back(std::string(field_size, ' '));
+  else {
+    lines.push_back(std::string(field_size, ' ') + _additional_lines[0]);
+    for (size_t iAdditionalLine = 1; iAdditionalLine < _additional_lines.size();
+         ++iAdditionalLine)
+      lines.push_back(_additional_lines[iAdditionalLine]);
   }
 
   return part;
