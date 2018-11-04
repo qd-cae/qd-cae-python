@@ -25,6 +25,12 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+*Changelog 04.11.2018*
+Version 0.8.4
+
+qd.cae.dyna:
+ - fixed: creating a *NODE had a wrong initial field size, which caused wrong formatting of nodes
+
 *Changelog 09.10.2018*
 Version 0.8.3
 
