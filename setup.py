@@ -73,7 +73,7 @@ def setup_dyna_cpp():
     if is_linux:
         compiler_args = ["-std=c++14",
                          "-fPIC",
-
+                         "-D_GLIBCXX_USE_CXX11_ABI=0",  # ABI compatability
                          "-DQD_VERSION=\"" + version + "\""]
 
         libs_dyna = ["stdc++"]
