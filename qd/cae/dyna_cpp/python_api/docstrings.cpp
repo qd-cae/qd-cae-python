@@ -1400,7 +1400,7 @@ const char* d3plot_description = R"qddoc(
 )qddoc";
 
 const char* d3plot_constructor = R"qddoc(
-    __init__(filepath, read_states=[])
+    __init__(filepath, read_states=[], use_femzip=False)
 
     Parameters
     ----------
@@ -1409,6 +1409,8 @@ const char* d3plot_constructor = R"qddoc(
     read_states : str or list of str
         read state information directly (saves time), 
         see the function ``read_states``
+    use_femzip : bool
+        whether the file shall be decompressed with femzip.
 
     Raises
     ------
@@ -1437,7 +1439,7 @@ const char* d3plot_constructor = R"qddoc(
         
         Read a compressed d3plot
 
-        >>> d3plot = D3plot("path/to/d3plot.fz")
+        >>> d3plot = D3plot("path/to/d3plot.fz", use_femzip=True)
         
         Read d3plot with state data at once.
 
@@ -1610,12 +1612,14 @@ const char* d3plot_clear_docs = R"qddoc(
 /* ----------------------- RAW D3PLOT ---------------------- */
 
 const char* rawd3plot_constructor_description = R"qddoc(
-    RawD3plot(filepath)
+    RawD3plot(filepath, use_femzip=False)
 
     Parameters
     ----------
     filepath : str
         path to the file
+    use_femzip: bool
+        whether the file shall be decompressed with femzip.
 
     Returns
     -------
@@ -1640,7 +1644,7 @@ const char* rawd3plot_constructor_description = R"qddoc(
         >>> # read an arbitrary d3plot
         >>> raw_d3plot = RawD3plot("path/to/d3plot")
         >>> #read femzip compressed file
-        >>> raw_d3plot = RawD3plot("path/to/d3plot.fz")
+        >>> raw_d3plot = RawD3plot("path/to/d3plot.fz", use_femzip=True)
 )qddoc";
 
 const char* rawd3plot_get_int_names_docs = R"qddoc(

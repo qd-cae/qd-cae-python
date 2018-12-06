@@ -22,7 +22,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 debugging_mode = False
 measure_time = False
 use_openmp = False  # buggy
-version = "0.8.3"
+version = "0.8.4"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() in ["Linux", "Darwin"])
@@ -73,7 +73,7 @@ def setup_dyna_cpp():
     if is_linux:
         compiler_args = ["-std=c++14",
                          "-fPIC",
-
+                         "-D_GLIBCXX_USE_CXX11_ABI=0",  # ABI compatability
                          "-DQD_VERSION=\"" + version + "\""]
 
         libs_dyna = ["stdc++"]

@@ -25,10 +25,14 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
-*Changelog 09.10.2018*
+*Changelog 06.12.2018*
 Version 0.8.4
 
+general:
+ - improved binary compatability for Linux
+
 qd.cae.dyna:
+ - fixed: creating a *NODE had a wrong initial field size, which caused wrong formatting of nodes
  - fixed setting card values of a `*PART` keyword works now correctly
 
 *Changelog 09.10.2018*
@@ -36,7 +40,10 @@ Version 0.8.3
 
 qd.cae.dyna:
  - fixed a bug that occasionally only a single timestep was read
+<<<<<<< HEAD
 
+=======
+>>>>>>> codie
 
 # Documentation
 
