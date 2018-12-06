@@ -25,8 +25,11 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
-*Changelog 04.11.2018*
+*Changelog 06.12.2018*
 Version 0.8.4
+
+general:
+ - improved binary compatability for Linux
 
 qd.cae.dyna:
  - fixed: creating a *NODE had a wrong initial field size, which caused wrong formatting of nodes
@@ -36,12 +39,6 @@ Version 0.8.3
 
 qd.cae.dyna:
  - fixed a bug that occasionally only a single timestep was read
-
-*Changelog 15.08.2018*
-Version 0.8.2
-
-qd.cae.dyna:
- - files with a missing part names section can now be read
 
 # Documentation
 
