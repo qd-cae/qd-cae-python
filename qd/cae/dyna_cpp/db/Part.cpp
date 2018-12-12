@@ -119,11 +119,12 @@ void
 Part::remove_element(std::shared_ptr<Element> _element)
 {
   std::lock_guard<std::mutex> lock(_part_mutex);
-  elements.erase(
-    std::remove_if(elements.begin(),
-                   elements.end(),
-                   [_element](auto elem) { return elem == _element; }),
-    elements.end());
+  elements.erase(std::remove_if(elements.begin(),
+                                elements.end(),
+                                [_element](std::shared_ptr<Element> elem) {
+                                  return elem == _element;
+                                }),
+                 elements.end());
 }
 
 /** Get the node ids of the elements

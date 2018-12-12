@@ -562,7 +562,7 @@ Element::remove_node(int32_t _node_id)
   node_ids.erase(
     std::remove_if(node_ids.begin(),
                    node_ids.end(),
-                   [_node_id](auto iNode) { return iNode == _node_id; }),
+                   [_node_id](int32_t iNode) { return iNode == _node_id; }),
     node_ids.end());
 }
 

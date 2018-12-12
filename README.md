@@ -1,5 +1,3 @@
-
-
 # qd - a CAE Python Library
 
 [![Build Status](https://travis-ci.org/qd-cae/qd-cae-python.svg?branch=master)](https://travis-ci.org/qd-cae/qd-cae-python)
@@ -13,11 +11,11 @@ CAE suffers greatly from expensive tools with bad or moderate scripting access a
 <p style="text-align: center;"><b>"We don't want to provide another software solution, 
 <br>we want, that people can build their own solutions quickly"</b></p>
 
-We believe, that CAE can not evolve, if people do not get comfortable access to the raw data and start doing their own stuff, because 
+We believe, that CAE can not evolve, if people do not get comfortable access to the raw data and start doing their own stuff, because
 
 <p style="text-align: center;"><b>"Creativity originates from freedom and simplicity."</b></p>
 
-This core idea keeps us pushing forward. 
+This core idea keeps us pushing forward.
 
 # Support this project
 
@@ -25,38 +23,53 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
-*Changelog 06.12.2018*
+_Changelog 06.12.2018_
 Version 0.8.4
 
 general:
- - improved binary compatability for Linux
+
+- improved binary compatability for Linux
 
 qd.cae.dyna:
- - fixed: creating a *NODE had a wrong initial field size, which caused wrong formatting of nodes
- - fixed setting card values of a `*PART` keyword works now correctly
 
-*Changelog 09.10.2018*
+- fixed: creating a \*NODE had a wrong initial field size, which caused wrong formatting of nodes
+- fixed setting card values of a `*PART` keyword works now correctly
+
+- fixed: creating a \*NODE had a wrong initial field size, which caused wrong formatting of nodes
+
+_Changelog 09.10.2018_
 Version 0.8.3
 
 qd.cae.dyna:
- - fixed a bug that occasionally only a single timestep was read
 <<<<<<< HEAD
 
+- fixed a bug that occasionally only a single timestep was read
+  <<<<<<< HEAD
+
 =======
->>>>>>> codie
+
+> > > > > > > # codie
+
+- fixed a bug that occasionally only a single timestep was read
+  > > > > > > > codie
 
 # Documentation
 
 You can find the [full Documentation here](https://qd-cae.github.io/qd-cae-python/build/html/index.html). Brief module and feature list:
 
 1. [qd.cae.dyna ](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_dyna.html)
-  - Read D3plot
-  - Read Binouts
-  - Read KeyFiles
+
+- Read D3plot
+- Read Binouts
+- Read KeyFiles
+
 2. [qd.numerics](https://qd-cae.github.io/qd-cae-python/build/html/qd_numerics.html)
-  - Submodule: sampling
+
+- Submodule: sampling
+
 3. [qd.cae.beta](https://qd-cae.github.io/qd-cae-python/build/html/qd_cae_beta.html)
-  - MetaCommunicator (control META remotely)
+
+- MetaCommunicator (control META remotely)
 
 # Installation
 
@@ -82,9 +95,9 @@ pip install [path/to/downloaded/wheel]
 
 Note though that your windows python distribution might not neccessarily find an appropriate version and fail. In that case one has three options:
 
- - Download and use [Anaconda Python x64](https://www.continuum.io/downloads#windows)
- - Compile it yourself (see the [compilation guide](https://qd-cae.github.io/qd-cae-python/build/html/compilation_guide.html))  
- - Open a request for compilation of a specific distribution
+- Download and use [Anaconda Python x64](https://www.continuum.io/downloads#windows)
+- Compile it yourself (see the [compilation guide](https://qd-cae.github.io/qd-cae-python/build/html/compilation_guide.html))
+- Open a request for compilation of a specific distribution
 
 ## Linux
 
@@ -100,6 +113,6 @@ See the license file.
 
 # Authors
 
-- codie 
+- codie
 - towelie
 - bala

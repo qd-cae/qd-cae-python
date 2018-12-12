@@ -7,7 +7,7 @@
 #include <string>
 
 #include <dyna_cpp/dyna/d3plot/AbstractBuffer.hpp>
-#include <dyna_cpp/parallel/WorkQueue.hpp>
+// #include <dyna_cpp/parallel/WorkQueue.hpp>
 
 namespace qd {
 

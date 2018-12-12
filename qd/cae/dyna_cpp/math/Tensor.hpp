@@ -60,7 +60,7 @@ Tensor<T>::Tensor(std::initializer_list<size_t> list)
   , _data(std::accumulate(begin(list),
                           end(list),
                           static_cast<size_t>(1),
-                          std::multiplies<>()))
+                          std::multiplies<size_t>()))
 {}
 
 /** Create a tensor from a shape and data
@@ -73,7 +73,7 @@ Tensor<T>::Tensor(std::vector<size_t> list, const T* data)
   , _data(std::accumulate(std::begin(list),
                           std::end(list),
                           static_cast<size_t>(1),
-                          std::multiplies<>()))
+                          std::multiplies<size_t>()))
 {
   std::copy(data, data + _data.size(), _data.begin());
 }
@@ -96,8 +96,10 @@ Tensor<T>::get_offset(const std::vector<size_t> indexes)
 
   size_t entry_index = 0;
   for (size_t ii = 0; ii < indexes.size(); ++ii) {
-    size_t offset = std::accumulate(
-      std::begin(_shape) + ii + 1, std::end(_shape), 1, std::multiplies<>());
+    size_t offset = std::accumulate(std::begin(_shape) + ii + 1,
+                                    std::end(_shape),
+                                    1,
+                                    std::multiplies<size_t>());
     entry_index += indexes[ii] * offset;
   }
 
@@ -157,7 +159,7 @@ Tensor<T>::resize(const std::vector<size_t>& _new_shape)
   size_t _new_data_len = std::accumulate(begin(_new_shape),
                                          end(_new_shape),
                                          static_cast<size_t>(1),
-                                         std::multiplies<>());
+                                         std::multiplies<size_t>());
   _data.resize(_new_data_len);
   _shape = _new_shape;
 }
@@ -175,7 +177,7 @@ Tensor<T>::reshape(const std::vector<size_t>& new_shape)
   size_t new_data_len = std::accumulate(begin(new_shape),
                                         end(new_shape),
                                         static_cast<size_t>(1),
-                                        std::multiplies<>());
+                                        std::multiplies<size_t>());
 
   if (_data.size() != new_data_len)
     throw(

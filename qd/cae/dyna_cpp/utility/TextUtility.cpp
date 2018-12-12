@@ -41,9 +41,9 @@ string_has_only_numbers(const std::string& _text, size_t start_pos)
 StringType
 get_string_type(const std::string& _arg)
 {
-  if(_arg.empty())
+  if (_arg.empty())
     return StringType::STRING;
-    
+
   size_t nPoints = 0;
   bool has_digit = false;
   bool is_exponential = false;
@@ -88,32 +88,38 @@ get_string_type(const std::string& _arg)
     return StringType::STRING;
 }
 
+inline bool
+is_word_char(const char c)
+{
+  return std::isalnum(c) || c == '_';
+}
+
+inline bool
+is_not_word_char(const char c)
+{
+  return !is_word_char(c);
+}
+
 std::string
 get_word(std::string::const_iterator _begin, std::string::const_iterator _end)
 {
 
-  const std::regex pattern("\\w+");
-  const std::sregex_iterator it_end;
-  std::sregex_iterator it(_begin, _end, pattern);
+  // find start
+  auto start_it = std::find_if(_begin, _end, is_word_char);
+  if (start_it == _end)
+    return {};
 
-  if (it != it_end)
-    return it->str();
+  // find end
+  auto end_it = std::find_if(start_it, _end, is_not_word_char);
 
-  return std::string();
+  return std::string(start_it, end_it);
 }
 
 std::ptrdiff_t
 get_word_position(const std::string& _str, const std::string& _pattern)
 {
-
-  const std::regex pattern("\\b" + _pattern + "\\b");
-
-  std::sregex_iterator it(_str.begin(), _str.end(), pattern), it_end;
-  if (it != it_end) {
-    return it->position();
-  }
-
-  return -1;
+  auto position = _str.find(_pattern);
+  return position == std::string::npos ? -1 : position;
 }
 
 } // namespace qd

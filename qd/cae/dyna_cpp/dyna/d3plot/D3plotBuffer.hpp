@@ -9,7 +9,7 @@
 #include <vector>
 
 #include <dyna_cpp/dyna/d3plot/AbstractBuffer.hpp>
-#include <dyna_cpp/parallel/WorkQueue.hpp>
+// #include <dyna_cpp/parallel/WorkQueue.hpp>
 
 namespace qd {
 
@@ -17,12 +17,14 @@ class D3plotBuffer : public AbstractBuffer
 {
 
 private:
-  WorkQueue _work_queue;
+  std::future<std::vector<char>> _next_buffer;
+
+  // WorkQueue _work_queue;
+  // std::deque<std::future<std::vector<char>>> _file_buffer_q;
 
   size_t iStateFile;
   size_t iActiveFile;
   std::vector<std::string> _d3plots;
-  std::deque<std::future<std::vector<char>>> _file_buffer_q;
 
   static std::vector<char> get_bufferFromFile(std::string); // helper function
 
