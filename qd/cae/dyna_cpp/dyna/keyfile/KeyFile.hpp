@@ -10,7 +10,7 @@
 #include <dyna_cpp/dyna/keyfile/Keyword.hpp>
 #include <dyna_cpp/dyna/keyfile/NodeKeyword.hpp>
 #include <dyna_cpp/dyna/keyfile/PartKeyword.hpp>
-#include <dyna_cpp/parallel/WorkQueue.hpp>
+// #include <dyna_cpp/parallel/WorkQueue.hpp>
 
 #include <map>
 #include <queue>

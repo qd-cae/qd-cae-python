@@ -110,7 +110,7 @@ public:
 
   inline bool has_long_fields() const;
   inline size_t size();
-  inline int64_t get_position();
+  inline int64_t get_position() const;
   /*
   bool contains_field(const std::string& _name) const;
   */
@@ -316,7 +316,7 @@ Keyword::size()
  * @return line_index line index of the keyword in the file
  */
 int64_t
-Keyword::get_position()
+Keyword::get_position() const
 {
   return position;
 }

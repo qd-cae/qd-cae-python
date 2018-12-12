@@ -18,6 +18,7 @@ NodeKeyword::NodeKeyword(DB_Nodes* _db_nodes,
   : Keyword(_lines, _iLine)
   , db_nodes(_db_nodes)
 {
+  field_size = 8;
   kw_type = KeywordType::NODE;
 }
 

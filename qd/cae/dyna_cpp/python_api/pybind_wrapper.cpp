@@ -29,7 +29,7 @@ extern "C"
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#include <numpy/arrayobject.h>
+// #include <numpy/arrayobject.h>
 
 #include <memory>
 #include <string>
@@ -146,17 +146,22 @@ auto cast_kw = [](std::shared_ptr<Keyword> instance) {
 // pybind11::array_t<T> f
 
 /*========= PLUGIN: dyna_cpp =========*/
-PYBIND11_MODULE(dyna_cpp, m)
+// pybind11 2.2
+// PYBIND11_MODULE(dyna_cpp, m)
+// old style
+PYBIND11_PLUGIN(dyna_cpp)
 {
-  m.doc() = "c++ python wrapper for ls-dyna module";
-  // pybind11::module m("dyna_cpp", "c++ python wrapper for ls-dyna module");
+  pybind11::module m("dyna_cpp", "c++ python wrapper for ls-dyna module");
+
+  // pybind11 2.2
+  // m.doc() = "c++ python wrapper for ls-dyna module";
 
   // load numpy
-  if (_import_array() < 0) {
-    PyErr_SetString(PyExc_ImportError,
-                    "numpy.core.multiarray failed to import");
-    return; // nullptr;
-  };
+  // if (_import_array() < 0) {
+  //   PyErr_SetString(PyExc_ImportError,
+  //                   "numpy.core.multiarray failed to import");
+  //   return nullptr;
+  // };
 
   // disable sigantures for documentation
   pybind11::options options;
@@ -619,18 +624,18 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("get_nodes",
          &DB_Nodes::get_nodes,
          pybind11::return_value_policy::take_ownership,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         //  pybind11::call_guard<pybind11::gil_scoped_release>(),
          dbnodes_get_nodes_docs)
     .def("get_nodeByID",
          (std::shared_ptr<Node>(DB_Nodes::*)(long)) &
            DB_Nodes::get_nodeByID<long>,
          "id"_a,
          pybind11::return_value_policy::reference_internal,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          dbnodes_get_nodeByID_docs)
     .def("get_nodeByID",
          [](std::shared_ptr<DB_Nodes> _db_nodes, pybind11::list _ids) {
-           auto tmp = qd::py::container_to_vector<int32_t>(
+           std::vector<int32_t> tmp = qd::py::container_to_vector<int32_t>(
              _ids, "An entry of the list was not a fully fledged integer.");
 
            pybind11::gil_scoped_release release;
@@ -712,7 +717,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          &DB_Elements::get_elements,
          "element_type"_a = Element::NONE,
          pybind11::return_value_policy::take_ownership,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          get_elements_docs)
     .def(
       "get_elementByID",
@@ -720,7 +725,7 @@ PYBIND11_MODULE(dyna_cpp, m)
         DB_Elements::get_elementByID<long>,
       "element_type"_a,
       "id"_a,
-      pybind11::call_guard<pybind11::gil_scoped_release>(),
+      // pybind11::call_guard<pybind11::gil_scoped_release>(),
       pybind11::return_value_policy::reference_internal)
     .def("get_elementByID",
          [](std::shared_ptr<DB_Elements> _db_elems,
@@ -867,7 +872,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("get_parts",
          &DB_Parts::get_parts,
          pybind11::return_value_policy::reference_internal,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          dbparts_get_parts_docs)
     .def("get_partByID",
          (std::shared_ptr<Part>(DB_Parts::*)(long)) &
@@ -925,7 +930,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          &DB_Parts::get_partByName,
          "name"_a,
          pybind11::return_value_policy::reference_internal,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          dbparts_get_partByName_docs);
 
   // FEMFile
@@ -935,7 +940,7 @@ PYBIND11_MODULE(dyna_cpp, m)
   femfile_py.def("get_filepath",
                  &FEMFile::get_filepath,
                  pybind11::return_value_policy::take_ownership,
-                 pybind11::call_guard<pybind11::gil_scoped_release>(),
+                 // pybind11::call_guard<pybind11::gil_scoped_release>(),
                  femfile_get_filepath_docs);
 
   // D3plot
@@ -968,58 +973,65 @@ PYBIND11_MODULE(dyna_cpp, m)
     //      "filepath"_a,
     //      "read_states"_a = pybind11::tuple())
     // DEPRECATED BEGIN
-    .def(
-      pybind11::init(
-        [](std::string _filepath, pybind11::list _variables, bool use_femzip) {
-          // std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
-          //              "needed anymore and will be "
-          //              "removed in the future.\n";
+    .def("__init__",
+         [](D3plot& instance,
+            std::string _filepath,
+            pybind11::list _variables,
+            bool use_femzip) {
+           // std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
+           //              "needed anymore and will be "
+           //              "removed in the future.\n";
 
-          auto tmp = qd::py::container_to_vector<std::string>(
-            _variables, "An entry of read_states was not of type str");
+           auto tmp = qd::py::container_to_vector<std::string>(
+             _variables, "An entry of read_states was not of type str");
 
-          pybind11::gil_scoped_release release;
-          return std::make_shared<D3plot>(_filepath, tmp, use_femzip);
-        }),
-      "filepath"_a,
-      "read_states"_a = pybind11::list(),
-      "use_femzip"_a = false)
-    .def(
-      pybind11::init(
-        [](std::string _filepath, pybind11::tuple _variables, bool use_femzip) {
-          // std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
-          //              "needed anymore and will be "
-          //              "removed in the future.\n";
+           pybind11::gil_scoped_release release;
+           new (&instance) D3plot(_filepath, tmp, use_femzip);
+         },
+         "filepath"_a,
+         "read_states"_a = pybind11::list(),
+         "use_femzip"_a = false)
+    .def("__init__",
+         [](D3plot& instance,
+            std::string _filepath,
+            pybind11::tuple _variables,
+            bool use_femzip) {
+           // std::cout << "DeprecationWarning: Argument 'use_femzip' is not "
+           //              "needed anymore and will be "
+           //              "removed in the future.\n";
 
-          auto tmp = qd::py::container_to_vector<std::string>(
-            _variables, "An entry of read_states was not of type str");
+           auto tmp = qd::py::container_to_vector<std::string>(
+             _variables, "An entry of read_states was not of type str");
 
-          pybind11::gil_scoped_release release;
-          return std::make_shared<D3plot>(_filepath, tmp, use_femzip);
-        }),
-      "filepath"_a,
-      "read_states"_a = pybind11::tuple(),
-      "use_femzip"_a = false)
-    .def(pybind11::init(
-           [](std::string _filepath, std::string var_name, bool use_femzip) {
-             //  std::cout << "DeprecationWarning: Argument 'use_femzip' is not
-             //  "
-             //               "needed anymore and will be "
-             //               "removed in the future.\n";
+           pybind11::gil_scoped_release release;
+           new (&instance) D3plot(_filepath, tmp, use_femzip);
+         },
+         "filepath"_a,
+         "read_states"_a = pybind11::tuple(),
+         "use_femzip"_a = false)
+    .def("__init__",
+         [](D3plot& instance,
+            std::string _filepath,
+            std::string var_name,
+            bool use_femzip) {
+           //  std::cout << "DeprecationWarning: Argument 'use_femzip' is not
+           //  "
+           //               "needed anymore and will be "
+           //               "removed in the future.\n";
 
-             pybind11::gil_scoped_release release;
-             return std::make_shared<D3plot>(_filepath, var_name, use_femzip);
-           }),
+           pybind11::gil_scoped_release release;
+           new (&instance) D3plot(_filepath, var_name, use_femzip);
+         },
          "filepath"_a,
          "read_states"_a = std::string(),
          "use_femzip"_a = false,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          d3plot_constructor)
     // DEPRECATED END
     .def("info", &D3plot::info, d3plot_info_docs)
     .def("read_states",
          (void (D3plot::*)(const std::string&)) & D3plot::read_states,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          d3plot_read_states_docs)
     .def("read_states",
          [](std::shared_ptr<D3plot> _d3plot, pybind11::list _list) {
@@ -1058,7 +1070,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          "variables"_a = pybind11::tuple())
     .def("clear",
          (void (D3plot::*)(const std::string&)) & D3plot::clear,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          "variables"_a = pybind11::str())
     .def("get_timesteps",
          [](std::shared_ptr<D3plot> _d3plot) {
@@ -1090,7 +1102,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def(pybind11::init<std::string, bool>(),
          "filepath"_a,
          "use_femzip"_a = false,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_constructor_description)
     .def(pybind11::init<>())
     .def("_get_string_names",
@@ -1101,7 +1113,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          &RawD3plot::get_string_data,
          "name"_a,
          pybind11::return_value_policy::take_ownership,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_get_string_data_docs)
     .def("_get_int_names",
          &RawD3plot::get_int_names,
@@ -1115,7 +1127,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          rawd3plot_get_int_data_docs)
     .def("_get_float_names",
          &RawD3plot::get_float_names,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          rawd3plot_get_float_names_docs)
     .def("_get_float_data",
          [](std::shared_ptr<RawD3plot> self, std::string& name) {
@@ -1128,7 +1140,7 @@ PYBIND11_MODULE(dyna_cpp, m)
             std::string _entry_name,
             pybind11::array_t<float> _data) {
            auto shape_sizet = std::vector<size_t>(_data.ndim());
-           for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
+           for (size_t ii = 0; ii < _data.ndim(); ++ii)
              shape_sizet[ii] = _data.shape()[ii];
 
            pybind11::gil_scoped_release release;
@@ -1141,7 +1153,7 @@ PYBIND11_MODULE(dyna_cpp, m)
             std::string _entry_name,
             pybind11::array_t<int> _data) {
            auto shape_sizet = std::vector<size_t>(_data.ndim());
-           for (ssize_t ii = 0; ii < _data.ndim(); ++ii)
+           for (size_t ii = 0; ii < _data.ndim(); ++ii)
              shape_sizet[ii] = _data.shape()[ii];
 
            pybind11::gil_scoped_release release;
@@ -1546,23 +1558,23 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("get_nodes",
          &NodeKeyword::get_nodes,
          pybind11::return_value_policy::take_ownership,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          node_keyword_get_nodes_docs)
     .def("get_node_ids",
          &NodeKeyword::get_node_ids,
          pybind11::return_value_policy::take_ownership,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          node_keyword_get_node_ids_docs)
     .def("load",
          &NodeKeyword::load,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          node_keyword_load_docs);
 
   element_keyword_py
     .def("get_elements",
          &ElementKeyword::get_elements,
          pybind11::return_value_policy::take_ownership,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          element_keyword_get_elements_docs)
     .def("get_nElements",
          &ElementKeyword::get_nElements,
@@ -1615,7 +1627,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          element_keyword_add_elementByNodeIndex_docs)
     .def("load",
          &ElementKeyword::load,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          element_keyword_load_docs);
 
   part_keyword_py
@@ -1641,12 +1653,12 @@ PYBIND11_MODULE(dyna_cpp, m)
          part_keyword_add_part_docs)
     .def("get_parts",
          &PartKeyword::get_parts,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          part_keyword_get_parts_docs)
     .def("get_nParts", &PartKeyword::get_nParts, part_keyword_get_nParts_docs)
     .def("load",
          &PartKeyword::load,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          part_keyword_load_docs);
 
   include_path_keyword_py
@@ -1667,7 +1679,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     // .def("load", &IncludeKeyword::load, include_keyword_load_docs)
     .def("load",
          [](std::shared_ptr<IncludeKeyword> self) { self->load(); },
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          include_keyword_load_docs);
 
   // KeyFile
@@ -1690,7 +1702,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          "read_keywords"_a = true,
          "parse_mesh"_a = false,
          "load_includes"_a = false,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          keyfile_constructor)
     .def("__init__",
          [](KeyFile& instance,
@@ -1705,6 +1717,7 @@ PYBIND11_MODULE(dyna_cpp, m)
                           "anymore and will be "
                           "removed in the future.\n";
 
+           pybind11::gil_scoped_release release;
            new (&instance) KeyFile(
              _filepath, read_generic_keywords, parse_mesh, load_includes);
            if (!str_has_content(_filepath))
@@ -1714,8 +1727,7 @@ PYBIND11_MODULE(dyna_cpp, m)
          "read_keywords"_a = true,
          "parse_mesh"_a = false,
          "load_includes"_a = false,
-         "encryption_detection"_a = 0.7,
-         pybind11::call_guard<pybind11::gil_scoped_release>())
+         "encryption_detection"_a = 0.7)
     .def("__str__",
          &KeyFile::str,
          pybind11::return_value_policy::take_ownership,
@@ -1782,7 +1794,7 @@ PYBIND11_MODULE(dyna_cpp, m)
     .def("save",
          &KeyFile::save_txt,
          "filepath"_a,
-         pybind11::call_guard<pybind11::gil_scoped_release>(),
+         // pybind11::call_guard<pybind11::gil_scoped_release>(),
          keyfile_save_description)
     .def("remove_keyword",
          [](std::shared_ptr<KeyFile> self,
@@ -1910,7 +1922,7 @@ PYBIND11_MODULE(dyna_cpp, m)
           return get_entropy(buffer);
         },
         pybind11::return_value_policy::take_ownership,
-        pybind11::call_guard<pybind11::gil_scoped_release>(),
+        // pybind11::call_guard<pybind11::gil_scoped_release>(),
         module_get_file_entropy_description);
 #ifdef QD_USE_FEMZIP
   m.def("is_femzipped",
@@ -1922,7 +1934,7 @@ PYBIND11_MODULE(dyna_cpp, m)
   m.attr("__version__") = QD_VERSION;
 #endif
 
-  // return m.ptr();
+  return m.ptr();
 }
 
 } //  namespace qd

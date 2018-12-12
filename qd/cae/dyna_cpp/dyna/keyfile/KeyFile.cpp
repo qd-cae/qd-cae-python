@@ -521,8 +521,8 @@ KeyFile::str() const
 
   std::sort(kwrds_sorted.begin(),
             kwrds_sorted.end(),
-            [](std::shared_ptr<Keyword>& instance1,
-               std::shared_ptr<Keyword>& instance2) {
+            [](const std::shared_ptr<Keyword>& instance1,
+               const std::shared_ptr<Keyword>& instance2) {
               return instance1->get_position() < instance2->get_position();
             });
 

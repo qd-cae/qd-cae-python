@@ -129,26 +129,24 @@ D3plotBuffer::init_nextState()
 #ifdef QD_DEBUG
   std::cout << "Emptying previous IO-Buffers" << std::endl;
 #endif
-  while (_file_buffer_q.size() != 0) {
-    _file_buffer_q.back().get();
-    _file_buffer_q.pop_back();
-  }
 
-  constexpr size_t n_threads = 1;
-
-  _work_queue.reset();
-  for (size_t iFile = 1; iFile < _d3plots.size(); ++iFile) {
-    _file_buffer_q.push_back(
-      _work_queue.submit(D3plotBuffer::get_bufferFromFile, _d3plots[iFile]));
-  }
-  _work_queue.init_workers(n_threads);
-
-  // preload buffers
-  // for (size_t iFile = _d3plots.size() - 1; iFile > 0; --iFile)
-  // {
-  //   file_buffer_q.push_back(
-  //     std::async();
+  // DISABLED
+  // while (_file_buffer_q.size() != 0) {
+  //   _file_buffer_q.back().get();
+  //   _file_buffer_q.pop_back();
   // }
+
+  // DISABLED
+  // constexpr size_t n_threads = 1;
+  // _work_queue.reset();
+  // for (size_t iFile = 1; iFile < _d3plots.size(); ++iFile) {
+  //   _file_buffer_q.push_back(
+  //     _work_queue.submit(D3plotBuffer::get_bufferFromFile, _d3plots[iFile]));
+  // }
+  // _work_queue.init_workers(n_threads);
+
+  if (_d3plots.size() > 0)
+    _next_buffer = std::async(D3plotBuffer::get_bufferFromFile, _d3plots[1]);
 }
 
 /*
@@ -174,8 +172,14 @@ D3plotBuffer::read_nextState()
   std::cout << "Loading state-file:" << _d3plots[iStateFile] << std::endl;
 #endif
 
-  _current_buffer = _file_buffer_q.front().get();
-  _file_buffer_q.pop_front();
+  // DISABLED
+  // _current_buffer = _file_buffer_q.front().get();
+  // _file_buffer_q.pop_front();
+
+  if (_next_buffer.valid())
+    _current_buffer = _next_buffer.get();
+  if (iStateFile + 1 < _d3plots.size())
+    _next_buffer = std::async(D3plotBuffer::get_bufferFromFile, _d3plots[1]);
 
   iStateFile++;
 }
@@ -200,7 +204,10 @@ D3plotBuffer::has_nextState()
   if (iStateFile == 0)
     return true;
 
-  if (_file_buffer_q.size() > 0)
+  // DISABLED
+  // if (_file_buffer_q.size() > 0)
+  //   return true;
+  if (_next_buffer.valid())
     return true;
 
   return false;
@@ -214,8 +221,10 @@ void
 D3plotBuffer::end_nextState()
 {
   _current_buffer.clear();
-  _file_buffer_q.clear();
-  _work_queue.abort();
+
+  // DISABLED
+  // _file_buffer_q.clear();
+  // _work_queue.abort();
 }
 
 /*
@@ -225,8 +234,10 @@ void
 D3plotBuffer::finish_reading()
 {
   _current_buffer.clear();
-  _file_buffer_q.clear();
-  _work_queue.abort();
+
+  // DISABLED
+  // _file_buffer_q.clear();
+  // _work_queue.abort();
 }
 
 } // namespace qd

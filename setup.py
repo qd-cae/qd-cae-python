@@ -22,7 +22,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 debugging_mode = False
 measure_time = False
 use_openmp = False  # buggy
-version = "0.8.3"
+version = "0.8.4"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() in ["Linux", "Darwin"])
@@ -63,7 +63,8 @@ def setup_dyna_cpp():
         "qd/cae/dyna_cpp/dyna/keyfile/IncludePathKeyword.cpp",
         "qd/cae/dyna_cpp/utility/FileUtility.cpp",
         "qd/cae/dyna_cpp/utility/TextUtility.cpp",
-        "qd/cae/dyna_cpp/parallel/WorkQueue.cpp"]
+        # "qd/cae/dyna_cpp/parallel/WorkQueue.cpp",
+    ]
 
     extra_link_args = []
 
@@ -71,9 +72,9 @@ def setup_dyna_cpp():
 
     # linux compiler args
     if is_linux:
-        compiler_args = ["-std=c++14",
+        compiler_args = ["-std=c++11",
                          "-fPIC",
-
+                         "-D_GLIBCXX_USE_CXX11_ABI=0",  # ABI compatability
                          "-DQD_VERSION=\"" + version + "\""]
 
         libs_dyna = ["stdc++"]
@@ -283,7 +284,7 @@ if __name__ == "__main__":
           ext_package='qd.cae',  # where to place c extensions
           ext_modules=[dyna_extension],
           install_requires=['numpy>=1.8',
-                            'diversipy', 'pybind11>=2.2.0', 'h5py'],
+                            'diversipy', 'pybind11==2.1.1', 'h5py'],
           keywords=['cae',
                       'simulation',
                       'engineering',
@@ -294,12 +295,12 @@ if __name__ == "__main__":
                       'binout'],
           classifiers=['Development Status :: 4 - Beta',
                        'Programming Language :: C++',
-                       'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
                        'Topic :: Scientific/Engineering',
                        'Intended Audience :: Science/Research',
                        'Topic :: Utilities',
                        'Operating System :: Microsoft :: Windows',
                        'Operating System :: POSIX :: Linux',
                        'Programming Language :: Python :: 3.5',
-                       'Programming Language :: Python :: 3.6'],
+                       'Programming Language :: Python :: 3.6',
+                       'Programming Language :: Python :: 3.7'],
           test_suite='setup.my_test_suite',)
