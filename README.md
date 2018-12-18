@@ -23,6 +23,13 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+_Changelog 18.12.2018_ ❄❄❄
+Version 0.8.5 
+
+general:
+
+ - the library can now be compiled with gcc-4.8 again, which is usually system default in linux
+
 _Changelog 06.12.2018_
 Version 0.8.4
 
@@ -36,22 +43,6 @@ qd.cae.dyna:
 - fixed setting card values of a `*PART` keyword works now correctly
 
 - fixed: creating a \*NODE had a wrong initial field size, which caused wrong formatting of nodes
-
-_Changelog 09.10.2018_
-Version 0.8.3
-
-qd.cae.dyna:
-<<<<<<< HEAD
-
-- fixed a bug that occasionally only a single timestep was read
-  <<<<<<< HEAD
-
-=======
-
-> > > > > > > # codie
-
-- fixed a bug that occasionally only a single timestep was read
-  > > > > > > > codie
 
 # Documentation
 
@@ -102,6 +93,8 @@ Note though that your windows python distribution might not neccessarily find an
 ## Linux
 
 In the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist) usually are some precompiled Linux wheels for installation with pip. Note that Linux wheels rarely work accross different systems, so do not expect them to work and in case of trouble see the [compilation guide](https://qd-cae.github.io/qd-cae-python/build/html/compilation_guide.html). It's quite simple to compile it yourself on Linux (❤).
+
+For your info the library is about **2-3 times faster on Linux than on Windows**.
 
 # Compilation
 
