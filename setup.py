@@ -12,7 +12,7 @@ try:
     import pybind11
 except ImportError:
     import pip
-    pip.main(['install', 'pybind11'])
+    pip.main(['install', 'pybind11==2.1.1'])
     import pybind11
 
 # ======= S E T T I N G S ======= #
