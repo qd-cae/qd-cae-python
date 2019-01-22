@@ -30,6 +30,9 @@ general:
 
  - the library can now be compiled with gcc-4.8 again, which is usually system default in linux
 
+Binout:
+ - fixed reading of results (such as nodout_ssd) without a timestamp marker.
+
 _Changelog 06.12.2018_
 Version 0.8.4
 

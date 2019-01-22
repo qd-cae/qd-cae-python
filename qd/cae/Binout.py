@@ -355,11 +355,17 @@ class Binout:
                         data.append(state_data[0])
                     else:  # more than one data entry
                         data.append(state_data)
-                    time += subdir_symbol.get(b"time").read()
+                    
+                    time_symbol = subdir_symbol.get(b"time")
+                    if time_symbol:
+                        time += time_symbol.read()
                     # data += subdir_symbol.get(variable_name).read()
 
             # return sorted by time
-            return np.array(data)[np.argsort(time)]
+            if len(time) == len(data):
+                return np.array(data)[np.argsort(time)]
+            else:
+                return np.array(data)
 
         raise ValueError("Could not find and read: %s" % str(path))
 
