@@ -10,13 +10,13 @@ Compilation on Windows
 
 Windows only supports compilation for python3.5 and higher. This is for the reason that python2 needs an ancient MSCV compiler, which does not support the new coding standard C++14 (also the old compiler created 3x slower code).
 
-For compilation of python version 3.5 or 3.6 on Windows download `Visual Studio 15`_ (Visual Studio 17 also worked for me). Then clone the repository into a folder:
+For compilation of python version 3.5 and higher on Windows download `Microsoft Visual Studio`_ . Then clone the repository into a folder:
 
-.. _Visual Studio 15: https://www.visualstudio.com/de/vs/older-downloads/
+.. _Microsoft Visual Studio: https://visualstudio.microsoft.com/downloads/
 
 .. code-block:: bash
 
-    git clone --depth 1 https://github.com/qd-cae/qd-cae-python.git
+    git clone --depth 1 --branch master --single-branch https://github.com/qd-cae/qd-cae-python.git
     cd qd-cae-python
 
 The argument ``--depth`` only makes a shallow copy, which saves a lot time and memory. Thereafter run the setup script, the code will automatically compile and install. 
@@ -35,7 +35,7 @@ Note that in contrast to windows, on Linux the library can be compiled for both,
 
     g++ --version
 
-You will need **g++ version 5.3 or higher**. If your compiler is fine, just install as follows:
+You will need **g++ version 4.8 or higher**. If your compiler is fine, just install as follows:
 
 .. code-block:: bash
 
@@ -43,7 +43,7 @@ You will need **g++ version 5.3 or higher**. If your compiler is fine, just inst
     cd qd-cae-python
     sudo python setup.py install
     
-As a little hint, if you want force python to take your modern compiler version (it may happen that you have multiple g++), simply overwrite the `CC` attribute before the running the setup script:
+As a little hint, if you want force python to take a modern compiler version (it may happen that you have multiple g++), simply overwrite the `CC` attribute before the running the setup script (bash shell):
 
 .. code-block:: bash
 
