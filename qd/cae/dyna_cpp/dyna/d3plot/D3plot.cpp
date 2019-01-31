@@ -1693,7 +1693,7 @@ D3plot::read_states(std::vector<std::string> _variables)
         this->timesteps.push_back(state_time);
 #ifdef QD_DEBUG
         std::cout << "State: " << iState << " Time: " << state_time
-                  << std::endl;
+                  << " at word " << wordPosition << std::endl;
 #endif
       }
 

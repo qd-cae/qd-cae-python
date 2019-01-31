@@ -23,7 +23,14 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
-_Changelog 18.12.2018_ ❄❄❄
+
+_Changelog 30.01.2019_ ❄❄❄
+Version 0.8.6
+
+D3plot:
+ - state reading of non-femzipped files sometimes returned empty result arrayss
+
+_Changelog 28.01.2019_ ❄❄❄
 Version 0.8.5 
 
 general:
@@ -32,20 +39,6 @@ general:
 
 Binout:
  - fixed reading of results (such as nodout_ssd) without a timestamp marker.
-
-_Changelog 06.12.2018_
-Version 0.8.4
-
-general:
-
-- improved binary compatability for Linux
-
-qd.cae.dyna:
-
-- fixed: creating a \*NODE had a wrong initial field size, which caused wrong formatting of nodes
-- fixed setting card values of a `*PART` keyword works now correctly
-
-- fixed: creating a \*NODE had a wrong initial field size, which caused wrong formatting of nodes
 
 # Documentation
 

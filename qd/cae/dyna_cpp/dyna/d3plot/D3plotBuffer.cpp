@@ -179,7 +179,8 @@ D3plotBuffer::read_nextState()
   if (_next_buffer.valid())
     _current_buffer = _next_buffer.get();
   if (iStateFile + 1 < _d3plots.size())
-    _next_buffer = std::async(D3plotBuffer::get_bufferFromFile, _d3plots[1]);
+    _next_buffer =
+      std::async(D3plotBuffer::get_bufferFromFile, _d3plots[iStateFile + 1]);
 
   iStateFile++;
 }
