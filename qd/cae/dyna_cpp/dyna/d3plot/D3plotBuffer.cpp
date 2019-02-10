@@ -120,6 +120,9 @@ D3plotBuffer::free_partBuffer(){};
 void
 D3plotBuffer::init_nextState()
 {
+#ifdef QD_DEBUG
+  std::cout << "D3plotBuffer::init_nextState\n";
+#endif
   iStateFile = 0;
 
   if (_current_buffer.size() == 0)
@@ -145,7 +148,7 @@ D3plotBuffer::init_nextState()
   // }
   // _work_queue.init_workers(n_threads);
 
-  if (_d3plots.size() > 0)
+  if (_d3plots.size() > 1)
     _next_buffer = std::async(D3plotBuffer::get_bufferFromFile, _d3plots[1]);
 }
 
@@ -155,6 +158,9 @@ D3plotBuffer::init_nextState()
 void
 D3plotBuffer::read_nextState()
 {
+#ifdef QD_DEBUG
+  std::cout << "D3plotBuffer::read_nextState\n";
+#endif
 
   // Do not load next buffer in case of first file
   // It will be read if the end marker is hit anyways.
@@ -192,6 +198,9 @@ D3plotBuffer::read_nextState()
 void
 D3plotBuffer::rewind_nextState()
 {
+#ifdef QD_DEBUG
+  std::cout << "D3plotBuffer::rewind_nextState\n";
+#endif
   this->init_nextState();
 }
 
@@ -221,6 +230,9 @@ D3plotBuffer::has_nextState()
 void
 D3plotBuffer::end_nextState()
 {
+#ifdef QD_DEBUG
+  std::cout << "D3plotBuffer::end_nextState\n";
+#endif
   _current_buffer.clear();
 
   // DISABLED
