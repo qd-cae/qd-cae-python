@@ -23,22 +23,17 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+_Changelog 10.02.2019_ ❄❄❄
+Version 0.8.7
+
+D3plot:
+ - fixed a bug when reading with a single result file
 
 _Changelog 30.01.2019_ ❄❄❄
 Version 0.8.6
 
 D3plot:
  - state reading of non-femzipped files sometimes returned empty result arrayss
-
-_Changelog 28.01.2019_ ❄❄❄
-Version 0.8.5 
-
-general:
-
- - the library can now be compiled with gcc-4.8 again, which is usually system default in linux
-
-Binout:
- - fixed reading of results (such as nodout_ssd) without a timestamp marker.
 
 # Documentation
 
