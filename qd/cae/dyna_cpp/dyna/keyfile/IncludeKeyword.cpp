@@ -40,9 +40,14 @@ IncludeKeyword::load(bool _load_mesh)
   if (iLine == lines.size())
     return;
 
+#ifdef QD_DEBUG
+  std::cout << "Loading Include ...\n";
+#endif
+
   // update parent search dirs
   auto master = parent_kf->get_master_keyfile();
-  auto dirs = master->get_include_dirs(true);
+  // auto dirs = master->get_include_dirs(true);
+  auto dirs = parent_kf->get_include_dirs(true);
 
   // create keywords
   for (; iLine < lines.size(); ++iLine) {
@@ -51,7 +56,8 @@ IncludeKeyword::load(bool _load_mesh)
     if (line.empty() || is_comment(line))
       break;
 
-    auto fpath = master->resolve_include_filepath(line);
+    // auto fpath = master->resolve_include_filepath(line);
+    auto fpath = parent_kf->resolve_include_filepath(line);
     auto kf = std::make_shared<KeyFile>(fpath,
                                         parent_kf->get_read_generic_keywords(),
                                         parent_kf->get_parse_mesh(),

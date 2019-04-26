@@ -97,7 +97,6 @@ public:
   void remove_keyword(const std::string& _keyword_name);
   template<typename T>
   void remove_keyword(const std::string& _keyword_name, T _index);
-
   int64_t get_end_keyword_position();
 
   // io
@@ -223,7 +222,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
     switch (_keyword_type) {
       case (Keyword::KeywordType::NODE): {
         auto kw = std::make_shared<NodeKeyword>(
-          parent_kf->get_db_nodes(), _lines, position);
+          get_master_keyfile()->get_db_nodes(), _lines, position);
         node_keywords.push_back(kw);
 
         // preload while continuing parsing
@@ -237,7 +236,9 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
       }
       case (Keyword::KeywordType::ELEMENT): {
         auto kw = std::make_shared<ElementKeyword>(
-          parent_kf->get_db_elements(), _lines, static_cast<int64_t>(_iLine));
+          get_master_keyfile()->get_db_elements(),
+          _lines,
+          static_cast<int64_t>(_iLine));
         element_keywords.push_back(kw);
 
         // update max position
@@ -247,8 +248,10 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
         break;
       }
       case (Keyword::KeywordType::PART): {
-        auto kw = std::make_shared<PartKeyword>(
-          parent_kf->get_db_parts(), _lines, static_cast<int64_t>(_iLine));
+        auto kw =
+          std::make_shared<PartKeyword>(get_master_keyfile()->get_db_parts(),
+                                        _lines,
+                                        static_cast<int64_t>(_iLine));
         part_keywords.push_back(kw);
 
         // update max position
@@ -281,7 +284,7 @@ KeyFile::create_keyword(const std::vector<std::string>& _lines,
     // *INCLUDE
     if (_keyword_type == Keyword::KeywordType::INCLUDE) {
       auto kw = std::make_shared<IncludeKeyword>(
-        parent_kf, _lines, static_cast<int64_t>(_iLine));
+        this, _lines, static_cast<int64_t>(_iLine));
       include_keywords.push_back(kw);
 
       // update max position

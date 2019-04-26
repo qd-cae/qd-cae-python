@@ -607,8 +607,11 @@ class TestDynaModule(unittest.TestCase):
         self.assertCountEqual(
             kw.get_lines(), ["*INCLUDE_PATH", "C:/absolute/path"])
 
+        # self.assertEqual(kf.get_include_dirs(), [
+        #                  'C:/absolute/path', 'test/', 'test/subdir'])
         self.assertEqual(kf.get_include_dirs(), [
-                         'C:/absolute/path', 'test/', 'test/subdir'])
+                         'C:/absolute/path', 'subdir', 'test/', 
+                         'test/C:/absolute/path', 'test/subdir'])
 
         # IncludeKeyword
         kf = KeyFile("test/keyfile.key", load_includes=True)

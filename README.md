@@ -23,17 +23,17 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+_Changelog 26.04.2019_ ❄❄❄
+Version 0.8.8
+
+KeyFile:
+ - Fixed a bug when loading deeply nested include structures
+
 _Changelog 10.02.2019_ ❄❄❄
 Version 0.8.7
 
 D3plot:
  - fixed a bug when reading with a single result file
-
-_Changelog 30.01.2019_ ❄❄❄
-Version 0.8.6
-
-D3plot:
- - state reading of non-femzipped files sometimes returned empty result arrayss
 
 # Documentation
 

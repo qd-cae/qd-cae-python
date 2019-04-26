@@ -72,7 +72,8 @@ KeyFile::load(bool _load_mesh)
   has_linebreak_at_eof = char_buffer.back() == '\n';
 
 #ifdef QD_DEBUG
-  std::cout << "done." << std::endl;
+  std::cout << "Specified filepath: " << get_filepath() << std::endl;
+  std::cout << "Resolved  filepath: " << my_filepath << std::endl;
 #endif
 
   // init parallel worker if master file
@@ -216,9 +217,11 @@ KeyFile::load(bool _load_mesh)
     // do the thing
     for (auto& include_kw : include_keywords) {
 
-      if (include_kw->get_position() < end_kw_position)
+      if (include_kw->get_position() < end_kw_position) {
+
         // Note: prevent loading the mesh here
         include_kw->load(false);
+      }
     }
   }
 
@@ -357,6 +360,10 @@ const std::vector<std::string>&
 KeyFile::get_include_dirs(bool _update)
 {
 
+#ifdef QD_DEBUG
+  std::cout << "Refreshing include dirs \n";
+#endif
+
   if (!_update)
     return include_dirs;
 
@@ -365,7 +372,13 @@ KeyFile::get_include_dirs(bool _update)
 
   // dir of file
   std::string directory = "";
-  auto my_filepath = get_filepath();
+  // BUGFIX
+  // https://github.com/qd-cae/qd-cae-python/issues/53
+  // originally the filepath of the include was used as basis
+  // as it seems, dyna uses the master file keyfile directory
+  // as basis for any include downwards
+  auto master = get_master_keyfile();
+  auto my_filepath = master->get_filepath();
   size_t pos = my_filepath.find_last_of("/\\");
   if (pos != std::string::npos)
     directory = my_filepath.substr(0, pos) + "/";
@@ -380,28 +393,33 @@ KeyFile::get_include_dirs(bool _update)
 
     // append
     for (const auto& dirpath : kw_inc_path->get_include_dirs()) {
-      if (is_relative_dir)
-        new_include_dirs.insert(join_path(directory, dirpath));
-      else
-        new_include_dirs.insert(dirpath);
+
+      // BUGFIX + BUGCAUSE
+      // we ignore relative or not here and simply search everything
+      // this is related to issue:
+      // https://github.com/qd-cae/qd-cae-python/issues/53
+      new_include_dirs.insert(join_path(directory, dirpath));
+      // if (is_relative_dir)
+      new_include_dirs.insert(dirpath);
     }
   }
 
   // check also the includes
-  for (auto& include_kw : include_keywords)
+  for (auto& include_kw : include_keywords) {
     for (auto& include_kf : include_kw->get_includes()) {
       auto paths = include_kf->get_include_dirs(true);
       new_include_dirs.insert(paths.begin(), paths.end());
     }
+  }
+
+  include_dirs =
+    std::vector<std::string>(new_include_dirs.begin(), new_include_dirs.end());
 
 #ifdef QD_DEBUG
   std::cout << "Include dirs:\n";
   for (const auto& entry : include_dirs)
     std::cout << entry << '\n';
 #endif
-
-  include_dirs =
-    std::vector<std::string>(new_include_dirs.begin(), new_include_dirs.end());
 
   return include_dirs;
 }
@@ -415,16 +433,24 @@ std::string
 KeyFile::resolve_include_filepath(const std::string& _filepath)
 {
 
+#ifdef QD_DEBUG
+  std::cout << "Resolving " << _filepath << '\n';
+#endif
+
   if (check_ExistanceAndAccess(_filepath))
     return _filepath;
 
   for (const auto& dir : include_dirs) {
     auto full_path = join_path(dir, _filepath);
+#ifdef QD_DEBUG
+    std::cout << "Trying " << full_path << '\n';
+#endif
+
     if (check_ExistanceAndAccess(full_path))
       return full_path;
   }
 
-  throw(std::invalid_argument("Can not find: " + _filepath));
+  throw(std::invalid_argument("Can not find include: " + _filepath));
 }
 
 /** Get all child include files
