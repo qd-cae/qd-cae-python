@@ -23,7 +23,7 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
-_Changelog 26.04.2019_ ❄❄❄
+_Changelog 26.04.2019_ ✿✿✿
 Version 0.8.8
 
 KeyFile:
