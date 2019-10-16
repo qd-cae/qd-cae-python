@@ -22,7 +22,7 @@ femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
 debugging_mode = False
 measure_time = False
 use_openmp = False  # buggy
-version = "0.8.8"
+version = "0.8.9"
 # =============================== #
 is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() in ["Linux", "Darwin"])
@@ -44,6 +44,7 @@ def setup_dyna_cpp():
                     pybind11.get_include()]
     srcs = [
         "qd/cae/dyna_cpp/python_api/pybind_wrapper.cpp",
+        # "qd/cae/dyna_cpp/python_api/docstrings.cpp",
         "qd/cae/dyna_cpp/db/FEMFile.cpp",
         "qd/cae/dyna_cpp/db/DB_Elements.cpp",
         "qd/cae/dyna_cpp/db/DB_Nodes.cpp",

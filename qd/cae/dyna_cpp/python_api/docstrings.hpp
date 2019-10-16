@@ -1,4 +1,6 @@
 
+#ifndef QD_DOCSTRINGS_HPP
+#define QD_DOCSTRINGS_HPP
 
 /* --------------------- NODE --------------------- */
 const char* qd_node_class_docs = R"qddoc(
@@ -3342,3 +3344,5 @@ const char* module_get_file_entropy_description = R"qddoc(
         >>> get_file_entropy("path/to/text_file")
         3.12390
 )qddoc";
+
+#endif

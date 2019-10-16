@@ -227,9 +227,12 @@ ElementKeyword::parse_elem4(const std::string& _keyword_name_lower,
       else
         remaining_data = std::string();
 
+      // bugfix from an awesome random guy
+      // https://github.com/zhjp0/qd-cae-python/commit/a7002b3029bd78894c208e71adc1b538caa36906
+      bool remaining_data_is_empty = remaining_data.empty();
       for (size_t iExtraLine = 0;
            iExtraLine < nAdditionalLines +
-                          (skip_eventually_one_more && !remaining_data.empty());
+                          (skip_eventually_one_more && !remaining_data_is_empty);
            ++iExtraLine)
         remaining_data += '\n' + lines[iLine + 1 + iExtraLine];
 

@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/qd-cae/qd-cae-python.svg?branch=master)](https://travis-ci.org/qd-cae/qd-cae-python)
 [![Join the chat at https://gitter.im/sahat/hackathon-starter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/qd-cae-python/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
 
+> **WARNING**: This library is only maintained for bugfixes. Migrate to [lasso-python](https://github.com/lasso-gmbh/lasso-python) if possible (not all features are available though).
+
 This Python3 library is an open source software package with utility functions regarding engineering, especially Simulation and Computer Aided Engineering (CAE).
 The library is still young, so features drop in over time depending on the needs of the persons who contribute. Visit our website at http://www.qd-eng.de/
 
@@ -23,17 +25,17 @@ This core idea keeps us pushing forward.
 
 # What's new?
 
+_Changelog 06.10.2019_
+Version 0.8.9
+
+KeyFile:
+ - Fixed a bug with extra lines of the element keyword
+
 _Changelog 26.04.2019_ ✿✿✿
 Version 0.8.8
 
 KeyFile:
  - Fixed a bug when loading deeply nested include structures
-
-_Changelog 10.02.2019_ ❄❄❄
-Version 0.8.7
-
-D3plot:
- - fixed a bug when reading with a single result file
 
 # Documentation
 
