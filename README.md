@@ -31,6 +31,9 @@ Version 0.8.9
 KeyFile:
  - Fixed a bug with extra lines of the element keyword
 
+ D3plot:
+ - updated femzip decompression to version 10
+
 _Changelog 26.04.2019_ ✿✿✿
 Version 0.8.8
 

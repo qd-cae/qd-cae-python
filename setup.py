@@ -16,10 +16,8 @@ except ImportError:
     import pybind11
 
 # ======= S E T T I N G S ======= #
-# femzip_path_windows = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
 femzip_path_windows = "libs/femzip/FEMZIP_10.68_dyna_NO_OMP_Windows_VS2015_mt_x64"  # optional
-# femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
-femzip_path_linux = "libs/femzip/Linux_10.86/sw"  # optional.
+femzip_path_linux = "libs/femzip/Linux_10.86"  # optional.
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
