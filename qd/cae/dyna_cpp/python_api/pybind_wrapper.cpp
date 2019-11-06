@@ -38,7 +38,7 @@ extern "C"
 using namespace pybind11::literals;
 
 // get the docstrings
-#include <dyna_cpp/python_api/docstrings.cpp>
+#include <dyna_cpp/python_api/docstrings.hpp>
 
 /** Computes strides from a tensor shape
  *
