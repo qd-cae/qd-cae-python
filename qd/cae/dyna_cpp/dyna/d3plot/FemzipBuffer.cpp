@@ -2,6 +2,7 @@
 #include <dyna_cpp/dyna/d3plot/FemzipBuffer.hpp>
 #include <dyna_cpp/utility/FileUtility.hpp>
 
+#include <fstream>
 #include <bitset>
 #include <chrono>
 #include <iostream>
@@ -100,6 +101,14 @@ FemzipBuffer::read_geometryBuffer()
                 (int32_t*)&this->_current_buffer[0],
                 &this->size_geo);
   this->check_ier("Femzip Error while reading geometry.");
+
+  #ifdef QD_DEBUG
+  const auto filepath = "qd_debug_geometry";
+  std::cout << "Writing debug buffer to " << filepath << std::endl;
+  auto myfile = std::fstream(filepath, std::ios::out | std::ios::binary);
+  myfile.write((char*)&this->_current_buffer[0], this->_current_buffer.capacity());
+  myfile.close();
+  #endif
 }
 
 /*
@@ -128,6 +137,14 @@ FemzipBuffer::read_partBuffer()
                    (int32_t*)&this->_current_buffer[0],
                    &this->size_titles);
   check_ier("Femzip Error during part_titles_read.");
+
+  #ifdef QD_DEBUG
+  const auto filepath = "qd_debug_parts";
+  std::cout << "Writing debug buffer to " << filepath << std::endl;
+  auto myfile = std::fstream(filepath, std::ios::out | std::ios::binary);
+  myfile.write((char*)&this->_current_buffer[0], this->_current_buffer.capacity());
+  myfile.close();
+  #endif
 }
 
 /*
@@ -208,6 +225,14 @@ FemzipBuffer::_load_next_timestep(int32_t _iTimestep, int32_t _size_state)
       state_buffer = std::vector<char>();
     }
   }
+
+  #ifdef QD_DEBUG
+  const auto state_filepath = "qd_debug_state_"+std::to_string(_iTimestep);
+  std::cout << "Writing debug buffer to " << state_filepath << std::endl;
+  auto myfile = std::fstream(state_filepath, std::ios::out | std::ios::binary);
+  myfile.write((char*)&state_buffer[0], state_buffer.capacity());
+  myfile.close();
+  #endif
 
   return std::move(state_buffer);
 }

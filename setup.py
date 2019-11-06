@@ -16,8 +16,10 @@ except ImportError:
     import pybind11
 
 # ======= S E T T I N G S ======= #
-femzip_path_windows = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
-femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
+# femzip_path_windows = "libs/femzip/FEMZIP_8.68_dyna_NO_OMP_Windows_VS2012_MD_x64/x64"  # optional
+femzip_path_windows = "libs/femzip/FEMZIP_10.68_dyna_NO_OMP_Windows_VS2015_mt_x64"  # optional
+# femzip_path_linux = "libs/femzip/Linux64/64Bit/"  # optional
+femzip_path_linux = "libs/femzip/Linux_10.86/sw"  # optional.
 # ====== D E V E L O P E R ====== #
 debugging_mode = False
 measure_time = False
@@ -141,9 +143,34 @@ def setup_dyna_cpp_femzip(srcs, lib_dirs, libs, compiler_args):
 
         srcs.append("qd/cae/dyna_cpp/dyna/d3plot/FemzipBuffer.cpp")
         lib_dirs.append(os.path.join(femzip_path_windows))
-        libs += ['femunziplib_standard_dyna', 'ipp_zlibd', 'ippcoremt',
-                 'ippdcmt', 'ippsmt', 'ifwin', 'ifconsol', 'ippvmmt', 'libmmd',
-                 'libirc', 'svml_dispmd', 'msvcrt']
+        # libs += ['femunziplib_standard_dyna', 'ipp_zlibd', 'ippcoremt',
+        #          'ippdcmt', 'ippsmt', 'ifwin', 'ifconsol', 'ippvmmt', 'libmmd',
+        #          'libirc', 'svml_dispmd', 'msvcrt']
+        libs += [
+            'femunziplib_standard_dyna', 
+            # 'msvcrt',
+            'ifconsol',
+            'ifmodintr',
+            'ifwin',
+            'libdecimal',
+            'libifcore',
+            'libifcoremd',
+            'libifcoremt',
+            'libifport',
+            'libifportmd',
+            'libiomp5md',
+            'libiompstubs5md',
+            'libirc',
+            'libircmt',
+            'libm',
+            'libmmd',
+            'libmmt',
+            'svml_disp',
+            'svml_dispmd',
+            'svml_dispmt',
+            # 'msvcr110',
+            # 'vcruntime140',
+        ]
         compiler_args.append("/DQD_USE_FEMZIP")
 
     # linux
@@ -151,9 +178,24 @@ def setup_dyna_cpp_femzip(srcs, lib_dirs, libs, compiler_args):
 
         srcs.append("qd/cae/dyna_cpp/dyna/d3plot/FemzipBuffer.cpp")
         lib_dirs.append(femzip_path_linux)
-        libs += ['femunzip_dyna_standard', 'ipp_z', 'ippcore',
-                 'ippdc', 'ipps', 'ifcore_pic', 'ifcoremt', 'imf',
-                 'ipgo', 'irc', 'svml', 'ippcore_l', 'stdc++', 'dl']
+        # libs += ['femunzip_dyna_standard', 'ipp_z', 'ippcore',
+        #          'ippdc', 'ipps', 'ifcore_pic', 'ifcoremt', 'imf',
+        #          'ipgo', 'irc', 'svml', 'ippcore_l', 'stdc++', 'dl']
+        libs += [
+            'femunzip_dyna_standard', 
+            'z', 
+            'ippdc',
+            'ipps',
+            'ippcore',
+            'ifcore_pic',
+            # 'ifcore',
+            'ifport',
+            'imf',
+            'irc',
+            'svml',
+            'stdc++',
+            'dl',
+        ]
         compiler_args.append("-DQD_USE_FEMZIP")
     else:
         print("FEMZIP library not found. Compiling without FEMZIP.")

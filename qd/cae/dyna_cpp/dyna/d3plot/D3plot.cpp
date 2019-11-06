@@ -1670,20 +1670,29 @@ D3plot::read_states(std::vector<std::string> _variables)
     // Not femzip case
     if ((!this->_is_femzipped) && firstFileDone) {
       wordPosition = 0;
-    }
+    } 
     // femzip case
+    // bugfix
+    // femzip originally in early versions put the parts 
+    // before the states every time. With femzip10 this 
+    // is gone.
+    if(this->_is_femzipped){
+      this->wordPosition = 0;
+    }
+    /*
     if (this->_is_femzipped) {
       // 0 = endmark
       // 1 = ntype = 90001
       // 2 = numprop
       int32_t dyna_numprop_states = this->buffer->read_int(2);
-      if (this->dyna_numprop != dyna_numprop_states)
-        throw(std::runtime_error(
-          "Numprop in geometry section != numprop in states section!"));
+      // if (this->dyna_numprop != dyna_numprop_states)
+      //   throw(std::runtime_error(
+      //     "Numprop in geometry section != numprop in states section!"));
       wordPosition = 1; // endline symbol at 0 in case of femzip ...
       wordPosition += 1 + (this->dyna_numprop + 1) * 19 + 1;
       // this->femzip_state_offset = wordPosition;
     }
+    */
 
     // Loop through states
     while (!this->isFileEnding(wordPosition)) {

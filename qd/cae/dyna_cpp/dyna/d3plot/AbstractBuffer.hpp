@@ -64,7 +64,7 @@ AbstractBuffer::read_int(int32_t iWord) const
   if (this->_current_buffer.capacity() <=
       static_cast<size_t>(iWord * this->_word_size))
     throw(
-      std::invalid_argument("read_int tries to read beyond the buffer size."));
+      std::invalid_argument("read_int tries to read beyond the buffer size: "+std::to_string(iWord * this->_word_size) + " >= " + std::to_string(iWord*this->_word_size)));
 #endif
 
   // BIG ENDIAN ?
@@ -88,7 +88,7 @@ AbstractBuffer::read_float(int32_t iWord) const
   if (this->_current_buffer.capacity() <=
       static_cast<size_t>(iWord * this->_word_size))
     throw(
-      std::invalid_argument("read_int tries to read beyond the buffer size."));
+      std::invalid_argument("read_float tries to read beyond the buffer size: "+std::to_string(iWord * this->_word_size) + " >= " + std::to_string(iWord*this->_word_size)));
 #endif
 
   float ret;
