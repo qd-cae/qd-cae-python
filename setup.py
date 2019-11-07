@@ -24,7 +24,7 @@ measure_time = False
 use_openmp = False  # buggy
 version = "0.8.9"
 # =============================== #
-is_windows = (platform.system() == "Windows")
+is_windows = (platform.system() == "Windows")   
 is_linux = (platform.system() in ["Linux", "Darwin"])
 # =============================== #
 
