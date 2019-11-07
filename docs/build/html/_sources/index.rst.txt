@@ -7,7 +7,9 @@ Welcome to qd's documentation!
 qd is python3 library for Computer Aided Engineering (CAE). I've developed this library, since I was very unhappy with many expensive commercial software tools in our field of work. I believe many new scientific ideas emerge from freedom and simplicity, therefore the main focus of this project was on a good API and Speed. As a result memory took quite some, so watch you RAM when you load a full vehicle.
 
 .. warning::
-    This library is maintained for bugfixes only. Migrate to [lasso-python](https://github.com/lasso-gmbh/lasso-python) if possible. Note please, that not all features are available in lasso-python.
+    This library is maintained for bugfixes only. Migrate to `lasso-python`_ if possible. Note please, that not all features are available in `lasso-python`_.
+
+    .. _lasso-python: https://github.com/lasso-gmbh/lasso-python
 
 Modules
 =======
@@ -18,6 +20,23 @@ Modules
    qd_cae_dyna
    qd_cae_beta
    qd_numerics
+
+Installation
+============
+
+Installation can be done by running:
+
+.. code-block:: bash
+
+    python -m pip install qd
+
+Windows uses precompiled wheels, which includes femzip decompression. Femzip decompression requires the intel libraries ``libmmd.dll`` and ``libiomp5.dll`` to be in your system path. For Anaconda Python you can easily install them through:
+
+.. code-block:: bash
+
+    conda install icc_rt mkl
+
+If the installation fails please check the compilation guide below. Compilation is required especially on Linux.
 
 Compilation Guide
 =================

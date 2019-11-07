@@ -20,21 +20,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.8.9',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -45,7 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Keyword" href="qd_cae_dyna_keywords_Keyword.html" /> 
+    <link rel="next" title="Keyword" href="qd_cae_dyna_keywords_Keyword.html" />
+    <link rel="prev" title="KeyFile" href="qd_cae_dyna_KeyFile.html" /> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
@@ -198,29 +189,26 @@
 <p>The basic idea of these classes is, that the file should look identical if written again, except for modifications. Also comments shall be preserved. Please beware in case of parsing the mesh, since the rewritten floating point numbers will deviate in due to the machine precision. To prevent this deviation, just don’t parse the mesh.</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference external" href="http://www.qd-eng.de/index.php/2018/02/19/manipulating-ls-dyna-keyfiles-in-python/">KeyFile Introduction Article</a></li>
+<li><p><a class="reference external" href="http://www.qd-eng.de/index.php/2018/02/19/manipulating-ls-dyna-keyfiles-in-python/">KeyFile Introduction Article</a></p></li>
 </ul>
 </div></blockquote>
 <p><strong>Keyword</strong></p>
 <blockquote>
-<div><p>The generic <code class="docutils literal"><span class="pre">Keyword</span></code> class is used for all unknown keywords. If the mesh of a <code class="docutils literal"><span class="pre">KeyFile</span></code> is not parsed, then also the mesh keywords are seen as generic keywords. To read all keywords of a <code class="docutils literal"><span class="pre">KeyFile</span></code> use the <code class="docutils literal"><span class="pre">read_keywords</span></code> option.</p>
-<p>If a <code class="docutils literal"><span class="pre">KeyFile</span></code> is written again, it will look identical, since the class saves everything including the comments.</p>
+<div><p>The generic <code class="docutils literal notranslate"><span class="pre">Keyword</span></code> class is used for all unknown keywords. If the mesh of a <code class="docutils literal notranslate"><span class="pre">KeyFile</span></code> is not parsed, then also the mesh keywords are seen as generic keywords. To read all keywords of a <code class="docutils literal notranslate"><span class="pre">KeyFile</span></code> use the <code class="docutils literal notranslate"><span class="pre">read_keywords</span></code> option.</p>
+<p>If a <code class="docutils literal notranslate"><span class="pre">KeyFile</span></code> is written again, it will look identical, since the class saves everything including the comments.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_Keyword.html">Keyword</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_Keyword.html">Keyword</a></li>
 </ul>
 </div>
-<dl class="docutils">
-<dt>Ressources:</dt>
-<dd><ul class="first last simple">
-<li><a class="reference external" href="https://youtu.be/wdOIw2m_YLk">Youtube Tutorial</a></li>
+<dl class="simple">
+<dt>Ressources:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://youtu.be/wdOIw2m_YLk">Youtube Tutorial</a></p></li>
 </ul>
 </dd>
 </dl>
 <p>Example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
 <span class="c1"># open a file (without mesh parsing)</span>
 <span class="n">kf</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">)</span>
 <span class="c1"># get the third part keyword</span>
@@ -235,26 +223,21 @@
 <p><strong>Include Keywords</strong></p>
 <blockquote>
 <div><p>The specific include keyword classes provide means to deal with include files.
-Includes are loaded automatically, if in the <code class="docutils literal"><span class="pre">KeyFile</span></code> contructor argument <code class="docutils literal"><span class="pre">load_includes=True</span></code>. The <code class="docutils literal"><span class="pre">IncludePathKeyword</span></code> manages all locations, where include files could be located, while the <code class="docutils literal"><span class="pre">IncludeKeyword</span></code> is resposible for managing the files.</p>
+Includes are loaded automatically, if in the <code class="docutils literal notranslate"><span class="pre">KeyFile</span></code> contructor argument <code class="docutils literal notranslate"><span class="pre">load_includes=True</span></code>. The <code class="docutils literal notranslate"><span class="pre">IncludePathKeyword</span></code> manages all locations, where include files could be located, while the <code class="docutils literal notranslate"><span class="pre">IncludeKeyword</span></code> is resposible for managing the files.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_IncludeKeyword.html">IncludeKeyword</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_IncludePathKeyword.html">IncludePathKeyword</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_IncludeKeyword.html">IncludeKeyword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_IncludePathKeyword.html">IncludePathKeyword</a></li>
 </ul>
 </div>
-<dl class="docutils">
-<dt>Ressources:</dt>
-<dd><ul class="first last simple">
-<li><a class="reference external" href="https://youtu.be/ZGiyNSxr4Eg">Youtube Tutorial</a></li>
+<dl class="simple">
+<dt>Ressources:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://youtu.be/ZGiyNSxr4Eg">Youtube Tutorial</a></p></li>
 </ul>
 </dd>
 </dl>
 <p>Example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
 <span class="c1"># open a file</span>
 <span class="n">kf</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">,</span> <span class="n">load_includes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="c1"># get first include keyword</span>
@@ -266,8 +249,8 @@ Includes are loaded automatically, if in the <code class="docutils literal"><spa
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">All the keywords of the includes are not accessible from the main <code class="docutils literal"><span class="pre">KeyFile</span></code>, but only from the include <code class="docutils literal"><span class="pre">KeyFile</span></code>, which can be retrieved by <code class="docutils literal"><span class="pre">KeyFile.get_includes</span></code>.</p>
+<p class="admonition-title">Note</p>
+<p>All the keywords of the includes are not accessible from the main <code class="docutils literal notranslate"><span class="pre">KeyFile</span></code>, but only from the include <code class="docutils literal notranslate"><span class="pre">KeyFile</span></code>, which can be retrieved by <code class="docutils literal notranslate"><span class="pre">KeyFile.get_includes</span></code>.</p>
 </div>
 </div></blockquote>
 <p><strong>Mesh Keywords</strong></p>
@@ -275,27 +258,20 @@ Includes are loaded automatically, if in the <code class="docutils literal"><spa
 <div><p>The mesh pecific Keywords:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_NodeKeyword.html">NodeKeyword</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_ElementKeyword.html">ElementKeyword</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_PartKeyword.html">PartKeyword</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_NodeKeyword.html">NodeKeyword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_ElementKeyword.html">ElementKeyword</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna_keywords_PartKeyword.html">PartKeyword</a></li>
 </ul>
 </div>
-<p>are only created, if opening a <code class="docutils literal"><span class="pre">KeyFile</span></code> with the argument <code class="docutils literal"><span class="pre">parse_mesh</span></code> enabled. If the mesh is not parsed, their data is seen as a generic <code class="docutils literal"><span class="pre">Keyword</span></code>.</p>
-<dl class="docutils">
-<dt>Ressources:</dt>
-<dd><ul class="first last simple">
-<li><a class="reference external" href="https://youtu.be/CkelV3MI6Jg">Youtube Tutorial</a></li>
+<p>are only created, if opening a <code class="docutils literal notranslate"><span class="pre">KeyFile</span></code> with the argument <code class="docutils literal notranslate"><span class="pre">parse_mesh</span></code> enabled. If the mesh is not parsed, their data is seen as a generic <code class="docutils literal notranslate"><span class="pre">Keyword</span></code>.</p>
+<dl class="simple">
+<dt>Ressources:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://youtu.be/CkelV3MI6Jg">Youtube Tutorial</a></p></li>
 </ul>
 </dd>
 </dl>
 <p>Example</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="o">*</span>
 <span class="c1"># load a file</span>
 <span class="n">kf</span> <span class="o">=</span> <span class="n">KeyFile</span><span class="p">(</span><span class="s2">&quot;path/to/keyfile&quot;</span><span class="p">,</span>
               <span class="n">parse_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -309,12 +285,12 @@ Includes are loaded automatically, if in the <code class="docutils literal"><spa
 </pre></div>
 </div>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">If parsing the mesh, all keywords except for the <code class="docutils literal"><span class="pre">PartKeyword</span></code> stop parsing if they encounter a comment or empty line in the data block (e.g. between two elements or nodes)</p>
+<p class="admonition-title">Warning</p>
+<p>If parsing the mesh, all keywords except for the <code class="docutils literal notranslate"><span class="pre">PartKeyword</span></code> stop parsing if they encounter a comment or empty line in the data block (e.g. between two elements or nodes)</p>
 </div>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Mesh entities, such as nodes can be created, but not deleted. Also the mesh keywords itself can not be deleted.</p>
+<p class="admonition-title">Warning</p>
+<p>Mesh entities, such as nodes can be created, but not deleted. Also the mesh keywords itself can not be deleted.</p>
 </div>
 </div></blockquote>
 </div>
@@ -329,6 +305,8 @@ Includes are loaded automatically, if in the <code class="docutils literal"><spa
       
         <a href="qd_cae_dyna_keywords_Keyword.html" class="btn btn-neutral float-right" title="Keyword" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+      
+        <a href="qd_cae_dyna_KeyFile.html" class="btn btn-neutral float-left" title="KeyFile" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -1623,8 +1623,7 @@ PYBIND11_PLUGIN(dyna_cpp)
          "part_id"_a,
          "node_indexes"_a,
          "additional_card_data"_a = "",
-         pybind11::return_value_policy::take_ownership,
-         element_keyword_add_elementByNodeIndex_docs)
+         pybind11::return_value_policy::take_ownership)
     .def("load",
          &ElementKeyword::load,
          // pybind11::call_guard<pybind11::gil_scoped_release>(),

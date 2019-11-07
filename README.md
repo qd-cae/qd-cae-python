@@ -23,6 +23,10 @@ This core idea keeps us pushing forward.
 
 [![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/bePatron?u=8375141)
 
+<aside class="notes">
+    This project is only maintained for bugfixes due to lacking support. Please migrate to <a href="https://github.com/lasso-gmbh/lasso-python">lasso-python</a> if possible (the KeyFile class is not available).
+</aside>
+
 # What's new?
 
 _Changelog 06.10.2019_
@@ -77,10 +81,16 @@ python -m pip install qd
 The wheels, which are used by pip, can also be found here in the [dist folder](https://github.com/qd-cae/qd-cae-python/tree/master/dist). If neccessary download the appropriate one and install it with:
 
 ```python
-pip install [path/to/downloaded/wheel]
+python -m pip install [path/to/downloaded/wheel]
 ```
 
-Note though that your windows python distribution might not neccessarily find an appropriate version and fail. In that case one has three options:
+The precompiled wheels include femzip decompression, which require the intel libraries `libmmd.dll` and `libiomp5.dll` to be present on your machine. You can install them in Anaconda through:
+
+```python
+conda install icc_rt mkl
+```
+
+Note that your windows python distribution might not neccessarily find an appropriate version and fail. In that case one has three options:
 
 - Download and use [Anaconda Python x64](https://www.continuum.io/downloads#windows)
 - Compile it yourself (see the [compilation guide](https://qd-cae.github.io/qd-cae-python/build/html/compilation_guide.html))

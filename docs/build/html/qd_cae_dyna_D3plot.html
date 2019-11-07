@@ -20,21 +20,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.8.9',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -44,7 +34,9 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="RawD3plot" href="qd_cae_dyna_RawD3plot.html" />
+    <link rel="prev" title="Binout" href="qd_cae_dyna_Binout.html" /> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
@@ -99,9 +91,7 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Binout.html">Binout</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">D3plot</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">D3plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_RawD3plot.html">RawD3plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_KeyFile.html">KeyFile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_keywords.html">Keyword Types</a></li>
@@ -188,52 +178,43 @@
             
   <div class="section" id="d3plot">
 <h1>D3plot<a class="headerlink" href="#d3plot" title="Permalink to this headline">¶</a></h1>
-<dl class="docutils">
-<dt>Ressources:</dt>
-<dd><ul class="first last simple">
-<li><a class="reference external" href="https://www.youtube.com/watch?v=w8qIzqPJ4VY">youtube tutorial</a></li>
-<li><a class="reference external" href="./d3plot_3d_html_example.html">3d html example</a></li>
+<dl class="simple">
+<dt>Ressources:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://www.youtube.com/watch?v=w8qIzqPJ4VY">youtube tutorial</a></p></li>
+<li><p><a class="reference external" href="./d3plot_3d_html_example.html">3d html example</a></p></li>
 </ul>
 </dd>
 </dl>
 <hr class="docutils" />
 <dl class="class">
 <dt id="qd.cae.dyna.D3plot">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">D3plot</code><span class="sig-paren">(</span><em>filepath</em>, <em>read_states=[]</em>, <em>use_femzip=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote>
-<div><p>path to the d3plot</p>
-</div></blockquote>
-<p><strong>read_states</strong> : str or list of str</p>
-<blockquote>
-<div><p>read state information directly (saves time), 
-see the function <code class="docutils literal"><span class="pre">read_states</span></code></p>
-</div></blockquote>
-<p><strong>use_femzip</strong> : bool</p>
-<blockquote>
-<div><p>whether the file shall be decompressed with femzip.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>D3plot d3plot</strong> : instance</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote>
-<div><p>in case of an invalid filepath or locked file</p>
-</div></blockquote>
-<p><strong>RuntimeError</strong></p>
-<blockquote class="last">
-<div><p>if anything goes wrong (internal checks) during reading</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<em class="property">class </em><code class="sig-prename descclassname">qd.cae.dyna.</code><code class="sig-name descname">D3plot</code><span class="sig-paren">(</span><em class="sig-param">filepath</em>, <em class="sig-param">read_states=[]</em>, <em class="sig-param">use_femzip=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to the d3plot</p>
+</dd>
+<dt><strong>read_states</strong><span class="classifier">str or list of str</span></dt><dd><p>read state information directly (saves time), 
+see the function <code class="docutils literal notranslate"><span class="pre">read_states</span></code></p>
+</dd>
+<dt><strong>use_femzip</strong><span class="classifier">bool</span></dt><dd><p>whether the file shall be decompressed with femzip.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>D3plot d3plot</strong><span class="classifier">instance</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>in case of an invalid filepath or locked file</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>if anything goes wrong (internal checks) during reading</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>If LS-Dyna writes multiple files (one for each timestep),
 give the filepath to the first file. The library finds all
@@ -242,395 +223,283 @@ Please read state information with the read_states flag
 in the constructor or with the member function.</p>
 <p class="rubric">Examples</p>
 <p>Read the plain geometry data</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Read a compressed d3plot</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span> <span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span> <span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Read d3plot with state data at once.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mises_stress max&quot;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mises_stress max&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.clear" title="qd.cae.dyna.D3plot.clear"><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></a>(vars)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.clear" title="qd.cae.dyna.D3plot.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>(vars)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.compare_scatter" title="qd.cae.dyna.D3plot.compare_scatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare_scatter</span></code></a>(self, filepath_list, …[, …])</p></td>
+<td><p>Compare the scatter between mutliple d3plot files</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_elementByIndex" title="qd.cae.dyna.D3plot.get_elementByIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_elementByIndex</span></code></a>(element_type, index)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_coords" title="qd.cae.dyna.D3plot.get_element_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_coords</span></code></a>(element_filter)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_energy" title="qd.cae.dyna.D3plot.get_element_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_energy</span></code></a>(element_filter)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_history_vars" title="qd.cae.dyna.D3plot.get_element_history_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_history_vars</span></code></a>(element_type)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_ids" title="qd.cae.dyna.D3plot.get_element_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_ids</span></code></a>(element_filter)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_node_ids" title="qd.cae.dyna.D3plot.get_element_node_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_node_ids</span></code></a>(element_type, n_nodes)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_plastic_strain" title="qd.cae.dyna.D3plot.get_element_plastic_strain"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_plastic_strain</span></code></a>(element_filter)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_strain" title="qd.cae.dyna.D3plot.get_element_strain"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_strain</span></code></a>(element_filter)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_stress" title="qd.cae.dyna.D3plot.get_element_stress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_stress</span></code></a>(element_filter)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_stress_mises" title="qd.cae.dyna.D3plot.get_element_stress_mises"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_stress_mises</span></code></a>(element_filter)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_elements" title="qd.cae.dyna.D3plot.get_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_elements</span></code></a>([element_filter])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_filepath" title="qd.cae.dyna.D3plot.get_filepath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filepath</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nElements" title="qd.cae.dyna.D3plot.get_nElements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nElements</span></code></a>([element_filter])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nNodes" title="qd.cae.dyna.D3plot.get_nNodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nNodes</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nParts" title="qd.cae.dyna.D3plot.get_nParts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nParts</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nTimesteps" title="qd.cae.dyna.D3plot.get_nTimesteps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nTimesteps</span></code></a>()</p></td>
+<td><p>Get the number of timesteps of the d3plot.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nodeByID" title="qd.cae.dyna.D3plot.get_nodeByID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nodeByID</span></code></a>(id)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nodeByIndex" title="qd.cae.dyna.D3plot.get_nodeByIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nodeByIndex</span></code></a>(index)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_node_acceleration" title="qd.cae.dyna.D3plot.get_node_acceleration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_acceleration</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_node_coords" title="qd.cae.dyna.D3plot.get_node_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_coords</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_node_ids" title="qd.cae.dyna.D3plot.get_node_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_ids</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_node_velocity" title="qd.cae.dyna.D3plot.get_node_velocity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_velocity</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nodes" title="qd.cae.dyna.D3plot.get_nodes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nodes</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_partByID" title="qd.cae.dyna.D3plot.get_partByID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_partByID</span></code></a>(id)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_partByIndex" title="qd.cae.dyna.D3plot.get_partByIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_partByIndex</span></code></a>(index)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_partByName" title="qd.cae.dyna.D3plot.get_partByName"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_partByName</span></code></a>(name)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_parts" title="qd.cae.dyna.D3plot.get_parts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_parts</span></code></a>()</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_timesteps" title="qd.cae.dyna.D3plot.get_timesteps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timesteps</span></code></a>()</p></td>
+<td><p>Get the simulation time of the written states.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.get_title" title="qd.cae.dyna.D3plot.get_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_title</span></code></a>()</p></td>
+<td><p>Get the title of the d3plot, which is part of the header data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.info" title="qd.cae.dyna.D3plot.info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">info</span></code></a>()</p></td>
+<td><p>Prints a summary of the header data of the D3plot, which involves node info, element info, written state data and so forth.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.plot" title="qd.cae.dyna.D3plot.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>(self[, iTimestep, element_result, …])</p></td>
+<td><p>Plot the D3plot, currently shells only!</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.plot_parts" title="qd.cae.dyna.D3plot.plot_parts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_parts</span></code></a>(parts[, iTimestep, …])</p></td>
+<td><p>Plot a selected group of parts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.D3plot.read_states" title="qd.cae.dyna.D3plot.read_states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_states</span></code></a>(vars)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.compare_scatter" title="qd.cae.dyna.D3plot.compare_scatter"><code class="xref py py-obj docutils literal"><span class="pre">compare_scatter</span></code></a>(filepath_list,&nbsp;element_result)</td>
-<td>Compare the scatter between mutliple d3plot files</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_elementByID</span></code></td>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 66%" />
+<col style="width: 34%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>get_elementByID</strong></p></td>
 <td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_elementByIndex" title="qd.cae.dyna.D3plot.get_elementByIndex"><code class="xref py py-obj docutils literal"><span class="pre">get_elementByIndex</span></code></a>(element_type,&nbsp;index)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_coords" title="qd.cae.dyna.D3plot.get_element_coords"><code class="xref py py-obj docutils literal"><span class="pre">get_element_coords</span></code></a>(element_filter)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_energy" title="qd.cae.dyna.D3plot.get_element_energy"><code class="xref py py-obj docutils literal"><span class="pre">get_element_energy</span></code></a>(element_filter)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_history_vars" title="qd.cae.dyna.D3plot.get_element_history_vars"><code class="xref py py-obj docutils literal"><span class="pre">get_element_history_vars</span></code></a>(element_type)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_ids" title="qd.cae.dyna.D3plot.get_element_ids"><code class="xref py py-obj docutils literal"><span class="pre">get_element_ids</span></code></a>(element_filter)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_node_ids" title="qd.cae.dyna.D3plot.get_element_node_ids"><code class="xref py py-obj docutils literal"><span class="pre">get_element_node_ids</span></code></a>(element_type,&nbsp;n_nodes)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_plastic_strain" title="qd.cae.dyna.D3plot.get_element_plastic_strain"><code class="xref py py-obj docutils literal"><span class="pre">get_element_plastic_strain</span></code></a>(element_filter)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_strain" title="qd.cae.dyna.D3plot.get_element_strain"><code class="xref py py-obj docutils literal"><span class="pre">get_element_strain</span></code></a>(element_filter)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_stress" title="qd.cae.dyna.D3plot.get_element_stress"><code class="xref py py-obj docutils literal"><span class="pre">get_element_stress</span></code></a>(element_filter)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_element_stress_mises" title="qd.cae.dyna.D3plot.get_element_stress_mises"><code class="xref py py-obj docutils literal"><span class="pre">get_element_stress_mises</span></code></a>(element_filter)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_elements" title="qd.cae.dyna.D3plot.get_elements"><code class="xref py py-obj docutils literal"><span class="pre">get_elements</span></code></a>([element_filter])</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_filepath" title="qd.cae.dyna.D3plot.get_filepath"><code class="xref py py-obj docutils literal"><span class="pre">get_filepath</span></code></a>()</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nElements" title="qd.cae.dyna.D3plot.get_nElements"><code class="xref py py-obj docutils literal"><span class="pre">get_nElements</span></code></a>([element_filter])</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nNodes" title="qd.cae.dyna.D3plot.get_nNodes"><code class="xref py py-obj docutils literal"><span class="pre">get_nNodes</span></code></a>()</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nParts" title="qd.cae.dyna.D3plot.get_nParts"><code class="xref py py-obj docutils literal"><span class="pre">get_nParts</span></code></a>()</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nTimesteps" title="qd.cae.dyna.D3plot.get_nTimesteps"><code class="xref py py-obj docutils literal"><span class="pre">get_nTimesteps</span></code></a>()</td>
-<td>Get the number of timesteps of the d3plot.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nodeByID" title="qd.cae.dyna.D3plot.get_nodeByID"><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByID</span></code></a>(id)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nodeByIndex" title="qd.cae.dyna.D3plot.get_nodeByIndex"><code class="xref py py-obj docutils literal"><span class="pre">get_nodeByIndex</span></code></a>(index)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_node_acceleration" title="qd.cae.dyna.D3plot.get_node_acceleration"><code class="xref py py-obj docutils literal"><span class="pre">get_node_acceleration</span></code></a>()</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_node_coords" title="qd.cae.dyna.D3plot.get_node_coords"><code class="xref py py-obj docutils literal"><span class="pre">get_node_coords</span></code></a>()</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_node_ids" title="qd.cae.dyna.D3plot.get_node_ids"><code class="xref py py-obj docutils literal"><span class="pre">get_node_ids</span></code></a>()</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_node_velocity" title="qd.cae.dyna.D3plot.get_node_velocity"><code class="xref py py-obj docutils literal"><span class="pre">get_node_velocity</span></code></a>()</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_nodes" title="qd.cae.dyna.D3plot.get_nodes"><code class="xref py py-obj docutils literal"><span class="pre">get_nodes</span></code></a>()</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_partByID" title="qd.cae.dyna.D3plot.get_partByID"><code class="xref py py-obj docutils literal"><span class="pre">get_partByID</span></code></a>(id)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_partByIndex" title="qd.cae.dyna.D3plot.get_partByIndex"><code class="xref py py-obj docutils literal"><span class="pre">get_partByIndex</span></code></a>(index)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_partByName" title="qd.cae.dyna.D3plot.get_partByName"><code class="xref py py-obj docutils literal"><span class="pre">get_partByName</span></code></a>(name)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_parts" title="qd.cae.dyna.D3plot.get_parts"><code class="xref py py-obj docutils literal"><span class="pre">get_parts</span></code></a>()</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_timesteps" title="qd.cae.dyna.D3plot.get_timesteps"><code class="xref py py-obj docutils literal"><span class="pre">get_timesteps</span></code></a>()</td>
-<td>Get the simulation time of the written states.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.get_title" title="qd.cae.dyna.D3plot.get_title"><code class="xref py py-obj docutils literal"><span class="pre">get_title</span></code></a>()</td>
-<td>Get the title of the d3plot, which is part of the header data.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.info" title="qd.cae.dyna.D3plot.info"><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></a>()</td>
-<td>Prints a summary of the header data of the D3plot, which involves node info, element info, written state data and so forth.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.plot" title="qd.cae.dyna.D3plot.plot"><code class="xref py py-obj docutils literal"><span class="pre">plot</span></code></a>([iTimestep,&nbsp;element_result,&nbsp;…])</td>
-<td>Plot the D3plot, currently shells only!</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.plot_parts" title="qd.cae.dyna.D3plot.plot_parts"><code class="xref py py-obj docutils literal"><span class="pre">plot_parts</span></code></a>(parts[,&nbsp;iTimestep,&nbsp;…])</td>
-<td>Plot a selected group of parts.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.D3plot.read_states" title="qd.cae.dyna.D3plot.read_states"><code class="xref py py-obj docutils literal"><span class="pre">read_states</span></code></a>(vars)</td>
-<td><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>filepath</em>, <em>read_states=[]</em>, <em>use_femzip=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote>
-<div><p>path to the d3plot</p>
-</div></blockquote>
-<p><strong>read_states</strong> : str or list of str</p>
-<blockquote>
-<div><p>read state information directly (saves time), 
-see the function <code class="docutils literal"><span class="pre">read_states</span></code></p>
-</div></blockquote>
-<p><strong>use_femzip</strong> : bool</p>
-<blockquote>
-<div><p>whether the file shall be decompressed with femzip.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>D3plot d3plot</strong> : instance</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote>
-<div><p>in case of an invalid filepath or locked file</p>
-</div></blockquote>
-<p><strong>RuntimeError</strong></p>
-<blockquote class="last">
-<div><p>if anything goes wrong (internal checks) during reading</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">filepath</em>, <em class="sig-param">read_states=[]</em>, <em class="sig-param">use_femzip=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to the d3plot</p>
+</dd>
+<dt><strong>read_states</strong><span class="classifier">str or list of str</span></dt><dd><p>read state information directly (saves time), 
+see the function <code class="docutils literal notranslate"><span class="pre">read_states</span></code></p>
+</dd>
+<dt><strong>use_femzip</strong><span class="classifier">bool</span></dt><dd><p>whether the file shall be decompressed with femzip.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>D3plot d3plot</strong><span class="classifier">instance</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>in case of an invalid filepath or locked file</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>if anything goes wrong (internal checks) during reading</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>If LS-Dyna writes multiple files (one for each timestep),
 give the filepath to the first file. The library finds all
@@ -639,51 +508,47 @@ Please read state information with the read_states flag
 in the constructor or with the member function.</p>
 <p class="rubric">Examples</p>
 <p>Read the plain geometry data</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Read a compressed d3plot</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span> <span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.fz&quot;</span><span class="p">,</span> <span class="n">use_femzip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Read d3plot with state data at once.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mises_stress max&quot;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mises_stress max&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><em>vars</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.clear" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vars</strong> : str or list(str)</p>
-<blockquote class="last">
-<div><p>variable or list of variables to delete</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.clear" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>vars</strong><span class="classifier">str or list(str)</span></dt><dd><p>variable or list of variables to delete</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>This function may be used if one wants to clear certain state data
 from the memory. Valid variable names are:</p>
 <ul class="simple">
-<li>disp</li>
-<li>vel</li>
-<li>accel</li>
-<li>strain</li>
-<li>stress</li>
-<li>stress_mises</li>
-<li>plastic_strain</li>
-<li>history [(optional) shell or solid]</li>
+<li><p>disp</p></li>
+<li><p>vel</p></li>
+<li><p>accel</p></li>
+<li><p>strain</p></li>
+<li><p>stress</p></li>
+<li><p>stress_mises</p></li>
+<li><p>plastic_strain</p></li>
+<li><p>history [(optional) shell or solid]</p></li>
 </ul>
 <p>The specification of shell or solid for history is optional. Deletes
 all history variables if none given.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;strain inner&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;strain inner&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_strain</span><span class="p">()</span> <span class="p">)</span>
 <span class="go">34</span>
@@ -704,50 +569,36 @@ all history variables if none given.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.compare_scatter">
-<code class="descname">compare_scatter</code><span class="sig-paren">(</span><em>filepath_list</em>, <em>element_result</em>, <em>pid_filter_list=None</em>, <em>kMappingNeighbors=4</em>, <em>export_filepath=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.compare_scatter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compare_scatter</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">filepath_list</em>, <em class="sig-param">element_result</em>, <em class="sig-param">pid_filter_list=None</em>, <em class="sig-param">kMappingNeighbors=4</em>, <em class="sig-param">export_filepath=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.compare_scatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare the scatter between mutliple d3plot files</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath_list</strong> : list(str)</p>
-<blockquote>
-<div><p>list of filepaths of d3plot for comparison</p>
-</div></blockquote>
-<p><strong>element_result</strong> : str or function(element)</p>
-<blockquote>
-<div><p>element results to compare. Either specify a user defined
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath_list</strong><span class="classifier">list(str)</span></dt><dd><p>list of filepaths of d3plot for comparison</p>
+</dd>
+<dt><strong>element_result</strong><span class="classifier">str or function(element)</span></dt><dd><p>element results to compare. Either specify a user defined
 function or use predefined results. Available are
 disp, plastic_strain or energy.</p>
-</div></blockquote>
-<p><strong>pid_filter_list</strong> : list(int)</p>
-<blockquote>
-<div><p>list of pids to filter for optionally</p>
-</div></blockquote>
-<p><strong>kMappingNeighbors</strong> : int</p>
-<blockquote>
-<div><p>number of neighbors used for nearest neighbor mapping</p>
-</div></blockquote>
-<p><strong>export_filepath</strong> : str</p>
-<blockquote>
-<div><p>optional filepath for saving. If none, the model
+</dd>
+<dt><strong>pid_filter_list</strong><span class="classifier">list(int)</span></dt><dd><p>list of pids to filter for optionally</p>
+</dd>
+<dt><strong>kMappingNeighbors</strong><span class="classifier">int</span></dt><dd><p>number of neighbors used for nearest neighbor mapping</p>
+</dd>
+<dt><strong>export_filepath</strong><span class="classifier">str</span></dt><dd><p>optional filepath for saving. If none, the model
 is exported to a temporary file and shown in the
 browser.</p>
-</div></blockquote>
-<p><strong>**kwargs</strong> : further arguments</p>
-<blockquote class="last">
-<div><p>additional arguments passed on to d3plot constructor (e.g. read_states)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">further arguments</span></dt><dd><p>additional arguments passed on to d3plot constructor (e.g. read_states)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The file calling the function will be the basis for the comparison. 
 The other files results will be mapped onto this mesh. The scatter is 
 computed between all runs as maximum difference.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Settings (don&#39;t forget to load the correct vars!)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Settings (don&#39;t forget to load the correct vars!)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">state_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;stress_mises max&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">other_files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;path/to/d3plot_2&quot;</span><span class="p">,</span> <span class="s2">&quot;path/to/d3plot_3&quot;</span><span class="p">]</span>
 <span class="go">&gt;&gt;&gt;</span>
@@ -769,38 +620,32 @@ computed between all runs as maximum difference.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_elementByIndex">
-<code class="descname">get_elementByIndex</code><span class="sig-paren">(</span><em>element_type</em>, <em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_elementByIndex" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : Element.type</p>
-<blockquote>
-<div><p>type of the element. Must be beam, shell or solid.</p>
-</div></blockquote>
-<p><strong>index</strong> : int or list(int)</p>
-<blockquote>
-<div><p>element index or list of indexes</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>element</strong> : Element</p>
-<blockquote>
-<div><p>Element(s) depending on the arguments</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>if invalid <code class="docutils literal"><span class="pre">element_type</span></code> is given
-or <code class="docutils literal"><span class="pre">index</span></code> does not exist</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_elementByIndex</code><span class="sig-paren">(</span><em class="sig-param">element_type</em>, <em class="sig-param">index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_elementByIndex" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_type</strong><span class="classifier">Element.type</span></dt><dd><p>type of the element. Must be beam, shell or solid.</p>
+</dd>
+<dt><strong>index</strong><span class="classifier">int or list(int)</span></dt><dd><p>element index or list of indexes</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>element</strong><span class="classifier">Element</span></dt><dd><p>Element(s) depending on the arguments</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>if invalid <code class="docutils literal notranslate"><span class="pre">element_type</span></code> is given
+or <code class="docutils literal notranslate"><span class="pre">index</span></code> does not exist</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># single element</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># single element</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">elem</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByIndex</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># multiple elements</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_shells</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elementByID</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
@@ -817,29 +662,25 @@ or <code class="docutils literal"><span class="pre">index</span></code> does not
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_element_coords">
-<code class="descname">get_element_coords</code><span class="sig-paren">(</span><em>element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_coords" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
-<blockquote>
-<div><p>optional type for filtering</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>field</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>coords vector of the elements (nElems x nTimesteps x 3)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_element_coords</code><span class="sig-paren">(</span><em class="sig-param">element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_coords" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_filter</strong><span class="classifier">Element.type</span></dt><dd><p>optional type for filtering</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field</strong><span class="classifier">np.ndarray</span></dt><dd><p>coords vector of the elements (nElems x nTimesteps x 3)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>If an element does not have the respective result, 0 is set as default value.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;coords&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;coords&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 <span class="go">4969</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nTimesteps</span><span class="p">()</span>
@@ -852,29 +693,25 @@ or <code class="docutils literal"><span class="pre">index</span></code> does not
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_element_energy">
-<code class="descname">get_element_energy</code><span class="sig-paren">(</span><em>element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_energy" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
-<blockquote>
-<div><p>optional type for filtering</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>field</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>energy of the elements (nElems x nTimesteps)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_element_energy</code><span class="sig-paren">(</span><em class="sig-param">element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_energy" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_filter</strong><span class="classifier">Element.type</span></dt><dd><p>optional type for filtering</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field</strong><span class="classifier">np.ndarray</span></dt><dd><p>energy of the elements (nElems x nTimesteps)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>If an element does not have the respective result, 0 is set as default value.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;energy mean&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;energy mean&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 <span class="go">4969</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nTimesteps</span><span class="p">()</span>
@@ -887,32 +724,28 @@ or <code class="docutils literal"><span class="pre">index</span></code> does not
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_element_history_vars">
-<code class="descname">get_element_history_vars</code><span class="sig-paren">(</span><em>element_type</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_history_vars" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : Element.type</p>
-<blockquote>
-<div><p>type of the element</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>field</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>history_vars vector of the elements (nElems x nTimesteps x nHistoryVars)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_element_history_vars</code><span class="sig-paren">(</span><em class="sig-param">element_type</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_history_vars" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_type</strong><span class="classifier">Element.type</span></dt><dd><p>type of the element</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field</strong><span class="classifier">np.ndarray</span></dt><dd><p>history_vars vector of the elements (nElems x nTimesteps x nHistoryVars)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>IMPORTANT: You can not query the history vars without specifying an element type. 
 In LS-Dyna e.g. history var 7 is different between shells and beams. To prevent 
 wrong usage and bugginess, we enforce this policy here. We didn’t mess this one up!</p>
 <p>If an element does not have the respective result, 0 is set as default value.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;shell history 7 max&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;shell history 7 max&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 <span class="go">4969</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nTimesteps</span><span class="p">()</span>
@@ -926,38 +759,34 @@ wrong usage and bugginess, we enforce this policy here. We didn’t mess this on
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_element_ids">
-<code class="descname">get_element_ids</code><span class="sig-paren">(</span><em>element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_ids" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
-<blockquote>
-<div><p>optional element type for filtering</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>element_ids</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>Ids of the elements</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_element_ids</code><span class="sig-paren">(</span><em class="sig-param">element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_ids" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_filter</strong><span class="classifier">Element.type</span></dt><dd><p>optional element type for filtering</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>element_ids</strong><span class="classifier">np.ndarray</span></dt><dd><p>Ids of the elements</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
-<p>If the ids for all elements are queried (<code class="docutils literal"><span class="pre">Element.none</span></code> as filter type)
+<p>If the ids for all elements are queried (<code class="docutils literal notranslate"><span class="pre">Element.none</span></code> as filter type)
 then the returned order is:</p>
 <blockquote>
 <div><ul class="simple">
-<li><code class="docutils literal"><span class="pre">Element.beam</span></code></li>
-<li><code class="docutils literal"><span class="pre">Element.shell</span></code></li>
-<li><code class="docutils literal"><span class="pre">Element.solid</span></code></li>
-<li><code class="docutils literal"><span class="pre">Element.tshell</span></code></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Element.beam</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Element.shell</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Element.solid</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Element.tshell</span></code></p></li>
 </ul>
 </div></blockquote>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># get all ids (beam, shell, solid, tshell)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_element_ids</span><span class="p">()</span>
 <span class="go">array([4687, 4688, 4689, 4690, ...])</span>
@@ -970,35 +799,29 @@ then the returned order is:</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_element_node_ids">
-<code class="descname">get_element_node_ids</code><span class="sig-paren">(</span><em>element_type</em>, <em>n_nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_node_ids" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_type</strong> : Element.type</p>
-<blockquote>
-<div><p>type of the element</p>
-</div></blockquote>
-<p><strong>n_nodes</strong> : int</p>
-<blockquote>
-<div><p>number of nodes</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>element_node_ids</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>ids of the nodes for every element (shape elems x n_nodes).</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_element_node_ids</code><span class="sig-paren">(</span><em class="sig-param">element_type</em>, <em class="sig-param">n_nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_node_ids" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_type</strong><span class="classifier">Element.type</span></dt><dd><p>type of the element</p>
+</dd>
+<dt><strong>n_nodes</strong><span class="classifier">int</span></dt><dd><p>number of nodes</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>element_node_ids</strong><span class="classifier">np.ndarray</span></dt><dd><p>ids of the nodes for every element (shape elems x n_nodes).</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The number of nodes must be specified since 
 elements of one type may have different number of nodes
 which would result in a non-uniform matrix.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_element_node_ids</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="go">array([[347, 354, 343, 344],</span>
 <span class="go">       [354, 355, 342, 343],</span>
@@ -1009,29 +832,25 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_element_plastic_strain">
-<code class="descname">get_element_plastic_strain</code><span class="sig-paren">(</span><em>element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_plastic_strain" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
-<blockquote>
-<div><p>optional type for filtering</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>field</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>effective plastic strain of the elements (nElems x nTimesteps)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_element_plastic_strain</code><span class="sig-paren">(</span><em class="sig-param">element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_plastic_strain" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_filter</strong><span class="classifier">Element.type</span></dt><dd><p>optional type for filtering</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field</strong><span class="classifier">np.ndarray</span></dt><dd><p>effective plastic strain of the elements (nElems x nTimesteps)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>If an element does not have the respective result, 0 is set as default value.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;plastic_strain max&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;plastic_strain max&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 <span class="go">4969</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nTimesteps</span><span class="p">()</span>
@@ -1044,29 +863,25 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_element_strain">
-<code class="descname">get_element_strain</code><span class="sig-paren">(</span><em>element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_strain" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
-<blockquote>
-<div><p>optional type for filtering</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>field</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>strain vector of the elements (nElems x nTimesteps x 6)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_element_strain</code><span class="sig-paren">(</span><em class="sig-param">element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_strain" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_filter</strong><span class="classifier">Element.type</span></dt><dd><p>optional type for filtering</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field</strong><span class="classifier">np.ndarray</span></dt><dd><p>strain vector of the elements (nElems x nTimesteps x 6)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>If an element does not have the respective result, 0 is set as default value.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;strain mean&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;strain mean&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 <span class="go">4969</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nTimesteps</span><span class="p">()</span>
@@ -1079,29 +894,25 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_element_stress">
-<code class="descname">get_element_stress</code><span class="sig-paren">(</span><em>element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_stress" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
-<blockquote>
-<div><p>optional type for filtering</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>field</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>stress vector of the elements (nElems x nTimesteps x 6)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_element_stress</code><span class="sig-paren">(</span><em class="sig-param">element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_stress" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_filter</strong><span class="classifier">Element.type</span></dt><dd><p>optional type for filtering</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field</strong><span class="classifier">np.ndarray</span></dt><dd><p>stress vector of the elements (nElems x nTimesteps x 6)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>If an element does not have the respective result, 0 is set as default value.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;stress mean&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;stress mean&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 <span class="go">4969</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nTimesteps</span><span class="p">()</span>
@@ -1114,29 +925,25 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_element_stress_mises">
-<code class="descname">get_element_stress_mises</code><span class="sig-paren">(</span><em>element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_stress_mises" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
-<blockquote>
-<div><p>optional type for filtering</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>field</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>mises stress of the elements (nElems x nTimesteps)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_element_stress_mises</code><span class="sig-paren">(</span><em class="sig-param">element_filter</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_element_stress_mises" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_filter</strong><span class="classifier">Element.type</span></dt><dd><p>optional type for filtering</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field</strong><span class="classifier">np.ndarray</span></dt><dd><p>mises stress of the elements (nElems x nTimesteps)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>If an element does not have the respective result, 0 is set as default value.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;stress_mises mean&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">,</span> <span class="n">read_states</span><span class="o">=</span><span class="s2">&quot;stress_mises mean&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 <span class="go">4969</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nTimesteps</span><span class="p">()</span>
@@ -1149,35 +956,31 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_elements">
-<code class="descname">get_elements</code><span class="sig-paren">(</span><em>element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_elements" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
-<blockquote>
-<div><p>Optional element type filter. May be beam, shell or solid.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>elements</strong> : list(Element)</p>
-<blockquote>
-<div><p>list of Elements</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>if invalid <code class="docutils literal"><span class="pre">element_filter</span></code> is given.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_elements</code><span class="sig-paren">(</span><em class="sig-param">element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_elements" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_filter</strong><span class="classifier">Element.type</span></dt><dd><p>Optional element type filter. May be beam, shell or solid.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>elements</strong><span class="classifier">list(Element)</span></dt><dd><p>list of Elements</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>if invalid <code class="docutils literal notranslate"><span class="pre">element_filter</span></code> is given.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>Get the elements of the femfile. One may use a filter by type.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_elements</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">all_elements</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">shell_elements</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_elements</span><span class="p">(</span><span class="n">Element</span><span class="o">.</span><span class="n">shell</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1185,21 +988,17 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_filepath">
-<code class="descname">get_filepath</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_filepath" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>Filepath of the femfile.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_filepath</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_filepath" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>Filepath of the femfile.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_filepath</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_filepath</span><span class="p">()</span>
 <span class="go">&quot;path/to/femfile&quot;</span>
 </pre></div>
 </div>
@@ -1207,33 +1006,29 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_nElements">
-<code class="descname">get_nElements</code><span class="sig-paren">(</span><em>element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nElements" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>element_filter</strong> : Element.type</p>
-<blockquote>
-<div><p>Optional element type filter. May be beam, shell or solid.</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nElements</strong> : int</p>
-<blockquote>
-<div><p>number of elements</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>if invalid <code class="docutils literal"><span class="pre">element_filter</span></code> is given.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_nElements</code><span class="sig-paren">(</span><em class="sig-param">element_filter=Element.none</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nElements" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>element_filter</strong><span class="classifier">Element.type</span></dt><dd><p>Optional element type filter. May be beam, shell or solid.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>nElements</strong><span class="classifier">int</span></dt><dd><p>number of elements</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>if invalid <code class="docutils literal notranslate"><span class="pre">element_filter</span></code> is given.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_nElements</span><span class="p">()</span>
 <span class="go">43156</span>
 </pre></div>
 </div>
@@ -1241,21 +1036,17 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_nNodes">
-<code class="descname">get_nNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nNodes" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nNodes</strong> : int</p>
-<blockquote class="last">
-<div><p>number of nodes in the file</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_nNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nNodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>nNodes</strong><span class="classifier">int</span></dt><dd><p>number of nodes in the file</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_nNodes</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_nNodes</span><span class="p">()</span>
 <span class="go">43145</span>
 </pre></div>
 </div>
@@ -1263,21 +1054,17 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_nParts">
-<code class="descname">get_nParts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nParts" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nParts</strong> : int</p>
-<blockquote class="last">
-<div><p>number of parts in the database</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_nParts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nParts" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>nParts</strong><span class="classifier">int</span></dt><dd><p>number of parts in the database</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_nParts</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">femfile</span><span class="o">.</span><span class="n">get_nParts</span><span class="p">()</span>
 <span class="go">7</span>
 </pre></div>
 </div>
@@ -1285,22 +1072,18 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_nTimesteps">
-<code class="descname">get_nTimesteps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nTimesteps" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_nTimesteps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nTimesteps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of timesteps of the d3plot.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nTimesteps</strong> : int</p>
-<blockquote class="last">
-<div><p>number of timesteps</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>nTimesteps</strong><span class="classifier">int</span></dt><dd><p>number of timesteps</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_nTimesteps</span><span class="p">()</span>
 <span class="go">32</span>
 </pre></div>
@@ -1309,33 +1092,29 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_nodeByID">
-<code class="descname">get_nodeByID</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nodeByID" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>id</strong> : int or list(int)</p>
-<blockquote>
-<div><p>node id or list of node ids</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node or list(Node)</p>
-<blockquote>
-<div><p>requested Node(s)</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>if <code class="docutils literal"><span class="pre">idx</span></code> does not exist.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_nodeByID</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nodeByID" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>id</strong><span class="classifier">int or list(int)</span></dt><dd><p>node id or list of node ids</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>node</strong><span class="classifier">Node or list(Node)</span></dt><dd><p>requested Node(s)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">idx</span></code> does not exist.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># get by single id</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># get by single id</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># get a list of nodes at once</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_nodes</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">)</span>
@@ -1345,36 +1124,32 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_nodeByIndex">
-<code class="descname">get_nodeByIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nodeByIndex" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>index</strong> : int or list(int)</p>
-<blockquote>
-<div><p>internal node index or list inf indexes</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node</strong> : Node or list(Node)</p>
-<blockquote>
-<div><p>Node(s)</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>if <code class="docutils literal"><span class="pre">index</span></code> larger <code class="docutils literal"><span class="pre">femfile.get_nNodes()</span></code>.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_nodeByIndex</code><span class="sig-paren">(</span><em class="sig-param">index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nodeByIndex" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">int or list(int)</span></dt><dd><p>internal node index or list inf indexes</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>node</strong><span class="classifier">Node or list(Node)</span></dt><dd><p>Node(s)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>if <code class="docutils literal notranslate"><span class="pre">index</span></code> larger <code class="docutils literal notranslate"><span class="pre">femfile.get_nNodes()</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The internal index starts at 0 and ends at
-<code class="docutils literal"><span class="pre">femfile.get_nNodes()</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">femfile.get_nNodes()</span></code>.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># single index</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># single index</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># get a list of nodes at once</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_nodes</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodeByIndex</span><span class="p">(</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">)</span>
@@ -1384,21 +1159,17 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_node_acceleration">
-<code class="descname">get_node_acceleration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_node_acceleration" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node_acceleration</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>Accelration of all nodes</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_node_acceleration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_node_acceleration" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>node_acceleration</strong><span class="classifier">np.ndarray</span></dt><dd><p>Accelration of all nodes</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_node_acceleration</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_node_acceleration</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(4915,1,3)</span>
 </pre></div>
 </div>
@@ -1406,21 +1177,17 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_node_coords">
-<code class="descname">get_node_coords</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_node_coords" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node_coords</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>coordinates of all nodes</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_node_coords</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_node_coords" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>node_coords</strong><span class="classifier">np.ndarray</span></dt><dd><p>coordinates of all nodes</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_node_coords</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_node_coords</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(4915, 3)</span>
 </pre></div>
 </div>
@@ -1428,21 +1195,17 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_node_ids">
-<code class="descname">get_node_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_node_ids" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node_ids</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>Ids of all nodes</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_node_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_node_ids" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>node_ids</strong><span class="classifier">np.ndarray</span></dt><dd><p>Ids of all nodes</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_node_ids</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_node_ids</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(100001)</span>
 </pre></div>
 </div>
@@ -1450,21 +1213,17 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_node_velocity">
-<code class="descname">get_node_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_node_velocity" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>node_velocity</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>Velocity of all nodes</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_node_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_node_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>node_velocity</strong><span class="classifier">np.ndarray</span></dt><dd><p>Velocity of all nodes</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_node_velocity</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_node_velocity</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(4915,1,3)</span>
 </pre></div>
 </div>
@@ -1472,163 +1231,139 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_nodes">
-<code class="descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>nodes</strong> : list(Node)</p>
-<blockquote class="last">
-<div><p>list of node objects</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>nodes</strong><span class="classifier">list(Node)</span></dt><dd><p>list of node objects</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_nodes</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_nodes</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_partByID">
-<code class="descname">get_partByID</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_partByID" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>id</strong> : int or list of int</p>
-<blockquote>
-<div><p>id or ids of the part in the file</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part or list of Parts</p>
-<blockquote>
-<div><p>output depending on arguments</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>if some <code class="docutils literal"><span class="pre">id</span></code> does not exist.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_partByID</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_partByID" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>id</strong><span class="classifier">int or list of int</span></dt><dd><p>id or ids of the part in the file</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>parts</strong><span class="classifier">Part or list of Parts</span></dt><dd><p>output depending on arguments</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>if some <code class="docutils literal notranslate"><span class="pre">id</span></code> does not exist.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_partByIndex">
-<code class="descname">get_partByIndex</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_partByIndex" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>index</strong> : int or list of int</p>
-<blockquote>
-<div><p>index or indexes of the part in the file</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part or list of Parts</p>
-<blockquote>
-<div><p>output depending on arguments</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>if some <code class="docutils literal"><span class="pre">index</span></code> does not exist.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_partByIndex</code><span class="sig-paren">(</span><em class="sig-param">index</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_partByIndex" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">int or list of int</span></dt><dd><p>index or indexes of the part in the file</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>parts</strong><span class="classifier">Part or list of Parts</span></dt><dd><p>output depending on arguments</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>if some <code class="docutils literal notranslate"><span class="pre">index</span></code> does not exist.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByIndex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByIndex</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_partByName">
-<code class="descname">get_partByName</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_partByName" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
-<blockquote>
-<div><p>name of the part</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part</p>
-<blockquote>
-<div><p>part with the given name</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>if a part with <code class="docutils literal"><span class="pre">name</span></code> does not exist.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_partByName</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_partByName" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>name of the part</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>parts</strong><span class="classifier">Part</span></dt><dd><p>part with the given name</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>if a part with <code class="docutils literal notranslate"><span class="pre">name</span></code> does not exist.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByName</span><span class="p">(</span><span class="s2">&quot;Lower Bumper&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_partByName</span><span class="p">(</span><span class="s2">&quot;Lower Bumper&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_parts">
-<code class="descname">get_parts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_parts" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>parts</strong> : list(Part)</p>
-<blockquote class="last">
-<div><p>list of all parts in the file</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">get_parts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_parts" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>parts</strong><span class="classifier">list(Part)</span></dt><dd><p>list of all parts in the file</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_all_parts</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_parts</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_of_all_parts</span> <span class="o">=</span> <span class="n">femfile</span><span class="o">.</span><span class="n">get_parts</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_timesteps">
-<code class="descname">get_timesteps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_timesteps" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_timesteps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_timesteps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the simulation time of the written states.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>timesteps</strong> : np.ndarray</p>
-<blockquote class="last">
-<div><p>state timesteps of the D3plot</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>timesteps</strong><span class="classifier">np.ndarray</span></dt><dd><p>state timesteps of the D3plot</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">time</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_timesteps</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1636,23 +1371,19 @@ which would result in a non-uniform matrix.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.get_title">
-<code class="descname">get_title</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_title" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_title</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.get_title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the title of the d3plot, which is part
 of the header data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>title</strong> : str</p>
-<blockquote class="last">
-<div><p>the title of the d3plot</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>the title of the d3plot</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">get_title</span><span class="p">()</span>
 <span class="go">&quot;Barrier Impact&quot;</span>
 </pre></div>
@@ -1661,12 +1392,12 @@ of the header data.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.info">
-<code class="descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a summary of the header data of the D3plot, which
 involves node info, element info, written state data and
 so forth.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1674,51 +1405,41 @@ so forth.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">self, iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the D3plot, currently shells only!</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>iTimestep</strong> : int</p>
-<blockquote>
-<div><p>timestep at which to plot the D3plot</p>
-</div></blockquote>
-<p><strong>element_result</strong> : str or function</p>
-<blockquote>
-<div><p>which type of results to use as fringe
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>iTimestep</strong><span class="classifier">int</span></dt><dd><p>timestep at which to plot the D3plot</p>
+</dd>
+<dt><strong>element_result</strong><span class="classifier">str or function</span></dt><dd><p>which type of results to use as fringe
 None means no fringe is used.
 When using string as arg you may use plastic_strain or energy.
 Function shall take elem as input and return a float value (for fringe)</p>
-</div></blockquote>
-<p><strong>fringe_bounds</strong> : list(float,float) or tuple(float,float)</p>
-<blockquote>
-<div><p>bounds for the fringe, default will use min and max value</p>
-</div></blockquote>
-<p><strong>export_filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>optional filepath for saving. If none, the model
+</dd>
+<dt><strong>fringe_bounds</strong><span class="classifier">list(float,float) or tuple(float,float)</span></dt><dd><p>bounds for the fringe, default will use min and max value</p>
+</dd>
+<dt><strong>export_filepath</strong><span class="classifier">str</span></dt><dd><p>optional filepath for saving. If none, the model
 is exported to a temporary file and shown in the
 browser.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <p>Load a d3plot and plot it’s geometry</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span> <span class="c1"># just geometry</span>
 </pre></div>
 </div>
 <p>Read the state data and plot in deformed state</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># read state data</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># read state data</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">read_states</span><span class="p">([</span><span class="s2">&quot;disp&quot;</span><span class="p">,</span><span class="s2">&quot;plastic_strain max&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iTimestep</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># last state</span>
 </pre></div>
 </div>
 <p>Use a user-defined element evaluation function for fringe colors.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># User defined evaluation function</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># User defined evaluation function</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">eval_fun</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">res</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get_plastic_strain</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">):</span> <span class="c1"># some elements may miss plastic strain</span>
@@ -1729,55 +1450,43 @@ browser.</p>
 </div>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="qd.cae.dyna.D3plot.plot_parts">
-<em class="property">static </em><code class="descname">plot_parts</code><span class="sig-paren">(</span><em>parts, iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot_parts" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">plot_parts</code><span class="sig-paren">(</span><em class="sig-param">parts, iTimestep=0, element_result=None, fringe_bounds=[None, None], export_filepath=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.plot_parts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a selected group of parts.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>parts</strong> : Part or list(Part)</p>
-<blockquote>
-<div><p>parts to plot. May be from different files.</p>
-</div></blockquote>
-<p><strong>iTimestep</strong> : int</p>
-<blockquote>
-<div><p>timestep at which to plot the D3plot</p>
-</div></blockquote>
-<p><strong>element_result</strong> : str or function</p>
-<blockquote>
-<div><p>which type of results to use as fringe
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>parts</strong><span class="classifier">Part or list(Part)</span></dt><dd><p>parts to plot. May be from different files.</p>
+</dd>
+<dt><strong>iTimestep</strong><span class="classifier">int</span></dt><dd><p>timestep at which to plot the D3plot</p>
+</dd>
+<dt><strong>element_result</strong><span class="classifier">str or function</span></dt><dd><p>which type of results to use as fringe
 None means no fringe is used
 When using string as arg you may use plastic_strain or energy.
 Function shall take elem as input and return a float value (for fringe)</p>
-</div></blockquote>
-<p><strong>fringe_bounds</strong> : list(float,float) or tuple(float,float)</p>
-<blockquote>
-<div><p>bounds for the fringe, default will use min and max value</p>
-</div></blockquote>
-<p><strong>export_filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>optional filepath for saving. If none, the model
+</dd>
+<dt><strong>fringe_bounds</strong><span class="classifier">list(float,float) or tuple(float,float)</span></dt><dd><p>bounds for the fringe, default will use min and max value</p>
+</dd>
+<dt><strong>export_filepath</strong><span class="classifier">str</span></dt><dd><p>optional filepath for saving. If none, the model
 is exported to a temporary file and shown in the
 browser.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>Can be applied to parts, coming from different files.</p>
 <p class="rubric">Examples</p>
 <p>For a full description of plotting functionality, see <cite>d3plot.plot</cite>.
 Load a d3plot and plot a part from it:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_1</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_1&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_1</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_1&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part_1</span> <span class="o">=</span> <span class="n">d3plot_1</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="o">.</span><span class="n">plot_parts</span><span class="p">(</span> <span class="p">[</span><span class="n">part_1</span><span class="p">]</span> <span class="p">)</span> <span class="c1"># static function!</span>
 </pre></div>
 </div>
 <p>Read a second d3plot and plot both parts at once</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_2</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_2&quot;</span><span class="p">)</span> <span class="c1"># different file!</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot_2</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot_2&quot;</span><span class="p">)</span> <span class="c1"># different file!</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">part_2</span> <span class="o">=</span> <span class="n">d3plot_2</span><span class="o">.</span><span class="n">get_partByID</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">D3plot</span><span class="o">.</span><span class="n">plot_parts</span><span class="p">(</span> <span class="p">[</span><span class="n">part_1</span><span class="p">,</span> <span class="n">part_2</span><span class="p">]</span> <span class="p">)</span>
 </pre></div>
@@ -1786,47 +1495,43 @@ Load a d3plot and plot a part from it:</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.D3plot.read_states">
-<code class="descname">read_states</code><span class="sig-paren">(</span><em>vars</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.read_states" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vars</strong> : str or list(str)</p>
-<blockquote class="last">
-<div><p>variable or list of variables to read (see Notes below)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">read_states</code><span class="sig-paren">(</span><em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.D3plot.read_states" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>vars</strong><span class="classifier">str or list(str)</span></dt><dd><p>variable or list of variables to read (see Notes below)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>Read a variable from the state files. If this is not done, the nodes
 and elements return empty vectors when requesting a result. The
 variables available are:</p>
 <ul class="simple">
-<li>disp (displacement)</li>
-<li>vel (velocity)</li>
-<li>accel (acceleration)</li>
-<li>strain [(optional) mode]</li>
-<li>stress [(optional) mode]</li>
-<li>stress_mises [(optional) mode]</li>
-<li>plastic_strain [(optional) mode]</li>
-<li>history [id1] [id2] [shell or solid] [(optional) mode]</li>
+<li><p>disp (displacement)</p></li>
+<li><p>vel (velocity)</p></li>
+<li><p>accel (acceleration)</p></li>
+<li><p>strain [(optional) mode]</p></li>
+<li><p>stress [(optional) mode]</p></li>
+<li><p>stress_mises [(optional) mode]</p></li>
+<li><p>plastic_strain [(optional) mode]</p></li>
+<li><p>history [id1] [id2] [shell or solid] [(optional) mode]</p></li>
 </ul>
 <p>There is an optional mode for the element results. The results are 
 only given at the center of an element. Since shell elements
 have multiple layers of results, the optional mode determines the
 treatment of these layers:</p>
 <ul class="simple">
-<li>inner (first layer)</li>
-<li>mid (middle)</li>
-<li>outer (last layer)</li>
-<li>mean</li>
-<li>max</li>
-<li>min</li>
+<li><p>inner (first layer)</p></li>
+<li><p>mid (middle)</p></li>
+<li><p>outer (last layer)</p></li>
+<li><p>mean</p></li>
+<li><p>max</p></li>
+<li><p>min</p></li>
 </ul>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span> <span class="c1"># just geometry</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span> <span class="c1"># just geometry</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">d3plot</span><span class="o">.</span><span class="n">get_nodeByID</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span> <span class="n">node</span><span class="o">.</span><span class="n">get_disp</span><span class="p">()</span> <span class="p">)</span> <span class="c1"># no disps loaded</span>
 <span class="go">0</span>
@@ -1851,6 +1556,15 @@ treatment of these layers:</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="qd_cae_dyna_RawD3plot.html" class="btn btn-neutral float-right" title="RawD3plot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="qd_cae_dyna_Binout.html" class="btn btn-neutral float-left" title="Binout" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

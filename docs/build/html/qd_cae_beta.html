@@ -20,21 +20,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.8.9',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="qd.numerics" href="qd_numerics.html" />
     <link rel="prev" title="Additional Functions" href="qd_cae_dyna_functions.html" /> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
@@ -100,9 +91,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">qd.cae.beta</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#metacommunicator">MetaCommunicator</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#metacommunicator">MetaCommunicator</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="qd_numerics.html">qd.numerics</a></li>
@@ -183,28 +172,20 @@
 <h2>MetaCommunicator<a class="headerlink" href="#metacommunicator" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qd.cae.beta.MetaCommunicator">
-<em class="property">class </em><code class="descclassname">qd.cae.beta.</code><code class="descname">MetaCommunicator</code><span class="sig-paren">(</span><em>meta_path=None</em>, <em>ip_address='127.0.0.1'</em>, <em>meta_listen_port=4342</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">qd.cae.beta.</code><code class="sig-name descname">MetaCommunicator</code><span class="sig-paren">(</span><em class="sig-param">meta_path=None</em>, <em class="sig-param">ip_address='127.0.0.1'</em>, <em class="sig-param">meta_listen_port=4342</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor for a MetaCommunicator</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>meta_filepath</strong> : str</p>
-<blockquote>
-<div><p>optional path or command for the META executable</p>
-</div></blockquote>
-<p><strong>ip_address</strong> : str</p>
-<blockquote>
-<div><p>ip-adress to connect to. Localhost by default.</p>
-</div></blockquote>
-<p><strong>meta_listen_port</strong> : int</p>
-<blockquote class="last">
-<div><p>port on which meta is listening (or in case of startup will listen)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>meta_filepath</strong><span class="classifier">str</span></dt><dd><p>optional path or command for the META executable</p>
+</dd>
+<dt><strong>ip_address</strong><span class="classifier">str</span></dt><dd><p>ip-adress to connect to. Localhost by default.</p>
+</dd>
+<dt><strong>meta_listen_port</strong><span class="classifier">int</span></dt><dd><p>port on which meta is listening (or in case of startup will listen)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The constructor checks for a running and listening instance of META and 
 connects to it. I   there is no running instance it will start one and will 
@@ -212,7 +193,7 @@ wait for it to be ready to operate.
 If META has to be started, either provide a filepath or simply set the 
 environment variable META_PATH to the executable.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span> <span class="c1"># starts META , if not listening</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span> <span class="c1"># starts META , if not listening</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">is_runnning</span><span class="p">()</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Send arbitrary Meta commands ... hihihi</span>
@@ -223,56 +204,48 @@ environment variable META_PATH to the executable.</p>
 </pre></div>
 </div>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.hide_pids" title="qd.cae.beta.MetaCommunicator.hide_pids"><code class="xref py py-obj docutils literal"><span class="pre">hide_pids</span></code></a></td>
-<td></td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.hide_pids" title="qd.cae.beta.MetaCommunicator.hide_pids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hide_pids</span></code></a></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.is_running" title="qd.cae.beta.MetaCommunicator.is_running"><code class="xref py py-obj docutils literal"><span class="pre">is_running</span></code></a></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.is_running" title="qd.cae.beta.MetaCommunicator.is_running"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_running</span></code></a></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.read_d3plot" title="qd.cae.beta.MetaCommunicator.read_d3plot"><code class="xref py py-obj docutils literal"><span class="pre">read_d3plot</span></code></a></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.read_d3plot" title="qd.cae.beta.MetaCommunicator.read_d3plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_d3plot</span></code></a></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.read_geometry" title="qd.cae.beta.MetaCommunicator.read_geometry"><code class="xref py py-obj docutils literal"><span class="pre">read_geometry</span></code></a></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.read_geometry" title="qd.cae.beta.MetaCommunicator.read_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_geometry</span></code></a></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.send_command" title="qd.cae.beta.MetaCommunicator.send_command"><code class="xref py py-obj docutils literal"><span class="pre">send_command</span></code></a></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.send_command" title="qd.cae.beta.MetaCommunicator.send_command"><code class="xref py py-obj docutils literal notranslate"><span class="pre">send_command</span></code></a></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.show_pids" title="qd.cae.beta.MetaCommunicator.show_pids"><code class="xref py py-obj docutils literal"><span class="pre">show_pids</span></code></a></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.beta.MetaCommunicator.show_pids" title="qd.cae.beta.MetaCommunicator.show_pids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_pids</span></code></a></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="qd.cae.beta.MetaCommunicator.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>meta_path=None</em>, <em>ip_address='127.0.0.1'</em>, <em>meta_listen_port=4342</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">meta_path=None</em>, <em class="sig-param">ip_address='127.0.0.1'</em>, <em class="sig-param">meta_listen_port=4342</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor for a MetaCommunicator</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>meta_filepath</strong> : str</p>
-<blockquote>
-<div><p>optional path or command for the META executable</p>
-</div></blockquote>
-<p><strong>ip_address</strong> : str</p>
-<blockquote>
-<div><p>ip-adress to connect to. Localhost by default.</p>
-</div></blockquote>
-<p><strong>meta_listen_port</strong> : int</p>
-<blockquote class="last">
-<div><p>port on which meta is listening (or in case of startup will listen)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>meta_filepath</strong><span class="classifier">str</span></dt><dd><p>optional path or command for the META executable</p>
+</dd>
+<dt><strong>ip_address</strong><span class="classifier">str</span></dt><dd><p>ip-adress to connect to. Localhost by default.</p>
+</dd>
+<dt><strong>meta_listen_port</strong><span class="classifier">int</span></dt><dd><p>port on which meta is listening (or in case of startup will listen)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The constructor checks for a running and listening instance of META and 
 connects to it. I   there is no running instance it will start one and will 
@@ -280,7 +253,7 @@ wait for it to be ready to operate.
 If META has to be started, either provide a filepath or simply set the 
 environment variable META_PATH to the executable.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span> <span class="c1"># starts META , if not listening</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span> <span class="c1"># starts META , if not listening</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">is_runnning</span><span class="p">()</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Send arbitrary Meta commands ... hihihi</span>
@@ -294,28 +267,20 @@ environment variable META_PATH to the executable.</p>
 
 <dl class="method">
 <dt>
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>meta_path=None</em>, <em>ip_address='127.0.0.1'</em>, <em>meta_listen_port=4342</em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">meta_path=None</em>, <em class="sig-param">ip_address='127.0.0.1'</em>, <em class="sig-param">meta_listen_port=4342</em><span class="sig-paren">)</span></dt>
 <dd><p>Constructor for a MetaCommunicator</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>meta_filepath</strong> : str</p>
-<blockquote>
-<div><p>optional path or command for the META executable</p>
-</div></blockquote>
-<p><strong>ip_address</strong> : str</p>
-<blockquote>
-<div><p>ip-adress to connect to. Localhost by default.</p>
-</div></blockquote>
-<p><strong>meta_listen_port</strong> : int</p>
-<blockquote class="last">
-<div><p>port on which meta is listening (or in case of startup will listen)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>meta_filepath</strong><span class="classifier">str</span></dt><dd><p>optional path or command for the META executable</p>
+</dd>
+<dt><strong>ip_address</strong><span class="classifier">str</span></dt><dd><p>ip-adress to connect to. Localhost by default.</p>
+</dd>
+<dt><strong>meta_listen_port</strong><span class="classifier">int</span></dt><dd><p>port on which meta is listening (or in case of startup will listen)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The constructor checks for a running and listening instance of META and 
 connects to it. I   there is no running instance it will start one and will 
@@ -323,7 +288,7 @@ wait for it to be ready to operate.
 If META has to be started, either provide a filepath or simply set the 
 environment variable META_PATH to the executable.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span> <span class="c1"># starts META , if not listening</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span> <span class="c1"># starts META , if not listening</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">is_runnning</span><span class="p">()</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Send arbitrary Meta commands ... hihihi</span>
@@ -337,31 +302,27 @@ environment variable META_PATH to the executable.</p>
 
 <dl class="attribute">
 <dt id="qd.cae.beta.MetaCommunicator.__weakref__">
-<code class="descname">__weakref__</code><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.__weakref__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__weakref__</code><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.__weakref__" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of weak references to the object (if defined)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.beta.MetaCommunicator.hide_pids">
-<code class="descname">hide_pids</code><span class="sig-paren">(</span><em>partlist=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.hide_pids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">hide_pids</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">partlist=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.hide_pids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tell META to make parts invisible.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>partlist</strong> : list(int)</p>
-<blockquote class="last">
-<div><p>list of pids</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>partlist</strong><span class="classifier">list(int)</span></dt><dd><p>list of pids</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>Hides all pids by default. If partlist is given, META performs
 a hide command for these pids.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># hide two pids</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># hide two pids</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">hide_pids</span><span class="p">(</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span><span class="mi">111</span><span class="p">]</span> <span class="p">)</span> 
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># hide all pids</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">hide_pids</span><span class="p">()</span>
@@ -371,28 +332,24 @@ a hide command for these pids.</p>
 
 <dl class="method">
 <dt id="qd.cae.beta.MetaCommunicator.is_running">
-<code class="descname">is_running</code><span class="sig-paren">(</span><em>timeout_seconds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.is_running" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_running</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">timeout_seconds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.is_running" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether META is up running</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>timeout_seconds</strong> : int</p>
-<blockquote>
-<div><p>seconds of waiting until timeout</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>is_running</strong> : bool</p>
-<blockquote class="last">
-<div><p>True if META is running. False otherwise</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>timeout_seconds</strong><span class="classifier">int</span></dt><dd><p>seconds of waiting until timeout</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>is_running</strong><span class="classifier">bool</span></dt><dd><p>True if META is running. False otherwise</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Pretty unfunny here, but I actually closed META now</span>
@@ -404,44 +361,36 @@ a hide command for these pids.</p>
 
 <dl class="method">
 <dt id="qd.cae.beta.MetaCommunicator.read_d3plot">
-<code class="descname">read_d3plot</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.read_d3plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_d3plot</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.read_d3plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open a d3plot in META and read geometry, displacement and plastic-strain.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>path to d3plot result file</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to d3plot result file</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">read_d3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">read_d3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.beta.MetaCommunicator.read_geometry">
-<code class="descname">read_geometry</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.read_geometry" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_geometry</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.read_geometry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the geometry from a file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>path to the result file</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to the result file</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">read_geometry</span><span class="p">(</span><span class="s2">&quot;path/to/result/file&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">read_geometry</span><span class="p">(</span><span class="s2">&quot;path/to/result/file&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># yay we see in meta some geometry ... but not here</span>
 </pre></div>
 </div>
@@ -449,29 +398,23 @@ a hide command for these pids.</p>
 
 <dl class="method">
 <dt id="qd.cae.beta.MetaCommunicator.send_command">
-<code class="descname">send_command</code><span class="sig-paren">(</span><em>command</em>, <em>timeout=20</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.send_command" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">send_command</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">command</em>, <em class="sig-param">timeout=20</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.send_command" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a command to a remote META</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>command</strong> : str</p>
-<blockquote>
-<div><p>command to send to META</p>
-</div></blockquote>
-<p><strong>timeout</strong> : int</p>
-<blockquote class="last">
-<div><p>timeout to wait until the command finishes</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>command</strong><span class="classifier">str</span></dt><dd><p>command to send to META</p>
+</dd>
+<dt><strong>timeout</strong><span class="classifier">int</span></dt><dd><p>timeout to wait until the command finishes</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The commands send over to META are identical as if they would be
 typed into the command line window.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span> <span class="o">=</span> <span class="n">MetaCommunicator</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">send_command</span><span class="p">(</span><span class="s2">&quot;read geom auto path/to/file&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">send_command</span><span class="p">(</span><span class="s2">&quot;add pid 4,5,3&quot;</span><span class="p">)</span>
 </pre></div>
@@ -480,30 +423,24 @@ typed into the command line window.</p>
 
 <dl class="method">
 <dt id="qd.cae.beta.MetaCommunicator.show_pids">
-<code class="descname">show_pids</code><span class="sig-paren">(</span><em>partlist=None</em>, <em>show_only=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.show_pids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show_pids</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">partlist=None</em>, <em class="sig-param">show_only=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.beta.MetaCommunicator.show_pids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tell META to make parts visible</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>partlist</strong> : list(int)</p>
-<blockquote>
-<div><p>list of pids</p>
-</div></blockquote>
-<p><strong>show_only</strong> : bool</p>
-<blockquote class="last">
-<div><p>whether to show only these parts (removes all others)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>partlist</strong><span class="classifier">list(int)</span></dt><dd><p>list of pids</p>
+</dd>
+<dt><strong>show_only</strong><span class="classifier">bool</span></dt><dd><p>whether to show only these parts (removes all others)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>Shows all pids by default. If partlist is given, META performs
 a show command for these pids. If show_only is used, all other
 parts will be removed from vision.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># show all pids</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># show all pids</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">show_pids</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># make two pids visible</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mc</span><span class="o">.</span><span class="n">show_pids</span><span class="p">(</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span><span class="mi">111</span><span class="p">]</span> <span class="p">)</span> 
@@ -525,6 +462,8 @@ parts will be removed from vision.</p>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="qd_numerics.html" class="btn btn-neutral float-right" title="qd.numerics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="qd_cae_dyna_functions.html" class="btn btn-neutral float-left" title="Additional Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

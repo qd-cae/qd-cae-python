@@ -20,21 +20,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.8.9',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -45,6 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="D3plot" href="qd_cae_dyna_D3plot.html" />
     <link rel="prev" title="qd.cae.dyna" href="qd_cae_dyna.html" /> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
@@ -99,9 +90,7 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Binout</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Binout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_D3plot.html">D3plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_RawD3plot.html">RawD3plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_KeyFile.html">KeyFile</a></li>
@@ -192,80 +181,72 @@
 <p>There is a <a class="reference external" href="https://www.youtube.com/watch?v=P96Vkuvg02w&amp;t=2s">YOUTUBE TUTORIAL</a> for this class available:</p>
 <dl class="class">
 <dt id="qd.cae.dyna.Binout">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">Binout</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">qd.cae.dyna.</code><code class="sig-name descname">Binout</code><span class="sig-paren">(</span><em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor for a binout</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>path to the binout or pattern</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to the binout or pattern</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The class loads the file given in the filepath. By giving a
 search pattern such as: “binout*”, all files with that
 pattern will be loaded.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads a single binout</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads a single binout</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout0000&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">filelist</span>
 <span class="go">[&#39;path/to/binout0000&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads multiple files</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads multiple files</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout*&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">filelist</span>
 <span class="go">[&#39;path/to/binout0000&#39;,&#39;path/to/binout0001&#39;]</span>
 </pre></div>
 </div>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.Binout.read" title="qd.cae.dyna.Binout.read"><code class="xref py py-obj docutils literal"><span class="pre">read</span></code></a>(…)</td>
-<td>Read all data from Binout (top to low level)</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.Binout.read" title="qd.cae.dyna.Binout.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a>(…)</p></td>
+<td><p>Read all data from Binout (top to low level)</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.Binout.save_hdf5" title="qd.cae.dyna.Binout.save_hdf5"><code class="xref py py-obj docutils literal"><span class="pre">save_hdf5</span></code></a>(filepath[,&nbsp;compression])</td>
-<td>Save a binout as HDF5</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.Binout.save_hdf5" title="qd.cae.dyna.Binout.save_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_hdf5</span></code></a>(self, filepath[, compression])</p></td>
+<td><p>Save a binout as HDF5</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="qd.cae.dyna.Binout.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor for a binout</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>path to the binout or pattern</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to the binout or pattern</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The class loads the file given in the filepath. By giving a
 search pattern such as: “binout*”, all files with that
 pattern will be loaded.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads a single binout</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads a single binout</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout0000&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">filelist</span>
 <span class="go">[&#39;path/to/binout0000&#39;]</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads multiple files</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># reads multiple files</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout*&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">filelist</span>
 <span class="go">[&#39;path/to/binout0000&#39;,&#39;path/to/binout0001&#39;]</span>
@@ -275,42 +256,38 @@ pattern will be loaded.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.Binout.read">
-<code class="descname">read</code><span class="sig-paren">(</span><em>path) Read all data from Binout (top to low level</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.read" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">path) Read all data from Binout (top to low level</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read all data from Binout (top to low level)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>path</strong> : list(str) or str</p>
-<blockquote>
-<div><p>internal path in the folder structure of the binout</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ret</strong> : list(str), np.ndarray or str</p>
-<blockquote class="last">
-<div><p>list of subdata within the folder or data itself (array or string)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">list(str) or str</span></dt><dd><p>internal path in the folder structure of the binout</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>ret</strong><span class="classifier">list(str), np.ndarray or str</span></dt><dd><p>list of subdata within the folder or data itself (array or string)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>This function is used to read any data from the binout. It has been used
 to make the access to the data more comfortable. The return type depends
 on the given path:</p>
 <blockquote>
 <div><ul class="simple">
-<li><cite>binout.read()</cite> : list(str) names of directories (in binout)</li>
-<li><cite>binout.read(dir)</cite> : list(str) names of variables or subdirs</li>
-<li><cite>binout.read(dir1, …, variable)</cite> : np.array(float/int) data</li>
+<li><p><cite>binout.read()</cite> : list(str) names of directories (in binout)</p></li>
+<li><p><cite>binout.read(dir)</cite> : list(str) names of variables or subdirs</p></li>
+<li><p><cite>binout.read(dir1, …, variable)</cite> : np.array(float/int) data</p></li>
 </ul>
 </div></blockquote>
 <p>If you have multiple outputs with different ids (e.g. in nodout for
 multiple nodes) then don’t forget to read the ids array for
 identification or id-labels.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">Binout</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">Binout</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;test/binout&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># get top dirs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -332,26 +309,20 @@ identification or id-labels.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.Binout.save_hdf5">
-<code class="descname">save_hdf5</code><span class="sig-paren">(</span><em>filepath</em>, <em>compression='gzip'</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.save_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save_hdf5</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">filepath</em>, <em class="sig-param">compression='gzip'</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.Binout.save_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save a binout as HDF5</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote>
-<div><p>path where the HDF5 shall be saved</p>
-</div></blockquote>
-<p><strong>compression</strong> : str</p>
-<blockquote class="last">
-<div><p>compression technique (see h5py docs)</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path where the HDF5 shall be saved</p>
+</dd>
+<dt><strong>compression</strong><span class="classifier">str</span></dt><dd><p>compression technique (see h5py docs)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span> <span class="o">=</span> <span class="n">Binout</span><span class="p">(</span><span class="s2">&quot;path/to/binout&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">binout</span><span class="o">.</span><span class="n">save_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/binout.h5&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -368,6 +339,8 @@ identification or id-labels.</p>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="qd_cae_dyna_D3plot.html" class="btn btn-neutral float-right" title="D3plot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="qd_cae_dyna.html" class="btn btn-neutral float-left" title="qd.cae.dyna" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

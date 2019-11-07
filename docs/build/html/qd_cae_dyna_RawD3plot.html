@@ -20,21 +20,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.8.9',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -44,7 +34,9 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="KeyFile" href="qd_cae_dyna_KeyFile.html" />
+    <link rel="prev" title="D3plot" href="qd_cae_dyna_D3plot.html" /> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/86/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.4/chroma.min.js"></script>
@@ -100,9 +92,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="qd_cae_dyna.html">qd.cae.dyna</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_Binout.html">Binout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_D3plot.html">D3plot</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">RawD3plot</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">RawD3plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_KeyFile.html">KeyFile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_keywords.html">Keyword Types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qd_cae_dyna_FEMFile.html">FEMFile (D3plot and KeyFile)</a></li>
@@ -188,96 +178,89 @@
             
   <div class="section" id="rawd3plot">
 <h1>RawD3plot<a class="headerlink" href="#rawd3plot" title="Permalink to this headline">¶</a></h1>
-<p>A <code class="docutils literal"><span class="pre">RawD3plot</span></code> is reading all of the raw data within a d3plot file. In contrast to the other <code class="docutils literal"><span class="pre">D3plot</span></code> class does it give access to the unprocessed data within the file.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">RawD3plot</span></code> is reading all of the raw data within a d3plot file. In contrast to the other <code class="docutils literal notranslate"><span class="pre">D3plot</span></code> class does it give access to the unprocessed data within the file.</p>
 <p>There are two purposes why this class was created. Firstly one can use and check the raw data oneself and do all kind of magic things with it. Secondly not using object orientation should speed up the reading process by avoiding many small allocations.</p>
 <p>The downside of the raw data access is the raw data itself. A d3plot has a very confusing structure. The file sometimes omits certain array elements and builds arrays in a very strange manner. Because the raw data arrays can be very confusing, one should not use this class without the <a class="reference external" href="https://github.com/qd-cae/qd-cae-python/tree/master/docs">official LS-Dyna database guide</a>.</p>
 <p><strong>This class is not finished and will change!</strong> The raw data arrays are simply too confusing and need a further utility layer.</p>
 <hr class="docutils" />
 <p>These are all the data arrays available with their shape description. They are categorized according to the variable type.</p>
-<dl class="docutils">
-<dt><strong>Float Data</strong>:</dt>
-<dd><ul class="first last simple">
-<li>timesteps <em>(nTimesteps)</em></li>
-<li>node_coordinates <em>(nNodes x 3)</em></li>
-<li>node_displacement <em>(nTimesteps x nNodes x 3)</em></li>
-<li>node_velocity <em>(nTimesteps x nNodes x 3)</em></li>
-<li>node_acceleration <em>(nTimesteps x nNodes x 3)</em></li>
-<li>node_mass_scaling <em>(nTimesteps x nNodes)</em></li>
-<li>elem_solid_results <em>(nTimesteps x nSolids x nResults)</em></li>
-<li>elem_solid_deletion_info <em>(nTimesteps x nSolids)</em></li>
-<li>elem_shell_results_layers <em>(nTimesteps x nShells x nLayers x nResults)</em></li>
-<li>elem_shell_results <em>(nTimesteps x nShells x nResults)</em></li>
-<li>elem_shell_deletion_info <em>(nTimesteps x nShells)</em></li>
-<li>elem_tshell_results_layers <em>(nTimesteps x nTShells x nLayers x nResults)</em></li>
-<li>elem_tshell_results <em>(nTimesteps x nTShells x nResults)</em></li>
-<li>elem_tshell_deletion_info <em>(nTimesteps x nTShells)</em></li>
-<li>elem_beam_results <em>(nTimesteps x nBeams x nResults)</em></li>
-<li>elem_beam_deletion_info <em>(nTimesteps x nBeams)</em></li>
-<li>airbag_geom_state_float_results <em>(nTimesteps x nAirbags x nResults)</em></li>
-<li>airbag_particle_float_results <em>(nTimesteps x nParticles x nResults)</em></li>
+<dl class="simple">
+<dt><strong>Float Data</strong>:</dt><dd><ul class="simple">
+<li><p>timesteps <em>(nTimesteps)</em></p></li>
+<li><p>node_coordinates <em>(nNodes x 3)</em></p></li>
+<li><p>node_displacement <em>(nTimesteps x nNodes x 3)</em></p></li>
+<li><p>node_velocity <em>(nTimesteps x nNodes x 3)</em></p></li>
+<li><p>node_acceleration <em>(nTimesteps x nNodes x 3)</em></p></li>
+<li><p>node_mass_scaling <em>(nTimesteps x nNodes)</em></p></li>
+<li><p>elem_solid_results <em>(nTimesteps x nSolids x nResults)</em></p></li>
+<li><p>elem_solid_deletion_info <em>(nTimesteps x nSolids)</em></p></li>
+<li><p>elem_shell_results_layers <em>(nTimesteps x nShells x nLayers x nResults)</em></p></li>
+<li><p>elem_shell_results <em>(nTimesteps x nShells x nResults)</em></p></li>
+<li><p>elem_shell_deletion_info <em>(nTimesteps x nShells)</em></p></li>
+<li><p>elem_tshell_results_layers <em>(nTimesteps x nTShells x nLayers x nResults)</em></p></li>
+<li><p>elem_tshell_results <em>(nTimesteps x nTShells x nResults)</em></p></li>
+<li><p>elem_tshell_deletion_info <em>(nTimesteps x nTShells)</em></p></li>
+<li><p>elem_beam_results <em>(nTimesteps x nBeams x nResults)</em></p></li>
+<li><p>elem_beam_deletion_info <em>(nTimesteps x nBeams)</em></p></li>
+<li><p>airbag_geom_state_float_results <em>(nTimesteps x nAirbags x nResults)</em></p></li>
+<li><p>airbag_particle_float_results <em>(nTimesteps x nParticles x nResults)</em></p></li>
 </ul>
 </dd>
-<dt><strong>Integer Data</strong>:</dt>
-<dd><ul class="first last simple">
-<li>node_ids <em>(nNodes)</em></li>
-<li>elem_solid_ids <em>(nSolids)</em></li>
-<li>elem_solid_data <em>(nSolids x 9)</em> (nodes and material)</li>
-<li>elem_shell_ids <em>(nShells)</em></li>
-<li>elem_shell_data <em>(nShells x 5)</em> (nodes and material)</li>
-<li>elem_tshell_ids <em>(nTShells)</em></li>
-<li>elem_tshell_data <em>(nTShells x 9)</em> (nodes and material)</li>
-<li>elem_beam_ids <em>(nBeams)</em></li>
-<li>elem_beam_data <em>(nBeams x 6)</em> (nodes and material)</li>
-<li>part_ids <em>(nParts)</em></li>
-<li>material_type_numbers <em>(nMaterials)</em></li>
-<li>airbag_geometry <em>(nAirbags x 4 or 5)</em></li>
-<li>airbag_variable_type_flag <em>(internally used only)</em></li>
-<li>airbag_geom_state_int_results <em>(nTimesteps x nAirbags x 1)</em></li>
-<li>airbag_particle_int_results <em>(nTimesteps x nParticles x 3)</em></li>
+<dt><strong>Integer Data</strong>:</dt><dd><ul class="simple">
+<li><p>node_ids <em>(nNodes)</em></p></li>
+<li><p>elem_solid_ids <em>(nSolids)</em></p></li>
+<li><p>elem_solid_data <em>(nSolids x 9)</em> (nodes and material)</p></li>
+<li><p>elem_shell_ids <em>(nShells)</em></p></li>
+<li><p>elem_shell_data <em>(nShells x 5)</em> (nodes and material)</p></li>
+<li><p>elem_tshell_ids <em>(nTShells)</em></p></li>
+<li><p>elem_tshell_data <em>(nTShells x 9)</em> (nodes and material)</p></li>
+<li><p>elem_beam_ids <em>(nBeams)</em></p></li>
+<li><p>elem_beam_data <em>(nBeams x 6)</em> (nodes and material)</p></li>
+<li><p>part_ids <em>(nParts)</em></p></li>
+<li><p>material_type_numbers <em>(nMaterials)</em></p></li>
+<li><p>airbag_geometry <em>(nAirbags x 4 or 5)</em></p></li>
+<li><p>airbag_variable_type_flag <em>(internally used only)</em></p></li>
+<li><p>airbag_geom_state_int_results <em>(nTimesteps x nAirbags x 1)</em></p></li>
+<li><p>airbag_particle_int_results <em>(nTimesteps x nParticles x 3)</em></p></li>
 </ul>
 </dd>
-<dt><strong>String Data</strong>:</dt>
-<dd><ul class="first last simple">
-<li>part_names <em>(nParts)</em></li>
-<li>airbag_all_variable_names</li>
-<li>airbag_geom_names (names for airbag_geometry)</li>
-<li>airbag_geom_state_int_names (names for airbag_geom_state_int_results)</li>
-<li>airbag_geom_state_float_names (names for airbag_geom_state_float_results)</li>
-<li>airbag_particle_int_names (names for airbag_particle_int_results)</li>
-<li>airbag_particle_float_names (names for airbag_particle_float_results)</li>
+<dt><strong>String Data</strong>:</dt><dd><ul class="simple">
+<li><p>part_names <em>(nParts)</em></p></li>
+<li><p>airbag_all_variable_names</p></li>
+<li><p>airbag_geom_names (names for airbag_geometry)</p></li>
+<li><p>airbag_geom_state_int_names (names for airbag_geom_state_int_results)</p></li>
+<li><p>airbag_geom_state_float_names (names for airbag_geom_state_float_results)</p></li>
+<li><p>airbag_particle_int_names (names for airbag_particle_int_results)</p></li>
+<li><p>airbag_particle_float_names (names for airbag_particle_float_results)</p></li>
 </ul>
 </dd>
 </dl>
 <hr class="docutils" />
 <dl class="class">
 <dt id="qd.cae.dyna.RawD3plot">
-<em class="property">class </em><code class="descclassname">qd.cae.dyna.</code><code class="descname">RawD3plot</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">qd.cae.dyna.</code><code class="sig-name descname">RawD3plot</code><span class="sig-paren">(</span><em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a RawD3plot file object</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote>
-<div><p>path to either the (first) d3plot or a d3plot in hdf5 format</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>instance</strong> : RawD3plot</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote>
-<div><p>in case of an invalid filepath or locked file</p>
-</div></blockquote>
-<p><strong>RuntimeError</strong></p>
-<blockquote class="last">
-<div><p>if anything goes wrong (internal checks) during reading</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to either the (first) d3plot or a d3plot in hdf5 format</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>instance</strong><span class="classifier">RawD3plot</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>in case of an invalid filepath or locked file</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>if anything goes wrong (internal checks) during reading</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The constructor first checks, if the file is a hdf5 file and
 then tries to open it as a casual D3plot.
@@ -285,7 +268,7 @@ If LS-Dyna writes multiple files (one for each timestep),
 give the filepath to the first file. The library finds all
 other files. The class automatically reads all data!</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">RawD3plot</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">RawD3plot</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># read an arbitrary d3plot</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1">#read femzip compressed file</span>
@@ -297,55 +280,51 @@ other files. The class automatically reads all data!</p>
 </pre></div>
 </div>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.RawD3plot.get_raw_data" title="qd.cae.dyna.RawD3plot.get_raw_data"><code class="xref py py-obj docutils literal"><span class="pre">get_raw_data</span></code></a>(key)</td>
-<td>Get a variable from its name</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.RawD3plot.get_raw_data" title="qd.cae.dyna.RawD3plot.get_raw_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_raw_data</span></code></a>(self, key)</p></td>
+<td><p>Get a variable from its name</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.RawD3plot.get_raw_keys" title="qd.cae.dyna.RawD3plot.get_raw_keys"><code class="xref py py-obj docutils literal"><span class="pre">get_raw_keys</span></code></a>()</td>
-<td>Get the names of the raw data fields</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.RawD3plot.get_raw_keys" title="qd.cae.dyna.RawD3plot.get_raw_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_raw_keys</span></code></a>(self)</p></td>
+<td><p>Get the names of the raw data fields</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#qd.cae.dyna.RawD3plot.info" title="qd.cae.dyna.RawD3plot.info"><code class="xref py py-obj docutils literal"><span class="pre">info</span></code></a>()</td>
-<td>Prints a summary of the header data of the d3plot, which involves node info, element info, written state data and so forth.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#qd.cae.dyna.RawD3plot.info" title="qd.cae.dyna.RawD3plot.info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">info</span></code></a>()</p></td>
+<td><p>Prints a summary of the header data of the d3plot, which involves node info, element info, written state data and so forth.</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#qd.cae.dyna.RawD3plot.save_hdf5" title="qd.cae.dyna.RawD3plot.save_hdf5"><code class="xref py py-obj docutils literal"><span class="pre">save_hdf5</span></code></a>(filepath[,&nbsp;overwrite,&nbsp;compression])</td>
-<td>Save the raw d3plot to HDF5</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#qd.cae.dyna.RawD3plot.save_hdf5" title="qd.cae.dyna.RawD3plot.save_hdf5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_hdf5</span></code></a>(self, filepath[, overwrite, …])</p></td>
+<td><p>Save the raw d3plot to HDF5</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a RawD3plot file object</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote>
-<div><p>path to either the (first) d3plot or a d3plot in hdf5 format</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>instance</strong> : RawD3plot</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote>
-<div><p>in case of an invalid filepath or locked file</p>
-</div></blockquote>
-<p><strong>RuntimeError</strong></p>
-<blockquote class="last">
-<div><p>if anything goes wrong (internal checks) during reading</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to either the (first) d3plot or a d3plot in hdf5 format</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>instance</strong><span class="classifier">RawD3plot</span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>in case of an invalid filepath or locked file</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>if anything goes wrong (internal checks) during reading</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The constructor first checks, if the file is a hdf5 file and
 then tries to open it as a casual D3plot.
@@ -353,7 +332,7 @@ If LS-Dyna writes multiple files (one for each timestep),
 give the filepath to the first file. The library finds all
 other files. The class automatically reads all data!</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">RawD3plot</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qd.cae.dyna</span> <span class="k">import</span> <span class="n">RawD3plot</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># read an arbitrary d3plot</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1">#read femzip compressed file</span>
@@ -368,30 +347,26 @@ other files. The class automatically reads all data!</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot._get_float_data">
-<code class="descname">_get_float_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_float_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_get_float_data</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_float_data" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>For internal usage</em></p>
 <p>This function is for reading any data, which is saved as a
 floating point value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
-<blockquote>
-<div><p>name of data array to request for</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> : numpy.ndarray</p>
-<blockquote class="last">
-<div><p>data array</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>name of data array to request for</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>data array</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_float_names</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_float_names</span><span class="p">()</span>
 <span class="go">[&#39;elem_shell_results&#39;, &#39;elem_shell_results_layers&#39;, &#39;elem_solid_results&#39;, ... ]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_float_data</span><span class="p">(</span><span class="s2">&quot;elem_shell_results&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(12, 4696, 24)</span>
@@ -402,21 +377,17 @@ floating point value.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot._get_float_names">
-<code class="descname">_get_float_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_float_names" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>names</strong> : list of str</p>
-<blockquote class="last">
-<div><p>names of all float variables in the d3plot</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<code class="sig-name descname">_get_float_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_float_names" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>names</strong><span class="classifier">list of str</span></dt><dd><p>names of all float variables in the d3plot</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_float_names</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_float_names</span><span class="p">()</span>
 <span class="go">[&#39;elem_shell_results&#39;, &#39;elem_shell_results_layers&#39;, &#39;elem_solid_results&#39;, ... ]</span>
 </pre></div>
 </div>
@@ -424,28 +395,24 @@ floating point value.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot._get_int_data">
-<code class="descname">_get_int_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_int_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_get_int_data</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_int_data" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>For internal usage</em></p>
 <p>This function is for reading any data, which is saved as an
 integer value.</p>
-<dl class="docutils">
-<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd>name of data array to request for</dd>
+<dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>name of data array to request for</p>
+</dd>
 </dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> : numpy.ndarray</p>
-<blockquote class="last">
-<div><p>data array</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>data array</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># check which vars are available</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># check which vars are available</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plott</span><span class="o">.</span><span class="n">get_int_names</span><span class="p">();</span>
 <span class="go">[&#39;elem_beam_data&#39;, &#39;elem_beam_ids&#39;, &#39;elem_shell_data&#39;, &#39;elem_shell_ids&#39;, ...]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># request some data</span>
@@ -458,25 +425,21 @@ integer value.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot._get_int_names">
-<code class="descname">_get_int_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_int_names" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_get_int_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_int_names" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>For internal usage</em></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>names</strong> : list of str</p>
-<blockquote class="last">
-<div><p>names of the integer variables in the d3plot</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>names</strong><span class="classifier">list of str</span></dt><dd><p>names of the integer variables in the d3plot</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>The variable arrays themselves can be obtained by
 the member function ‘RawD3plot.get_int_data’.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_int_names</span><span class="p">();</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_int_names</span><span class="p">();</span>
 <span class="go">[&#39;elem_beam_data&#39;, &#39;elem_beam_ids&#39;, &#39;elem_shell_data&#39;, &#39;elem_shell_ids&#39;, ...]</span>
 </pre></div>
 </div>
@@ -484,28 +447,24 @@ the member function ‘RawD3plot.get_int_data’.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot._get_string_data">
-<code class="descname">_get_string_data</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_string_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_get_string_data</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_string_data" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>For internal usage</em></p>
 <p>This function is for reading any data, which is saved as a
 string in the d3plot.</p>
-<dl class="docutils">
-<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd>name of data array to request for</dd>
+<dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>name of data array to request for</p>
+</dd>
 </dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> : list of str</p>
-<blockquote class="last">
-<div><p>string data list</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">list of str</span></dt><dd><p>string data list</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_string_names</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_string_names</span><span class="p">()</span>
 <span class="go">[&#39;part_names&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># also the part names are raw (untrimmed)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_string_data</span><span class="p">(</span><span class="s2">&quot;part_names&quot;</span><span class="p">)</span>
@@ -516,22 +475,18 @@ string in the d3plot.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot._get_string_names">
-<code class="descname">_get_string_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_string_names" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_get_string_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._get_string_names" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>For internal usage</em></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>names</strong> : list of str</p>
-<blockquote class="last">
-<div><p>names of all string variables in the d3plot</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>names</strong><span class="classifier">list of str</span></dt><dd><p>names of all string variables in the d3plot</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_string_names</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_string_names</span><span class="p">()</span>
 <span class="go">[&#39;part_names&#39;]</span>
 </pre></div>
 </div>
@@ -539,100 +494,89 @@ string in the d3plot.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot._is_hdf5">
-<code class="descname">_is_hdf5</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._is_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_is_hdf5</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._is_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a file is a HDF5 file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote>
-<div><p>path to the file</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>is_hdf5</strong> : bool</p>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to the file</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>is_hdf5</strong><span class="classifier">bool</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot._load_hdf5">
-<code class="descname">_load_hdf5</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._load_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">_load_hdf5</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot._load_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a d3plot, which was saved as an HDF5 file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
-<blockquote class="last">
-<div><p>path to the d3plot in HDF5 format</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>filepath</strong><span class="classifier">str</span></dt><dd><p>path to the d3plot in HDF5 format</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot.get_raw_data">
-<code class="descname">get_raw_data</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_raw_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_raw_data</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">key</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_raw_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a variable from its name</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>key</strong> : str</p>
-<blockquote>
-<div><p>name of the array or variable to get</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> : np.ndarray or list</p>
-<blockquote>
-<div><p>data array or list</p>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>ValueError</strong></p>
-<blockquote class="last">
-<div><p>In case that the key can not be found or the 
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>key</strong><span class="classifier">str</span></dt><dd><p>name of the array or variable to get</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">np.ndarray or list</span></dt><dd><p>data array or list</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>In case that the key can not be found or the 
 arugment is not a str.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">shell_geom_data</span> <span class="o">=</span> <span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_raw_data</span><span class="p">(</span><span class="s2">&quot;elem_shell_data&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">shell_geom_data</span> <span class="o">=</span> <span class="n">raw_d3plot</span><span class="o">.</span><span class="n">get_raw_data</span><span class="p">(</span><span class="s2">&quot;elem_shell_data&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot.get_raw_keys">
-<code class="descname">get_raw_keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_raw_keys" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_raw_keys</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.get_raw_keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the names of the raw data fields</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>names</strong> : list of str</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>names</strong><span class="classifier">list of str</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot.info">
-<code class="descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints a summary of the header data of the d3plot, which
 involves node info, element info, written state data and
 so forth.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">RawD3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -640,24 +584,20 @@ so forth.</p>
 
 <dl class="method">
 <dt id="qd.cae.dyna.RawD3plot.save_hdf5">
-<code class="descname">save_hdf5</code><span class="sig-paren">(</span><em>filepath</em>, <em>overwrite=True</em>, <em>compression='gzip'</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.save_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save_hdf5</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">filepath</em>, <em class="sig-param">overwrite=True</em>, <em class="sig-param">compression='gzip'</em><span class="sig-paren">)</span><a class="headerlink" href="#qd.cae.dyna.RawD3plot.save_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the raw d3plot to HDF5</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><strong>IOError</strong></p>
-<blockquote class="last">
-<div><p>In case anything related to IO goes wrong.</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>IOError</dt><dd><p>In case anything related to IO goes wrong.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
 <p>Saves the data arrays from a D3plot into an HDF5 file.</p>
 <p class="rubric">Examples</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span> <span class="o">=</span> <span class="n">D3plot</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw_d3plot</span><span class="o">.</span><span class="n">save_hdf5</span><span class="p">(</span><span class="s2">&quot;path/to/d3plot.h5)</span>
 </pre></div>
 </div>
@@ -672,6 +612,15 @@ so forth.</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="qd_cae_dyna_KeyFile.html" class="btn btn-neutral float-right" title="KeyFile" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="qd_cae_dyna_D3plot.html" class="btn btn-neutral float-left" title="D3plot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
