@@ -23,10 +23,6 @@ This core idea keeps us pushing forward.
 
 [![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/bePatron?u=8375141)
 
-<aside class="notes">
-    This project is only maintained for bugfixes due to lacking support. Please migrate to <a href="https://github.com/lasso-gmbh/lasso-python">lasso-python</a> if possible (the KeyFile class is not available).
-</aside>
-
 # What's new?
 
 _Changelog 06.10.2019_
