@@ -1,18 +1,15 @@
 
-# add current module to search path
+import filecmp
 import os
 import sys
-import math
-import filecmp
-import numpy as np
-sys.path.append(os.path.join(os.path.realpath(__file__), ".."))
-
-
 import unittest as unittest
+
+import numpy as np
 from qd.cae.dyna import *
 
 
 class TestDynaModule(unittest.TestCase):
+
     """Tests the dyna module."""
 
     def is_almost_equal(self, val1, val2, tolerance):
@@ -31,7 +28,6 @@ class TestDynaModule(unittest.TestCase):
             super(TestDynaModule, self).assertItemsEqual(*args, **kwargs)
 
     def test_dyna_d3plot(self):
-        """Testing qd.cae.dyna.D3plot"""
 
         d3plot_filepath = "test/d3plot"
         d3plot_modes = ["inner", "mid", "outer", "max", "min", "mean"]
@@ -308,7 +304,6 @@ class TestDynaModule(unittest.TestCase):
         '''
 
     def test_binout(self):
-        """Testing qd.cae.dyna.Binout"""
 
         binout_filepath = "test/binout"
         nTimesteps = 321
@@ -610,7 +605,7 @@ class TestDynaModule(unittest.TestCase):
         # self.assertEqual(kf.get_include_dirs(), [
         #                  'C:/absolute/path', 'test/', 'test/subdir'])
         self.assertEqual(kf.get_include_dirs(), [
-                         'C:/absolute/path', 'subdir', 'test/', 
+                         'C:/absolute/path', 'subdir', 'test/',
                          'test/C:/absolute/path', 'test/subdir'])
 
         # IncludeKeyword
@@ -650,6 +645,28 @@ class TestDynaModule(unittest.TestCase):
         self.assertEqual(part.get_name(), "Iam beautiful")
         self.assertEqual(len(part.get_elements()), 2)
         self.assertEqual(len(part.get_nodes()), 4)
+
+    def test_keyfile_issue_66(self):
+
+        kf = KeyFile(parse_mesh=True)
+        kw = kf.add_keyword("*Part")
+
+        additional_data = [" 2000001 2000017"]
+        # additional_data = " 2000001 2000017"
+        for pid in range(19, 22):
+            kw.add_part(pid, "A", additional_lines=additional_data)
+
+        part_data = "\n".join([
+            "*Part",
+            "                                                                     A",
+            "        19 2000001 2000017",
+            "                                                                     A",
+            "        20 2000001 2000017",
+            "                                                                     A",
+            "        21 2000001 2000017\n",
+        ])
+
+        self.assertEqual(str(kw), part_data)
 
     def test_raw_d3plot(self):
 

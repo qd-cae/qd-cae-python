@@ -88,7 +88,7 @@ PartKeyword::load()
     // eventually there are comments inbetween first and second card
     std::string comment_block;
     for (size_t iCLine = 1; iCLine < iNextLine - iLine; ++iCLine)
-      comment_block += lines[iLine + iCLine] + '\n';
+      comment_block += lines[iLine + iCLine];
     comments_between_card0_and_card1.push_back(comment_block);
 
     const auto& next_line = lines[iNextLine];
@@ -101,11 +101,21 @@ PartKeyword::load()
       std::string remaining_data(next_line.begin() + field_size,
                                  next_line.end());
 
+#ifdef QD_DEBUG
+      std::cout << "remaining_data: " << remaining_data << "\n";
+#endif
+
       // find end of part block
       iLine = iNextLine + 1;
       size_t iCardCount = 0;
       while (iCardCount < nAdditionalLines + one_more_card &&
              iLine < lines.size()) {
+#ifdef QD_DEBUG
+        std::cout << "iLine: " << iLine << "\n" 
+                  << "iCardCount: " << iCardCount << "\n" 
+                  << "nAdditionalLines: "<< nAdditionalLines << '\n' 
+                  << "one_more_card: " << one_more_card << '\n';
+#endif
 
         if (!is_comment(lines[iLine])) {
 
@@ -161,8 +171,6 @@ PartKeyword::str()
   auto iLine = get_line_index_of_next_card(0);
   for (size_t ii = 0; ii < iLine; ++ii)
     ss << lines[ii] << '\n';
-  // for (const auto& entry : lines)
-  //   ss << entry << '\n';
 
   // write parts
   switch (Keyword::field_alignment) {
@@ -196,23 +204,31 @@ PartKeyword::str()
   for (size_t iPart = 0; iPart < part_ids.size(); ++iPart) {
     const auto part = db_parts->get_partByID(part_ids[iPart]);
 
-    // const auto& comment_block = comments_between_card0_and_card1[iPart];
+    // std::cout 
+    //   << "iPart '" << iPart << "'\n"
+    //   << "name '" << part->get_name() << "'\n"
+    //   << "comment '" << comments_between_card0_and_card1[iPart] << "'\n"
+    //   << "unparsed_data '" << unparsed_data[iPart] << "'" << std::endl;
 
+    // CARD 0: write part name
     ss << std::setw(7 * field_size) << part->get_name() << '\n';
+    
+    // write comment block inbetween
+    const auto& comment_block = comments_between_card0_and_card1[iPart];
+    if(!comment_block.empty())
+      ss << comment_block << "\n"; 
 
     const size_t iLineNextKeyword = get_line_index_of_next_card(iLine);
-    for (size_t jLine = iLine + 1; jLine < iLineNextKeyword; ++jLine)
-      ss << lines[jLine] << '\n';
-
-    std::string remaining_line_data =
-      (iLineNextKeyword < lines.size() &&
-       lines[iLineNextKeyword].size() > field_size)
-        ? lines[iLineNextKeyword].substr(field_size,
-                                         lines[iLineNextKeyword].size())
-        : "";
-
-    ss << std::setw(field_size) << part->get_partID() << remaining_line_data
-       << '\n';
+    
+    // CARD 1: write part id
+    ss << std::setw(field_size) << part->get_partID() ;
+    
+    // write remaining line data
+    const auto& remaining_line_data = unparsed_data[iPart];
+    if(!remaining_line_data.empty()) {
+      ss << remaining_line_data;
+    }
+    ss << "\n";
 
     iLine = iLineNextKeyword + 1;
     size_t iCardCount = 0;

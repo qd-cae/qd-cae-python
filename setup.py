@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import os
-import sys
 import glob
+import os
 import platform
-import numpy as np
 import unittest
-from setuptools import setup, Extension
+
+import numpy as np
+from setuptools import Extension, setup
 
 try:
     import pybind11
@@ -24,7 +24,7 @@ measure_time = False
 use_openmp = False  # buggy
 version = "0.8.9"
 # =============================== #
-is_windows = (platform.system() == "Windows")   
+is_windows = (platform.system() == "Windows")
 is_linux = (platform.system() in ["Linux", "Darwin"])
 # =============================== #
 
@@ -146,7 +146,7 @@ def setup_dyna_cpp_femzip(srcs, lib_dirs, libs, compiler_args):
         #          'ippdcmt', 'ippsmt', 'ifwin', 'ifconsol', 'ippvmmt', 'libmmd',
         #          'libirc', 'svml_dispmd', 'msvcrt']
         libs += [
-            'femunziplib_standard_dyna', 
+            'femunziplib_standard_dyna',
             # 'msvcrt',
             'ifconsol',
             'ifmodintr',
@@ -181,8 +181,8 @@ def setup_dyna_cpp_femzip(srcs, lib_dirs, libs, compiler_args):
         #          'ippdc', 'ipps', 'ifcore_pic', 'ifcoremt', 'imf',
         #          'ipgo', 'irc', 'svml', 'ippcore_l', 'stdc++', 'dl']
         libs += [
-            'femunzip_dyna_standard', 
-            'z', 
+            'femunzip_dyna_standard',
+            'z',
             'ippdc',
             'ipps',
             'ippcore',
